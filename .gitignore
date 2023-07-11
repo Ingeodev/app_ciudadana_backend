@@ -50,6 +50,9 @@ admin.env
 _meta
 .serverless
 
+# GCP STUFF
+account_service_key.json
+
 
 /.eslintcache
 /.nyc_output
@@ -57,5 +60,3 @@ _meta
 /dist
 /node_modules
 npm-debug.log
-/package-lock.json
-
