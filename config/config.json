@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "",
+    "password": "",
+    "database": "calimobility",
+    "host": "testingaurorav2.cluster-chil5peqpvxe.us-east-1.rds.amazonaws.com",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "",
+    "password": "",
+    "database": "calimobility",
+    "host": "testingaurorav2.cluster-chil5peqpvxe.us-east-1.rds.amazonaws.com",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "",
+    "password": "",
+    "database": "calimobility",
+    "host": "testingaurorav2.cluster-chil5peqpvxe.us-east-1.rds.amazonaws.com",
+    "dialect": "postgres"
+  }
+}
