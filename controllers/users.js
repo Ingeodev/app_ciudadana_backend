@@ -10,4 +10,4 @@ const createUser = async (firstName, lastName, email) => {
   })
 }
 
-createUser('pepe', 'perez', 'pepeperez@gmail.com')
+// createUser('pepe', 'perez', 'pepeperez@gmail.com')

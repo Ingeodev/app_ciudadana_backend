@@ -14,6 +14,15 @@ const createUserWithRole = async (displayName, password, email) => {
   await app.auth().setCustomUserClaims(uid, { role: 'external_user'})
 };
 
+
+const addCustomClaimToUser = async (uid) => {
+  const additionalClaims = {
+    role: 'super_master_user'
+  };
+  const response =  await app.auth().setCustomUserClaims(uid, additionalClaims);
+  console.log(response);
+};
+
 const createCustomTokens = async (uid) => {
   const additionalClaims = {
     role: 'super_master_user'
@@ -27,5 +36,6 @@ const createCustomTokens = async (uid) => {
   */
 }
 
-createCustomTokens('s0uHrqRLPSPomarJsLZVjOpbwx42');
+// createCustomTokens('s0uHrqRLPSPomarJsLZVjOpbwx42');
+// addCustomClaimToUser('s0uHrqRLPSPomarJsLZVjOpbwx42');
 // createUserWithRole('PepePerez', 'myPassword123', 'pepeperez@gmail.com')

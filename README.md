@@ -12,6 +12,16 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 
 To run locally this project use
 
+Build the image
+```
+	docker build -t cali-mobility-app .
+```
+
+Run the generated image in your environment
+```
+	docker build -t cali-mobility-app .
+```
+
 ### Contributors
 
 ---

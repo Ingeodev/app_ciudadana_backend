@@ -11,7 +11,7 @@ app.use(cors());
 
 app.use(authMiddleware);
 
-app.get("/products", hasPermissions({ role: 'super_master'}), function (req, res, next) {
+app.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {
   res.json({ msg: "This is CORS-enabled for all origins!" });
 });
 
