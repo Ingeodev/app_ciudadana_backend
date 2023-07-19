@@ -7,4 +7,4 @@ build:
 run:
   command: node index.js
   network:
-    port: 8000
+    port: 3000

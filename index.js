@@ -9,6 +9,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+app.get("/health", function(req, res ) {
+  res.json({ msg: "everything seems to be ok" });
+});
+
 app.use(authMiddleware);
 
 app.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {
