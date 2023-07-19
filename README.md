@@ -15,6 +15,8 @@ To run locally this project use
 Build the image
 ```
 	docker build -t cali-mobility-app .
+	docker build --platform linux/amd64 -t cali-mobility-app .
+	
 ```
 
 Run the generated image in your environment

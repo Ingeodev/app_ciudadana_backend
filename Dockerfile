@@ -1,5 +1,5 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2
-ENV NODE_VERSION=16.13.0
+ENV NODE_VERSION=16.19.1
 ENV PATH=/usr/local/bin:$PATH \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
@@ -8,17 +8,13 @@ ENV PATH=/usr/local/bin:$PATH \
 EXPOSE 3000
 
 RUN yum update -y \
-    && yum install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+    && yum install -y curl \
+    && yum install -y tar
+
+RUN curl -sL https://rpm.nodesource.com/setup_16.x | bash \
+    && yum install -y nodejs
 RUN node --version
 RUN npm --version
-
-
 WORKDIR /srv
 COPY . /srv
 
