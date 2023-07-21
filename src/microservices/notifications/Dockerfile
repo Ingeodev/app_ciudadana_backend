@@ -17,15 +17,15 @@ RUN node --version
 RUN npm --version
 
 WORKDIR /srv
-COPY src/microservices/notifications/ /srv
+COPY src/microservices/notifications/ /srv/microservices/notifications
 COPY src/package.json /srv
 COPY src/package-lock.json /srv
-COPY src/models /srv
-COPY src/utils /srv
-COPY src/config /srv
+COPY src/models /srv/models/
+COPY src/utils /srv/utils/
+COPY src/config /srv/config/
 COPY src/account_service_key.json /srv
 
 
 RUN npm install --production
 
-CMD ["node", "index.js"]
+CMD ["node", "./microservices/notifications/index.js"]
