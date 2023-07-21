@@ -10,8 +10,8 @@ const createUserWithRole = async (displayName, password, email) => {
     displayName,
     password,
     email
-  })
-  await app.auth().setCustomUserClaims(uid, { role: 'external_user'})
+  });
+  await app.auth().setCustomUserClaims(uid, { role: 'external_user'});
 };
 
 
@@ -27,7 +27,7 @@ const createCustomTokens = async (uid) => {
   const additionalClaims = {
     role: 'super_master_user'
   };
-  const token = await app.auth().createCustomToken(uid, additionalClaims)
+  const token = await app.auth().createCustomToken(uid, additionalClaims);
   console.log(token);
   /*
   curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' \
