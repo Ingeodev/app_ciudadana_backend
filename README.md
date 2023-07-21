@@ -22,12 +22,12 @@ Build the image
 Run the generated image in your environment 
 ```
     # from your root directory execute
-    docker build --platform linux/amd64 -t users_ms -f src/microservices/users/Dockerfile .
-    docker build --platform linux/amd64 -t notifications_ms -f src/microservices/notifications/Dockerfile .
+    docker build --platform linux/amd64 -t app_mobility_users_ms -f src/microservices/users/Dockerfile .
+    docker build --platform linux/amd64 -t app_mobility_notifications_ms -f src/microservices/notifications/Dockerfile .
     
     # then 
-    docker run -d -p 3000:3000 users_ms
-    docker run -d -p 8080:3000 notifications_ms 
+    docker run -d -p 3000:3000 app_mobility_users_ms
+    docker run -d -p 8080:3000 app_mobility_notifications_ms 
 
 ```
 
