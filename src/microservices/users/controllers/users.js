@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const db       = require('../models');
+const db       = require('../../../models');
 
 const createUser = async (firstName, lastName, email) => {
   console.log(db);
