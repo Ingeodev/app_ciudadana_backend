@@ -60,3 +60,6 @@ src/account_service_key.json
 /dist
 /node_modules
 npm-debug.log
+
+# Config file
+config.json
