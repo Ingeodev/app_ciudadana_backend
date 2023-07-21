@@ -19,9 +19,14 @@ Build the image
 	
 ```
 
-Run the generated image in your environment
+Run the generated image in your environment 
 ```
-	docker build -t cali-mobility-app .
+    # from your root directory execute
+    docker build --platform linux/amd64 -t users_ms -f src/microservices/users/Dockerfile .
+    
+    # then 
+    docker run -d -p 3000:3000 users_ms
+
 ```
 
 ### Contributors

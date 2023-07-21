@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const {authMiddleware, hasPermissions }= require('./src/microservices/users/services/auth-middleware');
+const {authMiddleware }= require('./services/auth-middleware');
+const routes = require("../users/routes");
 
 const app = express();
 
@@ -15,9 +16,7 @@ app.get("/health", function(req, res ) {
 
 app.use(authMiddleware);
 
-app.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {
-  res.json({ msg: "This is CORS-enabled for all origins!" });
-});
+app.use('/v1/users', routes);
 
 app.listen(3000, function () {
   console.log("running with port 3000");
