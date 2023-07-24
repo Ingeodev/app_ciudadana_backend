@@ -1,14 +1,31 @@
-## CALI MOBILITY BACKEND
+# CALI MOBILITY BACKEND
 
 This backend has been generated from scratch to support the Cali Mobility Application
 
-### Tools
+**Table of Contents**
+
+- [CALI MOBILITY BACKEND](#cali-mobility-backend)
+  - [Tools](#tools)
+  - [Run local](#run-local)
+  - [Microservices](#microservices)
+    - [Users Microservice](#users-microservice)
+    - [Notifications Microservice](#notifications-microservice)
+      - [Advertising](#advertising)
+      - [Attention Lines](#attention-lines)
+      - [Service Lines](#service-lines)
+      - [Alert](#alert)
+    - [Third-Party Microservice](#third-party-microservice)
+  - [Contributors](#contributors)
+  - [License](#license)
+
+
+## Tools
 
 1. [Firebase](https://firebase.google.com/)
 2. [Docker](https://www.docker.com/)
 3. [Express](https://expressjs.com/)
 
-### Run local
+## Run local
 
 To run locally this project use
 
@@ -31,14 +48,50 @@ Run the generated image in your environment
 
 ```
 
-### Contributors
+## Microservices
+
+### Users Microservice
+
+
+
+### Notifications Microservice
+
+This microservice handles the [**Advertising**](#advertising), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
+
+#### Advertising 
+
+The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
+
+**_POST_ save new advertisement** \(\<Your_Host\>/v1/notifications/advertising/\) allows to save a new advertisement into the database. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _imageUri_   	| String (URI) 	|      Yes     	| URL to the image that will be displayed in the advertisement.    	|
+| _siteUri_    	| String (URI) 	|      Yes     	| URL to the web site of the vendor.                               	|
+| _categoryId_ 	|    Integer   	|      No      	| ID that references the Category of the advertisement (optional). 	|
+
+It returns **201 _created_** and the created object on success.
+
+#### Attention Lines 
+
+#### Service Lines 
+
+#### Alert 
+
+
+### Third-Party Microservice
+
+This microservice handles third-party APIs.
+
+## Contributors
 
 ---
 
 - [estebance](https://github.com/estebance)
 - [daniel]()
 - [andres]()
+- [Julián](https://github.com/bitjep)
 
-### License
+## License
 
 TBD
