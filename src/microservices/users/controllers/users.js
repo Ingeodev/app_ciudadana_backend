@@ -6,8 +6,8 @@ const Op = db.Sequelize.Op;
 
 /**
  * Verifies that the UID corresponds to a user in Firebase
- * @param {object} req - Object containing the clientId
- * @return {object} Response contiene: statuscode (integer), json (objeto): code, msg, data.
+ * @param {string} clientId
+ * @return {object} User object if found, null if not
  */
 const findUserByClientId = async (clientId) => {
   const result = await db.User.findOne({
@@ -16,15 +16,19 @@ const findUserByClientId = async (clientId) => {
   return result;
 }
 
-// const createUser = async (firstName, lastName, email) => {
-//   // console.log(db);
-//   await db.User.create({
-//     firstName,
-//     lastName,
-//     email
-//   })
-// }
-// createUser('pepe', 'perez', 'pepeperez@gmail.com')
+// ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
+/**
+ * Update a user in the database using the clientId
+ * @param {string} clientId
+ * @param {object} data - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt
+ * @return {object} Response of the update operation
+ */
+const updateUserByClientId = async (clientId, data) => {  
+  const result = await db.User.update(data, {
+    where: { clientId },
+  });
+  return result;
+}
 
 /**
  * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
@@ -90,5 +94,33 @@ exports.validateFirebaseClientId = async (req, res) => {
   } else {
     res.statusCode = firebaseResponse.code;
     // res.send({ message: result.message });
+  }
+};
+
+
+/**
+ * Update a user (existing in db) with missing information
+ * @param {object} req - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt (file)
+ * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ */
+exports.fullLogin = async (req, res) => {
+  console.log(req.file);
+  const clientId = res.locals.uid;
+
+  const resultUpdate = await updateUserByClientId(clientId, {
+    documentType: req.body.documentType,
+    numberDocument: req.body.numberDocument,
+    birthDate: req.body.birthDate,
+    residenceAddress: req.body.residenceAddress,
+    serviceReceipt: req.file.originalname,
+  });
+  if (resultUpdate[0] === 1) {
+    res.status(200).send({
+      message: "successful operation",
+    });
+  } else {
+    res.status(400).send({
+      message: "invalid input",
+    });
   }
 };

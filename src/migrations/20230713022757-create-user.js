@@ -28,15 +28,35 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
-        // phone: {
-        //   type: Sequelize.INTEGER
-        // },
+        documentType: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          unique: false,
+        },
+        numberDocument: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          // ! unique: true? Diversidad de tipos de documentos
+          unique: true,
+        },
+        birthDate: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          unique: false,
+        },
+        residenceAddress: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          unique: false,
+        },
+        serviceReceipt: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          unique: false,
+        },
         loginPhase: {
           type: Sequelize.STRING(50),
         },
-        // active: {
-        //   type: Sequelize.BOOLEAN
-        // },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: true,

@@ -1,8 +1,9 @@
-const express = require('express')
+const express = require("express");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 const { hasPermissions } = require("../../../middleware/auth-middleware.js");
 const users = require("../controllers/users.js");
-
 
 router.post(
   "/account/signin",
@@ -14,6 +15,13 @@ router.post(
   "/account/login",
   // hasPermissions({ role: "super_master_user" }),
   users.validateFirebaseClientId
+);
+
+router.post(
+  "/account/full_login",
+  upload.single("serviceReceipt"),
+  // hasPermissions({ role: "super_master_user" }),
+  users.fullLogin
 );
 
 router.get("/", (req, res) => {
@@ -28,5 +36,4 @@ router.get("/products", hasPermissions({ role: 'super_master_user'}), function (
   res.json({ msg: "This is CORS-enabled for all origins!" });
 });
 
-
-module.exports = router
+module.exports = router;
