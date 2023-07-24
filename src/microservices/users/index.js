@@ -15,6 +15,6 @@ app.use(authMiddleware);
 
 app.use('/v1/users', routes);
 
-app.listen(3001, function () {
-  console.log("running with port 3001");
+app.listen(3000, function () {
+  console.log("running with port 3000");
 });

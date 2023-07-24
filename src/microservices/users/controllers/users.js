@@ -1,6 +1,6 @@
 const db = require("../../../models/index.js");
 const user = require("../../../models/user.js");
-const firebase = require("../utils/firebase_admin.js");
+const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
 const Op = db.Sequelize.Op;
 
@@ -68,27 +68,27 @@ exports.validateFirebaseClientId = async (req, res) => {
   console.log(`clientId: ${clientId}`);
   const authorization = req.get("Authorization").split(" ");
   // ! Demora mucho cuando el clientId no conincide
-  const r_firebase = await firebase.verifyClientId(clientId);
-  if (r_firebase.code === 200) {
-    const r_user = await findUserByClientId(clientId);
-    if (r_user) {
+  const firebaseResponse = await firebase.verifyClientId(clientId);
+  if (firebaseResponse.code === 200) {
+    const firebaseUser = await findUserByClientId(clientId);
+    if (firebaseUser) {
       res.statusCode = 200;
       res.json({
         // ! token es enviado dentro de req.cabecera
         // ! Ó se genera un nuevo token?
         token: authorization[1],
-        loginPhase: r_user.dataValues.loginPhase,
+        loginPhase: firebaseUser.dataValues.loginPhase,
         userInfo: {
-          name: r_user.dataValues.name,
-          lastName: r_user.dataValues.lastName,
-          email: r_user.dataValues.email,
+          name: firebaseUser.dataValues.name,
+          lastName: firebaseUser.dataValues.lastName,
+          email: firebaseUser.dataValues.email,
           // ! Front - Firebase - Register phoneNumber
-          phone: r_firebase.data.phoneNumber || 0,
+          phone: firebaseResponse.data.phoneNumber || 0,
         },
       });
     }    
   } else {
-    res.statusCode = r_firebase.code;
+    res.statusCode = firebaseResponse.code;
     // res.send({ message: result.message });
   }
 };

@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const db = require('../../../models');
-const validator = require('../util/validator');
+const validator = require('../utils/validator');
 
 // Retrieve all the advertisements whether they have a category or not.
 const getAllAdvertisements = async (req, res, next) => {

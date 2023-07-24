@@ -20,11 +20,10 @@ WORKDIR /srv
 COPY src/microservices/notifications/ /srv/microservices/notifications
 COPY src/package.json /srv
 COPY src/package-lock.json /srv
+COPY src/middleware /srv/middleware/
 COPY src/models /srv/models/
-COPY src/utils /srv/utils/
 COPY src/config /srv/config/
 COPY src/account_service_key.json /srv
-
 
 RUN npm install --production
 

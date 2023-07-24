@@ -21,10 +21,9 @@ COPY src/microservices/users/ /srv/microservices/users
 COPY src/package.json /srv
 COPY src/package-lock.json /srv
 COPY src/models /srv/models/
-COPY src/utils /srv/utils/
+COPY src/middleware /srv/middleware/
 COPY src/config /srv/config/
 COPY src/account_service_key.json /srv
-
 
 RUN npm install --production
 
