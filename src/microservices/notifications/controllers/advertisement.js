@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const db = require('../../../models');
+const validator = require('../util/validator');
 
 // Retrieve all the advertisements whether they have a category or not.
 const getAllAdvertisements = async (req, res, next) => {
@@ -10,8 +11,7 @@ const getAllAdvertisements = async (req, res, next) => {
 // Create a new advertisement.
 const postAdvertisement = async (req, res, next) => {
     try {
-        // TODO: Validate the incoming data
-        const { imageUri, siteUri, categoryId } = req.body;
+        const { imageUri, siteUri, categoryId } = await validator.validateAdvertisementSchema(req.body);
         const newAdvertisement = await db.Advertisement.create({
             imageUri,
             siteUri,
@@ -22,7 +22,6 @@ const postAdvertisement = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-
 };
 
 
