@@ -1,8 +1,8 @@
-const admin = require("firebase-admin");
-const serviceAccount = require("../../../account_service_key.json");
+const adminFirebase = require("firebase-admin");
+const serviceAccount = require("../account_service_key.json");
 
-const app = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+const appFirebase = adminFirebase.initializeApp({
+    credential: adminFirebase.credential.cert(serviceAccount)
 });
 const authMiddleware = async (req, res, next) => {
     console.log('going to check the time and auth credentials:', Date.now())
@@ -20,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
     }
     const token = split[1]
     try {
-        const decodedToken = await app.auth().verifyIdToken(token);
+        const decodedToken = await appFirebase.auth().verifyIdToken(token);
         console.log("decodedToken", JSON.stringify(decodedToken))
         res.locals = { ...res.locals, uid: decodedToken.uid, role: decodedToken.role }
         next();
@@ -43,5 +43,5 @@ const hasPermissions = (params) => {
 };
 
 module.exports = {
-    authMiddleware, hasPermissions
+    authMiddleware, hasPermissions, appFirebase, adminFirebase
 };
