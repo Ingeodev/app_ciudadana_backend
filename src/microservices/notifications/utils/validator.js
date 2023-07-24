@@ -23,7 +23,7 @@ const use_validator_on_data = async (validator_schema, data) => {
         });
         return validated_data;
     } catch (error) {
-        error.status = StatusCodes.UNPROCESSABLE_ENTITY;
+        error.status = StatusCodes.BAD_REQUEST;
         return Promise.reject(error);
     }
 };
