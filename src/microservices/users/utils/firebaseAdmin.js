@@ -1,4 +1,4 @@
-const { appFirebase, adminFirebase } = require("../../../middleware/auth-middleware.js");
+const { appFirebase, adminFirebase } = require("../../../middleware/authMiddleware.js");
 
 const createUserWithRole = async (displayName, password, email) => {
   const { uid } = await appFirebase.auth().createUser({

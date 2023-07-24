@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { StatusCodes } = require('http-status-codes');
 
+const errorHandler = require('../../middleware/errorMiddleware');
 const advertisingRouter = require('./routes/advertisement');
 
 const app = express();
@@ -25,17 +26,7 @@ app.use((req, res, next) => {
 });
 
 // Error Handler!
-app.use((error, req, res, next) => {
-  if (!error.status) {
-    console.error(error);
-    error.status = StatusCodes.INTERNAL_SERVER_ERROR;
-  }
-  return res.status(error.status).json({
-    error: {
-      message: error.message
-    }
-  });
-});
+app.use(errorHandler);
 
 app.listen(3000, function () {
   console.log("running with port 3000");
