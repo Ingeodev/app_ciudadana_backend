@@ -31,6 +31,11 @@ Run the generated image in your environment
 
 ```
 
+### Run Users microservice
+    # On the console
+    cd src\microservices\users
+    node index.js
+
 ### Contributors
 
 ---
