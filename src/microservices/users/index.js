@@ -11,6 +11,10 @@ app.use(bodyParser.json({ limit: "60mb" }));
 app.use(bodyParser.urlencoded({ limit: "60mb", extended: true }));
 app.use(cors());
 
+app.get("/health", function (req, res) {
+  res.json({ msg: "everything seems to be ok" });
+});
+
 app.use(authMiddleware);
 
 app.use('/v1/users', routes);

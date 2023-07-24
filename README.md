@@ -46,6 +46,10 @@ Run the generated image in your environment
     # then 
     docker run -d -p 3000:3000 app_mobility_users_ms
     docker run -d -p 8080:3000 app_mobility_notifications_ms 
+    
+    # for deployment tag your versions, this is an example
+    docker tag app_mobility_notifications_ms:latest <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
+    docker push <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
 
 ```
 
