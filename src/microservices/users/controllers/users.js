@@ -4,6 +4,18 @@ const firebase = require("../utils/firebase_admin.js");
 const { formatDate } = require("../utils/formatDate.js");
 const Op = db.Sequelize.Op;
 
+/**
+ * Verifies that the UID corresponds to a user in Firebase
+ * @param {object} req - Object containing the clientId
+ * @return {object} Response contiene: statuscode (integer), json (objeto): code, msg, data.
+ */
+const findUserByClientId = async (clientId) => {
+  const result = await db.User.findOne({
+    where: { clientId },
+  });
+  return result;
+}
+
 // const createUser = async (firstName, lastName, email) => {
 //   // console.log(db);
 //   await db.User.create({
@@ -44,4 +56,39 @@ exports.registerNewUser = async (req, res) => {
         message: "invalid input",
       });
     });
+};
+
+/**
+ * Verifies that the UID corresponds to a user in Firebase
+ * @param {object} req - Object containing the clientId
+ * @return {object} Response contiene: statuscode (integer), json (objeto): code, msg, data.
+ */
+exports.validateFirebaseClientId = async (req, res) => {
+  const { clientId } = req.body;
+  console.log(`clientId: ${clientId}`);
+  const authorization = req.get("Authorization").split(" ");
+  // ! Demora mucho cuando el clientId no conincide
+  const r_firebase = await firebase.verifyClientId(clientId);
+  if (r_firebase.code === 200) {
+    const r_user = await findUserByClientId(clientId);
+    if (r_user) {
+      res.statusCode = 200;
+      res.json({
+        // ! token es enviado dentro de req.cabecera
+        // ! Ó se genera un nuevo token?
+        token: authorization[1],
+        loginPhase: r_user.dataValues.loginPhase,
+        userInfo: {
+          name: r_user.dataValues.name,
+          lastName: r_user.dataValues.lastName,
+          email: r_user.dataValues.email,
+          // ! Front - Firebase - Register phoneNumber
+          phone: r_firebase.data.phoneNumber || 0,
+        },
+      });
+    }    
+  } else {
+    res.statusCode = r_firebase.code;
+    // res.send({ message: result.message });
+  }
 };

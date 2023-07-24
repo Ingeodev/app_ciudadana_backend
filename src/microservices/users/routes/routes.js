@@ -10,6 +10,12 @@ router.post(
   users.registerNewUser
 );
 
+router.post(
+  "/account/login",
+  // hasPermissions({ role: "super_master_user" }),
+  users.validateFirebaseClientId
+);
+
 router.get("/", (req, res) => {
   res.status(200).json("my msg");
 });
