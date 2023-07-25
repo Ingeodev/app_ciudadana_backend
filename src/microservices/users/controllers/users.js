@@ -2,6 +2,7 @@ const db = require("../../../models/index.js");
 const user = require("../../../models/user.js");
 const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
+const { StatusCodes } = require('http-status-codes');
 const Op = db.Sequelize.Op;
 
 /**
@@ -121,6 +122,43 @@ exports.fullLogin = async (req, res) => {
   } else {
     res.status(400).send({
       message: "invalid input",
+    });
+  }
+};
+
+exports.accountInfo = async (req, res, next) => {
+  try {
+    const clientId = res.locals.uid;
+    const userInDb = await db.User.findOne({
+      where: {clientId},
+    });
+    console.info("userInDb: ", userInDb);
+    let responseBody = {
+      data: {
+        loginPhase: 'notRegister',
+        userInfo: {}
+      }
+    };
+    //TBD loginPhaseToBeDefined
+    if (userInDb.dataValues){
+      responseBody = {
+        data: {
+          loginPhase: 'register',
+          userInfo: {
+            name: userInDb.dataValues.name,
+            lastName: userInDb.dataValues.lastName,
+            email: userInDb.dataValues.email,
+            phone: userInDb.data.phoneNumber || ''
+          }
+        }
+      }
+    }
+    res.status(StatusCodes.OK).send(responseBody);
+  } catch (error) {
+    console.error('account info could not be retrieved: ', error);
+    // next(new Error({ message: ''}))
+    res.status(500).send({
+      message: "Internal server error in users controller accountInfo"
     });
   }
 };

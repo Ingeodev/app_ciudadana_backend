@@ -28,8 +28,8 @@ router.get("/", (req, res) => {
   res.status(200).json("my msg");
 });
 // define the about route
-router.get("/about", (req, res) => {
-  res.status(200).json("my msg");
+router.get("/account/info", (req, res) => {
+  users.accountInfo
 });
 
 router.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {
