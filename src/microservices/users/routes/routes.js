@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const router = express.Router();
-const { hasPermissions } = require("../../../middleware/auth-middleware.js");
+const { hasPermissions } = require("../../../middleware/authMiddleware.js");
 const users = require("../controllers/users.js");
 
 router.post(

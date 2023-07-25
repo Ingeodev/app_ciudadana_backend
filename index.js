@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const {authMiddleware, hasPermissions }= require('./src/microservices/users/services/auth-middleware');
+const { authMiddleware, hasPermissions }= require("./src/middleware/authMiddleware.js");
 
 const app = express();
 
