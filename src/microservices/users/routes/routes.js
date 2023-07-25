@@ -6,9 +6,9 @@ const { hasPermissions } = require("../../../middleware/authMiddleware.js");
 const users = require("../controllers/users.js");
 
 router.post(
-  "/account/signin",
+  "/account/info",
   // hasPermissions({ role: "super_master_user" }),
-  users.accountSignin
+  users.postAccountInfo
 );
 
 router.post(
@@ -24,12 +24,13 @@ router.post(
   users.accountFullLogin
 );
 
+// ! Retornar lista de endpoints?
 router.get("/", (req, res) => {
   res.status(200).json("my msg");
 });
 // define the about route
 router.get("/account/info", (req, res) => {
-  users.accountInfo
+  users.getAccountInfo
 });
 
 router.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {
