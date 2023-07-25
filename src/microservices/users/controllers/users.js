@@ -16,20 +16,6 @@ const findUserByClientId = async (clientId) => {
   return result;
 };
 
-// ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
-/**
- * Update a user in the database using the clientId
- * @param {string} clientId
- * @param {object} data - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt
- * @return {object} Response of the update operation
- */
-const updateUserByClientId = async (clientId, data) => {
-  const result = await db.User.update(data, {
-    where: { clientId },
-  });
-  return result;
-};
-
 /**
  * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
  * @param {object} req - Object containing the clientId, name, lastName, phone, email
@@ -108,25 +94,31 @@ exports.accountFullLogin = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     // ! Falta validar la existencia o no de los datos
+    
+    // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
+    // ! Quitar multer y upload, si se usa FirebaseStorage
 
-    const resultUpdate = await updateUserByClientId(clientId, {
+    const data = {
       documentType: req.body.documentType,
       numberDocument: req.body.numberDocument,
       birthDate: req.body.birthDate,
       residenceAddress: req.body.residenceAddress,
       serviceReceipt: req.file.originalname,
+      loginPhase: "inVerification",
+    };
+
+    const resultUpdate = await db.User.update(data, {
+      where: { clientId },
     });
+
     if (resultUpdate[0] === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "invalid input" });                               
+        .json({ message: "invalid input" });
     }
-    return res.status(StatusCodes.OK).json({ message: "successful operation" }); 
+    return res.status(StatusCodes.OK).json({ message: "successful operation" });
   } catch (error) {
     console.error("account full_login could not be retrieved: ", error);
-    // return res
-    //   .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    //   .json({ message: error.message }); 
     return next(error);
   }
 };
