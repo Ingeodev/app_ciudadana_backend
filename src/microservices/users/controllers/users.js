@@ -1,3 +1,4 @@
+const { StatusCodes } = require("http-status-codes");
 const db = require("../../../models/index.js");
 const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
@@ -13,7 +14,7 @@ const findUserByClientId = async (clientId) => {
     where: { clientId },
   });
   return result;
-}
+};
 
 // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
 /**
@@ -22,12 +23,12 @@ const findUserByClientId = async (clientId) => {
  * @param {object} data - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt
  * @return {object} Response of the update operation
  */
-const updateUserByClientId = async (clientId, data) => {  
+const updateUserByClientId = async (clientId, data) => {
   const result = await db.User.update(data, {
     where: { clientId },
   });
   return result;
-}
+};
 
 /**
  * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
@@ -96,31 +97,37 @@ exports.accountLogin = async (req, res) => {
   }
 };
 
-
 /**
  * Update a user (existing in db) with missing information
  * @param {object} req - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt (file)
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
-exports.accountFullLogin = async (req, res) => {
-  console.log(req.file);
-  const clientId = res.locals.uid;
+exports.accountFullLogin = async (req, res, next) => {
+  try {
+    // console.info("req.file: ", req.file);
+    const clientId = res.locals.uid;
 
-  const resultUpdate = await updateUserByClientId(clientId, {
-    documentType: req.body.documentType,
-    numberDocument: req.body.numberDocument,
-    birthDate: req.body.birthDate,
-    residenceAddress: req.body.residenceAddress,
-    serviceReceipt: req.file.originalname,
-  });
-  if (resultUpdate[0] === 1) {
-    res.status(200).send({
-      message: "successful operation",
+    // ! Falta validar la existencia o no de los datos
+
+    const resultUpdate = await updateUserByClientId(clientId, {
+      documentType: req.body.documentType,
+      numberDocument: req.body.numberDocument,
+      birthDate: req.body.birthDate,
+      residenceAddress: req.body.residenceAddress,
+      serviceReceipt: req.file.originalname,
     });
-  } else {
-    res.status(400).send({
-      message: "invalid input",
-    });
+    if (resultUpdate[0] === 0) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "invalid input" });                               
+    }
+    return res.status(StatusCodes.OK).json({ message: "successful operation" }); 
+  } catch (error) {
+    console.error("account full_login could not be retrieved: ", error);
+    // return res
+    //   .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    //   .json({ message: error.message }); 
+    return next(error);
   }
 };
 
@@ -128,35 +135,33 @@ exports.accountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
     const userInDb = await db.User.findOne({
-      where: {clientId},
+      where: { clientId },
     });
     console.info("userInDb: ", userInDb);
     let responseBody = {
       data: {
-        loginPhase: 'notRegister',
-        userInfo: {}
-      }
+        loginPhase: "notRegister",
+        // ! Error {}
+        userInfo: {},
+      },
     };
     //TBD loginPhaseToBeDefined
-    if (userInDb.dataValues){
+    if (userInDb.dataValues) {
       responseBody = {
         data: {
-          loginPhase: 'register',
+          loginPhase: "register",
           userInfo: {
             name: userInDb.dataValues.name,
             lastName: userInDb.dataValues.lastName,
             email: userInDb.dataValues.email,
-            phone: userInDb.data.phoneNumber || ''
-          }
-        }
-      }
+            phone: userInDb.data.phoneNumber || "",
+          },
+        },
+      };
     }
     res.status(StatusCodes.OK).send(responseBody);
   } catch (error) {
-    console.error('account info could not be retrieved: ', error);
-    // next(new Error({ message: ''}))
-    res.status(500).send({
-      message: "Internal server error in users controller accountInfo"
-    });
+    console.error("account info could not be retrieved: ", error);
+    return next(error);
   }
 };
