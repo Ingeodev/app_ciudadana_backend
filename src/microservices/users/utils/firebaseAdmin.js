@@ -39,7 +39,7 @@ const createCustomTokens = async (uid) => {
  * @param {string} clientId - ClientID to verify
  * @return {object} Contains: statusCode (integer - HTTP response status codes), msg (string - Descriptive message), data.
  */
-exports.verifyClientId = async (clientId) => {
+exports.getUserByClientId = async (clientId) => {
   try {
     // Verificar que el UID corresponda a un usuario en Firebase
     const userRecord = await adminFirebase.auth().getUser(clientId);

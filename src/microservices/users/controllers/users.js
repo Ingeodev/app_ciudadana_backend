@@ -73,7 +73,7 @@ exports.validateFirebaseClientId = async (req, res) => {
   console.log(`clientId: ${clientId}`);
   const authorization = req.get("Authorization").split(" ");
   // ! Demora mucho cuando el clientId no conincide
-  const firebaseResponse = await firebase.verifyClientId(clientId);
+  const firebaseResponse = await firebase.getUserByClientId(clientId);
   if (firebaseResponse.code === 200) {
     const firebaseUser = await findUserByClientId(clientId);
     if (firebaseUser) {
