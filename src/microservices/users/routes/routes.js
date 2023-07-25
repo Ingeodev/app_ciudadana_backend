@@ -8,20 +8,20 @@ const users = require("../controllers/users.js");
 router.post(
   "/account/signin",
   // hasPermissions({ role: "super_master_user" }),
-  users.registerNewUser
+  users.accountSignin
 );
 
 router.post(
   "/account/login",
   // hasPermissions({ role: "super_master_user" }),
-  users.validateFirebaseClientId
+  users.accountLogin
 );
 
 router.post(
   "/account/full_login",
   upload.single("serviceReceipt"),
   // hasPermissions({ role: "super_master_user" }),
-  users.fullLogin
+  users.accountFullLogin
 );
 
 router.get("/", (req, res) => {

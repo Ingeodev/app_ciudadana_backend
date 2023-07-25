@@ -1,9 +1,7 @@
 const db = require("../../../models/index.js");
-const user = require("../../../models/user.js");
 const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
-const { StatusCodes } = require('http-status-codes');
-const Op = db.Sequelize.Op;
+// const Op = db.Sequelize.Op;
 
 /**
  * Verifies that the UID corresponds to a user in Firebase
@@ -36,7 +34,7 @@ const updateUserByClientId = async (clientId, data) => {
  * @param {object} req - Object containing the clientId, name, lastName, phone, email
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
-exports.registerNewUser = async (req, res) => {
+exports.accountSignin = async (req, res) => {
   const { clientId, name, lastName, email } = req.body;
   // ! token es enviado dentro de req.cabecera
   // ! Ó se genera un nuevo token?
@@ -68,7 +66,7 @@ exports.registerNewUser = async (req, res) => {
  * @param {object} req - Object containing the clientId
  * @return {object} Response contiene: statuscode (integer), json (objeto): code, msg, data.
  */
-exports.validateFirebaseClientId = async (req, res) => {
+exports.accountLogin = async (req, res) => {
   const { clientId } = req.body;
   console.log(`clientId: ${clientId}`);
   const authorization = req.get("Authorization").split(" ");
@@ -91,7 +89,7 @@ exports.validateFirebaseClientId = async (req, res) => {
           phone: firebaseResponse.data.phoneNumber || 0,
         },
       });
-    }    
+    }
   } else {
     res.statusCode = firebaseResponse.code;
     // res.send({ message: result.message });
@@ -104,7 +102,7 @@ exports.validateFirebaseClientId = async (req, res) => {
  * @param {object} req - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt (file)
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
-exports.fullLogin = async (req, res) => {
+exports.accountFullLogin = async (req, res) => {
   console.log(req.file);
   const clientId = res.locals.uid;
 
