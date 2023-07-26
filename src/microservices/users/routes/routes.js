@@ -11,13 +11,6 @@ router.post(
   users.postAccountInfo
 );
 
-// ! Endpoint eliminado del Swagger
-router.post(
-  "/account/login",
-  // hasPermissions({ role: "super_master_user" }),
-  users.accountLogin
-);
-
 router.post(
   "/account/full_login",
   upload.single("serviceReceipt"),

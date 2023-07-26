@@ -8,18 +8,6 @@ const { formatDate } = require("../utils/formatDate.js");
 // ! Verificar formato de res: Response contains: statuscode (integer), json (objeto): message
 
 /**
- * Verifies that the UID corresponds to a user in Firebase
- * @param {string} clientId
- * @return {object} User object if found, null if not
- */
-const findUserByClientId = async (clientId) => {
-  const result = await db.User.findOne({
-    where: { clientId },
-  });
-  return result;
-};
-
-/**
  * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
  * @param {object} req - Object containing the clientId, name, lastName, phone, email
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
@@ -88,41 +76,6 @@ exports.postAccountInfo = async (req, res, next) => {
       error.message
     );
     return next(error);
-  }
-};
-
-/**
- * Verifies that the UID corresponds to a user in Firebase
- * @param {object} req - Object containing the clientId
- * @return {object} Response contiene: statuscode (integer), json (objeto): code, msg, data.
- */
-exports.accountLogin = async (req, res) => {
-  const { clientId } = req.body;
-  console.log(`clientId: ${clientId}`);
-  const authorization = req.get("Authorization").split(" ");
-  // ! Demora mucho cuando el clientId no conincide
-  const firebaseResponse = await firebase.getUserByClientId(clientId);
-  if (firebaseResponse.code === 200) {
-    const firebaseUser = await findUserByClientId(clientId);
-    if (firebaseUser) {
-      res.statusCode = 200;
-      res.json({
-        // ! token es enviado dentro de req.cabecera
-        // ! Ó se genera un nuevo token?
-        token: authorization[1],
-        loginPhase: firebaseUser.dataValues.loginPhase,
-        userInfo: {
-          name: firebaseUser.dataValues.name,
-          lastName: firebaseUser.dataValues.lastName,
-          email: firebaseUser.dataValues.email,
-          // ! Front - Firebase - Register phoneNumber
-          phone: firebaseResponse.data.phoneNumber || 0,
-        },
-      });
-    }
-  } else {
-    res.statusCode = firebaseResponse.code;
-    // res.send({ message: result.message });
   }
 };
 
