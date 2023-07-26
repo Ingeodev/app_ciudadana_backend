@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const joi = require("joi");
 const db = require("../../../models/index.js");
 const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
@@ -21,31 +22,53 @@ const findUserByClientId = async (clientId) => {
  * @param {object} req - Object containing the clientId, name, lastName, phone, email
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
-exports.accountSignin = async (req, res) => {
-  const { clientId, name, lastName, email } = req.body;
-  // ! token es enviado dentro de req.cabecera
-  // ! Ó se genera un nuevo token?
-  const authorization = req.get("Authorization").split(" ");
-  const date = formatDate(new Date());
-  await db.User.create({
-    clientId,
-    name,
-    lastName,
-    email,
-    loginPhase: "notRegistered",
-    createdAt: date,
-    updatedAt: date,
-  })
-    .then((data) => {
-      // ! token es enviado dentro de req.cabecera
-      // ! Ó se genera un nuevo token?
-      res.send({ token: authorization[1] });
-    })
-    .catch((err) => {
-      res.status(400).send({
-        message: "invalid input",
-      });
+exports.postAccountInfo = async (req, res, next) => {
+  try {
+    const clientId = res.locals.uid;
+    const { name, lastName, phone, email } = req.body;
+    const date = formatDate(new Date());
+    
+    const data = joi.object({
+      name: joi.string().required(),
+      lastName: joi.string().required(),
+      phone: joi.string().required(),
+      email: joi.string().email().required(),
     });
+
+    const { error } = data.validate(req.body);
+    if (error) {      
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: error.message });
+    }
+
+    await db.User.create({
+      clientId,
+      name,
+      lastName,
+      email,
+      phone,
+      loginPhase: "notRegistered",
+      createdAt: date,
+      updatedAt: date,
+    });
+    
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "successful operation" });
+    
+  } catch (error) {
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
+    console.error("account postAccountInfo could not be created/updated: ", error);
+    return next(error);
+  }
 };
 
 /**
@@ -94,9 +117,11 @@ exports.accountFullLogin = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     // ! Falta validar la existencia o no de los datos
-    
+
     // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
     // ! Quitar multer y upload, si se usa FirebaseStorage
+
+    // ! Verificar que el usuario tenga el loginPhase "baseLogin"
 
     const data = {
       documentType: req.body.documentType,
