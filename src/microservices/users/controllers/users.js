@@ -23,6 +23,7 @@ const findUserByClientId = async (clientId) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
 exports.postAccountInfo = async (req, res, next) => {
+  const transactionSequelize = await db.sequelize.transaction();
   try {
     const clientId = res.locals.uid;
     const { name, lastName, phone, email } = req.body;
@@ -36,28 +37,35 @@ exports.postAccountInfo = async (req, res, next) => {
     });
 
     const { error } = data.validate(req.body);
-    if (error) {      
+    if (error) {   
+      await transactionSequelize.rollback();
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: error.message });
     }
 
-    await db.User.create({
-      clientId,
-      name,
-      lastName,
-      email,
-      phone,
-      loginPhase: "notRegistered",
-      createdAt: date,
-      updatedAt: date,
-    });
+    await db.User.create(
+      {
+        clientId,
+        name,
+        lastName,
+        email,
+        phone,
+        loginPhase: "notRegistered",
+        createdAt: date,
+        updatedAt: date,
+      },
+      { transaction: transactionSequelize }
+    );
+
+    await transactionSequelize.commit();
     
     return res
       .status(StatusCodes.OK)
       .json({ message: "successful operation" });
     
   } catch (error) {
+    await transactionSequelize.rollback();
     if (
       error &&
       error.errors &&
@@ -66,7 +74,10 @@ exports.postAccountInfo = async (req, res, next) => {
     ) {
       error.message = error.errors[0].message;
     }
-    console.error("account postAccountInfo could not be created/updated: ", error);
+    console.error(
+      "account postAccountInfo could not be created/updated: ",
+      error.message
+    );
     return next(error);
   }
 };
