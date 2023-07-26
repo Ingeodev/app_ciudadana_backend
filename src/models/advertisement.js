@@ -28,7 +28,10 @@ module.exports = (sequelize, DataTypes) => {
     imageUri: DataTypes.STRING,
     siteUri: DataTypes.STRING,
     categoryId: DataTypes.INTEGER,
-    active: DataTypes.BOOLEAN
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
   }, {
     sequelize,
     modelName: 'Advertisement',
