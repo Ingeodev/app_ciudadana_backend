@@ -25,12 +25,16 @@ describe("Advertisement management API points: ", () => {
             expect(response0.body).toHaveProperty("msg");
             expect(response0.body).toHaveProperty("newAdvertisement");
             expect(response0.body.newAdvertisement).toHaveProperty("id");
+            expect(response0.body.newAdvertisement).toHaveProperty("active");
+            expect(response0.body.newAdvertisement.active).toBe(true);
             testAdvertisement0.id = response0.body.newAdvertisement.id;
             const response1 = await request(usedHost).post('/').send(testAdvertisement1);
             expect(response1.statusCode).toBe(201);
             expect(response1.body).toHaveProperty("msg");
             expect(response1.body).toHaveProperty("newAdvertisement");
             expect(response1.body.newAdvertisement).toHaveProperty("id");
+            expect(response1.body.newAdvertisement).toHaveProperty("active");
+            expect(response1.body.newAdvertisement.active).toBe(true);
             testAdvertisement1.id = response1.body.newAdvertisement.id;
         });
 
