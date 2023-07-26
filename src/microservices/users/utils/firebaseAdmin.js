@@ -35,13 +35,12 @@ const createCustomTokens = async (uid) => {
 // createUserWithRole('PepePerez', 'myPassword123', 'pepeperez@gmail.com')
 
 /**
- * Verifies that the UID corresponds to a user in Firebase
- * @param {string} clientId - ClientID to verify
+ * Get data user by clientId corresponds to a user in Firebase
+ * @param {string} clientId
  * @return {object} Contains: statusCode (integer - HTTP response status codes), msg (string - Descriptive message), data.
  */
-exports.verifyClientId = async (clientId) => {
+exports.getUserByClientId = async (clientId) => {
   try {
-    // Verificar que el UID corresponda a un usuario en Firebase
     const userRecord = await adminFirebase.auth().getUser(clientId);
 
     if (userRecord) {
