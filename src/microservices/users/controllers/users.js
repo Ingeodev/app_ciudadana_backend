@@ -28,6 +28,13 @@ exports.postAccountInfo = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
     const clientId = res.locals.uid;
+
+    if (!clientId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "clientId is missing" });
+    }
+
     const { name, lastName, phone, email } = req.body;
     const date = formatDate(new Date());
 
@@ -129,6 +136,12 @@ exports.accountFullLogin = async (req, res, next) => {
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
+
+    if (!clientId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "clientId is missing" });
+    }
 
     const accountFullLoginSchema = joi.object({
       documentType: joi.string().required(),
