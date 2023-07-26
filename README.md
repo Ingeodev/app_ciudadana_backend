@@ -43,9 +43,9 @@ When an error occurs during the processing of any HTTP request, our API responds
 
 ```
 {
-		status: number,
-		code: string,
-		detail: string
+    status: number,
+    code: string,
+    detail: string
 }
 ```
 ## 3. Run local
