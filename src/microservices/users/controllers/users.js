@@ -255,3 +255,49 @@ exports.getAccountInfo = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * Gets the user loginPhase
+ * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ */
+exports.getAccountLoginPhase = async (req, res, next) => {
+  // ! un usuario incognito tiene clienteId?
+  try {
+    const clientId = res.locals.uid;
+
+    if (!clientId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "clientId is missing" });
+    }
+
+    const userInDb = await db.User.findOne({
+      where: { clientId },
+    });
+    // let responseBody = {
+    //   data: {
+    //     loginPhase: "",
+    //     // ! Error {}
+    //     userInfo: {},
+    //   },
+    // };
+
+    // ! Si algun campo no existe, se devuelve un objeto null ó ""?
+    if (userInDb === null) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "user information could not be retrieved" });
+      // res.status(StatusCodes.OK).send(responseBody);
+    }
+
+    const { loginPhase } = userInDb.dataValues;
+
+    return res.status(StatusCodes.OK).send({
+      loginPhase,
+    });
+    // return res.status(StatusCodes.OK).send(responseBody);
+  } catch (error) {
+    console.error("account info could not be retrieved: ", error.message);
+    return next(error);
+  }
+};

@@ -11,6 +11,7 @@ router.post(
   users.postAccountInfo
 );
 
+// ! Endpoint eliminado del Swagger
 router.post(
   "/account/login",
   // hasPermissions({ role: "super_master_user" }),
@@ -28,6 +29,12 @@ router.get(
   "/account/info",
   // hasPermissions({ role: "super_master_user" }),
   users.getAccountInfo
+);
+
+router.get(
+  "/account/login/phase",
+  // hasPermissions({ role: "super_master_user" }),
+  users.getAccountLoginPhase
 );
 
 // ! Retornar lista de endpoints?
