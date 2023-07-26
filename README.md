@@ -5,28 +5,50 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 **Table of Contents**
 
 - [CALI MOBILITY BACKEND](#cali-mobility-backend)
-  - [Tools](#tools)
-  - [Run local](#run-local)
-  - [Microservices](#microservices)
-    - [Users Microservice](#users-microservice)
-      - [How to run](#how-to-run)
-    - [Notifications Microservice](#notifications-microservice)
+  - [1. Tools](#tools)
+  - [2. Architecture](#architecture)
+    - [2.1. Response Format](#response-format)
+      - [Successful HTTP Request](#successful-http-request)
+      - [Failed HTTP Request](#failed-http-request)
+  - [3. Run local](#run-local)
+  - [4. Microservices](#microservices)
+    - [4.1. Users Microservice](#users-microservice)
+      - [4.1.1. How to run](#how-to-run)
+    - [4.2. Notifications Microservice](#notifications-microservice)
       - [Advertising](#advertising)
       - [Attention Lines](#attention-lines)
       - [Service Lines](#service-lines)
       - [Alert](#alert)
-    - [Third-Party Microservice](#third-party-microservice)
-  - [Contributors](#contributors)
-  - [License](#license)
+    - [4.3. Third-Party Microservice](#third-party-microservice)
+  - [5. Contributors](#contributors)
+  - [6. License](#license)
 
 
-## Tools
+## 1. Tools
 
 1. [Firebase](https://firebase.google.com/)
 2. [Docker](https://www.docker.com/)
 3. [Express](https://expressjs.com/)
 
-## Run local
+## 2. Architecture
+
+### 2.1. Response Format
+#### Successful HTTP Request
+For any type of successful HTTP request, our API returns in the response (in JSON format) the same data it receives. This allows to confirm the processed data.
+#### Failed HTTP Request
+When an error occurs during the processing of any HTTP request, our API responds with a JSON object containing the following fields:
+- 'status': The HTTP status code associated with the problem.
+- 'code': An error code specific to our application.
+- 'detail': A detailed description of the problem that occurred.
+
+```
+{
+		status: number,
+		code: string,
+		detail: string
+}
+```
+## 3. Run local
 
 To run locally this project use
 
@@ -53,16 +75,16 @@ Run the generated image in your environment
 
 ```
 
-## Microservices
+## 4. Microservices
 
-### Users Microservice
+### 4.1. Users Microservice
 
 #### How to run 
     # On the console
     cd src\microservices\users
     node index.js
 
-### Notifications Microservice
+### 4.2. Notifications Microservice
 
 This microservice handles the [**Advertising**](#advertising), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
 
@@ -87,11 +109,11 @@ It returns **201 _created_** and the created object on success.
 #### Alert 
 
 
-### Third-Party Microservice
+### 4.3. Third-Party Microservice
 
 This microservice handles third-party APIs.
 
-## Contributors
+## 5. Contributors
 
 ---
 
@@ -100,6 +122,6 @@ This microservice handles third-party APIs.
 - [andres]()
 - [Julián](https://github.com/bitjep)
 
-## License
+## 6. License
 
 TBD
