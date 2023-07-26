@@ -8,7 +8,7 @@ describe("Advertisement management API points: ", () => {
     jest.setTimeout(8000);
 
     const testAdvertisement0 = {
-        imageUri: 'http://test.image.url',
+        imageUri: 'gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png',
         siteUri: 'http://test.site.url',
     };
 
