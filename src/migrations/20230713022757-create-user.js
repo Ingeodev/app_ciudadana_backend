@@ -44,6 +44,11 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
+        phone: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          unique: false,
+        },
         residenceAddress: {
           type: Sequelize.STRING(50),
           allowNull: true,
