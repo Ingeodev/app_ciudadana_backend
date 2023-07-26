@@ -28,7 +28,7 @@ exports.postAccountInfo = async (req, res, next) => {
     const clientId = res.locals.uid;
     const { name, lastName, phone, email } = req.body;
     const date = formatDate(new Date());
-    
+
     const data = joi.object({
       name: joi.string().required(),
       lastName: joi.string().required(),
@@ -37,13 +37,15 @@ exports.postAccountInfo = async (req, res, next) => {
     });
 
     const { error } = data.validate(req.body);
-    if (error) {   
+    if (error) {
       await transactionSequelize.rollback();
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: error.message });
     }
 
+    // ! Al crear: loginPhase: "notRegistered"
+    // ! Al actualizar: loginPhase: "baseLogin"
     await db.User.create(
       {
         clientId,
@@ -59,11 +61,8 @@ exports.postAccountInfo = async (req, res, next) => {
     );
 
     await transactionSequelize.commit();
-    
-    return res
-      .status(StatusCodes.OK)
-      .json({ message: "successful operation" });
-    
+
+    return res.status(StatusCodes.OK).json({ message: "successful operation" });
   } catch (error) {
     await transactionSequelize.rollback();
     if (
@@ -123,18 +122,30 @@ exports.accountLogin = async (req, res) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
  */
 exports.accountFullLogin = async (req, res, next) => {
+  const transactionSequelize = await db.sequelize.transaction();
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
 
-    // ! Falta validar la existencia o no de los datos
+    const accountFullLoginSchema = joi.object({
+      documentType: joi.string().required(),
+      numberDocument: joi.string().required(),
+      birthDate: joi.date().required(),
+      residenceAddress: joi.string().required(),
+    });
+
+    const { error } = accountFullLoginSchema.validate(req.body);
+    if (error) {
+      await transactionSequelize.rollback();
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: error.message });
+    }
 
     // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
     // ! Quitar multer y upload, si se usa FirebaseStorage
 
-    // ! Verificar que el usuario tenga el loginPhase "baseLogin"
-
-    const data = {
+    const dataUser = {
       documentType: req.body.documentType,
       numberDocument: req.body.numberDocument,
       birthDate: req.body.birthDate,
@@ -143,17 +154,27 @@ exports.accountFullLogin = async (req, res, next) => {
       loginPhase: "inVerification",
     };
 
-    const resultUpdate = await db.User.update(data, {
-      where: { clientId },
-    });
+    const resultUpdate = await db.User.update(
+      dataUser,
+      {
+        where: {
+          clientId,
+          loginPhase: "baseLogin",
+        },
+      },
+      { transaction: transactionSequelize }
+    );
 
     if (resultUpdate[0] === 0) {
+      await transactionSequelize.rollback();
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "invalid input" });
     }
+    await transactionSequelize.commit();
     return res.status(StatusCodes.OK).json({ message: "successful operation" });
   } catch (error) {
+    await transactionSequelize.rollback();    
     console.error("account full_login could not be retrieved: ", error);
     return next(error);
   }
