@@ -61,6 +61,13 @@ module.exports = {
         },
         loginPhase: {
           type: Sequelize.STRING(50),
+          allowNull: false,
+          unique: false,
+        },
+        disabled: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          unique: false,
         },
         createdAt: {
           type: "TIMESTAMP",

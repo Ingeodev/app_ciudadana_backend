@@ -52,6 +52,7 @@ exports.postAccountInfo = async (req, res, next) => {
         // ! phone - con codigo de pais?
         phone,
         loginPhase: "notRegistered",
+        disabled: false,
         createdAt: date,
         updatedAt: date,
       },

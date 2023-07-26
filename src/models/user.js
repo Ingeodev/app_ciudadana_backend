@@ -63,7 +63,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: false,
       },
-      loginPhase: DataTypes.STRING,
+      loginPhase: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      disabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: true,
