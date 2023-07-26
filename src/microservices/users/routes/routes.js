@@ -24,13 +24,15 @@ router.post(
   users.accountFullLogin
 );
 
+router.get(
+  "/account/info",
+  // hasPermissions({ role: "super_master_user" }),
+  users.getAccountInfo
+);
+
 // ! Retornar lista de endpoints?
 router.get("/", (req, res) => {
   res.status(200).json("my msg");
-});
-// define the about route
-router.get("/account/info", (req, res) => {
-  users.getAccountInfo
 });
 
 router.get("/products", hasPermissions({ role: 'super_master_user'}), function (req, res, next) {

@@ -5,6 +5,8 @@ const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
 // const Op = db.Sequelize.Op;
 
+// ! Verificar formato de res: Response contains: statuscode (integer), json (objeto): message
+
 /**
  * Verifies that the UID corresponds to a user in Firebase
  * @param {string} clientId
@@ -52,6 +54,7 @@ exports.postAccountInfo = async (req, res, next) => {
         name,
         lastName,
         email,
+        // ! phone - con codigo de pais?
         phone,
         loginPhase: "notRegistered",
         createdAt: date,
@@ -174,43 +177,66 @@ exports.accountFullLogin = async (req, res, next) => {
     await transactionSequelize.commit();
     return res.status(StatusCodes.OK).json({ message: "successful operation" });
   } catch (error) {
-    await transactionSequelize.rollback();    
+    await transactionSequelize.rollback();
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
     console.error("account full_login could not be retrieved: ", error);
     return next(error);
   }
 };
 
-exports.accountInfo = async (req, res, next) => {
+/**
+ * Gets the user information and the loginPhase
+ * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ */
+exports.getAccountInfo = async (req, res, next) => {
+  // ! un usuario incognito tiene clienteId?
   try {
     const clientId = res.locals.uid;
+
+    if (!clientId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "clientId is missing" });
+    }
+
     const userInDb = await db.User.findOne({
       where: { clientId },
     });
-    console.info("userInDb: ", userInDb);
-    let responseBody = {
-      data: {
-        loginPhase: "notRegister",
-        // ! Error {}
-        userInfo: {},
-      },
-    };
-    //TBD loginPhaseToBeDefined
-    if (userInDb.dataValues) {
-      responseBody = {
-        data: {
-          loginPhase: "register",
-          userInfo: {
-            name: userInDb.dataValues.name,
-            lastName: userInDb.dataValues.lastName,
-            email: userInDb.dataValues.email,
-            phone: userInDb.data.phoneNumber || "",
-          },
-        },
-      };
+    // let responseBody = {
+    //   data: {
+    //     loginPhase: "",
+    //     // ! Error {}
+    //     userInfo: {},
+    //   },
+    // };
+    
+    // ! Si algun campo no existe, se devuelve un objeto null ó ""?
+    if (userInDb === null) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "user information could not be retrieved" });
+      // res.status(StatusCodes.OK).send(responseBody);
     }
-    res.status(StatusCodes.OK).send(responseBody);
+
+    const { loginPhase, name, lastName, email, phone } = userInDb.dataValues;
+
+    return res.status(StatusCodes.OK).send({
+      loginPhase,
+      userInfo: {
+        name,
+        lastName,
+        email,
+        phone,
+      },
+    });
+    // return res.status(StatusCodes.OK).send(responseBody);
   } catch (error) {
-    console.error("account info could not be retrieved: ", error);
+    console.error("account info could not be retrieved: ", error.message);
     return next(error);
   }
 };
