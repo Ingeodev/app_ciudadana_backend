@@ -6,9 +6,9 @@ const errorHandler = (error, req, res, next) => {
         error.status = StatusCodes.INTERNAL_SERVER_ERROR;
     }
     return res.status(error.status).json({
-        error: {
-            message: error.message
-        }
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      code: "Internal Server Error",
+      detail: error.message,
     });
 };
 
