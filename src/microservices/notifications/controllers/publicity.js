@@ -36,7 +36,6 @@ const getCategorized = async (req, res, next) => {
             // TODO: Check whether the url should be mapped.
             return advertisement.dataValues;
         });
-        console.log(banners);
         return res.status(StatusCodes.OK)
             .json(banners);
     } catch (error) {
