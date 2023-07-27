@@ -1,6 +1,4 @@
 const express = require("express");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 const { hasPermissions } = require("../../../middleware/authMiddleware.js");
 const users = require("../controllers/users.js");
@@ -13,7 +11,6 @@ router.post(
 
 router.post(
   "/account/full_login",
-  upload.single("serviceReceipt"),
   // hasPermissions({ role: "super_master_user" }),
   users.accountFullLogin
 );

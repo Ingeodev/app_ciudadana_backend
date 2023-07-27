@@ -113,8 +113,7 @@ exports.accountFullLogin = async (req, res, next) => {
     }
 
     // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
-    // ! Quitar multer y upload, si se usa FirebaseStorage
-
+    
     const { documentType, numberDocument, birthDate, residenceAddress } = req.body
 
     const dataUser = {
@@ -122,7 +121,7 @@ exports.accountFullLogin = async (req, res, next) => {
       numberDocument,
       birthDate,
       residenceAddress,
-      serviceReceipt: req.file.originalname,
+      // serviceReceipt: req.file.originalname,
       loginPhase: "inVerification",
     };
 
