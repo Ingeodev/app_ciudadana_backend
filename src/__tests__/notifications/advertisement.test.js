@@ -13,9 +13,9 @@ describe("Advertisement management API points: ", () => {
     };
 
     const testAdvertisement1 = {
-        imageUri: 'https://test.image.url/second',
+        imageUri: 'gs://documentainotery.appspot.com/dance dance danseur.jpg',
         siteUri: 'https://test.site.url/second',
-        categoryId: undefined,
+        categoryId: 2,
     };
 
     describe("POST /v1/notifications/advertising/ ", () => {
@@ -106,7 +106,7 @@ describe("Advertisement management API points: ", () => {
         test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
             const response0 = await request(usedHost).post('/').send({
                 ...testAdvertisement1,
-                categoryId: 127,
+                categoryId: -5,
             });
             expect(response0.statusCode).toBe(500);
             expect(response0.body).not.toHaveProperty("newAdvertisement");
