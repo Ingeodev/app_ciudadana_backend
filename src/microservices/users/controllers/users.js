@@ -18,50 +18,93 @@ exports.postAccountInfo = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "clientId is missing" });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: "clientId is missing",
+      });
     }
 
+    // ! Evitar la inyeccion de codigo SQL
     const { name, lastName, phone, email } = req.body;
     const date = formatDate(new Date());
+    const dataUser = {
+      name,
+      lastName,
+      phone,
+      email,
+    };
+    let extraDataUser = {}
 
+    // Upload Case - loginPhase="notRegistered"
+    // ! Validar con App Movil, si el campo se envia como null o ""?
+    if (
+      name === null &&
+      lastName === null &&
+      phone === null &&
+      email === null
+    ) {
+      extraDataUser.clientId = clientId;
+      extraDataUser.loginPhase = "notRegistered";
+      extraDataUser.disabled = false;
+      extraDataUser.createdAt = date;
+      extraDataUser.updatedAt = date;
+
+      await db.User.create(
+        { ...dataUser, ...extraDataUser },
+        { transaction: transactionSequelize }
+      );
+      await transactionSequelize.commit();
+
+      return res.status(StatusCodes.OK).json(dataUser);
+    }
+
+    // ------------------------------------------
+    // Updates Case - loginPhase="baseLogin"
+    // ! Validar los campos que son requeridos - Monday
     const data = joi.object({
-      name: joi.string().required(),
-      lastName: joi.string().required(),
-      phone: joi.string().required(),
+      name: joi.string(),
+      lastName: joi.string(),
+      phone: joi.string(),
+      // ! HU-B1 Monday - Solo el email es requerido
       email: joi.string().email().required(),
     });
 
     const { error } = data.validate(req.body);
     if (error) {
       await transactionSequelize.rollback();
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: error.message });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
     }
 
-    // ! Al crear: loginPhase: "notRegistered"
-    // ! Al actualizar: loginPhase: "baseLogin"
-    await db.User.create(
+    extraDataUser.loginPhase = "baseLogin";
+    extraDataUser.disabled = false;
+    extraDataUser.updatedAt = date;
+
+    const resultUpdate = await db.User.update(
+      { ...dataUser, ...extraDataUser },
       {
-        clientId,
-        name,
-        lastName,
-        email,
-        // ! phone - con codigo de pais?
-        phone,
-        loginPhase: "notRegistered",
-        disabled: false,
-        createdAt: date,
-        updatedAt: date,
+        where: {
+          clientId,
+          loginPhase: "notRegistered",
+        },
       },
       { transaction: transactionSequelize }
     );
 
+    if (resultUpdate[0] === 0) {
+      await transactionSequelize.rollback();
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: "invalid input",
+      });
+    }
     await transactionSequelize.commit();
-
-    return res.status(StatusCodes.OK).json({ message: "successful operation" });
+    return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
     await transactionSequelize.rollback();
     if (
@@ -123,6 +166,7 @@ exports.accountFullLogin = async (req, res, next) => {
       residenceAddress,
       // serviceReceipt: req.file.originalname,
       loginPhase: "inVerification",
+      // ! Añadir timestamp de update?
     };
 
     const resultUpdate = await db.User.update(
