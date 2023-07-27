@@ -44,11 +44,6 @@ module.exports = (sequelize, DataTypes) => {
         // ! unique: true? Diversidad de tipos de documentos
         unique: true,
       },
-      birthDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        unique: false,
-      },
       phone: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -59,7 +54,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: false,
       },
-      serviceReceipt: {
+      serviceReceiptUri: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false,
+      },
+      serviceReceiptSiteUri: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
@@ -70,6 +70,11 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       disabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
+      userMobile: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,

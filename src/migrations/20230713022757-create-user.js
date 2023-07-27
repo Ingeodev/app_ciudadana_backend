@@ -40,11 +40,6 @@ module.exports = {
           // ! unique: true? Diversidad de tipos de documentos
           unique: true,
         },
-        birthDate: {
-          type: Sequelize.DATE,
-          allowNull: true,
-          unique: false,
-        },
         phone: {
           type: Sequelize.STRING(50),
           allowNull: true,
@@ -55,8 +50,13 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        serviceReceipt: {
-          type: Sequelize.STRING(50),
+        serviceReceiptUri: {
+          type: Sequelize.STRING(128),
+          allowNull: true,
+          unique: false,
+        },
+        serviceReceiptSiteUri: {
+          type: Sequelize.STRING(128),
           allowNull: true,
           unique: false,
         },
@@ -66,6 +66,11 @@ module.exports = {
           unique: false,
         },
         disabled: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          unique: false,
+        },
+        userMobile: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
           unique: false,
