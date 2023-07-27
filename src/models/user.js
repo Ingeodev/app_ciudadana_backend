@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
       lastName: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
+        // ! Verificar si Firebase en ocasiones email=null
+        allowNull: true,
         unique: true,
       },
       documentType: {

@@ -25,7 +25,8 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING(50),
-          allowNull: false,
+          // ! Verificar si Firebase en ocasiones email=null
+          allowNull: true,
           unique: true,
         },
         documentType: {
