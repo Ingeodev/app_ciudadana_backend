@@ -13,7 +13,7 @@ describe("Advertisement management API points: ", () => {
     };
 
     const testAdvertisement1 = {
-        imageUri: 'gs://documentainotery.appspot.com/dance dance danseur.jpg',
+        imageUri: 'gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg',
         siteUri: 'https://test.site.url/second',
         categoryId: 2,
     };
