@@ -63,3 +63,6 @@ npm-debug.log
 
 # Config file
 config.json
+
+# jest snapshots
+__snapshots__
