@@ -10,7 +10,7 @@ const { formatDate } = require("../utils/formatDate.js");
 /**
  * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
  * @param {object} req - Object containing the clientId, name, lastName, phone, email
- * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountInfo = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
@@ -27,7 +27,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     // ! Evitar la inyeccion de codigo SQL
     const { name, lastName, phone, email } = req.body;
-    const date = formatDate(new Date());
+    const dateNow = formatDate(new Date());
     const dataUser = {
       name,
       lastName,
@@ -47,8 +47,8 @@ exports.postAccountInfo = async (req, res, next) => {
       extraDataUser.clientId = clientId;
       extraDataUser.loginPhase = "notRegistered";
       extraDataUser.disabled = false;
-      extraDataUser.createdAt = date;
-      extraDataUser.updatedAt = date;
+      extraDataUser.createdAt = dateNow;
+      extraDataUser.updatedAt = dateNow;
 
       await db.User.create(
         { ...dataUser, ...extraDataUser },
@@ -82,7 +82,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     extraDataUser.loginPhase = "baseLogin";
     extraDataUser.disabled = false;
-    extraDataUser.updatedAt = date;
+    extraDataUser.updatedAt = dateNow;
 
     const resultUpdate = await db.User.update(
       { ...dataUser, ...extraDataUser },
@@ -125,8 +125,8 @@ exports.postAccountInfo = async (req, res, next) => {
 
 /**
  * Update a user (existing in db) with missing information
- * @param {object} req - Object containing: documentType, documentNumber, birthDate, residenceAddress, serviceReceipt (file)
- * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, serviceReceiptSiteUri
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.accountFullLogin = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
@@ -135,42 +135,53 @@ exports.accountFullLogin = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "clientId is missing" });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: "clientId is missing",
+      });
     }
 
     const accountFullLoginSchema = joi.object({
       documentType: joi.string().required(),
       numberDocument: joi.string().required(),
-      birthDate: joi.date().required(),
-      residenceAddress: joi.string().required(),
+      residenceAddress: joi.date().required(),
+      serviceReceiptUri: joi.string().required(),
+      serviceReceiptSiteUri: joi.string().required(),
     });
 
     const { error } = accountFullLoginSchema.validate(req.body);
     if (error) {
       await transactionSequelize.rollback();
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: error.message });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
     }
 
-    // ! Quitar serviceReceipt, o bueno, este se va a manejar con FirebaseStorage
-    
-    const { documentType, numberDocument, birthDate, residenceAddress } = req.body
+    const {
+      documentType,
+      numberDocument,
+      serviceReceiptUri,
+      serviceReceiptSiteUri,
+    } = req.body;
 
     const dataUser = {
       documentType,
       numberDocument,
-      birthDate,
-      residenceAddress,
-      // serviceReceipt: req.file.originalname,
+      serviceReceiptUri,
+      serviceReceiptSiteUri,
+    };
+    const dateNow = formatDate(new Date());
+    const extraDataUser = {
       loginPhase: "inVerification",
-      // ! Añadir timestamp de update?
+      userMobile: true,
+      updatedAt: dateNow,
     };
 
     const resultUpdate = await db.User.update(
-      dataUser,
+      { ...dataUser, ...extraDataUser },
       {
         where: {
           clientId,
@@ -182,12 +193,14 @@ exports.accountFullLogin = async (req, res, next) => {
 
     if (resultUpdate[0] === 0) {
       await transactionSequelize.rollback();
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "invalid input" });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        code: "Internal Server Error",
+        detail: "there was an error updating the record",
+      });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ message: "successful operation" });
+    return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
     await transactionSequelize.rollback();
     if (
@@ -205,7 +218,7 @@ exports.accountFullLogin = async (req, res, next) => {
 
 /**
  * Gets the user information and the loginPhase
- * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountInfo = async (req, res, next) => {
   // ! un usuario incognito tiene clienteId?
@@ -255,7 +268,7 @@ exports.getAccountInfo = async (req, res, next) => {
 
 /**
  * Gets the user loginPhase
- * @return {object} Response contains: statuscode (integer), json (objeto): code, msg, data.
+ * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountLoginPhase = async (req, res, next) => {
   // ! un usuario incognito tiene clienteId?
