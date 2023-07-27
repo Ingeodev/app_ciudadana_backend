@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { authMiddleware }= require('../../middleware/authMiddleware.js');
+// const { authMiddleware }= require('../../middleware/authMiddleware.js');
 const routes = require("./routes/users.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
@@ -16,7 +16,7 @@ app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });
 
-app.use(authMiddleware);
+// app.use(authMiddleware);
 app.use('/v1/users', routes);
 
 // Not found route
