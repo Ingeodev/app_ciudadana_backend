@@ -33,7 +33,6 @@ const getCategorized = async (req, res, next) => {
         const banners = categorizedAdvertisements.map(advertisement => {
             advertisement.dataValues.category = advertisement.dataValues.AdvertisementCategory.name;
             delete advertisement.dataValues.AdvertisementCategory;
-            // TODO: Check whether the url should be mapped.
             return advertisement.dataValues;
         });
         return res.status(StatusCodes.OK)

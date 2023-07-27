@@ -18,7 +18,7 @@ const postAdvertisement = async (req, res, next) => {
             categoryId,
         });
         return res.status(StatusCodes.CREATED)
-            .json({ msg: 'New advertisement created.', newAdvertisement });
+            .json({ data: newAdvertisement.dataValues });
     } catch (error) {
         return next(error);
     }
