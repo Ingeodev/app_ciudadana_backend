@@ -3,6 +3,7 @@ const router = express.Router();
 const { hasPermissions } = require("../../../middleware/authMiddleware.js");
 const users = require("../controllers/users.js");
 
+// * ------------------ Endpoints - appMobile -----------------------------
 router.post(
   "/account/info",
   // hasPermissions({ role: "super_master_user" }),
@@ -12,7 +13,7 @@ router.post(
 router.post(
   "/account/full_login",
   // hasPermissions({ role: "super_master_user" }),
-  users.accountFullLogin
+  users.postAccountFullLogin
 );
 
 router.get(
@@ -26,6 +27,9 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   users.getAccountLoginPhase
 );
+
+// * ------------------ Endpoints - appWeb -----------------------------
+
 
 // ! Retornar lista de endpoints?
 router.get("/", (req, res) => {

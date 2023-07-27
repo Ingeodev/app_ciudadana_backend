@@ -6,8 +6,8 @@ const { formatDate } = require("../utils/formatDate.js");
 // const Op = db.Sequelize.Op;
 
 /**
- * New user registration, all login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
- * @param {object} req - Object containing the clientId, name, lastName, phone, email
+ * Create (loginPhase="notRegistered") or update (loginPhase="baseLogin") user's base information. All login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
+ * @param {object} req - Object containing the name, lastName, phone, email
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountInfo = async (req, res, next) => {
@@ -45,6 +45,7 @@ exports.postAccountInfo = async (req, res, next) => {
       extraDataUser.clientId = clientId;
       extraDataUser.loginPhase = "notRegistered";
       extraDataUser.disabled = false;
+      extraDataUser.userMobile = true;
       extraDataUser.createdAt = dateNow;
       extraDataUser.updatedAt = dateNow;
 
@@ -122,11 +123,11 @@ exports.postAccountInfo = async (req, res, next) => {
 };
 
 /**
- * Update a user (existing in db) with missing information
+ * Update a user (existing in db) with missing information, ie, when loginPhase="baseLogin"
  * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, serviceReceiptSiteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.accountFullLogin = async (req, res, next) => {
+exports.postAccountFullLogin = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
     // console.info("req.file: ", req.file);
@@ -143,7 +144,7 @@ exports.accountFullLogin = async (req, res, next) => {
     const accountFullLoginSchema = joi.object({
       documentType: joi.string().required(),
       numberDocument: joi.string().required(),
-      residenceAddress: joi.date().required(),
+      residenceAddress: joi.string().required(),
       serviceReceiptUri: joi.string().required(),
       serviceReceiptSiteUri: joi.string().required(),
     });
@@ -161,6 +162,7 @@ exports.accountFullLogin = async (req, res, next) => {
     const {
       documentType,
       numberDocument,
+      residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
     } = req.body;
@@ -168,6 +170,7 @@ exports.accountFullLogin = async (req, res, next) => {
     const dataUser = {
       documentType,
       numberDocument,
+      residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
     };
