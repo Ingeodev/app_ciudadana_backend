@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { authMiddleware }= require('../../middleware/authMiddleware.js');
-const routes = require("./routes/routes.js");
+const routes = require("./routes/users.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
 const app = express();
