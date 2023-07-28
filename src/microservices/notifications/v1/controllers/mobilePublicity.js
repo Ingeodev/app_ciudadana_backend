@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const { Op } = require('sequelize');
 const { ne } = Op;
 
-const db = require('../../../models');
+const db = require('../../../../models');
 
 
 // Retrieve the advertisements that have no category attached.
