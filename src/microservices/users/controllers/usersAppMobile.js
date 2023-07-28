@@ -61,7 +61,7 @@ exports.postAccountInfo = async (req, res, next) => {
     // ------------------------------------------
     // Updates Case - loginPhase="baseLogin"
     // ! Validar los campos que son requeridos - Monday
-    const data = joi.object({
+    const dataSchema = joi.object({
       name: joi.string(),
       lastName: joi.string(),
       phone: joi.string(),
@@ -69,7 +69,7 @@ exports.postAccountInfo = async (req, res, next) => {
       email: joi.string().email().required(),
     });
 
-    const { error } = data.validate(req.body);
+    const { error } = dataSchema.validate(req.body);
     if (error) {
       await transactionSequelize.rollback();
       return res.status(StatusCodes.BAD_REQUEST).json({

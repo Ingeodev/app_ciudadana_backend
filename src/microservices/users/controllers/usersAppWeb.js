@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const db = require("../../../models/index.js");
-// const firebase = require("../utils/firebaseAdmin.js");
+const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
 // const Op = db.Sequelize.Op;
 
@@ -12,8 +12,6 @@ const { formatDate } = require("../utils/formatDate.js");
 exports.getUsersListAllActive = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
 
     if (!clientId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -23,16 +21,39 @@ exports.getUsersListAllActive = async (req, res, next) => {
       });
     }
 
-    const usersInDb = await User.findAll({
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    
+    const dataSchema = joi.object({
+      page: joi.number(),
+      pageSize: joi.number(),
+    });
+    console.log("page: ", page);
+    console.log("pageSize: ", pageSize);
+
+    const { error } = dataSchema.validate({
+      page,
+      pageSize,
+    });
+    if (error) {
+      await transactionSequelize.rollback();
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
+    }
+
+    const usersInDb = await db.User.findAll({
       where: {
-        disabled: true,
+        disabled: false,
       },
       limit: pageSize,
       offset: (page - 1) * pageSize,
       order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
     });
 
-    if (usersInDb === null) {
+    if (!Array.isArray(usersInDb) || !usersInDb.length || usersInDb === null) {
       return res.status(StatusCodes.NOT_FOUND).json({
         status: StatusCodes.NOT_FOUND,
         code: "Not found",

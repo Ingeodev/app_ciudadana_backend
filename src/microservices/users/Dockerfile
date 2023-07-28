@@ -23,6 +23,7 @@ COPY src/package-lock.json /srv
 COPY src/models /srv/models/
 COPY src/middleware /srv/middleware/
 COPY src/config /srv/config/
+COPY src/config/config.json /srv/config/
 COPY src/account_service_key.json /srv
 
 RUN npm install --production

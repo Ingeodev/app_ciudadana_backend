@@ -30,14 +30,11 @@ router.get(
 );
 
 // * ------------------ Endpoints - appWeb -----------------------------
-// router.get(
-//   "/list_all_active",
-//   // hasPermissions({ role: "super_master_user" }),
-//   usersMobile.getAccountLoginPhase
-// );
-router.get("/list_all_active", (req, res) => {
-  res.status(200).json("list_all_active");
-});
+router.get(
+  "/list_all_active",
+  // hasPermissions({ role: "super_master_user" }),
+  usersWeb.getUsersListAllActive
+);
 
 // ! Retornar lista de endpoints?
 router.get("/", (req, res) => {
