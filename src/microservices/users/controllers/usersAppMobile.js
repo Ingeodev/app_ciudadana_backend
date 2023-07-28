@@ -3,6 +3,8 @@ const joi = require("joi");
 const db = require("../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
+const validator = require("../utils/validator.js");
+
 // const Op = db.Sequelize.Op;
 
 /**
@@ -14,6 +16,8 @@ exports.postAccountInfo = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
     const clientId = res.locals.uid;
+    // ! Validar los campos que son requeridos - Monday
+    const { name, lastName, phone, email } = await validator.validatepostAccountInfoSchema(req.body);
 
     if (!clientId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -24,7 +28,6 @@ exports.postAccountInfo = async (req, res, next) => {
     }
 
     // ! Evitar la inyeccion de codigo SQL
-    const { name, lastName, phone, email } = req.body;
     const dateNow = formatDate(new Date());
     const dataUser = {
       name,
@@ -32,9 +35,9 @@ exports.postAccountInfo = async (req, res, next) => {
       phone,
       email,
     };
-    let extraDataUser = {}
+    let extraDataUser = {};
 
-    // Upload Case - loginPhase="notRegistered"
+    // Create Case - loginPhase="notRegistered"
     // ! Validar con App Movil, si el campo se envia como null o ""?
     if (
       name === null &&
@@ -60,27 +63,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     // ------------------------------------------
     // Updates Case - loginPhase="baseLogin"
-    // ! Validar los campos que son requeridos - Monday
-    const dataSchema = joi.object({
-      name: joi.string(),
-      lastName: joi.string(),
-      phone: joi.string(),
-      // ! HU-B1 Monday - Solo el email es requerido
-      email: joi.string().email().required(),
-    });
-
-    const { error } = dataSchema.validate(req.body);
-    if (error) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
-
     extraDataUser.loginPhase = "baseLogin";
-    extraDataUser.disabled = false;
     extraDataUser.updatedAt = dateNow;
 
     const resultUpdate = await db.User.update(
@@ -105,7 +88,15 @@ exports.postAccountInfo = async (req, res, next) => {
     await transactionSequelize.commit();
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
+    console.error("account postAccountInfo could not be created/updated: ", error.message);
     await transactionSequelize.rollback();
+    if (error.status == StatusCodes.BAD_REQUEST) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
+    }
     if (
       error &&
       error.errors &&
@@ -114,10 +105,6 @@ exports.postAccountInfo = async (req, res, next) => {
     ) {
       error.message = error.errors[0].message;
     }
-    console.error(
-      "account postAccountInfo could not be created/updated: ",
-      error.message
-    );
     return next(error);
   }
 };
@@ -141,32 +128,14 @@ exports.postAccountFullLogin = async (req, res, next) => {
       });
     }
 
-    const accountFullLoginSchema = joi.object({
-      documentType: joi.string().required(),
-      numberDocument: joi.string().required(),
-      residenceAddress: joi.string().required(),
-      serviceReceiptUri: joi.string().required(),
-      serviceReceiptSiteUri: joi.string().required(),
-    });
-
-    const { error } = accountFullLoginSchema.validate(req.body);
-    if (error) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
-
     const {
       documentType,
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
-    } = req.body;
-
+    } = await validator.validatepostAccountFullLoginSchema(req.body);
+    
     const dataUser = {
       documentType,
       numberDocument,
@@ -177,7 +146,6 @@ exports.postAccountFullLogin = async (req, res, next) => {
     const dateNow = formatDate(new Date());
     const extraDataUser = {
       loginPhase: "inVerification",
-      userMobile: true,
       updatedAt: dateNow,
     };
 
@@ -203,7 +171,15 @@ exports.postAccountFullLogin = async (req, res, next) => {
     await transactionSequelize.commit();
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
+    console.error("account full_login could not be retrieved: ", error);
     await transactionSequelize.rollback();
+    if (error.status == StatusCodes.BAD_REQUEST) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
+    }
     if (
       error &&
       error.errors &&
@@ -212,7 +188,6 @@ exports.postAccountFullLogin = async (req, res, next) => {
     ) {
       error.message = error.errors[0].message;
     }
-    console.error("account full_login could not be retrieved: ", error);
     return next(error);
   }
 };
