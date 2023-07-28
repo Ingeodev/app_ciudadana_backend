@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const joi = require("joi");
+// const joi = require("joi");
 const db = require("../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../utils/formatDate.js");
@@ -17,7 +17,7 @@ exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
     // ! Validar los campos que son requeridos - Monday
-    const { name, lastName, phone, email } = await validator.validatepostAccountInfoSchema(req.body);
+    const { name, lastName, phone, email } = await validator.validatePostAccountInfo(req.body);
 
     if (!clientId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -134,7 +134,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
-    } = await validator.validatepostAccountFullLoginSchema(req.body);
+    } = await validator.validatePostAccountFullLogin(req.body);
     
     const dataUser = {
       documentType,
@@ -274,6 +274,81 @@ exports.getAccountLoginPhase = async (req, res, next) => {
     });
   } catch (error) {
     console.error("account info could not be retrieved: ", error.message);
+    return next(error);
+  }
+};
+/**
+ * Update a user (existing in db) with missing information, ie, when loginPhase="fullLogin"
+ * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, serviceReceiptSiteUri
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postAccountUpdateUser = async (req, res, next) => {
+  const transactionSequelize = await db.sequelize.transaction();
+  try {
+    // console.info("req.file: ", req.file);
+    const clientId = res.locals.uid;
+
+    if (!clientId) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: "clientId is missing",
+      });
+    }
+
+    const { name, lastName, residenceAddress, phone } =
+      await validator.validatePostAccountUpdateUser(req.body);
+
+    const dataUser = {
+      name,
+      lastName,
+      residenceAddress,
+      phone,
+    };
+    const dateNow = formatDate(new Date());
+    const extraDataUser = {
+      updatedAt: dateNow,
+    };
+
+    const resultUpdate = await db.User.update(
+      { ...dataUser, ...extraDataUser },
+      {
+        where: {
+          clientId,
+          loginPhase: "fullLogin",
+        },
+      },
+      { transaction: transactionSequelize }
+    );
+
+    if (resultUpdate[0] === 0) {
+      await transactionSequelize.rollback();
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        code: "Internal Server Error",
+        detail: "there was an error updating the record",
+      });
+    }
+    await transactionSequelize.commit();
+    return res.status(StatusCodes.OK).json(dataUser);
+  } catch (error) {
+    console.error("account full_login could not be retrieved: ", error);
+    await transactionSequelize.rollback();
+    if (error.status == StatusCodes.BAD_REQUEST) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: StatusCodes.BAD_REQUEST,
+        code: "Bad Request",
+        detail: error.message,
+      });
+    }
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
     return next(error);
   }
 };

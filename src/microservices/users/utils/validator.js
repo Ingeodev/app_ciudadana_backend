@@ -4,6 +4,7 @@ const joi = require('joi');
 // const uri_string = joi.string().uri();
 // const integer_number = joi.number().integer();
 
+// * ------------- App Mobile --------------------------------
 const postAccountInfoSchema = joi.object({
   name: joi.string().required().allow(null),
   lastName: joi.string().required().allow(null),
@@ -20,6 +21,28 @@ const postAccountFullLoginSchema = joi.object({
   serviceReceiptSiteUri: joi.string().required(),
 });
 
+const postAccountUpdateUserSchema = joi.object({
+  documentType: joi.string().required(),
+  numberDocument: joi.string().required(),
+  residenceAddress: joi.string().required(),
+  serviceReceiptUri: joi.string().required(),
+  serviceReceiptSiteUri: joi.string().required(),
+});
+
+  // * ------------- App Web --------------------------------
+const getUsersListAllActiveSchema = joi.object({
+  page: joi.number(),
+  pageSize: joi.number(),
+});
+
+const postUsersUpdateDisabledSchema = joi.object({
+  clientId: joi.string().required().empty(""),
+  disabled: joi.boolean().required(),
+});
+
+const postUsersUpdateLoginPhaseFullLoginSchema = joi.object({
+  clientId: joi.string().required().empty(""),
+});
 
 const use_validator_on_data = async (validator_schema, data) => {
     try {
@@ -40,10 +63,26 @@ const use_validator_on_data = async (validator_schema, data) => {
 };
 
 module.exports = {
-  validatepostAccountInfoSchema: async (inputData) => {
+  // * ------------- App Mobile --------------------------------
+  validatePostAccountInfo: async (inputData) => {
     return await use_validator_on_data(postAccountInfoSchema, inputData);
   },
-  validatepostAccountFullLoginSchema: async (inputData) => {
+  validatePostAccountFullLogin: async (inputData) => {
     return await use_validator_on_data(postAccountFullLoginSchema, inputData);
+  },
+
+  validatePostAccountUpdateUser: async (inputData) => {
+    return await use_validator_on_data(postAccountUpdateUserSchema, inputData);
+  },
+
+  // * ------------- App Web --------------------------------
+  validateGetUsersListAllActive: async (inputData) => {
+    return await use_validator_on_data(getUsersListAllActiveSchema, inputData);
+  },
+  validatePostUsersUpdateDisabled: async (inputData) => {
+    return await use_validator_on_data(postUsersUpdateDisabledSchema, inputData);
+  },
+  validatepostUsersUpdateLoginPhaseFullLogin: async (inputData) => {
+    return await use_validator_on_data(postUsersUpdateLoginPhaseFullLoginSchema, inputData);
   },
 };

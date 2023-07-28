@@ -29,11 +29,29 @@ router.get(
   usersMobile.getAccountLoginPhase
 );
 
+router.post(
+  "/account/updateUser",
+  // hasPermissions({ role: "super_master_user" }),
+  usersMobile.postAccountUpdateUser
+);
+
 // * ------------------ Endpoints - appWeb -----------------------------
 router.get(
-  "/list_all_active",
+  "/web/list_all_active",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.getUsersListAllActive
+);
+
+router.post(
+  "/web/update_disabled",
+  // hasPermissions({ role: "super_master_user" }),
+  usersWeb.postUsersUpdateDisabled
+);
+
+router.post(
+  "/web/update_loginPhase_fullLogin",
+  // hasPermissions({ role: "super_master_user" }),
+  usersWeb.postUsersUpdateLoginPhaseFullLogin
 );
 
 // ! Retornar lista de endpoints?
