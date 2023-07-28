@@ -6,42 +6,41 @@ const joi = require('joi');
 
 // * ------------- App Mobile --------------------------------
 const postAccountInfoSchema = joi.object({
-  name: joi.string().required().allow(null),
-  lastName: joi.string().required().allow(null),
-  phone: joi.string().required().allow(null),
+  name: joi.string().trim().required().allow(null),
+  lastName: joi.string().trim().required().allow(null),
+  phone: joi.string().trim().required().allow(null),
   // ! HU-B1 Monday - Solo el email es requerido?. Requerido en la db o para la solicitud HTTP?
-  email: joi.string().email().required().allow(null),
+  email: joi.string().trim().email().required().allow(null),
 });
 
 const postAccountFullLoginSchema = joi.object({
-  documentType: joi.string().required(),
-  numberDocument: joi.string().required(),
-  residenceAddress: joi.string().required(),
-  serviceReceiptUri: joi.string().required(),
-  serviceReceiptSiteUri: joi.string().required(),
+  documentType: joi.string().trim().required(),
+  numberDocument: joi.string().trim().required(),
+  residenceAddress: joi.string().trim().required(),
+  serviceReceiptUri: joi.string().trim().required(),
+  serviceReceiptSiteUri: joi.string().trim().required(),
 });
 
 const postAccountUpdateUserSchema = joi.object({
-  documentType: joi.string().required(),
-  numberDocument: joi.string().required(),
-  residenceAddress: joi.string().required(),
-  serviceReceiptUri: joi.string().required(),
-  serviceReceiptSiteUri: joi.string().required(),
+  name: joi.string().trim().empty("").invalid(" "),
+  lastName: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" "),
+  residenceAddress: joi.string().trim().empty("").invalid(" "),
 });
 
   // * ------------- App Web --------------------------------
-const getUsersListAllActiveSchema = joi.object({
+const getUsersListAllSchema = joi.object({
   page: joi.number(),
   pageSize: joi.number(),
 });
 
 const postUsersUpdateDisabledSchema = joi.object({
-  clientId: joi.string().required().empty(""),
+  clientId: joi.string().trim().required().empty(""),
   disabled: joi.boolean().required(),
 });
 
 const postUsersUpdateLoginPhaseFullLoginSchema = joi.object({
-  clientId: joi.string().required().empty(""),
+  clientId: joi.string().trim().required().empty(""),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -64,25 +63,25 @@ const use_validator_on_data = async (validator_schema, data) => {
 
 module.exports = {
   // * ------------- App Mobile --------------------------------
-  validatePostAccountInfo: async (inputData) => {
+  vPostAccountInfo: async (inputData) => {
     return await use_validator_on_data(postAccountInfoSchema, inputData);
   },
-  validatePostAccountFullLogin: async (inputData) => {
+  vPostAccountFullLogin: async (inputData) => {
     return await use_validator_on_data(postAccountFullLoginSchema, inputData);
   },
 
-  validatePostAccountUpdateUser: async (inputData) => {
+  vPostAccountUpdateUser: async (inputData) => {
     return await use_validator_on_data(postAccountUpdateUserSchema, inputData);
   },
 
   // * ------------- App Web --------------------------------
-  validateGetUsersListAllActive: async (inputData) => {
-    return await use_validator_on_data(getUsersListAllActiveSchema, inputData);
+  vGetUsersListAll: async (inputData) => {
+    return await use_validator_on_data(getUsersListAllSchema, inputData);
   },
-  validatePostUsersUpdateDisabled: async (inputData) => {
+  vPostUsersUpdateDisabled: async (inputData) => {
     return await use_validator_on_data(postUsersUpdateDisabledSchema, inputData);
   },
-  validatepostUsersUpdateLoginPhaseFullLogin: async (inputData) => {
+  vPostUsersUpdateLoginPhaseFullLogin: async (inputData) => {
     return await use_validator_on_data(postUsersUpdateLoginPhaseFullLoginSchema, inputData);
   },
 };

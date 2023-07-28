@@ -11,9 +11,9 @@ const validator = require("../utils/validator.js");
  * Get all users (web + app)
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.getUsersListAllActive = async (req, res, next) => {
+exports.getUsersListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.validateGetUsersListAllActive({
+    const { page, pageSize } = await validator.vGetUsersListAll({
         "page" : parseInt(req.query.page) || 1,
         "pageSize" : parseInt(req.query.pageSize) || 10
       });
@@ -57,7 +57,7 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
 
   try {
-    const { clientId, disabled } = await validator.validatePostUsersUpdateDisabled(req.body);
+    const { clientId, disabled } = await validator.vPostUsersUpdateDisabled(req.body);
     const dataUser = {
       disabled,
       updatedAt: formatDate(new Date())
@@ -94,32 +94,42 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
 };
 
 /**
- * Update the status of the users.disabled field (enabled/disabled) for a user
+ * Update the users.loginPhase="inVerification" to "fullLogin"
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersUpdateLoginPhaseFullLogin = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
-    const { clientId } = await validator.validatepostUsersUpdateLoginPhaseFullLogin(req.body);
+    const { clientId } = await validator.vPostUsersUpdateLoginPhaseFullLogin(req.body);
     
     const resultUpdate = await db.User.update(
-      { updatedAt: formatDate(new Date()) },
-      { where: { clientId } },
+      {
+        loginPhase: "fullLogin",
+        updatedAt: formatDate(new Date())
+      },
+      {
+        where: {
+          clientId,
+          loginPhase: "inVerification",
+        },
+      },
       { transaction: transactionSequelize }
     );
+
+    console.log("resultUpdate:", resultUpdate[0]);
 
     if (resultUpdate[0] === 0) {
       await transactionSequelize.rollback();
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: StatusCodes.BAD_REQUEST,
         code: "Bad Request",
-        detail: "invalid input",
+        detail: "user could not be updated",
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ clientId, disabled });
+    return res.status(StatusCodes.OK).json({ clientId });
   } catch (error) {
-    console.error("users could not be updated: ", error.message);
+    console.error("user could not be updated: ", error.message);
     await transactionSequelize.rollback();
     if (error.status == StatusCodes.BAD_REQUEST) {
       return res.status(StatusCodes.BAD_REQUEST).json({

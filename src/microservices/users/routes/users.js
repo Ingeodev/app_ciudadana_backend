@@ -37,9 +37,9 @@ router.post(
 
 // * ------------------ Endpoints - appWeb -----------------------------
 router.get(
-  "/web/list_all_active",
+  "/web/list_all",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.getUsersListAllActive
+  usersWeb.getUsersListAll
 );
 
 router.post(
