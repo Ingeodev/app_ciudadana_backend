@@ -17,7 +17,7 @@ exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
     // ! Validar los campos que son requeridos - Monday
-    const { name, lastName, phone, email } = await validator.validatePostAccountInfo(req.body);
+    const { name, lastName, phone, email } = await validator.vPostAccountInfo(req.body);
 
     if (!clientId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -134,7 +134,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
-    } = await validator.validatePostAccountFullLogin(req.body);
+    } = await validator.vPostAccountFullLogin(req.body);
     
     const dataUser = {
       documentType,
@@ -296,8 +296,8 @@ exports.postAccountUpdateUser = async (req, res, next) => {
       });
     }
 
-    const { name, lastName, residenceAddress, phone } =
-      await validator.validatePostAccountUpdateUser(req.body);
+    const { name, lastName, phone, residenceAddress } =
+      await validator.vPostAccountUpdateUser(req.body);
 
     const dataUser = {
       name,
