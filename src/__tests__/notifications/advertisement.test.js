@@ -1,7 +1,7 @@
 const request = require('supertest');
 
-const localTestHost = 'http://localhost:3000/v1/notifications/advertising';
-const onlineTestHost = 'https://k7gmmdc9dj.us-east-1.awsapprunner.com/v1/notifications/advertising';
+const localTestHost = 'http://localhost:3000/web/v1/notifications/advertising';
+const onlineTestHost = 'https://k7gmmdc9dj.us-east-1.awsapprunner.com/web/v1/notifications/advertising';
 const usedHost = localTestHost;
 
 describe("Advertisement management API points: ", () => {
@@ -18,7 +18,7 @@ describe("Advertisement management API points: ", () => {
         categoryId: 2,
     };
 
-    describe("POST /v1/notifications/advertising/ ", () => {
+    describe("POST /notifications/advertising/ ", () => {
         test("should respond with status 201 and the new object (data) after creating a new advertisement", async () => {
             const response0 = await request(usedHost).post('/').send(testAdvertisement0);
             expect(response0.statusCode).toBe(201);
