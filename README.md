@@ -86,13 +86,14 @@ Run the generated image in your environment
 
 ### 4.2. Notifications Microservice
 
-This microservice handles the [**Advertising**](#advertising), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
+This microservice handles the [**Advertising**](#advertising), [**Publicity**](#publicity), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
 
 #### Advertising 
 
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
 
-**_POST_ save new advertisement** \(\<Your_Host\>/v1/notifications/advertising/\) allows to save a new advertisement into the database. It receives the following parameters:
+##### _POST_ save new advertisement
+\(\<Your_Host\>/web/v1/notifications/advertising/\) allows web users to save a new advertisement into the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -101,6 +102,98 @@ The Advertising end-points allow the web user to manage the advertisements shown
 | _categoryId_ 	|    Integer   	|      No      	| ID that references the Category of the advertisement (optional). 	|
 
 It returns **201 _created_** and the created object on success.
+
+**Examples**
+
+1. New advertisement without category
+
+    Request body:
+      >```JSON
+      >{
+      >  "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+      >  "siteUri": "http://test.site.url"
+      >}
+      >```
+
+    Response:
+      > _Status code: **201 Created**_
+      > ```JSON
+      > {
+      >   "data": {
+      >       "active": true,
+      >       "id": 36,
+      >       "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+      >       "siteUri": "http://test.site.url",
+      >       "categoryId": null,
+      >       "updatedAt": "2023-07-28T20:41:14.745Z",
+      >       "createdAt": "2023-07-28T20:41:14.745Z",
+      >       "deletedAt": null
+      >    }
+      > }
+      > ```
+
+2. New advertisement with category
+
+    Request body:
+      >```JSON
+      >{
+      >  "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+      >  "siteUri": "http://test.site.url",
+      >  "categoryId": 2
+      >}
+      >```
+
+    Response:
+      > _Status code: **201 Created**_
+      > ```JSON
+      > {
+      >   "data": {
+      >       "active": true,
+      >       "id": 35,
+      >       "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+      >       "siteUri": "http://test.site.url",
+      >       "categoryId": 2,
+      >       "updatedAt": "2023-07-28T20:39:40.947Z",
+      >       "createdAt": "2023-07-28T20:39:40.947Z",
+      >       "deletedAt": null
+      >    }
+      > }
+      > ```
+
+#### Publicity 
+
+The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
+
+##### _GET_ Uncategorized advertisements (Publicity)
+
+
+##### _GET_ Categorized advertisements (Banners)
+
+\(\<Your_Host\>/mobile/v1/notifications/publicity/banners/\) allows mobile users to retrieve all the active banners (i.e. categorized advertisements). It receives no parameters. It returns a list of objects with whe image locator `image`, the provider URL `url`, and the category `category`.
+
+**Example Response**
+
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "image": "https://test.image.url/second",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     },
+>     {
+>         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     },
+>     {
+>         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     }
+> ]
+> ```
+
 
 #### Attention Lines 
 
