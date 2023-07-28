@@ -35,9 +35,10 @@ const authMiddleware = async (req, res, next) => {
     try {
       const decodedToken = await appFirebase.auth().verifyIdToken(token);
       console.log("decodedToken", JSON.stringify(decodedToken));
+      console.log("------user_id:", decodedToken.user_id);
       res.locals = {
         ...res.locals,
-        uid: decodedToken.uid,
+        uid: decodedToken.user_id,
         role: decodedToken.role,
       };
       next();
