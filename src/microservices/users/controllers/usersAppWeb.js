@@ -19,9 +19,6 @@ exports.getUsersListAll = async (req, res, next) => {
       });
 
     const usersInDb = await db.User.findAll({
-      where: {
-        disabled: false,
-      },
       limit: pageSize,
       offset: (page - 1) * pageSize,
       order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
