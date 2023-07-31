@@ -50,7 +50,6 @@ exports.postAccountInfo = async (req, res, next) => {
       extraDataUser.disabled = false;
       extraDataUser.userMobile = true;
       extraDataUser.createdAt = dateNow;
-      extraDataUser.updatedAt = dateNow;
 
       await db.User.create(
         { ...dataUser, ...extraDataUser },

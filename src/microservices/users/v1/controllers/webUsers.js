@@ -51,7 +51,6 @@ exports.postAccountInfo = async (req, res, next) => {
       extraDataUser.disabled = false;
       extraDataUser.userMobile = false;
       extraDataUser.createdAt = dateNow;
-      extraDataUser.updatedAt = dateNow;
 
       await db.User.create(
         { ...dataUser, ...extraDataUser },
@@ -405,7 +404,7 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
     const { clientId, disabled } = await validator.vPostUsersUpdateDisabled(req.body);
     const dataUser = {
       disabled,
-      updatedAt: formatDate(new Date())
+      deleteAt: formatDate(new Date()),
     };
 
     const resultUpdate = await db.User.update(
