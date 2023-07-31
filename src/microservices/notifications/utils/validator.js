@@ -1,45 +1,96 @@
-const { StatusCodes } = require('http-status-codes');
-const joi = require('joi');
+const { StatusCodes } = require("http-status-codes");
+const joi = require("joi");
 
 const uri_string = joi.string().uri();
 const integer_number = joi.number().integer();
 
 const advertisementSchema = joi.object({
-    imageUri: uri_string.required(),
-    siteUri: uri_string.required(),
-    categoryId: integer_number,
+  imageUri: uri_string.required(),
+  siteUri: uri_string.required(),
+  categoryId: integer_number,
 });
 
 const alertSchema = joi.object({
-    message: joi.string().required(),
-    push: joi.bool().required(),
-    sms: joi.bool().required(),
-    alertList: joi.bool().required(),
+  message: joi.string().required(),
+  push: joi.bool().required(),
+  sms: joi.bool().required(),
+  alertList: joi.bool().required(),
+});
+
+const attentionLPostRegisterchema = joi.object({
+  name: joi.string().required().trim().empty("").invalid(" "),
+  phone: joi.string().required().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  imageSiteUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  whatsapp: joi.string().required().trim().empty("").invalid(" "),
+  url: joi.string().uri().required().trim().empty("").invalid(" "),
+});
+
+const attentionLPostUpdatechema = joi.object({
+  id: joi.number().empty("").invalid(0),
+  name: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri().trim().empty("").invalid(" "),
+  imageSiteUri: joi.string().uri().trim().empty("").invalid(" "),
+  whatsapp: joi.string().trim().empty("").invalid(" "),
+  url: joi.string().uri().trim().empty("").invalid(" "),
+});
+
+const getAttentionLListAllSchema = joi.object({
+  page: joi.number(),
+  pageSize: joi.number(),
+});
+
+const getAttentionLGetOneSchema = joi.object({
+  id: joi.number().required().empty("").invalid(0),
+});
+
+const postAttentionLUpdateActiveSchema = joi.object({
+  id: joi.number().required().empty("").invalid(0),
+  active: joi.boolean().required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
-    try {
-        if (!validator_schema) {
-            return Promise.reject(new Error("validator_schema cannot be falsy."));
-        }
-        const validated_data = await validator_schema.validateAsync(data, {
-            convert: true,
-            abortEarly: true,
-            errors: { render: true, label: 'key' },
-            stripUnknown: true
-        });
-        return validated_data;
-    } catch (error) {
-        error.status = StatusCodes.BAD_REQUEST;
-        return Promise.reject(error);
+  try {
+    if (!validator_schema) {
+      return Promise.reject(new Error("validator_schema cannot be falsy."));
     }
+    const validated_data = await validator_schema.validateAsync(data, {
+      convert: true,
+      abortEarly: true,
+      errors: { render: true, label: "key" },
+      stripUnknown: true,
+    });
+    return validated_data;
+  } catch (error) {
+    error.status = StatusCodes.BAD_REQUEST;
+    return Promise.reject(error);
+  }
 };
 
 module.exports = {
-    validateAdvertisementSchema: async inputData => {
-        return await use_validator_on_data(advertisementSchema, inputData);
-    },
-    validateAlertSchema: async inputData => {
-        return await use_validator_on_data(alertSchema, inputData);
-    },
+  validateAdvertisementSchema: async (inputData) => {
+    return await use_validator_on_data(advertisementSchema, inputData);
+  },
+  validateAlertSchema: async (inputData) => {
+    return await use_validator_on_data(alertSchema, inputData);
+  },
+  vAttentionLPostRegister: async (inputData) => {
+    return await use_validator_on_data(attentionLPostRegisterchema, inputData);
+  },
+  vAttentionLPostUpdate: async (inputData) => {
+    return await use_validator_on_data(attentionLPostUpdatechema, inputData);
+  },
+  vAttentionLGetListAll: async (inputData) => {
+    return await use_validator_on_data(getAttentionLListAllSchema, inputData);
+  },
+  vAttentionLGetOne: async (inputData) => {
+    return await use_validator_on_data(getAttentionLGetOneSchema, inputData);
+  },
+  vPostAttentionLUpdateActive: async (inputData) => {
+    return await use_validator_on_data(
+      postAttentionLUpdateActiveSchema,
+      inputData
+    );
+  },
 };
