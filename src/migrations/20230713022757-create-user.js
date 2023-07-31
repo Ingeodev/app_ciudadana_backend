@@ -51,12 +51,12 @@ module.exports = {
           unique: false,
         },
         serviceReceiptUri: {
-          type: Sequelize.STRING(128),
+          type: Sequelize.STRING,
           allowNull: true,
           unique: false,
         },
         serviceReceiptSiteUri: {
-          type: Sequelize.STRING(128),
+          type: Sequelize.STRING,
           allowNull: true,
           unique: false,
         },
