@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      disabled: {
+      active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,

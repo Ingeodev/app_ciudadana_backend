@@ -47,7 +47,7 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        disabled: {
+        active: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
           unique: false,
