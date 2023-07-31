@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { hasPermissions } = require("../../../middleware/authMiddleware.js");
-const usersMobile = require("../controllers/usersAppMobile.js");
-const usersWeb = require("../controllers/usersAppWeb.js");
+const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const usersMobile = require("../controllers/mobileUsers.js");
 
 // * ------------------ Endpoints - appMobile -----------------------------
 router.post(
@@ -35,29 +34,9 @@ router.post(
   usersMobile.postAccountUpdateUser
 );
 
-// * ------------------ Endpoints - appWeb -----------------------------
-router.get(
-  "/web/list_all",
-  // hasPermissions({ role: "super_master_user" }),
-  usersWeb.getUsersListAll
-);
-
-router.post(
-  "/web/update_disabled",
-  // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postUsersUpdateDisabled
-);
-
-router.post(
-  "/web/update_loginPhase_fullLogin",
-  // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postUsersUpdateLoginPhaseFullLogin
-);
-
 // ! Retornar lista de endpoints?
 router.get("/", (req, res) => {
-  res.status(200).json("API Users Microservice");
+  res.status(200).json("Mobile API - User Microservice");
 });
-
 
 module.exports = router;

@@ -2,8 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { StatusCodes } = require("http-status-codes");
 const { authMiddleware }= require('../../middleware/authMiddleware.js');
-const routes = require("./routes/users.js");
+const webRouter = require("./v1/routes/web.js");
+const mobileRouter = require("./v1/routes/mobile.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
 const app = express();
@@ -17,7 +19,14 @@ app.get("/health", function (req, res) {
 });
 
 app.use(authMiddleware);
-app.use('/v1/users', routes);
+
+//#region Web-oriented end-points
+app.use('/web/v1/users', webRouter);
+//#endregion
+
+//#region Mobile-oriented end-points
+app.use("/mobile/v1/users", mobileRouter);
+//#endregion
 
 // Not found route
 app.use((req, res, next) => {
