@@ -10,6 +10,13 @@ const advertisementSchema = joi.object({
     categoryId: integer_number,
 });
 
+const alertSchema = joi.object({
+    message: joi.string().required(),
+    push: joi.bool().required(),
+    sms: joi.bool().required(),
+    alertList: joi.bool().required(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
     try {
         if (!validator_schema) {
@@ -31,5 +38,8 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
     validateAdvertisementSchema: async inputData => {
         return await use_validator_on_data(advertisementSchema, inputData);
+    },
+    validateAlertSchema: async inputData => {
+        return await use_validator_on_data(alertSchema, inputData);
     },
 };
