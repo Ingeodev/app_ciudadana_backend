@@ -358,20 +358,21 @@ exports.postAccountUpdateUser = async (req, res, next) => {
  * Get all users (web + app)
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.getUsersListAll = async (req, res, next) => {
+exports.postUsersListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vGetUsersListAll({
-        "page" : parseInt(req.query.page) || 1,
-        "pageSize" : parseInt(req.query.pageSize) || 10
-      });
 
-    const usersInDb = await db.User.findAll({
+    const { page, pageSize } = await validator.vPostUsersListAll({
+      page: parseInt(req.body.page) || 1,
+      pageSize: parseInt(req.body.pageSize) || 10,
+    });
+
+    const usersInDb = await db.User.findAndCountAll({
       limit: pageSize,
       offset: (page - 1) * pageSize,
       order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
     });
 
-    if (!Array.isArray(usersInDb) || !usersInDb.length || usersInDb === null) {
+    if (usersInDb.count === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         status: StatusCodes.NOT_FOUND,
         code: "Not found",
@@ -379,7 +380,18 @@ exports.getUsersListAll = async (req, res, next) => {
       });
     }
 
-    return res.status(StatusCodes.OK).send(usersInDb);
+    const responseCustom = {
+      meta: {
+        page,
+        pageSize,
+        totalRecords: usersInDb.count,
+        // ! Validar si lo hace el front o back
+        totalPages: Math.ceil(usersInDb.count / pageSize),
+      },
+      data: usersInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     console.error("users could not be recovered: ", error.message);
     if (error.status == StatusCodes.BAD_REQUEST) {

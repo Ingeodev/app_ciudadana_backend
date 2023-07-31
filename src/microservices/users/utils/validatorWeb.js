@@ -5,9 +5,9 @@ const joi = require('joi');
 // const integer_number = joi.number().integer();
 
 // * ------------- App Web --------------------------------
-const getUsersListAllSchema = joi.object({
-  page: joi.number(),
-  pageSize: joi.number(),
+const postUsersListAllSchema = joi.object({
+  page: joi.number().invalid(0),
+  pageSize: joi.number().invalid(0),
 });
 
 const postUsersUpdateDisabledSchema = joi.object({
@@ -39,8 +39,8 @@ const use_validator_on_data = async (validator_schema, data) => {
 
 module.exports = {
   // * ------------- App Web --------------------------------
-  vGetUsersListAll: async (inputData) => {
-    return await use_validator_on_data(getUsersListAllSchema, inputData);
+  vPostUsersListAll: async (inputData) => {
+    return await use_validator_on_data(postUsersListAllSchema, inputData);
   },
   vPostUsersUpdateDisabled: async (inputData) => {
     return await use_validator_on_data(postUsersUpdateDisabledSchema, inputData);

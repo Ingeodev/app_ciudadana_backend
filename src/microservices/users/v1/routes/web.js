@@ -36,10 +36,10 @@ router.post(
 );
 // TODO: -- End - Endpoints copied from mobileController
 
-router.get(
+router.post(
   "/list_all",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.getUsersListAll
+  usersWeb.postUsersListAll
 );
 
 router.post(
