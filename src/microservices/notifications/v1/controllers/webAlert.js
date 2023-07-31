@@ -1,5 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
 
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
+const twilioClient = require('twilio')(twilioAccountSid, twilioAuthToken);
+
 const validator = require('../../utils/validator');
 const db = require("../../../../models/index");
 
@@ -38,8 +43,14 @@ const sendPushNotifications = async (message, usersPushIds) => {
 
 const sendSmsNotifications = async (message, usersPhoneNumbers) => {
     try {
-        // TODO: send sms notifications.
-        console.log("TODO: send sms notifications.");
+        const smsPromises = usersPhoneNumbers.map(number => {
+            twilioClient.messages.create({
+                messagingServiceSid: twilioMessageServiceSid,
+                body: message,
+                to: number
+            })
+        });
+        // TODO: continue...
         return true;
     } catch (error) {
         console.error(error);
@@ -66,30 +77,30 @@ const sendAlerts = async (req, res, next) => {
         if (!(push || sms || alertList))
             throw {
                 status: StatusCodes.UNPROCESSABLE_ENTITY,
-                message: "At least one of the following must be true: push, sms, alertList",
+                message: "At least one alert option must be true: push, sms, alertList",
             };
         const usersCount = await db.User.count({ where: { disabled: false, userMobile: true } });
         const totalBatches = Math.floor(usersCount / batchSize);
-        const responses = [];
+        const alertsSent = {};
         for (let i = 0; i <= totalBatches; i++) {
             const usersData = await getUsersInBatches(db.User, i, batchSize);
             if (push) {
                 const usersPushIds = usersData.map(user => user.clientId);
-                await sendPushNotifications(message, usersPushIds);
+                alertsSent.push = await sendPushNotifications(message, usersPushIds);
             }
             if (sms) {
                 const usersPhoneNumbers = usersData.map(user => user.phone);
-                await sendPushNotifications(message, usersPhoneNumbers);
+                alertsSent.sms = await sendSmsNotifications(message, usersPhoneNumbers);
             }
             if (alertList) {
                 const usersAlertListIds = usersData.map(user => user.id);   // TODO: Revisar; no sé cómo sería.
-                await sendPushNotifications(message, usersAlertListIds);
+                alertsSent.alertList = await sendAlertListNotifications(message, usersAlertListIds);
             }
         }
         // TODO: Save alert in database
 
-        return res.status(StatusCodes.OK)
-            .json({ msg: 'Sample Alert sending...' });
+        return res.status(StatusCodes.ACCEPTED)
+            .json({ message: 'The alerts are being sent by the external services.', alertsSent });
     } catch (error) {
         next(error);
     }

@@ -27,4 +27,6 @@ COPY src/account_service_key.json /srv
 
 RUN npm install --production
 
-CMD ["node", "./microservices/notifications/index.js"]
+WORKDIR /srv/microservices/notifications
+
+CMD ["node", "./index.js"]
