@@ -65,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         // ! allowNull: true?
       },
+      deleteAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        // ! allowNull: true?
+      },
     },
     {
       sequelize,

@@ -62,6 +62,11 @@ module.exports = {
           allowNull: true,
           // ! allowNull: true?
         },
+        deteleAt: {
+          type: "TIMESTAMP",
+          allowNull: true,
+          // ! allowNull: true?
+        },
       },
       {
         tableName: "AttentionLines",
