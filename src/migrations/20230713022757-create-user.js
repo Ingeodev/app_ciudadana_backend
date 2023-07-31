@@ -87,6 +87,12 @@ module.exports = {
           // ! allowNull: true?
           // type: Sequelize.DATE
         },
+        deleteAt: {
+          type: "TIMESTAMP",
+          allowNull: true,
+          // ! allowNull: true?
+          // type: Sequelize.DATE
+        },
       },
       {
         tableName: "Users",

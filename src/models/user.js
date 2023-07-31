@@ -81,10 +81,15 @@ module.exports = (sequelize, DataTypes) => {
       },
       createdAt: {
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: false,
         // ! allowNull: true?
       },
       updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        // ! allowNull: true?
+      },
+      deleteAt: {
         type: DataTypes.DATE,
         allowNull: true,
         // ! allowNull: true?
