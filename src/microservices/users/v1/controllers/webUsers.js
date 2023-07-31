@@ -402,9 +402,15 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
 
   try {
     const { clientId, disabled } = await validator.vPostUsersUpdateDisabled(req.body);
-    const dataUser = {
-      disabled,
-      deleteAt: formatDate(new Date()),
+    const dataUser = {};
+    if (disabled === true) {
+      dataUser = {
+        disabled,
+        deleteAt: formatDate(new Date()),
+      };
+    }
+    dataUser = {
+      disabled
     };
 
     const resultUpdate = await db.User.update(
