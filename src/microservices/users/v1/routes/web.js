@@ -36,10 +36,10 @@ router.post(
 );
 // TODO: -- End - Endpoints copied from mobileController
 
-router.post(
-  "/list_all",
+router.get(
+  "/",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postUsersListAll
+  usersWeb.getUsersListAll
 );
 
 router.post(
@@ -54,9 +54,5 @@ router.post(
   usersWeb.postUsersUpdateLoginPhaseFullLogin
 );
 
-// ! Retornar lista de endpoints?
-router.get("/", (req, res) => {
-  res.status(200).json("Web API - User Microservice");
-});
 
 module.exports = router;

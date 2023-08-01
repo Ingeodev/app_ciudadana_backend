@@ -358,12 +358,12 @@ exports.postAccountUpdateUser = async (req, res, next) => {
  * Get all users (web + app)
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUsersListAll = async (req, res, next) => {
+exports.getUsersListAll = async (req, res, next) => {
   try {
 
-    const { page, pageSize } = await validator.vPostUsersListAll({
-      page: parseInt(req.body.page) || 1,
-      pageSize: parseInt(req.body.pageSize) || 10,
+    const { page, pageSize } = await validator.vGetUsersListAll({
+      page: parseInt(req.query.page) || 1,
+      pageSize: parseInt(req.query.pageSize) || 10,
     });
 
     const usersInDb = await db.User.findAndCountAll({
