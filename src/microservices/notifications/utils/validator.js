@@ -3,6 +3,13 @@ const joi = require("joi");
 
 const uri_string = joi.string().uri();
 const integer_number = joi.number().integer();
+const positive_integer = integer_number.positive();
+const non_negative_integer = integer_number.min(0);
+
+const page_object = joi.object({
+  size: positive_integer.required(),
+  number: positive_integer.required(),
+});
 
 const advertisementSchema = joi.object({
   imageUri: uri_string.required(),
@@ -15,6 +22,10 @@ const alertSchema = joi.object({
   push: joi.bool().required(),
   sms: joi.bool().required(),
   alertList: joi.bool().required(),
+});
+
+const simplePaginationSchema = joi.object({
+  page: page_object,
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -41,5 +52,8 @@ module.exports = {
   },
   validateAlertSchema: async (inputData) => {
     return await use_validator_on_data(alertSchema, inputData);
+  },
+  validateSimplePaginationSchema: async (inputData) => {
+    return await use_validator_on_data(simplePaginationSchema, inputData);
   },
 };
