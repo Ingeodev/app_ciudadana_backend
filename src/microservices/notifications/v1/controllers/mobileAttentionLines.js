@@ -35,18 +35,7 @@ exports.getListAll = async (req, res, next) => {
       });
     }
 
-    const responseCustom = {
-      meta: {
-        page,
-        pageSize,
-        totalRecords: attentionLInDb.count,
-        // ! Validar si lo hace el front o back
-        totalPages: Math.ceil(attentionLInDb.count / pageSize),
-      },
-      data: attentionLInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    return res.status(StatusCodes.OK).send(attentionLInDb.rows);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
     if (error.status == StatusCodes.BAD_REQUEST) {
