@@ -28,7 +28,7 @@ exports.postRegister = async (req, res, next) => {
       { transaction: transactionSequelize }
     );
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataQuery);
+    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
   } catch (error) {
     console.error(
       "attention line could not be created: ",
@@ -71,7 +71,7 @@ exports.postUpdate = async (req, res, next) => {
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataQuery);
+    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
   } catch (error) {
     console.error(
       "attention line could not be updated: ",
@@ -111,7 +111,7 @@ exports.postListAll = async (req, res, next) => {
     const attentionLInDb = await db.AttentionLine.findAndCountAll({
       limit: pageSize,
       offset: (page - 1) * pageSize,
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
     if (attentionLInDb.count === 0) {
@@ -169,7 +169,9 @@ exports.getAttentionLine = async (req, res, next) => {
       });
     }
 
-    return res.status(StatusCodes.OK).send(attentionLInDb);
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: attentionLInDb });
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
     return next(error);
@@ -211,7 +213,9 @@ exports.postUpdateActive = async (req, res, next) => {
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ id, active });
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: { id, active } });
   } catch (error) {
     console.error("attention line could not be updated: ", error.message);
     await transactionSequelize.rollback();
