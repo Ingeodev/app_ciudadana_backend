@@ -17,6 +17,8 @@ This backend has been generated from scratch to support the Cali Mobility Applic
     - [4.2. Notifications Microservice](#42-notifications-microservice)
       - [Advertising](#advertising)
         - [_POST_ save new advertisement](#post-save-new-advertisement)
+        - [_GET_ list advertisements](#get-list-advertisements)
+        - [_POST_ update advertisement](#post-update-advertisement)
       - [Publicity](#publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
@@ -130,8 +132,7 @@ It returns **201 _created_** and the created object on success.
       >       "siteUri": "http://test.site.url",
       >       "categoryId": null,
       >       "updatedAt": "2023-07-28T20:41:14.745Z",
-      >       "createdAt": "2023-07-28T20:41:14.745Z",
-      >       "deletedAt": null
+      >       "createdAt": "2023-07-28T20:41:14.745Z"
       >    }
       > }
       > ```
@@ -158,11 +159,124 @@ It returns **201 _created_** and the created object on success.
       >       "siteUri": "http://test.site.url",
       >       "categoryId": 2,
       >       "updatedAt": "2023-07-28T20:39:40.947Z",
-      >       "createdAt": "2023-07-28T20:39:40.947Z",
-      >       "deletedAt": null
+      >       "createdAt": "2023-07-28T20:39:40.947Z"
       >    }
       > }
       > ```
+
+##### _GET_ list advertisements
+\(\<Your_Host\>/web/v1/notifications/advertising/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
+
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
+| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>    "meta": {
+>        "page": 1,
+>        "pageSize": 5,
+>        "totalRecords": 16,
+>        "totalPages": 4
+>    },
+>    "data": [
+>        {
+>            "id": 39,
+>            "imageUri": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
+>            "siteUri": "https://test.site.url/second",
+>            "categoryId": 2,
+>            "active": true,
+>            "createdAt": "2023-07-28T22:27:19.426Z",
+>            "updatedAt": "2023-07-28T22:27:19.426Z"
+>        },
+>        {
+>            "id": 38,
+>            "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+>            "siteUri": "http://test.site.url",
+>            "categoryId": null,
+>            "active": true,
+>            "createdAt": "2023-07-28T22:27:17.369Z",
+>            "updatedAt": "2023-07-28T22:27:17.369Z"
+>        },
+>        {
+>            "id": 37,
+>            "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+>            "siteUri": "http://test.site.url",
+>            "categoryId": null,
+>            "active": true,
+>            "createdAt": "2023-07-28T22:22:04.139Z",
+>            "updatedAt": "2023-07-28T22:22:04.139Z"
+>        },
+>        {
+>            "id": 36,
+>            "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+>            "siteUri": "http://test.site.url",
+>            "categoryId": null,
+>            "active": true,
+>            "createdAt": "2023-07-28T20:41:14.745Z",
+>            "updatedAt": "2023-07-28T20:41:14.745Z"
+>        },
+>        {
+>            "id": 35,
+>            "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+>            "siteUri": "http://test.site.url",
+>            "categoryId": 2,
+>            "active": true,
+>            "createdAt": "2023-07-28T20:39:40.947Z",
+>            "updatedAt": "2023-07-28T20:39:40.947Z"
+>        }
+>    ]
+>}
+> ```
+
+##### _POST_ update advertisement
+\(\<Your_Host\>/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement inthe database. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
+| _imageUri_   	| String (URI) 	|      No     	| URL to the image that will be displayed in the advertisement.    	|
+| _siteUri_    	| String (URI) 	|      No     	| URL to the web site of the vendor.                               	|
+| _categoryId_ 	|    Integer   	|      No      	| ID that references the Category of the advertisement (optional). 	|
+| _active_ 	|    Boolean   	|      No      	| Whether the Advertisement is active or not (but not deleted). 	|
+
+At least one of the optional (_imageUri_, _siteUri_, _categoryId_, _active_) parameters must be passed.
+
+It returns **200 _OK_** and the updated object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >    "id": 38,
+  >    "active": false,
+  >    "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+  >    "siteUri": "http://test.second.site.url"
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >    "data": {
+  >        "id": 38,
+  >        "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+  >        "siteUri": "http://test.second.site.url",
+  >        "categoryId": null,
+  >        "active": false,
+  >        "createdAt": "2023-07-28T22:27:17.369Z",
+  >        "updatedAt": "2023-08-01T21:59:16.102Z"
+  >    }
+  > }
+  > ```
 
 #### Publicity 
 
