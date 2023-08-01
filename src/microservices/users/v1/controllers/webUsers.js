@@ -440,7 +440,13 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ clientId, disabled });
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: {
+        clientId,
+        disabled,
+      },
+    });
   } catch (error) {
     console.error("users could not be updated: ", error.message);
     await transactionSequelize.rollback();
@@ -489,7 +495,12 @@ exports.postUsersUpdateLoginPhaseFullLogin = async (req, res, next) => {
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ clientId });
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: {
+        clientId
+      },
+    });
   } catch (error) {
     console.error("user could not be updated: ", error.message);
     await transactionSequelize.rollback();
