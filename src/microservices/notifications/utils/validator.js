@@ -25,7 +25,7 @@ const alertSchema = joi.object({
 });
 
 const simplePaginationSchema = joi.object({
-  page: page_object,
+  page: page_object.required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
