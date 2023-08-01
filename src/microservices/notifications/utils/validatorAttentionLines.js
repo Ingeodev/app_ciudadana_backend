@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// * ------------------ Attention Lines -----------------
+// * ------------------ Web - Attention Lines -----------------
 const attentionLPostRegisterchema = joi.object({
   name: joi.string().required().trim().empty("").invalid(" "),
   phone: joi.string().required().trim().empty("").invalid(" "),
@@ -34,7 +34,9 @@ const postAttentionLUpdateActiveSchema = joi.object({
   id: joi.number().required().empty("").invalid(0),
   active: joi.boolean().required(),
 });
-// * ------------------ END - Attention Lines -----------------
+// * ------------------ END - Web - Attention Lines -----------------
+// * ------------------ Mobile - Attention Lines -----------------
+// * ------------------ END - Mobile - Attention Lines -----------------
 
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -56,24 +58,26 @@ const use_validator_on_data = async (validator_schema, data) => {
 };
 
 module.exports = {
-  // * ------------------ Attention Lines -----------------
-  vAttentionLPostRegister: async (inputData) => {
+  // * ------------------ Web - Attention Lines -----------------
+  vAttLPostRegister: async (inputData) => {
     return await use_validator_on_data(attentionLPostRegisterchema, inputData);
   },
-  vAttentionLPostUpdate: async (inputData) => {
+  vAttLPostUpdate: async (inputData) => {
     return await use_validator_on_data(attentionLPostUpdatechema, inputData);
   },
-  vAttentionLGetListAll: async (inputData) => {
+  vAttLGetListAll: async (inputData) => {
     return await use_validator_on_data(getAttentionLListAllSchema, inputData);
   },
-  vAttentionLGetOne: async (inputData) => {
+  vAttLGetOne: async (inputData) => {
     return await use_validator_on_data(getAttentionLGetOneSchema, inputData);
   },
-  vPostAttentionLUpdateActive: async (inputData) => {
+  vAttLPostUpdateActive: async (inputData) => {
     return await use_validator_on_data(
       postAttentionLUpdateActiveSchema,
       inputData
     );
   },
-  // * ------------------ END - Attention Lines -----------------
+  // * ------------------ END - Web - Attention Lines -----------------
+  // * ------------------ Mobile - Attention Lines -----------------
+  // * ------------------ END - Mobile - Attention Lines -----------------
 };

@@ -13,7 +13,7 @@ exports.postRegister = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
     const { name, phone, imageUri, imageSiteUri, whatsapp, url } =
-      await validator.vAttentionLPostRegister(req.body);
+      await validator.vAttLPostRegister(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
     const dateNow = formatDate(new Date());
@@ -48,7 +48,7 @@ exports.postUpdate = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
   try {
     const { id, name, phone, imageUri, imageSiteUri, whatsapp, url } =
-      await validator.vAttentionLPostUpdate(req.body);
+      await validator.vAttLPostUpdate(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
     const dateNow = formatDate(new Date());
@@ -103,7 +103,7 @@ exports.postUpdate = async (req, res, next) => {
  */
 exports.postListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vAttentionLGetListAll({
+    const { page, pageSize } = await validator.vAttLGetListAll({
       page: parseInt(req.body.page) || 1,
       pageSize: parseInt(req.body.pageSize) || 10,
     });
@@ -153,7 +153,7 @@ exports.postListAll = async (req, res, next) => {
 exports.getAttentionLine = async (req, res, next) => {
   try {
     
-    const { id } = await validator.vAttentionLGetOne({
+    const { id } = await validator.vAttLGetOne({
       id: parseInt(req.params.id),
     });
 
@@ -186,7 +186,7 @@ exports.postUpdateActive = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
 
   try {
-    const { id, active } = await validator.vPostAttentionLUpdateActive(req.body);
+    const { id, active } = await validator.vAttLPostUpdateActive(req.body);
     const dataQuery = {}
     if (active === false) {
       dataQuery = {
