@@ -25,6 +25,15 @@ const editAdvertisementSchema = joi.object({
   active: joi.bool(),
 }).or('imageUri', 'siteUri', 'categoryId', 'active');
 
+const statusAdvertisementSchema = joi.object({
+  id: non_negative_integer.required(),
+  active: joi.bool().required(),
+});
+
+const deleteAdvertisementSchema = joi.object({
+  id: non_negative_integer.required()
+});
+
 const alertSchema = joi.object({
   message: joi.string().required(),
   push: joi.bool().required(),
@@ -60,6 +69,12 @@ module.exports = {
   },
   validateEditAdvertisementSchema: async (inputData) => {
     return await use_validator_on_data(editAdvertisementSchema, inputData);
+  },
+  validateStatusAdvertisementSchema: async (inputData) => {
+    return await use_validator_on_data(statusAdvertisementSchema, inputData);
+  },
+  validateDeleteAdvertisementSchema: async (inputData) => {
+    return await use_validator_on_data(deleteAdvertisementSchema, inputData);
   },
   validateAlertSchema: async (inputData) => {
     return await use_validator_on_data(alertSchema, inputData);

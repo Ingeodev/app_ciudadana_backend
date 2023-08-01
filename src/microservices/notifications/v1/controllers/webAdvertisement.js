@@ -1,7 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
-const { where } = require('sequelize');
 
 // Retrieve all the advertisements whether they have a category or not.
 const getAllAdvertisements = async (req, res, next) => {
@@ -74,14 +73,16 @@ const postAdvertisementEdit = async (req, res, next) => {
 // Update the status of an advertisement.
 const postAdvertisementStatus = async (req, res, next) => {
     try {
-        const { imageUri, siteUri, categoryId } = await validator.validateAdvertisementSchema(req.body);
-        const newAdvertisement = await db.Advertisement.create({
-            imageUri,
-            siteUri,
-            categoryId,
-        });
+        const { id, active } = await validator.validateStatusAdvertisementSchema(req.body);
+        const advertisement = await db.Advertisement.findByPk(id);
+        if (advertisement == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Advertisement with id ${id} does not exist.`
+            };
+        const updatedAdvertisement = await advertisement.update({ active });
         return res.status(StatusCodes.OK)
-            .json({ data: { ...newAdvertisement.dataValues, deletedAt: undefined } });
+            .json({ data: { ...updatedAdvertisement.dataValues, deletedAt: undefined } });
     } catch (error) {
         return next(error);
     }
@@ -90,14 +91,17 @@ const postAdvertisementStatus = async (req, res, next) => {
 // Delete an advertisement.
 const postAdvertisementDelete = async (req, res, next) => {
     try {
-        const { imageUri, siteUri, categoryId } = await validator.validateAdvertisementSchema(req.body);
-        const newAdvertisement = await db.Advertisement.create({
-            imageUri,
-            siteUri,
-            categoryId,
+        const { id } = await validator.validateDeleteAdvertisementSchema(req.body);
+        const advertisement = await db.Advertisement.findByPk(id);
+        if (advertisement == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Advertisement with id ${id} has already been deleted.`
+            };
+        await advertisement.destroy();
+        return res.status(StatusCodes.OK).json({
+            data: { id }
         });
-        return res.status(StatusCodes.OK)
-            .json({ data: { ...newAdvertisement.dataValues, deletedAt: undefined } });
     } catch (error) {
         return next(error);
     }
