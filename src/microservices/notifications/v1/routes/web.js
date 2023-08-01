@@ -14,6 +14,15 @@ router.get('/advertising', advertisingController.getAllAdvertisements);
 
 // Create a new advertisement.
 router.post('/advertising', advertisingController.postAdvertisement);
+
+// Update an advertisement.
+router.post('/advertising/edit', advertisingController.postAdvertisementEdit);
+
+// Update the status of an advertisement.
+router.post('/advertising/status', advertisingController.postAdvertisementStatus);
+
+// Delete an advertisement.
+router.post('/advertising/delete', advertisingController.postAdvertisementDelete);
 //#endregion
 
 //#region Attention Lines end-points
