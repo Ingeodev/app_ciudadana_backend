@@ -54,7 +54,7 @@ const postAdvertisement = async (req, res, next) => {
             categoryId,
         });
         return res.status(StatusCodes.CREATED)
-            .json({ data: newAdvertisement.dataValues });
+            .json({ data: {...newAdvertisement.dataValues, deletedAt: undefined} });
     } catch (error) {
         return next(error);
     }
