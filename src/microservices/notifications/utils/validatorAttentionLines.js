@@ -22,8 +22,8 @@ const attentionLPostUpdatechema = joi.object({
 });
 
 const getAttentionLListAllSchema = joi.object({
-  page: joi.number(),
-  pageSize: joi.number(),
+  page: joi.number().invalid(0),
+  pageSize: joi.number().invalid(0),
 });
 
 const getAttentionLGetOneSchema = joi.object({
