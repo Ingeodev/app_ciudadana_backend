@@ -15,17 +15,19 @@ exports.getListAll = async (req, res, next) => {
       pageSize: parseInt(req.query.pageSize) || 10,
     });
 
-    const attentionLInDb = await db.AttentionLine.findAll({
+    // const attentionLInDb = await db.AttentionLine.findAll({
+    //   limit: pageSize,
+    //   offset: (page - 1) * pageSize,
+    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+    // });
+
+    const attentionLInDb = await db.AttentionLine.findAndCountAll({
       limit: pageSize,
       offset: (page - 1) * pageSize,
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (
-      !Array.isArray(attentionLInDb) ||
-      !attentionLInDb.length ||
-      attentionLInDb === null
-    ) {
+    if (attentionLInDb.count === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         status: StatusCodes.NOT_FOUND,
         code: "Not found",
@@ -33,7 +35,18 @@ exports.getListAll = async (req, res, next) => {
       });
     }
 
-    return res.status(StatusCodes.OK).send(attentionLInDb);
+    const responseCustom = {
+      meta: {
+        page,
+        pageSize,
+        totalRecords: attentionLInDb.count,
+        // ! Validar si lo hace el front o back
+        totalPages: Math.ceil(attentionLInDb.count / pageSize),
+      },
+      data: attentionLInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
     if (error.status == StatusCodes.BAD_REQUEST) {
