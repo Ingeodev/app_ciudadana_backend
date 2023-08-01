@@ -35,56 +35,20 @@ exports.postAccountInfo = async (req, res, next) => {
       phone,
       email,
     };
-    let extraDataUser = {};
+    const extraDataUser = {
+      clientId: clientId,
+      loginPhase: "baseLogin",
+      disabled: false,
+      userMobile: true,
+      createdAt: dateNow,
+    };
 
-    // Create Case - loginPhase="notRegistered"
-    // ! Validar con App Movil, si el campo se envia como null o ""?
-    if (
-      name === null &&
-      lastName === null &&
-      phone === null &&
-      email === null
-    ) {
-      extraDataUser.clientId = clientId;
-      extraDataUser.loginPhase = "notRegistered";
-      extraDataUser.disabled = false;
-      extraDataUser.userMobile = true;
-      extraDataUser.createdAt = dateNow;
-
-      await db.User.create(
-        { ...dataUser, ...extraDataUser },
-        { transaction: transactionSequelize }
-      );
-      await transactionSequelize.commit();
-
-      return res.status(StatusCodes.OK).json(dataUser);
-    }
-
-    // ------------------------------------------
-    // Updates Case - loginPhase="baseLogin"
-    extraDataUser.loginPhase = "baseLogin";
-    extraDataUser.updatedAt = dateNow;
-
-    const resultUpdate = await db.User.update(
+    await db.User.create(
       { ...dataUser, ...extraDataUser },
-      {
-        where: {
-          clientId,
-          loginPhase: "notRegistered",
-        },
-      },
       { transaction: transactionSequelize }
     );
-
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "invalid input",
-      });
-    }
     await transactionSequelize.commit();
+
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
     console.error("account postAccountInfo could not be created/updated: ", error.message);
@@ -96,14 +60,7 @@ exports.postAccountInfo = async (req, res, next) => {
         detail: error.message,
       });
     }
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
-    }
+    
     return next(error);
   }
 };
