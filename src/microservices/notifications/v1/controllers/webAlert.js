@@ -65,7 +65,10 @@ const sendSmsNotifications = async (message, usersPhoneNumbers) => {
         to: number,
       });
     });
-    // TODO: continue...
+    const smsResponses = await Promise.allSettled(smsPromises);
+    const fulfilled = smsResponses.filter(resp => (resp.status === 'fulfilled'));
+    if (fulfilled.length() < smsResponses.length() * 0.1)
+      return false;
     return true;
   } catch (error) {
     console.error(error);
@@ -85,7 +88,7 @@ const sendAlertListNotifications = async (message, usersAlertListIds) => {
 };
 
 const sendAlerts = async (req, res, next) => {
-  const batchSize = 100;
+  const batchSize = 10000;
   try {
     const { message, push, sms, alertList } =
       await validator.validateAlertSchema(req.body);
@@ -102,8 +105,8 @@ const sendAlerts = async (req, res, next) => {
     for (let i = 0; i <= totalBatches; i++) {
       const usersData = await getUsersInBatches(db.User, i, batchSize);
       if (push) {
-        const usersPushIds = usersData.map((user) => user.clientId);
-        alertsSent.push = await sendPushNotifications(message, usersPushIds);
+        const usersPushIds = usersData.map((user) => user.clientId); // TODO: Revisar; podría ser mejor con un topic.
+        alertsSent.push = await sendPushNotifications(message, usersPushIds); //Si fuera topic, iría simplemente fuera del for.
       }
       if (sms) {
         const usersPhoneNumbers = usersData.map((user) => user.phone);
@@ -122,8 +125,10 @@ const sendAlerts = async (req, res, next) => {
     return res
       .status(StatusCodes.ACCEPTED)
       .json({
-        message: "The alerts are being sent by the external services.",
-        alertsSent,
+        meta: {
+          message: "The alerts are being sent by the external services.",
+        },
+        data: { alertsSent },
       });
   } catch (error) {
     next(error);
