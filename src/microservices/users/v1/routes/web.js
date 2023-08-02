@@ -30,7 +30,7 @@ router.get(
 );
 
 router.post(
-  "/account/update",
+  "/account/edit",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.postAccountUpdateUser
 );
