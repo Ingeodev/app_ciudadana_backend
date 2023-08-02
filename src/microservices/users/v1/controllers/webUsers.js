@@ -271,53 +271,34 @@ exports.postAccountUpdateUser = async (req, res, next) => {
 exports.getUsersListAll = async (req, res, next) => {
   try {
     const objPage = await validator.vGetUsersListAll({
-      number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
-      size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 10,
     });
 
-    // ! Filtrar los usuarios activos solamente?
-    const totalRecords = await db.User.count();
-    // if (usersInDb.count === 0) {
-    if (totalRecords === 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "users could not be recovered",
-      };
-    }
+    const usersInDb = await db.User.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
 
-    const totalPages = Math.ceil(totalRecords / objPage.size);
-    if (objPage.number > totalPages) {
+    console.log("usersInDb: ", usersInDb);
+
+    if (usersInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "The requested page does not exist",
       };
     }
-
-    // const usersInDb = await db.User.findAndCountAll({
-    //   limit: objPage.size,
-    //   offset: (objPage.number - 1) * objPage.size,
-    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    // });
-
-    // const usersInDb = await db.User.findAndCountAll({
-    const usersInDb = await db.User.findAll({
-        limit: objPage.size,
-      offset: (objPage.number - 1) * objPage.size,
-      // ! Verificar filtro ordenamiento
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    });
+    const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords,
-        // totalRecords: usersInDb.count,
-        totalPages,
-        // totalPages: Math.ceil(usersInDb.count / objPage.size),
+        totalRecords: usersInDb.count,
+        totalPages: totalPages,
       },
-      data: usersInDb,
-      // data: usersInDb.rows,
+      data: usersInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
