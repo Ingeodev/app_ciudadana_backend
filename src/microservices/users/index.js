@@ -21,11 +21,11 @@ app.get("/health", function (req, res) {
 app.use(authMiddleware);
 
 //#region Web-oriented end-points
-app.use('/web/v1/users', webRouter);
+app.use('/api/web/v1/users', webRouter);
 //#endregion
 
 //#region Mobile-oriented end-points
-app.use("/mobile/v1/users", mobileRouter);
+app.use("/api/mobile/v1/users", mobileRouter);
 //#endregion
 
 // Not found route

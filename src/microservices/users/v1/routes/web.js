@@ -30,7 +30,7 @@ router.get(
 );
 
 router.post(
-  "/account/updateUser",
+  "/account/update",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.postAccountUpdateUser
 );
@@ -43,7 +43,7 @@ router.get(
 );
 
 router.post(
-  "/update_disabled",
+  "/delete",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.postUsersUpdateDisabled
 );

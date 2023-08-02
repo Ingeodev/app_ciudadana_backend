@@ -14,18 +14,18 @@ const validator = require("../../utils/validatorWeb.js");
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountInfo = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
     const clientId = res.locals.uid;
     // ! Validar los campos que son requeridos - Monday
-    const { name, lastName, phone, email } = await validator.vPostAccountInfo(req.body);
+    const { name, lastName, phone, email } = await validator.vPostAccountInfo(
+      req.body
+    );
 
     if (!clientId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      throw {
         status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "clientId is missing",
-      });
+        message: "clientId is missing",
+      };
     }
 
     // ! Evitar la inyeccion de codigo SQL
@@ -35,76 +35,24 @@ exports.postAccountInfo = async (req, res, next) => {
       lastName,
       phone,
       email,
+      clientId: clientId,
+      loginPhase: "baseLogin",
+      disabled: false,
+      userMobile: false,
+      createdAt: dateNow,
     };
-    let extraDataUser = {};
 
-    // Create Case - loginPhase="notRegistered"
-    // ! Validar con App Movil, si el campo se envia como null o ""?
-    if (
-      name === null &&
-      lastName === null &&
-      phone === null &&
-      email === null
-    ) {
-      extraDataUser.clientId = clientId;
-      extraDataUser.loginPhase = "notRegistered";
-      extraDataUser.disabled = false;
-      extraDataUser.userMobile = false;
-      extraDataUser.createdAt = dateNow;
+    await db.User.create(dataUser);
 
-      await db.User.create(
-        { ...dataUser, ...extraDataUser },
-        { transaction: transactionSequelize }
-      );
-      await transactionSequelize.commit();
-
-      return res.status(StatusCodes.OK).json(dataUser);
-    }
-
-    // ------------------------------------------
-    // Updates Case - loginPhase="baseLogin"
-    extraDataUser.loginPhase = "baseLogin";
-    extraDataUser.updatedAt = dateNow;
-
-    const resultUpdate = await db.User.update(
-      { ...dataUser, ...extraDataUser },
-      {
-        where: {
-          clientId,
-          loginPhase: "notRegistered",
-        },
-      },
-      { transaction: transactionSequelize }
-    );
-
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "invalid input",
-      });
-    }
-    await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataUser);
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: dataUser,
+    });
   } catch (error) {
-    console.error("account postAccountInfo could not be created/updated: ", error.message);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
-    }
+    console.error(
+      "account postAccountInfo could not be created/updated: ",
+      error.message
+    );
     return next(error);
   }
 };
@@ -115,17 +63,15 @@ exports.postAccountInfo = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountFullLogin = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      throw {
         status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "clientId is missing",
-      });
+        message: "clientId is missing",
+      };
     }
 
     const {
@@ -135,51 +81,40 @@ exports.postAccountFullLogin = async (req, res, next) => {
       serviceReceiptUri,
       serviceReceiptSiteUri,
     } = await validator.vPostAccountFullLogin(req.body);
-    
+
     const dataUser = {
       documentType,
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
       serviceReceiptSiteUri,
-    };
-    const dateNow = formatDate(new Date());
-    const extraDataUser = {
       loginPhase: "inVerification",
-      updatedAt: dateNow,
+      updatedAt: formatDate(new Date()),
     };
 
-    const resultUpdate = await db.User.update(
-      { ...dataUser, ...extraDataUser },
-      {
-        where: {
-          clientId,
-          loginPhase: "baseLogin",
-        },
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "baseLogin",
       },
-      { transaction: transactionSequelize }
-    );
+    });
 
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        code: "Internal Server Error",
-        detail: "there was an error updating the record",
-      });
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="baseLogin does not exist`,
+      };      
     }
-    await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataUser);
+
+    await userInDb.update(dataUser);
+    
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
   } catch (error) {
     console.error("account full_login could not be retrieved: ", error);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
+    
     if (
       error &&
       error.errors &&
@@ -202,35 +137,26 @@ exports.getAccountInfo = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      throw {
         status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "clientId is missing",
-      });
+        message: "clientId is missing",
+      };
     }
 
     const userInDb = await db.User.findOne({
       where: { clientId },
     });
-    
+
     if (userInDb === null) {
-      return res.status(StatusCodes.NOT_FOUND).json({
+      throw {
         status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "user information could not be retrieved",
-      });
+        message: "user information could not be retrieved",
+      };
     }
 
-    const { loginPhase, name, lastName, email, phone } = userInDb.dataValues;
-
-    return res.status(StatusCodes.OK).send({
-      loginPhase,
-      userInfo: {
-        name,
-        lastName,
-        email,
-        phone,
-      },
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: userInDb,
     });
   } catch (error) {
     console.error("account info could not be retrieved: ", error.message);
@@ -248,11 +174,10 @@ exports.getAccountLoginPhase = async (req, res, next) => {
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      throw {
         status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "clientId is missing",
-      });
+        message: "clientId is missing",
+      };
     }
 
     const userInDb = await db.User.findOne({
@@ -260,17 +185,17 @@ exports.getAccountLoginPhase = async (req, res, next) => {
     });
 
     if (userInDb === null) {
-      return res.status(StatusCodes.NOT_FOUND).json({
+      throw {
         status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "user information could not be retrieved",
-      });
+        message: "user information could not be retrieved",
+      };
     }
 
     const { loginPhase } = userInDb.dataValues;
 
-    return res.status(StatusCodes.OK).send({
-      loginPhase,
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { loginPhase },
     });
   } catch (error) {
     console.error("account info could not be retrieved: ", error.message);
@@ -283,17 +208,14 @@ exports.getAccountLoginPhase = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountUpdateUser = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
-    // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
 
     if (!clientId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      throw {
         status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "clientId is missing",
-      });
+        message: "clientId is missing",
+      };
     }
 
     const { name, lastName, phone, residenceAddress } =
@@ -304,43 +226,32 @@ exports.postAccountUpdateUser = async (req, res, next) => {
       lastName,
       residenceAddress,
       phone,
-    };
-    const dateNow = formatDate(new Date());
-    const extraDataUser = {
-      updatedAt: dateNow,
+      updatedAt: formatDate(new Date()),
     };
 
-    const resultUpdate = await db.User.update(
-      { ...dataUser, ...extraDataUser },
-      {
-        where: {
-          clientId,
-          loginPhase: "fullLogin",
-        },
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "fullLogin",
       },
-      { transaction: transactionSequelize }
-    );
+    });
 
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        code: "Internal Server Error",
-        detail: "there was an error updating the record",
-      });
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="fullLogin" does not exist`,
+      };
     }
-    await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataUser);
+
+    await userInDb.update(dataUser);
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
   } catch (error) {
     console.error("account full_login could not be retrieved: ", error);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
+    
     if (
       error &&
       error.errors &&
@@ -360,47 +271,58 @@ exports.postAccountUpdateUser = async (req, res, next) => {
  */
 exports.getUsersListAll = async (req, res, next) => {
   try {
-
-    const { page, pageSize } = await validator.vGetUsersListAll({
-      page: parseInt(req.query.page) || 1,
-      pageSize: parseInt(req.query.pageSize) || 10,
+    const objPage = await validator.vGetUsersListAll({
+      number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
+      size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
     });
 
-    const usersInDb = await db.User.findAndCountAll({
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
+    // ! Filtrar los usuarios activos solamente?
+    const totalRecords = await db.User.count();
+    // if (usersInDb.count === 0) {
+    if (totalRecords === 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "users could not be recovered",
+      };
+    }
+
+    const totalPages = Math.ceil(totalRecords / objPage.size);
+    if (objPage.number > totalPages) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "The requested page does not exist",
+      };
+    }
+
+    // const usersInDb = await db.User.findAndCountAll({
+    //   limit: objPage.size,
+    //   offset: (objPage.number - 1) * objPage.size,
+    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+    // });
+
+    // const usersInDb = await db.User.findAndCountAll({
+    const usersInDb = await db.User.findAll({
+        limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
     });
 
-    if (usersInDb.count === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({
-        status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "users could not be recovered",
-      });
-    }
-
     const responseCustom = {
       meta: {
-        page,
-        pageSize,
-        totalRecords: usersInDb.count,
-        // ! Validar si lo hace el front o back
-        totalPages: Math.ceil(usersInDb.count / pageSize),
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords,
+        // totalRecords: usersInDb.count,
+        totalPages,
+        // totalPages: Math.ceil(usersInDb.count / objPage.size),
       },
-      data: usersInDb.rows,
+      data: usersInDb,
+      // data: usersInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     console.error("users could not be recovered: ", error.message);
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
@@ -410,53 +332,34 @@ exports.getUsersListAll = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersUpdateDisabled = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
-
   try {
-    const { clientId, disabled } = await validator.vPostUsersUpdateDisabled(req.body);
-    const dataUser = {};
-    if (disabled === true) {
-      dataUser = {
-        disabled,
-        deleteAt: formatDate(new Date()),
-      };
-    }
-    dataUser = {
-      disabled
+    const { clientId } = await validator.vPostUsersUpdateDisabled(req.body);
+    const dataUser = {
+      disabled: null,
+      deleteAt: formatDate(new Date()),
     };
 
-    const resultUpdate = await db.User.update(
-      dataUser,
-      { where: { clientId } },
-      { transaction: transactionSequelize }
-    );
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId
+      },
+    });
 
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "invalid input",
-      });
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} does not exist`,
+      };
     }
-    await transactionSequelize.commit();
+
+    await userInDb.update(dataUser);
+    
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: {
-        clientId,
-        disabled,
-      },
+      data: { clientId }
     });
   } catch (error) {
     console.error("users could not be updated: ", error.message);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
@@ -466,51 +369,35 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersUpdateLoginPhaseFullLogin = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
     const { clientId } = await validator.vPostUsersUpdateLoginPhaseFullLogin(req.body);
-    
-    const resultUpdate = await db.User.update(
-      {
-        loginPhase: "fullLogin",
-        updatedAt: formatDate(new Date())
-      },
-      {
-        where: {
-          clientId,
-          loginPhase: "inVerification",
-        },
-      },
-      { transaction: transactionSequelize }
-    );
+    const dataUser = {
+      loginPhase: "fullLogin",
+      updatedAt: formatDate(new Date()),
+    };
 
-    console.log("resultUpdate:", resultUpdate[0]);
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "inVerification",
+      },
+    });
 
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "user could not be updated",
-      });
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="inVerification" does not exist`,
+      };
     }
-    await transactionSequelize.commit();
+
+    await userInDb.update(dataUser);
+
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: {
-        clientId
-      },
+      data: { clientId },
     });
   } catch (error) {
     console.error("user could not be updated: ", error.message);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
