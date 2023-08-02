@@ -18,6 +18,17 @@ describe("Advertisement management API points: ", () => {
         categoryId: 2,
     };
 
+    const editAdvertisement0 = {
+        siteUri: 'http://edited.site.url',
+        categoryId: 2,
+        active: false,
+    };
+
+    const editAdvertisement1 = {
+        imageUri: 'gs://documentainotery.appspot.com/myUploads',
+        categoryId: null,
+    };
+
     describe("POST /notifications/advertising/ ", () => {
         test("should respond with status 201 and the new object (data) after creating a new advertisement", async () => {
             const response0 = await request(usedHost).post('/').send(testAdvertisement0);
@@ -202,6 +213,122 @@ describe("Advertisement management API points: ", () => {
             expect(response7.body).toHaveProperty("status", 400);
             expect(response7.body).toHaveProperty("code");
             expect(response7.body).toHaveProperty("detail");
+        });
+    });
+
+    describe("POST /notifications/advertising/edit ", () => {
+        test("should respond with status 200 and the edited object (data)", async () => {
+            const response0 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement0, ...editAdvertisement0
+            });
+            expect(response0.statusCode).toBe(200);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual(expect.objectContaining({
+                ...testAdvertisement0, ...editAdvertisement0
+            }));
+            const response1 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement1, ...editAdvertisement1
+            });
+            expect(response1.statusCode).toBe(200);
+            expect(response1.body).toHaveProperty("data");
+            expect(response1.body.data).toEqual(expect.objectContaining({
+                ...testAdvertisement1, ...editAdvertisement1
+            }));
+        });
+
+        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+            const response0 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement0,
+                id: undefined
+            });
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement0,
+                siteUri: 'not.an.URI.str'
+            });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+
+            const response2 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement0,
+                imageUri: 0
+            });
+            expect(response2.statusCode).toBe(400);
+            expect(response2.body).not.toHaveProperty("data");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
+
+            const response3 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement0,
+                siteUri: { url: 'http://test.site.url' }
+            });
+            expect(response3.statusCode).toBe(400);
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
+
+            const response4 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement1,
+                categoryId: "not a number"
+            });
+            expect(response4.statusCode).toBe(400);
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
+
+            const response5 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement1,
+                categoryId: 1.5
+            });
+            expect(response5.statusCode).toBe(400);
+            expect(response5.body).not.toHaveProperty("data");
+            expect(response5.body).toHaveProperty("status", 400);
+            expect(response5.body).toHaveProperty("code");
+            expect(response5.body).toHaveProperty("detail");
+
+            const response6 = await request(usedHost).post('/edit').send({
+                id: testAdvertisement1.id
+            });
+            expect(response6.statusCode).toBe(400);
+            expect(response6.body).not.toHaveProperty("data");
+            expect(response6.body).toHaveProperty("status", 400);
+            expect(response6.body).toHaveProperty("code");
+            expect(response6.body).toHaveProperty("detail");
+        });
+
+        test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+            const response0 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement1,
+                categoryId: -5,
+            });
+            expect(response0.statusCode).toBe(500);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 500);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
+
+        test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+            const response0 = await request(usedHost).post('/edit').send({
+                ...testAdvertisement1,
+                id: testAdvertisement1.id + 98976545120
+            });
+            expect(response0.statusCode).toBe(404);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 404);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
         });
     });
 });
