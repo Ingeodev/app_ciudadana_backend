@@ -29,7 +29,7 @@ router.get(
 );
 
 router.post(
-  "/account/updateUser",
+  "/account/edit",
   // hasPermissions({ role: "super_master_user" }),
   usersMobile.postAccountUpdateUser
 );
