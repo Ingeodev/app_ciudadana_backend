@@ -195,7 +195,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": 2,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:19.426Z",
->            "updatedAt": "2023-07-28T22:27:19.426Z"
+>            "updatedAt": "2023-07-28T22:27:19.426Z",
+>            "categoryName": "sample"
 >        },
 >        {
 >            "id": 38,
@@ -204,7 +205,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:17.369Z",
->            "updatedAt": "2023-07-28T22:27:17.369Z"
+>            "updatedAt": "2023-07-28T22:27:17.369Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 37,
@@ -213,7 +215,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:22:04.139Z",
->            "updatedAt": "2023-07-28T22:22:04.139Z"
+>            "updatedAt": "2023-07-28T22:22:04.139Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 36,
@@ -222,7 +225,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T20:41:14.745Z",
->            "updatedAt": "2023-07-28T20:41:14.745Z"
+>            "updatedAt": "2023-07-28T20:41:14.745Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 35,
@@ -231,7 +235,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": 2,
 >            "active": true,
 >            "createdAt": "2023-07-28T20:39:40.947Z",
->            "updatedAt": "2023-07-28T20:39:40.947Z"
+>            "updatedAt": "2023-07-28T20:39:40.947Z",
+>            "categoryName": "sample"
 >        }
 >    ]
 >}
