@@ -417,4 +417,87 @@ describe("Advertisement management API points: ", () => {
             expect(response0.body).toHaveProperty("detail");
         });
     });
+
+    describe("POST /notifications/advertising/delete ", () => {
+        test("should respond with status 200 and the deleted object's id (data)", async () => {
+            const response0 = await request(usedHost).post('/delete').send({
+                id: testAdvertisement0.id,
+            });
+            expect(response0.statusCode).toBe(200);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual({ id: testAdvertisement0.id });
+
+            const response1 = await request(usedHost).post('/delete').send({
+                id: testAdvertisement1.id,
+            });
+            expect(response1.statusCode).toBe(200);
+            expect(response1.body).toHaveProperty("data");
+            expect(response1.body.data).toEqual({ id: testAdvertisement1.id });
+        });
+
+        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+            const response0 = await request(usedHost).post('/delete');
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedHost).post('/delete').send({
+                id: undefined
+            });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+
+            const response2 = await request(usedHost).post('/delete').send({
+                id: null,
+            });
+            expect(response2.statusCode).toBe(400);
+            expect(response2.body).not.toHaveProperty("data");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
+
+            const response3 = await request(usedHost).post('/delete').send({
+                id: { id: testAdvertisement1.id },
+            });
+            expect(response3.statusCode).toBe(400);
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
+
+            const response4 = await request(usedHost).post('/delete').send({
+                id: "aBc",
+            });
+            expect(response4.statusCode).toBe(400);
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
+        });
+
+        test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+            const response0 = await request(usedHost).post('/delete').send({
+                id: testAdvertisement0.id,
+            });
+            expect(response0.statusCode).toBe(404);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 404);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedHost).post('/delete').send({
+                id: testAdvertisement1.id,
+            });
+            expect(response1.statusCode).toBe(404);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 404);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+        });
+    });
 });
