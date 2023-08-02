@@ -6,9 +6,7 @@
   "scripts": {
     "test": "echo \"Remember that the Microservices must be running\" & jest --detectOpenHandles",
     "format": "prettier --write .",
-    "start": "nodemon ./index",
-    "start-users": "nodemon microservices/users/index.js",
-    "start-notif": "nodemon microservices/notifications/index.js"
+    "start": "nodemon ./index"
   },
   "author": "restebance",
   "license": "ISC",
