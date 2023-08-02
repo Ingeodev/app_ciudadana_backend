@@ -29,7 +29,6 @@ exports.postAccountInfo = async (req, res, next) => {
     }
 
     // ! Evitar la inyeccion de codigo SQL
-    const dateNow = formatDate(new Date());
     const dataUser = {
       name,
       lastName,
@@ -39,7 +38,7 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: false,
-      createdAt: dateNow,
+      createdAt: formatDate(new Date()),
     };
 
     await db.User.create(dataUser);
@@ -106,7 +105,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       };      
     }
 
-    await userInDb.update(dataUser);
+    const resultUpdate = await userInDb.update(dataUser);
     
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -243,7 +242,7 @@ exports.postAccountUpdateUser = async (req, res, next) => {
       };
     }
 
-    await userInDb.update(dataUser);
+    const resultUpdate = await userInDb.update(dataUser);
 
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -390,11 +389,12 @@ exports.postUsersUpdateLoginPhaseFullLogin = async (req, res, next) => {
       };
     }
 
-    await userInDb.update(dataUser);
+    const result = await userInDb.update(dataUser);
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { clientId },
+      // data: { clientId },
+      data: result,
     });
   } catch (error) {
     console.error("user could not be updated: ", error.message);
