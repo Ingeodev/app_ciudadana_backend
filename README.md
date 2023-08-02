@@ -19,6 +19,8 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_POST_ save new advertisement](#post-save-new-advertisement)
         - [_GET_ list advertisements](#get-list-advertisements)
         - [_POST_ update advertisement](#post-update-advertisement)
+        - [_POST_ change advertisement status](#post-change-advertisement-status)
+        - [_POST_ delete advertisement](#post-delete-advertisement)
       - [Publicity](#publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
@@ -236,7 +238,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _POST_ update advertisement
-\(\<Your_Host\>/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement inthe database. It receives the following parameters:
+\(\<Your_Host\>/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -274,6 +276,70 @@ Response:
   >        "active": false,
   >        "createdAt": "2023-07-28T22:27:17.369Z",
   >        "updatedAt": "2023-08-01T21:59:16.102Z"
+  >    }
+  > }
+  > ```
+
+##### _POST_ change advertisement status
+\(\<Your_Host\>/web/v1/notifications/advertising/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
+| _active_ 	|    Boolean   	|      Yes      	| Whether the Advertisement is active or not (but not deleted). 	|
+
+It returns **200 _OK_** and the updated object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >    "id": 38,
+  >    "active": true
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >    "data": {
+  >        "id": 38,
+  >        "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+  >        "siteUri": "http://test.second.site.url",
+  >        "categoryId": null,
+  >        "active": true,
+  >        "createdAt": "2023-07-28T22:27:17.369Z",
+  >        "updatedAt": "2023-08-01T22:27:42.839Z"
+  >    }
+  > }
+  > ```
+
+##### _POST_ delete advertisement
+\(\<Your_Host\>/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
+
+It returns **200 _OK_** and the updated object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >    "id": 38,
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >    "data": {
+  >        "id": 38
   >    }
   > }
   > ```
