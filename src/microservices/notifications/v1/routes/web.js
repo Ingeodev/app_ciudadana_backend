@@ -36,10 +36,10 @@ router.post(
 );
 
 // ! Validar si es POST
-router.post(
-  "/attention_lines/find_all",
+router.get(
+  "/attention_lines",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postListAll
+  attentionLinesController.getListAll
 );
 
 router.get(

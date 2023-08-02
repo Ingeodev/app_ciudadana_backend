@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
 // * ------------------ Web - Attention Lines -----------------
-const attentionLPostRegisterchema = joi.object({
+const postRegisterchema = joi.object({
   name: joi.string().required().trim().empty("").invalid(" "),
   phone: joi.string().required().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
@@ -11,7 +11,7 @@ const attentionLPostRegisterchema = joi.object({
   url: joi.string().uri().required().trim().empty("").invalid(" "),
 });
 
-const attentionLPostUpdatechema = joi.object({
+const postUpdatechema = joi.object({
   id: joi.number().empty("").invalid(0),
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
@@ -21,21 +21,25 @@ const attentionLPostUpdatechema = joi.object({
   url: joi.string().uri().trim().empty("").invalid(" "),
 });
 
-const getAttentionLListAllSchema = joi.object({
-  page: joi.number().invalid(0),
-  pageSize: joi.number().invalid(0),
+const getListAllSchema = joi.object({
+  page: joi.number().allow(null).invalid(0),
+  pageSize: joi.number().allow(null).invalid(0),
 });
 
-const getAttentionLGetOneSchema = joi.object({
+const getGetOneSchema = joi.object({
   id: joi.number().required().empty("").invalid(0),
 });
 
-const postAttentionLUpdateActiveSchema = joi.object({
+const postUpdateActiveSchema = joi.object({
   id: joi.number().required().empty("").invalid(0),
   active: joi.boolean().required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------
+const mobileGetListAllSchema = joi.object({
+  page: joi.number().allow(null).invalid(0),
+  pageSize: joi.number().allow(null).invalid(0),
+});
 // * ------------------ END - Mobile - Attention Lines -----------------
 
 
@@ -59,25 +63,28 @@ const use_validator_on_data = async (validator_schema, data) => {
 
 module.exports = {
   // * ------------------ Web - Attention Lines -----------------
-  vAttLPostRegister: async (inputData) => {
-    return await use_validator_on_data(attentionLPostRegisterchema, inputData);
+  vWebPostRegister: async (inputData) => {
+    return await use_validator_on_data(postRegisterchema, inputData);
   },
-  vAttLPostUpdate: async (inputData) => {
-    return await use_validator_on_data(attentionLPostUpdatechema, inputData);
+  vWebPostUpdate: async (inputData) => {
+    return await use_validator_on_data(postUpdatechema, inputData);
   },
-  vAttLGetListAll: async (inputData) => {
-    return await use_validator_on_data(getAttentionLListAllSchema, inputData);
+  vWebGetListAll: async (inputData) => {
+    return await use_validator_on_data(getListAllSchema, inputData);
   },
-  vAttLGetOne: async (inputData) => {
-    return await use_validator_on_data(getAttentionLGetOneSchema, inputData);
+  vWebGetOne: async (inputData) => {
+    return await use_validator_on_data(getGetOneSchema, inputData);
   },
-  vAttLPostUpdateActive: async (inputData) => {
-    return await use_validator_on_data(
-      postAttentionLUpdateActiveSchema,
-      inputData
-    );
+  vWebPostUpdateActive: async (inputData) => {
+    return await use_validator_on_data(postUpdateActiveSchema, inputData);
   },
   // * ------------------ END - Web - Attention Lines -----------------
   // * ------------------ Mobile - Attention Lines -----------------
+  vMobileMGetListAll: async (inputData) => {
+    return await use_validator_on_data(mobileGetListAllSchema, inputData);
+  },
+  // vMobileMGetDependencies: async (inputData) => {
+  //   return await use_validator_on_data(mobileGetListAllSchema, inputData);
+  // },
   // * ------------------ END - Mobile - Attention Lines -----------------
 };
