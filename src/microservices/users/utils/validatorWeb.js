@@ -5,17 +5,17 @@ const joi = require('joi');
 // const integer_number = joi.number().integer();
 
 const postAccountInfoSchema = joi.object({
-  name: joi.string().trim().required().trim().empty("").invalid(" "),
-  lastName: joi.string().trim().required().trim().empty("").invalid(" "),
-  phone: joi.string().trim().required().trim().empty("").invalid(" "),
+  name: joi.string().trim().required().empty("").invalid(" "),
+  lastName: joi.string().trim().required().empty("").invalid(" "),
+  phone: joi.string().trim().required().empty("").invalid(" "),
   // ! HU-B1 Monday - Solo el email es requerido?. Requerido en la db o para la solicitud HTTP?
-  email: joi.string().trim().email().required().trim().empty("").invalid(" "),
+  email: joi.string().trim().email().required().empty("").invalid(" "),
 });
 
 const postAccountFullLoginSchema = joi.object({
-  documentType: joi.string().trim().required().trim().empty("").invalid(" "),
-  numberDocument: joi.string().trim().required().trim().empty("").invalid(" "),
-  residenceAddress: joi.string().trim().required().trim().empty("").invalid(" "),
+  documentType: joi.string().trim().required().empty("").invalid(" "),
+  numberDocument: joi.string().trim().required().empty("").invalid(" "),
+  residenceAddress: joi.string().trim().required().empty("").invalid(" "),
   serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
   serviceReceiptSiteUri: joi.string().uri().required().trim().empty("").invalid(" "),
 });

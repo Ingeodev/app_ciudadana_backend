@@ -303,6 +303,7 @@ exports.getUsersListAll = async (req, res, next) => {
     const usersInDb = await db.User.findAll({
         limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
+      // ! Verificar filtro ordenamiento
       order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
     });
 
