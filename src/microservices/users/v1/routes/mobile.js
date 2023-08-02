@@ -34,9 +34,4 @@ router.post(
   usersMobile.postAccountUpdateUser
 );
 
-// ! Retornar lista de endpoints?
-router.get("/", (req, res) => {
-  res.status(200).json("Mobile API - User Microservice");
-});
-
 module.exports = router;

@@ -62,7 +62,7 @@ module.exports = {
           allowNull: true,
           // ! allowNull: true?
         },
-        deteleAt: {
+        deleteAt: {
           type: "TIMESTAMP",
           allowNull: true,
           // ! allowNull: true?

@@ -45,10 +45,10 @@ router.post(
 );
 
 // ! Validar si es POST
-router.post(
-  "/attention_lines/find_all",
+router.get(
+  "/attention_lines",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postListAll
+  attentionLinesController.getListAll
 );
 
 router.get(
@@ -61,5 +61,10 @@ router.get(
 //#region Alerts end-points
 router.post('/alert', alertController.sendAlerts);
 //#endregion
+
+// ! Retornar lista de endpoints?
+router.get("/", (req, res) => {
+  res.status(200).json("Web API - Notificacions Microservice");
+});
 
 module.exports = router

@@ -10,31 +10,29 @@ const validator = require("../../utils/validatorAttentionLines.js");
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
-    const { name, phone, imageUri, imageSiteUri, whatsapp, url } =
-      await validator.vAttentionLPostRegister(req.body);
+    const { name, phone, imageUri, imageSiteUri, whatsapp, url } = await validator.vWebPostRegister(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
-    const dateNow = formatDate(new Date());
-    const dataQuery = { name, phone, imageUri, imageSiteUri, whatsapp, url };
-    const extraDataQuery = {
+    const dataQuery = {
+      name,
+      phone,
+      imageUri,
+      imageSiteUri,
+      whatsapp,
+      url,
       active: true,
-      createdAt: dateNow,
+      createdAt: formatDate(new Date()),
     };
-
-    await db.AttentionLine.create(
-      { ...dataQuery, ...extraDataQuery },
-      { transaction: transactionSequelize }
-    );
-    await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataQuery);
+    
+    // ! Como retornar el id??
+    await db.AttentionLine.create(dataQuery);
+    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
   } catch (error) {
     console.error(
       "attention line could not be created: ",
       error.message
     );
-    await transactionSequelize.rollback();
     return next(error);
   }
 };
@@ -45,23 +43,25 @@ exports.postRegister = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUpdate = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
   try {
     const { id, name, phone, imageUri, imageSiteUri, whatsapp, url } =
-      await validator.vAttentionLPostUpdate(req.body);
+      await validator.vWebPostUpdate(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
-    const dateNow = formatDate(new Date());
-    const dataQuery = { id, name, phone, imageUri, imageSiteUri, whatsapp, url };
-    const extraDataQuery = {
-      updatedAt: dateNow,
+    const dataQuery = {
+      id,
+      name,
+      phone,
+      imageUri,
+      imageSiteUri,
+      whatsapp,
+      url,
+      updatedAt: formatDate(new Date()),
     };
 
-    const resultUpdate = await db.AttentionLine.update(
-      { ...dataQuery, ...extraDataQuery },
-      { where: { id } },
-      { transaction: transactionSequelize }
-    );
+    const resultUpdate = await db.AttentionLine.update(dataQuery, {
+      where: { id },
+    });
     if (resultUpdate[0] === 0) {
       await transactionSequelize.rollback();
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -70,21 +70,12 @@ exports.postUpdate = async (req, res, next) => {
         detail: "invalid input",
       });
     }
-    await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json(dataQuery);
+    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
   } catch (error) {
     console.error(
       "attention line could not be updated: ",
       error.message
     );
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     if (
       error &&
       error.errors &&
@@ -97,29 +88,32 @@ exports.postUpdate = async (req, res, next) => {
   }
 };
 
+
 /**
  * Get all attention lines
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
-exports.postListAll = async (req, res, next) => {
+exports.getListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vAttentionLGetListAll({
-      page: parseInt(req.body.page) || 1,
-      pageSize: parseInt(req.body.pageSize) || 10,
+    const { page, pageSize } = await validator.vWebGetListAll({
+      // ! Obligatorio paginacion para Front
+      page: parseInt(req.query.page) || null,
+      pageSize: parseInt(req.query.pageSize) || null,
     });
 
+    // Case pagination
     const attentionLInDb = await db.AttentionLine.findAndCountAll({
       limit: pageSize,
       offset: (page - 1) * pageSize,
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+      // ! Validar ordenamiento
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
     if (attentionLInDb.count === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({
+      throw {
         status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "attention lines could not be recovered",
-      });
+        message: "attention lines could not be recovered",
+      };
     }
 
     const responseCustom = {
@@ -127,7 +121,6 @@ exports.postListAll = async (req, res, next) => {
         page,
         pageSize,
         totalRecords: attentionLInDb.count,
-        // ! Validar si lo hace el front o back
         totalPages: Math.ceil(attentionLInDb.count / pageSize),
       },
       data: attentionLInDb.rows,
@@ -146,6 +139,7 @@ exports.postListAll = async (req, res, next) => {
     return next(error);
   }
 };
+
 /**
  * Get attention line by id
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
@@ -153,7 +147,7 @@ exports.postListAll = async (req, res, next) => {
 exports.getAttentionLine = async (req, res, next) => {
   try {
     
-    const { id } = await validator.vAttentionLGetOne({
+    const { id } = await validator.vWebGetOne({
       id: parseInt(req.params.id),
     });
 
@@ -169,7 +163,9 @@ exports.getAttentionLine = async (req, res, next) => {
       });
     }
 
-    return res.status(StatusCodes.OK).send(attentionLInDb);
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: attentionLInDb });
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
     return next(error);
@@ -184,7 +180,7 @@ exports.postUpdateActive = async (req, res, next) => {
   const transactionSequelize = await db.sequelize.transaction();
 
   try {
-    const { id, active } = await validator.vPostAttentionLUpdateActive(req.body);
+    const { id, active } = await validator.vWebPostUpdateActive(req.body);
     const dataQuery = {}
     if (active === false) {
       dataQuery = {
@@ -211,7 +207,9 @@ exports.postUpdateActive = async (req, res, next) => {
       });
     }
     await transactionSequelize.commit();
-    return res.status(StatusCodes.OK).json({ id, active });
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: { id, active } });
   } catch (error) {
     console.error("attention line could not be updated: ", error.message);
     await transactionSequelize.rollback();

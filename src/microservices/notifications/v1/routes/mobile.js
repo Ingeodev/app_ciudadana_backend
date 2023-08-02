@@ -35,5 +35,9 @@ router.post(
 );
 //#endregion
 
+// ! Retornar lista de endpoints?
+router.get("/", (req, res) => {
+  res.status(200).json("Mobile API - Notifications Microservice");
+});
 
 module.exports = router
