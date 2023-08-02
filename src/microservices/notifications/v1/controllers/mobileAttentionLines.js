@@ -10,59 +10,32 @@ const validator = require("../../utils/validatorAttentionLines.js");
  */
 exports.getListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vMobileMGetListAll({
-      page: parseInt(req.query.page) || null,
-      pageSize: parseInt(req.query.pageSize) || null,
-    });   
+    // TODO: Pagination
+    // const objPage = await validator.vMobileMGetListAll({
+    //   number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
+    //   size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
+    // });
 
-    if (page === null && pageSize === null) {
-      // Case NO pagination
-      const attentionLInDb = await db.AttentionLine.findAll({
-        // ! Validar ordenamiento
-        order: [["createdAt", "DESC"]],
-      });
+    const attentionLInDb = await db.AttentionLine.findAll({
+      where: { active: true },
+      attributes: ["name", "phone", "whatsapp"],
+      // Ordered from A-Z
+      order: [["name", "ASC"]],
+    });
 
-      if (
-        !Array.isArray(attentionLInDb) ||
-        !attentionLInDb.length ||
-        attentionLInDb === null
-      ) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          status: StatusCodes.NOT_FOUND,
-          code: "Not found",
-          detail: "attention lines could not be recovered",
-        });
-      }
-      return res.status(StatusCodes.OK).send(attentionLInDb);
-    } else {
-      // Case pagination
-      const attentionLInDb = await db.AttentionLine.findAndCountAll({
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-        // ! Validar ordenamiento
-        order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
-      });
-
-      if (attentionLInDb.count === 0) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          status: StatusCodes.NOT_FOUND,
-          code: "Not found",
-          detail: "attention lines could not be recovered",
-        });
-      }
-
-      return res.status(StatusCodes.OK).send(attentionLInDb.rows);
+    if (
+      !Array.isArray(attentionLInDb) ||
+      !attentionLInDb.length ||
+      attentionLInDb === null
+    ) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "attention lines could not be recovered",
+      };
     }
-
+    return res.status(StatusCodes.OK).send(attentionLInDb);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
@@ -74,41 +47,32 @@ exports.getListAll = async (req, res, next) => {
  */
 exports.getDependencies = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vMobileMGetDependencies({
-      page: parseInt(req.query.page) || null,
-      pageSize: parseInt(req.query.pageSize) || null,
-    });
-
-    // const attentionLInDb = await db.AttentionLine.findAll({
-    //   limit: pageSize,
-    //   offset: (page - 1) * pageSize,
-    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+    // TODO: Pagination
+    // const objPage = await validator.vMobileMGetDependencies({
+    //   number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
+    //   size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
     // });
 
-    const attentionLInDb = await db.AttentionLine.findAndCountAll({
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    const dependenciesInDb = await db.Dependency.findAll({
+      where: { active: false },
+      attributes: ["id", "name"],
+      // Ordered from A-Z
+      order: [["name", "ASC"]],
     });
 
-    if (attentionLInDb.count === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({
+    if (
+      !Array.isArray(dependenciesInDb) ||
+      !dependenciesInDb.length ||
+      dependenciesInDb === null
+    ) {
+      throw {
         status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "attention lines could not be recovered",
-      });
+        message: "Dependencies could not be recovered",
+      };
     }
-
-    return res.status(StatusCodes.OK).send(attentionLInDb.rows);
+    return res.status(StatusCodes.OK).send(dependenciesInDb);
   } catch (error) {
-    console.error("attention lines could not be recovered: ", error.message);
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
+    console.error("Dependencies could not be recovered: ", error.message);
     return next(error);
   }
 };

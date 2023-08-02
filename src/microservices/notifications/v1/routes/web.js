@@ -27,19 +27,19 @@ router.post('/advertising/delete', advertisingController.postAdvertisementDelete
 
 //#region Attention Lines end-points
 router.post(
-  "/attention_lines/register",
+  "/attention_lines/",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postRegister
 );
 
 router.post(
-  "/attention_lines/update",
+  "/attention_lines/edit",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postUpdate
 );
 
 router.post(
-  "/attention_lines/update_active",
+  "/attention_lines/status",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postUpdateActive
 );
@@ -52,7 +52,7 @@ router.get(
 );
 
 router.get(
-  "/attention_lines/find_one/:id",
+  "/attention_lines/:id",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.getAttentionLine
 );

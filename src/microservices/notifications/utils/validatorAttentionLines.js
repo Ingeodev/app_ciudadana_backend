@@ -22,23 +22,28 @@ const postUpdatechema = joi.object({
 });
 
 const getListAllSchema = joi.object({
-  page: joi.number().allow(null).invalid(0),
-  pageSize: joi.number().allow(null).invalid(0),
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
 });
 
 const getGetOneSchema = joi.object({
-  id: joi.number().required().empty("").invalid(0),
+  id: joi.number().required().empty("").greater(0).invalid(0),
 });
 
 const postUpdateActiveSchema = joi.object({
-  id: joi.number().required().empty("").invalid(0),
+  id: joi.number().required().empty("").greater(0).invalid(0),
   active: joi.boolean().required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------
-const mobileGetListAllSchema = joi.object({
-  page: joi.number().allow(null).invalid(0),
-  pageSize: joi.number().allow(null).invalid(0),
+const mGetListAllSchema = joi.object({
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
+});
+
+const mGetDependenciesSchema = joi.object({
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
 });
 // * ------------------ END - Mobile - Attention Lines -----------------
 
@@ -81,10 +86,10 @@ module.exports = {
   // * ------------------ END - Web - Attention Lines -----------------
   // * ------------------ Mobile - Attention Lines -----------------
   vMobileMGetListAll: async (inputData) => {
-    return await use_validator_on_data(mobileGetListAllSchema, inputData);
+    return await use_validator_on_data(mGetListAllSchema, inputData);
   },
-  // vMobileMGetDependencies: async (inputData) => {
-  //   return await use_validator_on_data(mobileGetListAllSchema, inputData);
-  // },
+  vMobileMGetDependencies: async (inputData) => {
+    return await use_validator_on_data(mGetDependenciesSchema, inputData);
+  },
   // * ------------------ END - Mobile - Attention Lines -----------------
 };
