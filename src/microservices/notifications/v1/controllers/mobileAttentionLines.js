@@ -10,67 +10,64 @@ const validator = require("../../utils/validatorAttentionLines.js");
  */
 exports.getListAll = async (req, res, next) => {
   try {
-    // TODO: Pagination
-    // const objPage = await validator.vMobileMGetListAll({
-    //   number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
-    //   size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
-    // });
+    const objPage = await validator.vMobileMGetListAll({
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 100,
+    });
 
-    const attentionLInDb = await db.AttentionLine.findAll({
+    const attentionLInDb = await db.AttentionLine.findAndCountAll({
       where: { active: true },
       attributes: ["name", "phone", "whatsapp"],
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
       // Ordered from A-Z
       order: [["name", "ASC"]],
     });
 
-    if (
-      !Array.isArray(attentionLInDb) ||
-      !attentionLInDb.length ||
-      attentionLInDb === null
-    ) {
+    if (attentionLInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "attention lines could not be recovered",
       };
     }
-    return res.status(StatusCodes.OK).send(attentionLInDb);
+    // const totalPages = Math.ceil(attentionLInDb.count / objPage.size);
+
+    return res.status(StatusCodes.OK).send(attentionLInDb.rows);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
     return next(error);
   }
 };
 
-
 /**
- * Get all attention lines
+ * Get all the dependencies to submit a pqrsdf
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getDependencies = async (req, res, next) => {
   try {
-    // TODO: Pagination
-    // const objPage = await validator.vMobileMGetDependencies({
-    //   number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
-    //   size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
-    // });
+    const objPage = await validator.vMobileMGetDependencies({
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 100,
+    });
 
-    const dependenciesInDb = await db.Dependency.findAll({
-      where: { active: false },
+    const dependenciesInDb = await db.Dependency.findAndCountAll({
+      where: { active: true },
       attributes: ["id", "name"],
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
       // Ordered from A-Z
       order: [["name", "ASC"]],
     });
 
-    if (
-      !Array.isArray(dependenciesInDb) ||
-      !dependenciesInDb.length ||
-      dependenciesInDb === null
-    ) {
+    if (dependenciesInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "Dependencies could not be recovered",
       };
     }
-    return res.status(StatusCodes.OK).send(dependenciesInDb);
+    // const totalPages = Math.ceil(dependenciesInDb.count / objPage.size);
+
+    return res.status(StatusCodes.OK).send(dependenciesInDb.rows);
   } catch (error) {
     console.error("Dependencies could not be recovered: ", error.message);
     return next(error);
@@ -78,7 +75,7 @@ exports.getDependencies = async (req, res, next) => {
 };
 
 /**
- * Get all attention lines
+ * Register a pqrsdf
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.postPqrsdf = async (req, res, next) => {

@@ -44,7 +44,6 @@ router.post(
   attentionLinesController.postUpdateActive
 );
 
-// ! Validar si es POST
 router.get(
   "/attention_lines",
   // hasPermissions({ role: "super_master_user" }),

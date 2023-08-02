@@ -281,8 +281,6 @@ exports.getUsersListAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    console.log("usersInDb: ", usersInDb);
-
     if (usersInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
