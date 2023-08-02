@@ -21,7 +21,7 @@ const editAdvertisementSchema = joi.object({
   id: non_negative_integer.required(),
   imageUri: uri_string,
   siteUri: uri_string,
-  categoryId: integer_number,
+  categoryId: integer_number.allow(null),
   active: joi.bool(),
 }).or('imageUri', 'siteUri', 'categoryId', 'active');
 
