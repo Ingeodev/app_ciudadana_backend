@@ -52,10 +52,10 @@ describe("Advertisement management API points: ", () => {
                 siteUri: 'not.an.URI.str'
             });
             expect(response1.statusCode).toBe(400);
-            expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
 
             const response2 = await request(usedHost).post('/').send({
                 ...testAdvertisement0,
@@ -63,49 +63,49 @@ describe("Advertisement management API points: ", () => {
             });
             expect(response2.statusCode).toBe(400);
             expect(response2.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
 
             const response3 = await request(usedHost).post('/').send({
                 ...testAdvertisement0,
                 siteUri: { url: 'http://test.site.url' }
             });
             expect(response3.statusCode).toBe(400);
-            expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
 
             const response4 = await request(usedHost).post('/').send({
                 ...testAdvertisement1,
                 categoryId: "not a number"
             });
             expect(response4.statusCode).toBe(400);
-            expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
 
             const response5 = await request(usedHost).post('/').send({
                 ...testAdvertisement1,
                 categoryId: 1.5
             });
             expect(response5.statusCode).toBe(400);
-            expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response5.body).not.toHaveProperty("data");
+            expect(response5.body).toHaveProperty("status", 400);
+            expect(response5.body).toHaveProperty("code");
+            expect(response5.body).toHaveProperty("detail");
 
             const response6 = await request(usedHost).post('/').send({
                 ...testAdvertisement1,
                 categoryId: { number: 127 }
             });
             expect(response6.statusCode).toBe(400);
-            expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 400);
-            expect(response0.body).toHaveProperty("code");
-            expect(response0.body).toHaveProperty("detail");
+            expect(response6.body).not.toHaveProperty("data");
+            expect(response6.body).toHaveProperty("status", 400);
+            expect(response6.body).toHaveProperty("code");
+            expect(response6.body).toHaveProperty("detail");
         });
 
         test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
@@ -118,6 +118,90 @@ describe("Advertisement management API points: ", () => {
             expect(response0.body).toHaveProperty("status", 500);
             expect(response0.body).toHaveProperty("code");
             expect(response0.body).toHaveProperty("detail");
+        });
+    });
+
+    describe("GET /notifications/advertising/ ", () => {
+        test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
+            const response0 = await request(usedHost).get('/').query({ page: { number: 1, size: 2 } });
+            expect(response0.statusCode).toBe(200);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual(expect.any(Array));
+            expect(response0.body.data.length).toBe(2);
+            expect(response0.body.data[0]).toEqual(expect.objectContaining(testAdvertisement1));
+            expect(response0.body.data[1]).toEqual(expect.objectContaining(testAdvertisement0));
+        });
+
+        test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
+            const response0 = await request(usedHost).get('/');
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedHost).get('/').query({
+                page: {}
+            });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+
+            const response2 = await request(usedHost).get('/').query({
+                page: { number: 1 }
+            });
+            expect(response2.statusCode).toBe(400);
+            expect(response2.body).not.toHaveProperty("data");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
+
+            const response3 = await request(usedHost).get('/').query({
+                page: { size: 1 }
+            });
+            expect(response3.statusCode).toBe(400);
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
+
+            const response4 = await request(usedHost).get('/').query({
+                page: { number: 0, size: 1 }
+            });
+            expect(response4.statusCode).toBe(400);
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
+
+            const response5 = await request(usedHost).get('/').query({
+                page: { number: 1, size: 0 }
+            });
+            expect(response5.statusCode).toBe(400);
+            expect(response5.body).not.toHaveProperty("data");
+            expect(response5.body).toHaveProperty("status", 400);
+            expect(response5.body).toHaveProperty("code");
+            expect(response5.body).toHaveProperty("detail");
+
+            const response6 = await request(usedHost).get('/').query({
+                page: { number: "A", size: 2 }
+            });
+            expect(response6.statusCode).toBe(400);
+            expect(response6.body).not.toHaveProperty("data");
+            expect(response6.body).toHaveProperty("status", 400);
+            expect(response6.body).toHaveProperty("code");
+            expect(response6.body).toHaveProperty("detail");
+
+            const response7 = await request(usedHost).get('/').query({
+                page: { number: 2, size: "B" }
+            });
+            expect(response7.statusCode).toBe(400);
+            expect(response7.body).not.toHaveProperty("data");
+            expect(response7.body).toHaveProperty("status", 400);
+            expect(response7.body).toHaveProperty("code");
+            expect(response7.body).toHaveProperty("detail");
         });
     });
 });
