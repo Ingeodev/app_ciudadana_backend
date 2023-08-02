@@ -99,82 +99,61 @@ exports.postUpdate = async (req, res, next) => {
 exports.getListAll = async (req, res, next) => {
   try {
     const objPage = await validator.vWebGetListAll({
-      number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
-      size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 10,
     });
 
-    // Case pagination
-    // const attentionLInDb = await db.AttentionLine.findAndCountAll({
-    //   limit: pageSize,
-    //   offset: (page - 1) * pageSize,
-    //   // ! Validar ordenamiento
-    //   order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
-    // });
-
-    // if (attentionLInDb.count === 0) {
+    // // ! Filtrar los usuarios activos solamente?
+    // const totalRecords = await db.AttentionLine.count();
+    // if (totalRecords === 0) {
     //   throw {
     //     status: StatusCodes.NOT_FOUND,
     //     message: "attention lines could not be recovered",
     //   };
     // }
 
-    // const responseCustom = {
-    //   meta: {
-    //     page,
-    //     pageSize,
-    //     totalRecords: attentionLInDb.count,
-    //     totalPages: Math.ceil(attentionLInDb.count / pageSize),
-    //   },
-    //   data: attentionLInDb.rows,
-    // };
+    // const totalPages = Math.ceil(totalRecords / objPage.size);
+    // if (objPage.number > totalPages) {
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "The requested page does not exist",
+    //   };
+    // }
 
-    // return res.status(StatusCodes.OK).send(responseCustom);
-    // -----------------------------------------------
+    // const attLinesInDb = await db.AttentionLine.findAll({
+    //   limit: objPage.size,
+    //   offset: (objPage.number - 1) * objPage.size,
+    //   // ! Verificar filtro ordenamiento
+    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+    // });
 
-    // ! Filtrar los usuarios activos solamente?
-    const totalRecords = await db.AttentionLine.count();
-    if (totalRecords === 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "attention lines could not be recovered",
-      };
-    }
+    const attLinesInDb = await db.AttentionLine.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
 
-    const totalPages = Math.ceil(totalRecords / objPage.size);
-    if (objPage.number > totalPages) {
+    if (attLinesInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "The requested page does not exist",
       };
     }
-
-    const attLinesInDb = await db.AttentionLine.findAll({
-      limit: objPage.size,
-      offset: (objPage.number - 1) * objPage.size,
-      // ! Verificar filtro ordenamiento
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    });
+    const totalPages = Math.ceil(attLinesInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords,
-        totalPages,
+        totalRecords: attLinesInDb.count,
+        totalPages: totalPages,
       },
-      data: attLinesInDb,
+      data: attLinesInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
@@ -235,7 +214,7 @@ exports.postUpdateActive = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await attLInDb.update(dataQuery);
+    await attLInDb.update(dataQuery);
 
     // return res.status(StatusCodes.OK).json({
     //   meta: null,
