@@ -307,7 +307,7 @@ exports.getUsersListAll = async (req, res, next) => {
 };
 
 /**
- * Update the status of the users.disabled field (enabled/disabled) for a user
+ * Update the status of the users.disabled field (to false) for a user
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersUpdateDisabled = async (req, res, next) => {
