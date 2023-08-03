@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const authorization = require("../../../../middleware/authMiddleware.js");
 
 const publicityController = require('../controllers/mobilePublicity.js');
 const attentionLinesController = require('../controllers/mobileAttentionLines.js');
 
-// TODO: require MOBILE authentication for every point
+// TODO: require MOBILE authentication for every point(CHECK hasPermissions)
+router.use(authorization.authMiddleware);
 
 //#region Publicity end-points
 // Retrieve the advertisements that have no category attached.

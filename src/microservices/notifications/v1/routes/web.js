@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const authorization = require("../../../../middleware/authMiddleware.js");
 
 const advertisingController = require('../controllers/webAdvertisement');
 const attentionLinesController = require('../controllers/webAttentionLines');
 const alertController = require('../controllers/webAlert');
 
-// TODO: require WEB authentication for every point
+// TODO: require WEB authentication for every point (CHECK hasPermissions)
+router.use(authorization.authMiddleware);
 
 //#region Advertisements end-points
 // Retrieve all the advertisements whether they have a category or not.
