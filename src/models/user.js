@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasOne(models.Advertisement, {
+      User.hasOne(models.Alert, {
         foreignKey: {
           name: "sentBy",
           allowNull: false,
