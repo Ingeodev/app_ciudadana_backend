@@ -2,20 +2,26 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 
 
 const errorHandler = (error, req, res, next) => {
-  if (!error.status) {
-    error.status = StatusCodes.INTERNAL_SERVER_ERROR;
-  }
-  let errorCode;
-  try{
-    errorCode = getReasonPhrase(error.status);
-  } catch (err) {
-    errorCode = `Undefined error code: ${error.status}`;
-  }
-  return res.status(error.status).json({
+  const returnError = {
     status: error.status,
-    code: errorCode,
     detail: error.message,
-  });
+  };
+  if (!error.status) {
+    console.error(error);
+    returnError.status = StatusCodes.INTERNAL_SERVER_ERROR;
+    const splitDetail = error.message.split('"')
+      .filter((_, index) => {
+        if (index % 2 != 0) return false;
+        return true;
+      });
+    returnError.detail = splitDetail.join('').replace("  ", " ").trim();
+  }
+  try {
+    returnError.code = getReasonPhrase(returnError.status);
+  } catch (err) {
+    returnError.code = `Undefined error code: ${returnError.status}`;
+  }
+  return res.status(returnError.status).json(returnError);
 };
 
 module.exports = errorHandler;
