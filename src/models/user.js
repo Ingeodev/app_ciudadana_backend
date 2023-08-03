@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: false,
       },
-      serviceReceiptSiteUri: {
+      siteUri: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,

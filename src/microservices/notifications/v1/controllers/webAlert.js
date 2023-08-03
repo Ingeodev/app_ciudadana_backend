@@ -28,7 +28,7 @@ const getUsersInBatches = async (
         "numberDocument",
         "residenceAddress",
         "serviceReceiptUri",
-        "serviceReceiptSiteUri",
+        "siteUri",
         "loginPhase",
         "disabled",
         "userMobile",

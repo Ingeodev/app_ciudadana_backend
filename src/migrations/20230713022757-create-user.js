@@ -55,7 +55,7 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        serviceReceiptSiteUri: {
+        siteUri: {
           type: Sequelize.STRING,
           allowNull: true,
           unique: false,
