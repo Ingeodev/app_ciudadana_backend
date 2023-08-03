@@ -135,6 +135,49 @@ const sendAlerts = async (req, res, next) => {
   }
 };
 
+/**
+ * Get all alerts
+ * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
+ */
+const getlistAll = async (req, res, next) => {
+  try {
+    const objPage = await validator.vGetAlertsListAll({
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 10,
+    });
+
+    const alertsInDb = await db.Alert.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
+
+    if (alertsInDb.count === 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "The requested page does not exist",
+      };
+    }
+    const totalPages = Math.ceil(alertsInDb.count / objPage.size);
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: alertsInDb.count,
+        totalPages: totalPages,
+      },
+      data: alertsInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    console.error("alerts could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
 module.exports = {
   sendAlerts,
+  getlistAll,
 };

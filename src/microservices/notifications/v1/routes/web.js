@@ -59,6 +59,12 @@ router.get(
 
 //#region Alerts end-points
 router.post('/alert', alertController.sendAlerts);
+
+router.get(
+  "/alerts",
+  // hasPermissions({ role: "super_master_user" }),
+  alertController.getlistAll
+);
 //#endregion
 
 // ! Retornar lista de endpoints?

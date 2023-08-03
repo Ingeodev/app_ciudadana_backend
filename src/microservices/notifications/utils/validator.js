@@ -45,6 +45,11 @@ const simplePaginationSchema = joi.object({
   page: page_object.required(),
 });
 
+const getAlertsListAllSchema = joi.object({
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -81,5 +86,8 @@ module.exports = {
   },
   validateSimplePaginationSchema: async (inputData) => {
     return await use_validator_on_data(simplePaginationSchema, inputData);
+  },
+  vGetAlertsListAll: async (inputData) => {
+    return await use_validator_on_data(getAlertsListAllSchema, inputData);
   },
 };
