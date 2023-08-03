@@ -62,7 +62,7 @@ router.get(
 router.post('/alert', alertController.sendAlerts);
 
 router.get(
-  "/alerts",
+  "/alert",
   // hasPermissions({ role: "super_master_user" }),
   alertController.getlistAll
 );
