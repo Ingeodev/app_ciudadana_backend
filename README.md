@@ -41,7 +41,7 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 3. [Express](https://expressjs.com/)
 
 **Postman**: [Documentation Link](http://postmanTest.com "Documentation Link")
-
+------------
 ## 2. Architecture
 
 ### 2.1. Response Format
@@ -60,6 +60,7 @@ When an error occurs during the processing of any HTTP request, our API responds
     detail: string
 }
 ```
+------------
 ## 3. Run local
 
 To run locally this project use
@@ -86,9 +87,9 @@ Run the generated image in your environment
     docker push <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
 
 ```
-
+------------
 ## 4. Microservices
-
+------------
 ### 4.1. Users Microservice
 
 #### App Runner
@@ -127,7 +128,7 @@ Run the generated image in your environment
 |  /account/edit | POST  |  postAccountUpdateUser | Update user data - when loginPhase="fullLogin"  |
 
 
-
+------------
 ### 4.2. Notifications Microservice
 
 This microservice handles the [**Advertising**](#advertising), [**Publicity**](#publicity), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
@@ -135,7 +136,7 @@ This microservice handles the [**Advertising**](#advertising), [**Publicity**](#
 #### App Runner
      https://k7gmmdc9dj.us-east-1.awsapprunner.com
 
-
+------------
 #### 4.2.1. Advertising 
 
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
@@ -388,7 +389,7 @@ Response:
   >    }
   > }
   > ```
-
+------------
 #### 4.2.2 Publicity 
 
 The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
@@ -423,7 +424,7 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 > ]
 > ```
 
-
+------------
 #### 4.2.3. Attention Lines 
 #### List of endpoints
 ##### Mobile App
@@ -447,9 +448,9 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 | /attention_lines/edit  | POST  | postUpdate  | Update an attention line  |
 | /attention_lines/status  | POST  | postUpdateActive | Activate or deactivate an attention line |
 | /attention_lines/:id | GET | getAttentionLine | Get an attention line by id |
-
+------------
 #### 4.2.4. Service Lines 
-
+------------
 #### 4.2.5. Alert 
 #### List of endpoints
 ##### Web App
@@ -462,10 +463,11 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 | /alert | GET | getlistAll | Get all alerts |
 | /alert | POST | sendAlerts | Send alerts to users |
 
+------------
 ### 4.3. Third-Party Microservice
 
 This microservice handles third-party APIs.
-
+------------
 ## 5. Contributors
 
 ---
@@ -474,7 +476,7 @@ This microservice handles third-party APIs.
 - [daniel]()
 - [andres]()
 - [Julián](https://github.com/bitjep)
-
+------------
 ## 6. License
 
 TBD
