@@ -347,7 +347,7 @@ exports.postUsersUpdateDisabled = async (req, res, next) => {
  * Update the users.loginPhase="inVerification" to "fullLogin"
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUsersUpdateLoginPhaseFullLogin = async (req, res, next) => {
+exports.postUsersFullLogin = async (req, res, next) => {
   try {
     const { clientId } = await validator.vPostUsersUpdateLoginPhaseFullLogin(req.body);
     const dataUser = {
