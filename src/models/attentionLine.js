@@ -35,12 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      imageSiteUri: {
+      siteUri: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
-      whatsapp: {
+      address: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,

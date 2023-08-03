@@ -58,7 +58,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="baseLogin"
- * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, serviceReceiptSiteUri
+ * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountFullLogin = async (req, res, next) => {
@@ -78,7 +78,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
-      serviceReceiptSiteUri,
+      siteUri,
     } = await validator.vPostAccountFullLogin(req.body);
 
     const dataUser = {
@@ -86,7 +86,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
-      serviceReceiptSiteUri,
+      siteUri,
       loginPhase: "inVerification",
       updatedAt: formatDate(new Date()),
     };
@@ -203,7 +203,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
 };
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="fullLogin"
- * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, serviceReceiptSiteUri
+ * @param {object} req - Object containing: documentType, numberDocument, residenceAddress, serviceReceiptUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountUpdateUser = async (req, res, next) => {
@@ -271,52 +271,32 @@ exports.postAccountUpdateUser = async (req, res, next) => {
 exports.getUsersListAll = async (req, res, next) => {
   try {
     const objPage = await validator.vGetUsersListAll({
-      number: req.query.page ? parseInt(req.query.page.number) || 1 : 1,
-      size: req.query.page ? parseInt(req.query.page.size) || 10 : 10,
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 10,
     });
 
-    // ! Filtrar los usuarios activos solamente?
-    const totalRecords = await db.User.count();
-    // if (usersInDb.count === 0) {
-    if (totalRecords === 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "users could not be recovered",
-      };
-    }
+    const usersInDb = await db.User.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
 
-    const totalPages = Math.ceil(totalRecords / objPage.size);
-    if (objPage.number > totalPages) {
+    if (usersInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "The requested page does not exist",
       };
     }
-
-    // const usersInDb = await db.User.findAndCountAll({
-    //   limit: objPage.size,
-    //   offset: (objPage.number - 1) * objPage.size,
-    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    // });
-
-    // const usersInDb = await db.User.findAndCountAll({
-    const usersInDb = await db.User.findAll({
-        limit: objPage.size,
-      offset: (objPage.number - 1) * objPage.size,
-      order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    });
+    const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords,
-        // totalRecords: usersInDb.count,
-        totalPages,
-        // totalPages: Math.ceil(usersInDb.count / objPage.size),
+        totalRecords: usersInDb.count,
+        totalPages: totalPages,
       },
-      data: usersInDb,
-      // data: usersInDb.rows,
+      data: usersInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
@@ -327,7 +307,7 @@ exports.getUsersListAll = async (req, res, next) => {
 };
 
 /**
- * Update the status of the users.disabled field (enabled/disabled) for a user
+ * Update the status of the users.disabled field (to false) for a user
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersUpdateDisabled = async (req, res, next) => {

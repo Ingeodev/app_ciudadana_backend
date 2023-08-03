@@ -6,20 +6,20 @@ const validator = require("../../utils/validatorAttentionLines.js");
 
 /**
  * Create attention line
- * @param {object} req - Object containing the name, phone, imageUri, imageSiteUri, whatsapp, url
+ * @param {object} req - Object containing the name, phone, imageUri, siteUri, address, url
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, phone, imageUri, imageSiteUri, whatsapp, url } = await validator.vWebPostRegister(req.body);
+    const { name, phone, imageUri, siteUri, address, url } = await validator.vWebPostRegister(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
     const dataQuery = {
       name,
       phone,
       imageUri,
-      imageSiteUri,
-      whatsapp,
+      siteUri,
+      address,
       url,
       active: true,
       createdAt: formatDate(new Date()),
@@ -39,12 +39,12 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update attention line
- * @param {object} req - Object containing the id, name, phone, imageUri, imageSiteUri, whatsapp, url
+ * @param {object} req - Object containing the id, name, phone, imageUri, siteUri, address, url
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUpdate = async (req, res, next) => {
   try {
-    const { id, name, phone, imageUri, imageSiteUri, whatsapp, url } =
+    const { id, name, phone, imageUri, siteUri, address, url } =
       await validator.vWebPostUpdate(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
@@ -53,24 +53,27 @@ exports.postUpdate = async (req, res, next) => {
       name,
       phone,
       imageUri,
-      imageSiteUri,
-      whatsapp,
+      siteUri,
+      address,
       url,
       updatedAt: formatDate(new Date()),
     };
 
-    const resultUpdate = await db.AttentionLine.update(dataQuery, {
-      where: { id },
-    });
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "invalid input",
-      });
+    const attLInDb = await db.AttentionLine.findByPk(id);
+
+    if (attLInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The attention line with id=${id} does not exist`,
+      };
     }
-    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
+
+    const resultUpdate = await attLInDb.update(dataQuery);
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
   } catch (error) {
     console.error(
       "attention line could not be updated: ",
@@ -95,47 +98,62 @@ exports.postUpdate = async (req, res, next) => {
  */
 exports.getListAll = async (req, res, next) => {
   try {
-    const { page, pageSize } = await validator.vWebGetListAll({
-      // ! Obligatorio paginacion para Front
-      page: parseInt(req.query.page) || null,
-      pageSize: parseInt(req.query.pageSize) || null,
+    const objPage = await validator.vWebGetListAll({
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 10,
     });
 
-    // Case pagination
-    const attentionLInDb = await db.AttentionLine.findAndCountAll({
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-      // ! Validar ordenamiento
+    // // ! Filtrar los usuarios activos solamente?
+    // const totalRecords = await db.AttentionLine.count();
+    // if (totalRecords === 0) {
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "attention lines could not be recovered",
+    //   };
+    // }
+
+    // const totalPages = Math.ceil(totalRecords / objPage.size);
+    // if (objPage.number > totalPages) {
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "The requested page does not exist",
+    //   };
+    // }
+
+    // const attLinesInDb = await db.AttentionLine.findAll({
+    //   limit: objPage.size,
+    //   offset: (objPage.number - 1) * objPage.size,
+    //   // ! Verificar filtro ordenamiento
+    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
+    // });
+
+    const attLinesInDb = await db.AttentionLine.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (attentionLInDb.count === 0) {
+    if (attLinesInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "attention lines could not be recovered",
+        message: "The requested page does not exist",
       };
     }
+    const totalPages = Math.ceil(attLinesInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
-        page,
-        pageSize,
-        totalRecords: attentionLInDb.count,
-        totalPages: Math.ceil(attentionLInDb.count / pageSize),
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: attLinesInDb.count,
+        totalPages: totalPages,
       },
-      data: attentionLInDb.rows,
+      data: attLinesInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     console.error("attention lines could not be recovered: ", error.message);
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };
@@ -146,21 +164,17 @@ exports.getListAll = async (req, res, next) => {
  */
 exports.getAttentionLine = async (req, res, next) => {
   try {
-    
     const { id } = await validator.vWebGetOne({
       id: parseInt(req.params.id),
     });
 
-    const attentionLInDb = await db.AttentionLine.findOne({
-      where: { id }
-    });
+    const attentionLInDb = await db.AttentionLine.findByPk(id);
 
     if (attentionLInDb === null) {
-      return res.status(StatusCodes.NOT_FOUND).json({
+      throw {
         status: StatusCodes.NOT_FOUND,
-        code: "Not found",
-        detail: "attention line information could not be retrieved",
-      });
+        message: "attention line information could not be retrieved",
+      };
     }
 
     return res
@@ -177,11 +191,9 @@ exports.getAttentionLine = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUpdateActive = async (req, res, next) => {
-  const transactionSequelize = await db.sequelize.transaction();
-
   try {
     const { id, active } = await validator.vWebPostUpdateActive(req.body);
-    const dataQuery = {}
+    let dataQuery = {}
     if (active === false) {
       dataQuery = {
         active,
@@ -189,37 +201,30 @@ exports.postUpdateActive = async (req, res, next) => {
       };
     }
     dataQuery = {
-      active
+      active,
+      updatedAt: formatDate(new Date()),
     };
+    
+    const attLInDb = await db.AttentionLine.findByPk(id);
 
-    const resultUpdate = await db.AttentionLine.update(
-      dataQuery,
-      { where: { id } },
-      { transaction: transactionSequelize }
-    );
-
-    if (resultUpdate[0] === 0) {
-      await transactionSequelize.rollback();
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: "invalid input",
-      });
+    if (attLInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The attention line with id=${id} does not exist`,
+      };
     }
-    await transactionSequelize.commit();
+
+    await attLInDb.update(dataQuery);
+
+    // return res.status(StatusCodes.OK).json({
+    //   meta: null,
+    //   data: resultUpdate,
+    // });
     return res
       .status(StatusCodes.OK)
       .send({ meta: null, data: { id, active } });
   } catch (error) {
     console.error("attention line could not be updated: ", error.message);
-    await transactionSequelize.rollback();
-    if (error.status == StatusCodes.BAD_REQUEST) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        status: StatusCodes.BAD_REQUEST,
-        code: "Bad Request",
-        detail: error.message,
-      });
-    }
     return next(error);
   }
 };

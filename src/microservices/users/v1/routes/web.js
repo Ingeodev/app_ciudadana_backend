@@ -49,9 +49,9 @@ router.post(
 );
 
 router.post(
-  "/update_loginPhase_fullLogin",
+  "/full_login",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postUsersUpdateLoginPhaseFullLogin
+  usersWeb.postUsersFullLogin
 );
 
 

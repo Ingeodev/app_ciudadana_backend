@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Alert extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasOne(models.Advertisement, {
+      Alert.belongsTo(models.User, {
         foreignKey: {
           name: "sentBy",
           allowNull: false,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  User.init(
+  Alert.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -26,87 +26,59 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      clientId: {
+      sentBy: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
+      },
+      title: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-      },
-      name: DataTypes.STRING,
-      lastName: DataTypes.STRING,
-      email: {
-        type: DataTypes.STRING,
-        // ! Verificar si Firebase en ocasiones email=null
-        allowNull: true,
-        unique: true,
-      },
-      documentType: {
-        type: DataTypes.STRING,
-        allowNull: true,
         unique: false,
       },
-      numberDocument: {
+      message: {
         type: DataTypes.STRING,
-        allowNull: true,
-        // ! unique: true? Diversidad de tipos de documentos
-        unique: true,
-      },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false,
-      },
-      residenceAddress: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false,
-      },
-      serviceReceiptUri: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       siteUri: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
-      loginPhase: {
+      imageUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
-      disabled: {
+      isSMS: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
-      userMobile: {
+      isPUSH: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
-      createdAt: {
+      isAlertList: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
+      expiresAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        // ! allowNull: true?
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        // ! allowNull: true?
-      },
-      deleteAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        // ! allowNull: true?
       },
     },
     {
       sequelize,
-      modelName: "User",
-      tableName: "Users",
+      modelName: "Alert",
+      tableName: "Alerts",
       schema: "public",
+      paranoid: true,
+      timestamps: true,
     }
   );
-  return User;
+  return Alert;
 };

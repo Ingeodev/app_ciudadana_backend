@@ -6,8 +6,8 @@ const postRegisterchema = joi.object({
   name: joi.string().required().trim().empty("").invalid(" "),
   phone: joi.string().required().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  imageSiteUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  whatsapp: joi.string().required().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  address: joi.string().required().trim().empty("").invalid(" "),
   url: joi.string().uri().required().trim().empty("").invalid(" "),
 });
 
@@ -16,29 +16,34 @@ const postUpdatechema = joi.object({
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  imageSiteUri: joi.string().uri().trim().empty("").invalid(" "),
-  whatsapp: joi.string().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" "),
   url: joi.string().uri().trim().empty("").invalid(" "),
 });
 
 const getListAllSchema = joi.object({
-  page: joi.number().allow(null).invalid(0),
-  pageSize: joi.number().allow(null).invalid(0),
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
 });
 
 const getGetOneSchema = joi.object({
-  id: joi.number().required().empty("").invalid(0),
+  id: joi.number().required().empty("").greater(0).invalid(0),
 });
 
 const postUpdateActiveSchema = joi.object({
-  id: joi.number().required().empty("").invalid(0),
+  id: joi.number().required().empty("").greater(0).invalid(0),
   active: joi.boolean().required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------
-const mobileGetListAllSchema = joi.object({
-  page: joi.number().allow(null).invalid(0),
-  pageSize: joi.number().allow(null).invalid(0),
+const mGetListAllSchema = joi.object({
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
+});
+
+const mGetDependenciesSchema = joi.object({
+  number: joi.number().integer().greater(0),
+  size: joi.number().integer().greater(0),
 });
 // * ------------------ END - Mobile - Attention Lines -----------------
 
@@ -81,10 +86,10 @@ module.exports = {
   // * ------------------ END - Web - Attention Lines -----------------
   // * ------------------ Mobile - Attention Lines -----------------
   vMobileMGetListAll: async (inputData) => {
-    return await use_validator_on_data(mobileGetListAllSchema, inputData);
+    return await use_validator_on_data(mGetListAllSchema, inputData);
   },
-  // vMobileMGetDependencies: async (inputData) => {
-  //   return await use_validator_on_data(mobileGetListAllSchema, inputData);
-  // },
+  vMobileMGetDependencies: async (inputData) => {
+    return await use_validator_on_data(mGetDependenciesSchema, inputData);
+  },
   // * ------------------ END - Mobile - Attention Lines -----------------
 };

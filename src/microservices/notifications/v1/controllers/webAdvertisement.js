@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
+const { Sequelize } = require('sequelize');
 
 // Retrieve all the advertisements whether they have a category or not.
 const getAllAdvertisements = async (req, res, next) => {
@@ -8,12 +9,19 @@ const getAllAdvertisements = async (req, res, next) => {
         const { page: pagination } = await validator.validateSimplePaginationSchema(req.query);
         const offset = (pagination.number - 1) * pagination.size;
         const pageAdvertisements = await db.Advertisement.findAndCountAll({
+            unique: true,
             paranoid: true,
             order: [["createdAt", "DESC"]],
             offset,
             limit: pagination.size,
+            include: [{
+                model: db.AdvertisementCategory,
+                attributes: ['name'],
+                required: false,
+            }],
             attributes: {
-                exclude: ["deletedAt"]
+                exclude: ["deletedAt", "AdvertisementCategory"],
+                include: [[Sequelize.col('"AdvertisementCategory"."name"'), 'categoryName']],
             },
         });
         if (pageAdvertisements.count <= 0)
@@ -21,6 +29,9 @@ const getAllAdvertisements = async (req, res, next) => {
                 status: StatusCodes.NOT_FOUND,
                 message: 'There are no Advertisements registered in the database.',
             };
+        const data = pageAdvertisements.rows.map(row => {
+            return { ...row.dataValues, AdvertisementCategory: undefined };
+        });
         return res.status(StatusCodes.OK).json({
             meta: {
                 page: pagination.number,
@@ -28,7 +39,7 @@ const getAllAdvertisements = async (req, res, next) => {
                 totalRecords: pageAdvertisements.count,
                 totalPages: Math.ceil(pageAdvertisements.count / pagination.size),
             },
-            data: pageAdvertisements.rows,
+            data,
         });
     } catch (error) {
         return next(error);

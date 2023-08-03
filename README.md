@@ -13,20 +13,22 @@ This backend has been generated from scratch to support the Cali Mobility Applic
   - [3. Run local](#3-run-local)
   - [4. Microservices](#4-microservices)
     - [4.1. Users Microservice](#41-users-microservice)
-      - [How to run](#how-to-run)
+		- [App Runner](#app-runner)
+		- [How to run in local](#how-to-run-in-local)
+		- [List of endpoints](#list-of-endpoints)
     - [4.2. Notifications Microservice](#42-notifications-microservice)
-      - [Advertising](#advertising)
+      - [4.2.1 Advertising](#421-advertising)
         - [_POST_ save new advertisement](#post-save-new-advertisement)
         - [_GET_ list advertisements](#get-list-advertisements)
         - [_POST_ update advertisement](#post-update-advertisement)
         - [_POST_ change advertisement status](#post-change-advertisement-status)
         - [_POST_ delete advertisement](#post-delete-advertisement)
-      - [Publicity](#publicity)
+      - [4.2.2. Publicity](#423-publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
-      - [Attention Lines](#attention-lines)
-      - [Service Lines](#service-lines)
-      - [Alert](#alert)
+      - [4.2.3. Attention Lines](#423-attention-lines)
+      - [4.2.4. Service Lines](#424-service-lines)
+      - [4.2.5. Alert](#425-alert)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
@@ -37,6 +39,8 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 1. [Firebase](https://firebase.google.com/)
 2. [Docker](https://www.docker.com/)
 3. [Express](https://expressjs.com/)
+
+**Postman**: [Documentation Link](http://postmanTest.com "Documentation Link")
 
 ## 2. Architecture
 
@@ -87,16 +91,48 @@ Run the generated image in your environment
 
 ### 4.1. Users Microservice
 
-#### How to run 
+#### App Runner
+    https://vbxb7pp27j.us-east-1.awsapprunner.com
+
+#### How to run in local
     # On the console
     cd src\microservices\users
     node index.js
+#### List of endpoints
+##### Mobile App
+	Path: http:localhost:3000/api/mobile/v1/users
+	Controller: src\microservices\users\v1\controllers\mobileUsers.js
+	Route: src\microservices\users\v1\routes\mobile.js
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+| /account/info  | POST  | postAccountInfo  | Create the user base information - loginPhase="baseLogin"  |
+| /account/full_login  | POST  | postAccountFullLogin  | Update missing user data - when loginPhase="baseLogin"  |
+|  /account/info | GET  |  getAccountInfo | Get user data and login phase  |
+| /account/login/phase  | GET  | getAccountLoginPhase  | Get the user loginPhase state  |
+|  /account/edit | POST  |  postAccountUpdateUser | Update user data - when loginPhase="fullLogin"  |
+
+##### Web App
+	Path: http:localhost:3000/api/web/v1/users
+	Controller: src\microservices\users\v1\controllers\webUsers.js
+	Route: src\microservices\users\v1\routes\web.js
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+|  / | GET  |  getUsersListAll | Get all users (web + app) |
+|  /delete | POST  |  postUsersUpdateDisabled | Update  status user.disabled=true |
+|  /full_login | POST  |  postUsersFullLogin | Update users.loginPhase to fullLogin |
+| /account/info  | POST  | postAccountInfo  | Create the user base information - loginPhase="baseLogin"  |
+| /account/full_login  | POST  | postAccountFullLogin  | Update missing user data - when loginPhase="baseLogin"  |
+|  /account/info | GET  |  getAccountInfo | Get user data and login phase  |
+| /account/login/phase  | GET  | getAccountLoginPhase  | Get the user loginPhase state  |
+|  /account/edit | POST  |  postAccountUpdateUser | Update user data - when loginPhase="fullLogin"  |
+
+
 
 ### 4.2. Notifications Microservice
 
 This microservice handles the [**Advertising**](#advertising), [**Publicity**](#publicity), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
 
-#### Advertising 
+#### 4.2.1. Advertising 
 
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
 
@@ -195,7 +231,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": 2,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:19.426Z",
->            "updatedAt": "2023-07-28T22:27:19.426Z"
+>            "updatedAt": "2023-07-28T22:27:19.426Z",
+>            "categoryName": "sample"
 >        },
 >        {
 >            "id": 38,
@@ -204,7 +241,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:17.369Z",
->            "updatedAt": "2023-07-28T22:27:17.369Z"
+>            "updatedAt": "2023-07-28T22:27:17.369Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 37,
@@ -213,7 +251,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T22:22:04.139Z",
->            "updatedAt": "2023-07-28T22:22:04.139Z"
+>            "updatedAt": "2023-07-28T22:22:04.139Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 36,
@@ -222,7 +261,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": null,
 >            "active": true,
 >            "createdAt": "2023-07-28T20:41:14.745Z",
->            "updatedAt": "2023-07-28T20:41:14.745Z"
+>            "updatedAt": "2023-07-28T20:41:14.745Z",
+>            "categoryName": null
 >        },
 >        {
 >            "id": 35,
@@ -231,7 +271,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "categoryId": 2,
 >            "active": true,
 >            "createdAt": "2023-07-28T20:39:40.947Z",
->            "updatedAt": "2023-07-28T20:39:40.947Z"
+>            "updatedAt": "2023-07-28T20:39:40.947Z",
+>            "categoryName": "sample"
 >        }
 >    ]
 >}
@@ -344,7 +385,7 @@ Response:
   > }
   > ```
 
-#### Publicity 
+#### 4.2.2 Publicity 
 
 The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
 
@@ -379,11 +420,11 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 > ```
 
 
-#### Attention Lines 
+#### 4.2.3. Attention Lines 
 
-#### Service Lines 
+#### 4.2.4. Service Lines 
 
-#### Alert 
+#### 4.2.5. Alert 
 
 
 ### 4.3. Third-Party Microservice
