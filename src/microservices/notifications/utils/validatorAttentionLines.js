@@ -6,8 +6,8 @@ const postRegisterchema = joi.object({
   name: joi.string().required().trim().empty("").invalid(" "),
   phone: joi.string().required().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  imageSiteUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  whatsapp: joi.string().required().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  address: joi.string().required().trim().empty("").invalid(" "),
   url: joi.string().uri().required().trim().empty("").invalid(" "),
 });
 
@@ -16,8 +16,8 @@ const postUpdatechema = joi.object({
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  imageSiteUri: joi.string().uri().trim().empty("").invalid(" "),
-  whatsapp: joi.string().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" "),
   url: joi.string().uri().trim().empty("").invalid(" "),
 });
 

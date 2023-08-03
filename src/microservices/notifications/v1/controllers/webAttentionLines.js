@@ -6,20 +6,20 @@ const validator = require("../../utils/validatorAttentionLines.js");
 
 /**
  * Create attention line
- * @param {object} req - Object containing the name, phone, imageUri, imageSiteUri, whatsapp, url
+ * @param {object} req - Object containing the name, phone, imageUri, siteUri, address, url
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, phone, imageUri, imageSiteUri, whatsapp, url } = await validator.vWebPostRegister(req.body);
+    const { name, phone, imageUri, siteUri, address, url } = await validator.vWebPostRegister(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
     const dataQuery = {
       name,
       phone,
       imageUri,
-      imageSiteUri,
-      whatsapp,
+      siteUri,
+      address,
       url,
       active: true,
       createdAt: formatDate(new Date()),
@@ -39,12 +39,12 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update attention line
- * @param {object} req - Object containing the id, name, phone, imageUri, imageSiteUri, whatsapp, url
+ * @param {object} req - Object containing the id, name, phone, imageUri, siteUri, address, url
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUpdate = async (req, res, next) => {
   try {
-    const { id, name, phone, imageUri, imageSiteUri, whatsapp, url } =
+    const { id, name, phone, imageUri, siteUri, address, url } =
       await validator.vWebPostUpdate(req.body);
 
     // ! Evitar la inyeccion de codigo SQL
@@ -53,8 +53,8 @@ exports.postUpdate = async (req, res, next) => {
       name,
       phone,
       imageUri,
-      imageSiteUri,
-      whatsapp,
+      siteUri,
+      address,
       url,
       updatedAt: formatDate(new Date()),
     };

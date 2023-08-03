@@ -29,13 +29,13 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        imageSiteUri: {
+        siteUri: {
           // ! Limite de tamanio del String?
           type: Sequelize.STRING,
           allowNull: false,
           unique: false,
         },
-        whatsapp: {
+        address: {
           // ! Limite de tamanio del String?
           type: Sequelize.STRING,
           allowNull: false,

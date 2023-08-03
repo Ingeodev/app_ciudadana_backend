@@ -17,7 +17,7 @@ exports.getListAll = async (req, res, next) => {
 
     const attentionLInDb = await db.AttentionLine.findAndCountAll({
       where: { active: true },
-      attributes: ["name", "phone", "whatsapp"],
+      attributes: ["name", "phone", "address"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       // Ordered from A-Z
