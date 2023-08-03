@@ -45,11 +45,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      url: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: false,
-      },
       active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

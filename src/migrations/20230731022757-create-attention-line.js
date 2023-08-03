@@ -41,12 +41,6 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        url: {
-          // ! Limite de tamanio del String?
-          type: Sequelize.STRING,
-          allowNull: false,
-          unique: false,
-        },
         active: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
