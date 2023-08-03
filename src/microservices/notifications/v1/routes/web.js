@@ -40,7 +40,7 @@ router.post(
 );
 
 router.post(
-  "/attention_lines/status",
+  "/attention_lines/delete",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postUpdateActive
 );
