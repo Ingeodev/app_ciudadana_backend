@@ -115,7 +115,7 @@ Run the generated image in your environment
 	Path: http:localhost:3000/api/web/v1/users
 	Controller: src\microservices\users\v1\controllers\webUsers.js
 	Route: src\microservices\users\v1\routes\web.js
-| Route  | Method  |  Location in Controller |  Description |
+| Endpoint  | Method  |  Location in Controller |  Description |
 | :------------ | :------------ | :------------ | :------------ |
 |  / | GET  |  getUsersListAll | Get all users (web + app) |
 |  /delete | POST  |  postUsersUpdateDisabled | Update  status user.disabled=true |
