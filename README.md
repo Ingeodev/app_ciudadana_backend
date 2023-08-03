@@ -119,7 +119,7 @@ Run the generated image in your environment
 | :------------ | :------------ | :------------ | :------------ |
 |  / | GET  |  getUsersListAll | Get all users (web + app) |
 |  /delete | POST  |  postUsersUpdateDisabled | Update  status user.disabled=true |
-|  /update_loginPhase_fullLogin | POST  |  postUsersUpdateLoginPhaseFullLogin | Update users.loginPhase to fullLogin |
+|  /full_login | POST  |  postUsersFullLogin | Update users.loginPhase to fullLogin |
 | /account/info  | POST  | postAccountInfo  | Create the user base information - loginPhase="baseLogin"  |
 | /account/full_login  | POST  | postAccountFullLogin  | Update missing user data - when loginPhase="baseLogin"  |
 |  /account/info | GET  |  getAccountInfo | Get user data and login phase  |
