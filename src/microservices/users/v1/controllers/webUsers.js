@@ -41,11 +41,11 @@ exports.postAccountInfo = async (req, res, next) => {
       createdAt: formatDate(new Date()),
     };
 
-    await db.User.create(dataUser);
+    const result = await db.User.create(dataUser);
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: dataUser,
+      data: result,
     });
   } catch (error) {
     console.error(
