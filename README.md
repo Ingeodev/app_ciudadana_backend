@@ -27,8 +27,10 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
       - [4.2.3. Attention Lines](#423-attention-lines)
+      		- [List of endpoints](#list-of-endpoints) 
       - [4.2.4. Service Lines](#424-service-lines)
       - [4.2.5. Alert](#425-alert)
+      		- [List of endpoints](#list-of-endpoints) 
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
@@ -131,6 +133,10 @@ Run the generated image in your environment
 ### 4.2. Notifications Microservice
 
 This microservice handles the [**Advertising**](#advertising), [**Publicity**](#publicity), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
+
+#### App Runner
+     https://k7gmmdc9dj.us-east-1.awsapprunner.com
+
 
 #### 4.2.1. Advertising 
 
@@ -421,11 +427,42 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 
 
 #### 4.2.3. Attention Lines 
+#### List of endpoints
+##### Mobile App
+	Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines
+	Controller: src\microservices\notifications\v1\controllers\mobileAttentionLines.js
+	Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+| /attention_lines  | GET  | getListAll  | Get all attention lines  |
+| /attention_lines/dependencies  | GET  | getDependencies  | Get all the dependencies to submit a pqrsdf  |
+
+##### Web App
+	Path: http:localhost:3000/api/web/v1/notifications/attention_lines
+	Controller: src\microservices\notifications\v1\controllers\webAttentionLines.js
+	Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+| /attention_lines | GET | getListAll | Get all attention lines |
+| /attention_lines/  | POST  | postRegister  | Create an attention line  |
+| /attention_lines/edit  | POST  | postUpdate  | Update an attention line  |
+| /attention_lines/status  | POST  | postUpdateActive | Activate or deactivate an attention line |
+| /attention_lines/:id | GET | getAttentionLine | Get an attention line by id |
 
 #### 4.2.4. Service Lines 
 
 #### 4.2.5. Alert 
+#### List of endpoints
+##### Web App
+	Path: http:localhost:3000/api/web/v1/notifications/alert
+	Controller: src\microservices\notifications\v1\controllers\webAlert.js
+	Route: src\microservices\notifications\v1\routes\web.js
 
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+| /alert | GET | getlistAll | Get all alerts |
+| /alert | POST | sendAlerts | Send alerts to users |
 
 ### 4.3. Third-Party Microservice
 
