@@ -465,7 +465,6 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 
 ------------
 ### 4.3. Third-Party Microservice
-
 This microservice handles third-party APIs.
 ------------
 ## 5. Contributors
