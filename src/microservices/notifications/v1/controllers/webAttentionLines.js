@@ -25,8 +25,8 @@ exports.postRegister = async (req, res, next) => {
     };
     
     // ! Como retornar el id??
-    await db.AttentionLine.create(dataQuery);
-    return res.status(StatusCodes.OK).json({ meta: null, data: dataQuery });
+    const result = await db.AttentionLine.create(dataQuery);
+    return res.status(StatusCodes.OK).json({ meta: null, data: result });
   } catch (error) {
     console.error(
       "attention line could not be created: ",
