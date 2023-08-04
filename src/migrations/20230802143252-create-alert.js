@@ -66,7 +66,11 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true,
       },
-    });
+    },
+      {
+        tableName: "Alerts",
+        schema: "public",
+      });
     return await queryInterface.addConstraint("Alerts", {
       name: "fk_Alerts_Users",
       fields: ["sentBy"],
