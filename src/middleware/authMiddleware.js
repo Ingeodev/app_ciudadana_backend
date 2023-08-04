@@ -1,76 +1,64 @@
 const adminFirebase = require("firebase-admin");
-const serviceAccount = require("../account_service_key.json");
 const { StatusCodes } = require("http-status-codes");
 
-const appFirebase = adminFirebase.initializeApp({
-    credential: adminFirebase.credential.cert(serviceAccount)
-});
-const authMiddleware = async (req, res, next) => {
-    console.log('going to check the time and auth credentials:', Date.now())
-    const { authorization } = req.headers
-    if (!authorization) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-          status: StatusCodes.UNAUTHORIZED,
-          code: "Unauthorized",
-          detail: "Missing header Authorization",
-        });
-    }
+const serviceAccount = require("../account_service_key.json");
 
-    if (!authorization.startsWith('Bearer')) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-          status: StatusCodes.UNAUTHORIZED,
-          code: "Unauthorized",
-          detail: "an authorization token starting with 'Bearer' is expected",
-        });
-    }
-    const split = authorization.split('Bearer ')
-    if (split.length !== 2) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-          status: StatusCodes.UNAUTHORIZED,
-          code: "Unauthorized",
-          detail: "authorization header is not in the expected format. It should be 'Bearer [token]'",
-        });
-    }
-    const token = split[1]
-    try {
-      const decodedToken = await appFirebase.auth().verifyIdToken(token);
-      console.log("decodedToken", JSON.stringify(decodedToken));
-      console.log("------user_id:", decodedToken.user_id);
-      res.locals = {
-        ...res.locals,
-        uid: decodedToken.user_id,
-        role: decodedToken.role,
+const appFirebase = adminFirebase.initializeApp({
+  credential: adminFirebase.credential.cert(serviceAccount)
+});
+
+const authMiddleware = async (req, res, next) => {
+  try {
+    const { authorization } = req.headers
+    if (!authorization)
+      throw {
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Missing header Authorization",
       };
-      next();
-    } catch (error) {
-      console.error(`${error.code} -  ${error.message}`);
-      // ! Uso del middleware errorMiddleware - Verificar con Julian
-      return next(error);
-    }
+    if (!authorization.startsWith('Bearer'))
+      throw {
+        status: StatusCodes.UNAUTHORIZED,
+        message: "An authorization token starting with 'Bearer' is expected",
+      };
+    const split = authorization.split('Bearer ')
+    if (split.length !== 2)
+      throw {
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Authorization header is not in the expected format. It should be 'Bearer [token]'",
+      };
+
+    const token = split[1]
+    const decodedToken = await appFirebase.auth().verifyIdToken(token);
+    res.locals = {
+      ...res.locals,
+      uid: decodedToken.user_id,
+      role: decodedToken.role,
+    };
+    return next();
+  } catch (error) {
+    if (error.code)
+      error.status = StatusCodes.UNAUTHORIZED;
+    return next(error);
+  }
 };
 
 const hasPermissions = (params) => {
-    try {
-        return (req, res, next) => {
-          const tokenRole = res.locals.role;
-          if (params.role === tokenRole) {
-            next();
-          } else {
-            return res.status(StatusCodes.FORBIDDEN).json({
-              status: StatusCodes.FORBIDDEN,
-              code: "Forbidden",
-              detail: "role not valid",
-            });
-          }
-        };
-    } catch (error) {
-        console.error(`${error.code} -  ${error.message}`);
-        // ! Uso del middleware errorMiddleware - Verificar con Julian
-        return next(error);
-    }
-   
+  try {
+    return (req, res, next) => {
+      const tokenRole = res.locals.role;
+      if (params.role === tokenRole)
+        return next();
+      throw {
+        status: StatusCodes.FORBIDDEN,
+        message: "Your role has no access to the requested resource",
+      };
+    };
+  } catch (error) {
+    return next(error);
+  }
+
 };
 
 module.exports = {
-    authMiddleware, hasPermissions, appFirebase, adminFirebase
+  authMiddleware, hasPermissions, appFirebase, adminFirebase
 };
