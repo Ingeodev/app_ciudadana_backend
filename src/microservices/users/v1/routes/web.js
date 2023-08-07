@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
-const usersWeb = require("../controllers/webUsers.js");
+const usersWeb = require("../controllers/users/web.js");
 const documentTypes = require("../controllers/documentTypes/web.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------

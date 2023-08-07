@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
-const usersMobile = require("../controllers/mobileUsers.js");
+const usersMobile = require("../controllers/users/mobile.js");
 const documentTypes = require("../controllers/documentTypes/mobile.js");
 
 // * ------------------ Endpoints - appMobile -----------------------------
