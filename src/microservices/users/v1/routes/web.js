@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersWeb = require("../controllers/webUsers.js");
+const documentTypes = require("../controllers/documentTypes/web.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
 // TODO: -- Start - Endpoints copied from mobileController
@@ -35,6 +36,40 @@ router.post(
   usersWeb.postAccountUpdateUser
 );
 // TODO: -- End - Endpoints copied from mobileController
+
+// TODO: -- Start - DocumentTypes Endpoints
+//#region DocumentTypes end-points
+router.post(
+  "/document_types/",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.postRegister
+);
+
+router.post(
+  "/document_types/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.postEdit
+);
+
+router.post(
+  "/document_types/status",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.postStatus
+);
+
+router.get(
+  "/document_types",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.getAll
+);
+
+router.get(
+  "/document_types/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.getOneById
+);
+//#endregion - DocumentTypes
+// TODO: -- End - DocumentTypes Endpoints 
 
 router.get(
   "/",

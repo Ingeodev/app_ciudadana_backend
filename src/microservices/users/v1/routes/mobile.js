@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersMobile = require("../controllers/mobileUsers.js");
+const documentTypes = require("../controllers/documentTypes/mobile.js");
 
 // * ------------------ Endpoints - appMobile -----------------------------
 router.post(
@@ -33,5 +34,15 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   usersMobile.postAccountUpdateUser
 );
+
+// TODO: -- Start - DocumentTypes Endpoints
+//#region DocumentTypes end-points
+router.get(
+  "/document_types",
+  // hasPermissions({ role: "super_master_user" }),
+  documentTypes.getAll
+);
+//#endregion - DocumentTypes
+// TODO: -- End - DocumentTypes Endpoints 
 
 module.exports = router;
