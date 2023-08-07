@@ -24,7 +24,7 @@ const getUsersInBatches = async (
         "name",
         "lastName",
         "email",
-        "documentType",
+        "documentTypeId",
         "numberDocument",
         "residenceAddress",
         "serviceReceiptUri",
