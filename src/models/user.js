@@ -15,6 +15,13 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
         },
       });
+
+      User.belongsTo(models.DocumentType, {
+        foreignKey: {
+          name: "documentTypeId",
+          allowNull: true,
+        },
+      });
     }
   }
   User.init(
@@ -39,8 +46,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: true,
       },
-      documentType: {
-        type: DataTypes.STRING,
+      documentTypeId: {
+        type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },

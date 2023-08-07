@@ -29,8 +29,8 @@ module.exports = {
           allowNull: true,
           unique: true,
         },
-        documentType: {
-          type: Sequelize.STRING(50),
+        documentTypeId: {
+          type: Sequelize.INTEGER,
           allowNull: true,
           unique: false,
         },
@@ -99,6 +99,17 @@ module.exports = {
         schema: "public",
       }
     );
+    return await queryInterface.addConstraint("Users", {
+      name: "fk_Users_DocumentTypes",
+      fields: ["documentTypeId"],
+      type: "foreign key",
+      references: {
+        table: "DocumentTypes",
+        field: "id",
+      },
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Users");
