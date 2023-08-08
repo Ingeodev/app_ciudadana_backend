@@ -20,8 +20,8 @@ const postUpdatechema = joi.object({
 });
 
 const getListAllSchema = joi.object({
-  number: joi.number().integer().greater(0),
-  size: joi.number().integer().greater(0),
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
 });
 
 const getGetOneSchema = joi.object({

@@ -97,8 +97,8 @@ exports.postUpdate = async (req, res, next) => {
 exports.getListAll = async (req, res, next) => {
   try {
     const objPage = await validator.vWebGetListAll({
-      number: req.query.page ? parseInt(req.query.page.number) : 1,
-      size: req.query.page ? parseInt(req.query.page.size) : 10,
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
     // // ! Filtrar los usuarios activos solamente?
