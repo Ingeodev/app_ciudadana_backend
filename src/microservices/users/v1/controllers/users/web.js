@@ -271,8 +271,8 @@ exports.postAccountUpdateUser = async (req, res, next) => {
 exports.getUsersListAll = async (req, res, next) => {
   try {
     const objPage = await validator.vGetUsersListAll({
-      number: req.query.page ? parseInt(req.query.page.number) : 1,
-      size: req.query.page ? parseInt(req.query.page.size) : 10,
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
     const usersInDb = await db.User.findAndCountAll({

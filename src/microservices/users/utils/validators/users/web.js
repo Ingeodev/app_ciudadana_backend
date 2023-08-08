@@ -34,8 +34,8 @@ const postAccountUpdateUserSchema = joi.object({
 // });
 
 const getUsersListAllSchema = joi.object({
-  number: joi.number().integer().greater(0),
-  size: joi.number().integer().greater(0),
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
 });
 
 const postUsersUpdateDisabledSchema = joi.object({
