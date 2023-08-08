@@ -43,7 +43,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     const result = await db.User.create(dataUser);
 
-    return res.status(StatusCodes.OK).json({
+    return res.status(StatusCodes.CREATED).json({
       meta: null,
       data: result,
     });

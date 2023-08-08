@@ -45,7 +45,7 @@ exports.postAccountInfo = async (req, res, next) => {
       { ...dataUser, ...extraDataUser }
     );
 
-    return res.status(StatusCodes.OK).json(dataUser);
+    return res.status(StatusCodes.CREATED).json(dataUser);
   } catch (error) {
     console.error("account postAccountInfo could not be created/updated: ", error.message);
     return next(error);

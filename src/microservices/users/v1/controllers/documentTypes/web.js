@@ -23,7 +23,7 @@ exports.postRegister = async (req, res, next) => {
     };
 
     const result = await db.DocumentType.create(dataQuery);
-    return res.status(StatusCodes.OK).json({ meta: null, data: result });
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     console.error("document type could not be created: ", error.message);
     return next(error);
