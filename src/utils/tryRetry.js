@@ -1,7 +1,7 @@
 const sleepNow = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 const validate_input = (functionToRetry, functionArgumentsObj, attempts, allowedErrorMessages, sleepms) => {
-    if (functionToRetry == null || typeof functionToRetry === 'function')
+    if (functionToRetry == null || typeof functionToRetry !== 'function')
         throw new Error("Type error: <functionToRetry> must be a function.");
     if (functionArgumentsObj == null)
         functionArgumentsObj = [];
@@ -32,25 +32,32 @@ const validate_input = (functionToRetry, functionArgumentsObj, attempts, allowed
  * @param {number} sleepms Optional. Milliseconds to sleep before each retry. Minimum is 0, maximum is 10000. Default is 0.
  * @returns An object possibly including two keys: {`result`: the result from a successful try, `errors`: the thrown errors during the retries.}.
  */
-const asyncTryRetry = async (functionToRetry, functionArgumentsObj = [], attempts = 2, allowedErrorMessages = [], sleepms = 0) => {
-    validate_input(functionToRetry, functionArgumentsObj, attempts, allowedErrorMessages);
+const tryRetry = async (functionToRetry, functionArgumentsObj = [], attempts = 2, allowedErrorMessages = [], sleepms = 0) => {
+    let retryfunc = functionToRetry;
+    let args = functionArgumentsObj;
+    let atmp = attempts;
+    let allowedErrors = allowedErrorMessages;
+    let sleep = sleepms;
+    validate_input(retryfunc, args, atmp, allowedErrors, sleep);
     const errors = [];
     let result;
-    for (let i = 0; i < attempts; i++) {
+    for (let i = 0; i < atmp; i++) {
         try {
-            result = await functionToRetry(...functionArgumentsObj);
+            result = await retryfunc(...args);
             return { result, errors };
         } catch (error) {
             errors.push(error);
-            if (allowedErrorMessages != null && !allowedErrorMessages.includes(error.message)) {
-                return { errors };
+            if (allowedErrors.length > 0 && !allowedErrors.includes(error.message)) {
+                return { result: null, errors };
             }
         }
-        if (sleepms)
-            await sleepNow(sleepms);
+        if (sleep)
+            await sleepNow(sleep);
     }
+    return { result: null, errors };
 };
 
+
 module.exports = {
-    asyncTryRetry,
+    tryRetry,
 };
