@@ -46,8 +46,8 @@ const simplePaginationSchema = joi.object({
 });
 
 const getAlertsListAllSchema = joi.object({
-  number: joi.number().integer().greater(0),
-  size: joi.number().integer().greater(0),
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
