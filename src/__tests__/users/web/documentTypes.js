@@ -150,10 +150,25 @@ describe("Web - Document Type management API points: ", () => {
         //   code: -5,
         // });
       expect(response0.statusCode).toBe(500);
+      expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
       expect(response0.body).toHaveProperty("status", 500);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
+
+      const response1 = await request(usedHost)
+        .post("/")
+        .set(requestHeaders)
+        .send({
+          ...testDocType1,
+          code: 22,
+        });
+      expect(response1.statusCode).toBe(500);
+      expect(response1.body).not.toHaveProperty("meta");
+      expect(response1.body).not.toHaveProperty("data");
+      expect(response1.body).toHaveProperty("status", 500);
+      expect(response1.body).toHaveProperty("code");
+      expect(response1.body).toHaveProperty("detail");
     });
 
     // {
@@ -615,21 +630,27 @@ describe("Web - Document Type management API points: ", () => {
       expect(response5.body).toHaveProperty("detail");
     });
 
-    // test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
-    //   const response0 = await request(usedHost)
-    //     .post("/edit")
-    //     .set(requestHeaders)
-    //     .send({
-    //       ...editDocType1,
-    //       id: 999,
-    //     });
-    //   expect(response0.statusCode).toBe(500);
-    //   expect(response0.body).not.toHaveProperty("meta");
-    //   expect(response0.body).not.toHaveProperty("data");
-    //   expect(response0.body).toHaveProperty("status", 500);
-    //   expect(response0.body).toHaveProperty("code");
-    //   expect(response0.body).toHaveProperty("detail");
-    // });
+    // {
+    //     "status": 500,
+    //     "detail": "Validation error",
+    //     "code": "Internal Server Error"
+    // }  
+    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+      const response0 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...testDocType1,
+          ...editDocType1,
+          code: 22,
+        });
+      expect(response0.statusCode).toBe(500);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
 
     // {
     //     "status": 404,
