@@ -21,6 +21,13 @@ const validate_input = (functionToRetry, functionArgumentsObj, attempts, allowed
         console.warn(`<sleepms> must be between 0 and 10000. The value of ${sleepms} is invalid; it will be set to 0.`);
     }
     sleepms = Math.round(sleepms);
+    return {
+        retryFunc: functionToRetry,
+        args: functionArgumentsObj,
+        atmp: attempts,
+        allowedErrors: allowedErrorMessages,
+        sleep: sleepms
+    };
 };
 
 /**
@@ -33,17 +40,12 @@ const validate_input = (functionToRetry, functionArgumentsObj, attempts, allowed
  * @returns An object possibly including two keys: {`result`: the result from a successful try, `errors`: the thrown errors during the retries.}.
  */
 const tryRetry = async (functionToRetry, functionArgumentsObj = [], attempts = 2, allowedErrorMessages = [], sleepms = 0) => {
-    let retryfunc = functionToRetry;
-    let args = functionArgumentsObj;
-    let atmp = attempts;
-    let allowedErrors = allowedErrorMessages;
-    let sleep = sleepms;
-    validate_input(retryfunc, args, atmp, allowedErrors, sleep);
+    const { retryFunc, args, atmp, allowedErrors, sleep } = validate_input(functionToRetry, functionArgumentsObj, attempts, allowedErrorMessages, sleepms);
     const errors = [];
     let result;
     for (let i = 0; i < atmp; i++) {
         try {
-            result = await retryfunc(...args);
+            result = await retryFunc(...args);
             return { result, errors };
         } catch (error) {
             errors.push(error);
