@@ -1,7 +1,7 @@
 const request = require("supertest");
 
 const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/document_types`;
-describe("Web - Document Type management API points: ", () => {
+describe("Mobile - Document Type management API points: ", () => {
   jest.setTimeout(8000);
 
   const requestHeaders = {
