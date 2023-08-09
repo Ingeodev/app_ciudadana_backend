@@ -278,12 +278,16 @@ exports.getUsersListAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (usersInDb.count === 0) {
+    if (usersInDb.count <= 0)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "The requested page does not exist",
+        message: "There are no Users registered in the database",
       };
-    }
+    if (usersInDb.rows.length <= 0)
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
     const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
     const responseCustom = {
