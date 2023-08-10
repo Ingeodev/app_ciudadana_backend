@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersWeb = require("../controllers/web/users.js");
+const adminNotif = require("../controllers/web/adminNotifications.js");
 const documentTypes = require("../controllers/web/documentTypes.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
@@ -93,6 +94,12 @@ router.post(
   "/full_login",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.postUsersFullLogin
+);
+
+router.get(
+  "/admin/notifications",
+  // hasPermissions({ role: "super_master_user" }),
+  adminNotif.getAllNotifications
 );
 
 
