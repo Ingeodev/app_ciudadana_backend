@@ -3,8 +3,8 @@ const joi = require("joi");
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
-  phone: joi.string().required().trim().empty("").invalid(" ").max(10),
-  whatsapp: joi.string().required().trim().empty("").invalid(" ").max(10),
+  phone: joi.number().integer().greater(0).less(9999999999).required(),
+  whatsapp: joi.number().integer().greater(0).less(9999999999).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

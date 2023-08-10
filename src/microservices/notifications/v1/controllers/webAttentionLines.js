@@ -10,13 +10,12 @@ const validator = require("../../utils/validatorAttentionLines.js");
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
-  console.log("Inicio postRegister");
   try {
     const { phone, whatsapp } = await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
-      phone,
-      whatsapp
+      phone: `+57${phone}`,
+      whatsapp: `+57${whatsapp}`
     };
     
     const result = await db.AttentionLine.create(dataQuery);
