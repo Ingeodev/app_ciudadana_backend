@@ -43,7 +43,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     return res.status(StatusCodes.CREATED).json(dataUser);
   } catch (error) {
-    console.error("account postAccountInfo could not be created/updated: ", error.message);
+    // console.error("account postAccountInfo could not be created/updated: ", error.message);
     return next(error);
   }
 };
@@ -113,7 +113,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
     await transaction.rollback();
-    console.error("account full_login could not be updated: ", error);
+    // console.error("account full_login could not be updated: ", error);
     if (
       error &&
       error.errors &&
@@ -164,7 +164,7 @@ exports.getAccountInfo = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("account info could not be retrieved: ", error.message);
+    // console.error("account info could not be retrieved: ", error.message);
     return next(error);
   }
 };
@@ -200,7 +200,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
       loginPhase,
     });
   } catch (error) {
-    console.error("account info could not be retrieved: ", error.message);
+    // console.error("account info could not be retrieved: ", error.message);
     return next(error);
   }
 };
@@ -249,7 +249,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
-    console.error("account full_login could not be retrieved: ", error);
+    // console.error("account full_login could not be retrieved: ", error);
     
     if (
       error &&

@@ -40,7 +40,7 @@ exports.getAll = async (req, res, next) => {
     }
     return res.status(StatusCodes.OK).send(docTypesInDb.rows);
   } catch (error) {
-    console.error("Document types could not be recovered: ", error.message);
+    // console.error("Document types could not be recovered: ", error.message);
     return next(error);
   }
 };

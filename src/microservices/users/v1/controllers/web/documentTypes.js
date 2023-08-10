@@ -25,7 +25,7 @@ exports.postRegister = async (req, res, next) => {
     const result = await db.DocumentType.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
-    console.error("document type could not be created: ", error.message);
+    // console.error("document type could not be created: ", error.message);
     return next(error);
   }
 };
@@ -62,7 +62,7 @@ exports.postEdit = async (req, res, next) => {
       data: resultUpdate,
     });
   } catch (error) {
-    console.error("document type could not be updated: ", error.message);
+    // console.error("document type could not be updated: ", error.message);
     if (
       error &&
       error.errors &&
@@ -119,7 +119,7 @@ exports.getAll = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    console.error("document types could not be recovered: ", error.message);
+    // console.error("document types could not be recovered: ", error.message);
     return next(error);
   }
 };
@@ -147,7 +147,7 @@ exports.getOneById = async (req, res, next) => {
       .status(StatusCodes.OK)
       .send({ meta: null, data: docTypeInDb });
   } catch (error) {
-    console.error("Document Type could not be recovered: ", error.message);
+    // console.error("Document Type could not be recovered: ", error.message);
     return next(error);
   }
 };
@@ -174,7 +174,7 @@ exports.postStatus = async (req, res, next) => {
       .status(StatusCodes.OK)
       .send({ meta: null, data: { id, active } });
   } catch (error) {
-    console.error("document type could not be updated: ", error.message);
+    // console.error("document type could not be updated: ", error.message);
     return next(error);
   }
 };

@@ -45,10 +45,7 @@ exports.postAccountInfo = async (req, res, next) => {
       data: result,
     });
   } catch (error) {
-    console.error(
-      "account postAccountInfo could not be created/updated: ",
-      error.message
-    );
+    // console.error( "account postAccountInfo could not be created/updated: ", error.message);
     return next(error);
   }
 };
@@ -118,7 +115,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     });
   } catch (error) {
     await transaction.rollback();
-    console.error("account full_login could not be updated: ", error);    
+    // console.error("account full_login could not be updated: ", error);    
     if (
       error &&
       error.errors &&
@@ -162,7 +159,7 @@ exports.getAccountInfo = async (req, res, next) => {
       data: userInDb,
     });
   } catch (error) {
-    console.error("account info could not be retrieved: ", error.message);
+    // console.error("account info could not be retrieved: ", error.message);
     return next(error);
   }
 };
@@ -200,7 +197,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
       data: { loginPhase },
     });
   } catch (error) {
-    console.error("account info could not be retrieved: ", error.message);
+    // console.error("account info could not be retrieved: ", error.message);
     return next(error);
   }
 };
@@ -251,7 +248,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       data: resultUpdate,
     });
   } catch (error) {
-    console.error("account full_login could not be retrieved: ", error);
+    // console.error("account full_login could not be retrieved: ", error);
 
     if (
       error &&
@@ -309,7 +306,7 @@ exports.getUsersListAll = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    console.error("users could not be recovered: ", error.message);
+    // console.error("users could not be recovered: ", error.message);
     return next(error);
   }
 };
@@ -339,7 +336,7 @@ exports.postUsersDelete = async (req, res, next) => {
       data: { clientId }
     });
   } catch (error) {
-    console.error("users could not be deleted: ", error.message);
+    // console.error("users could not be deleted: ", error.message);
     return next(error);
   }
 };
@@ -369,7 +366,7 @@ exports.postUsersStatus = async (req, res, next) => {
       data: { result },
     });
   } catch (error) {
-    console.error("users could not be deleted: ", error.message);
+    // console.error("users could not be deleted: ", error.message);
     return next(error);
   }
 };
@@ -407,7 +404,7 @@ exports.postUsersFullLogin = async (req, res, next) => {
       data: result,
     });
   } catch (error) {
-    console.error("user could not be updated: ", error.message);
+    // console.error("user could not be updated: ", error.message);
     return next(error);
   }
 };

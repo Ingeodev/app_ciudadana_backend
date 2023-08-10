@@ -53,7 +53,7 @@ exports.getAllNotifications = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    console.error("AdminNotifications could not be recovered: ", error.message);
+    // console.error("AdminNotifications could not be recovered: ", error.message);
     return next(error);
   }
 };
