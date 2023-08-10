@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class AttentionLine extends Model {
+  class Security extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  AttentionLine.init(
+  Security.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -20,25 +20,45 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
       phone: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
-      whatsapp: {
+      imageUri: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      siteUri: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      active: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
     },
     {
       sequelize,
-      modelName: "AttentionLine",
-      tableName: "AttentionLines",
+      modelName: "Security",
+      tableName: "Securities",
       schema: "public",
       paranoid: true,
       timestamps: true,
     }
   );
-  return AttentionLine;
+  return Security;
 };

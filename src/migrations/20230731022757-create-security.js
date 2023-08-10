@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "AttentionLines",
+      "Securities",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -56,19 +56,19 @@ module.exports = {
           allowNull: true,
           // ! allowNull: true?
         },
-        deleteAt: {
+        deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
           // ! allowNull: true?
         },
       },
       {
-        tableName: "AttentionLines",
+        tableName: "Securities",
         schema: "public",
       }
     );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("AttentionLines");
+    await queryInterface.dropTable("Securities");
   },
 };

@@ -3,7 +3,8 @@ const router = express.Router();
 const authorization = require("../../../../middleware/authMiddleware.js");
 
 const advertisingController = require('../controllers/webAdvertisement');
-const attentionLinesController = require('../controllers/webAttentionLines');
+const securityController = require("../controllers/webSecurity");
+const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
@@ -26,35 +27,35 @@ router.post('/advertising/status', advertisingController.postAdvertisementStatus
 router.post('/advertising/delete', advertisingController.postAdvertisementDelete);
 //#endregion
 
-//#region Attention Lines end-points
+//#region Security end-points
 router.post(
-  "/attention_lines/",
+  "/security/",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postRegister
+  securityController.postRegister
 );
 
 router.post(
-  "/attention_lines/edit",
+  "/security/edit",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postUpdate
+  securityController.postUpdate
 );
 
 router.post(
-  "/attention_lines/delete",
+  "/security/delete",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postUpdateActive
+  securityController.postUpdateActive
 );
 
 router.get(
-  "/attention_lines",
+  "/security",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.getListAll
+  securityController.getListAll
 );
 
 router.get(
-  "/attention_lines/:id",
+  "/security/:id",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.getAttentionLine
+  securityController.getAttentionLine
 );
 //#endregion
 
@@ -65,6 +66,14 @@ router.get(
   "/alert",
   // hasPermissions({ role: "super_master_user" }),
   alertController.getlistAll
+);
+//#endregion
+
+//#region Security end-points
+router.post(
+  "/attention_lines/",
+  // hasPermissions({ role: "super_master_user" }),
+  attentionLinesController.postRegister
 );
 //#endregion
 

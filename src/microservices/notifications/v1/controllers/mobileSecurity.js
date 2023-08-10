@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../../../../middleware/formatDate.js");
-const validator = require("../../utils/validatorAttentionLines.js");
+const validator = require("../../utils/validatorSecurity.js");
 
 /**
  * Get all attention lines
@@ -24,16 +24,12 @@ exports.getListAll = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (attentionLInDb.count <= 0)
+    if (attentionLInDb.count === 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no Attention Lines registered in the database",
+        message: "attention lines could not be recovered",
       };
-    if (attentionLInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+    }
     // const totalPages = Math.ceil(attentionLInDb.count / objPage.size);
 
     return res.status(StatusCodes.OK).send(attentionLInDb.rows);
