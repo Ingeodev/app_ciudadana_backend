@@ -8,6 +8,14 @@ const twilioClient = require("twilio")(twilioAccountSid, twilioAuthToken);
 const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
 
+/**
+ * Function that returns a batch of rows from the database, but defaults to users data.
+ * @param {*} userModel The Sequelize model to use (for users if default)
+ * @param {*} batchNumber The number of the batch to retrieve, batches start at 0
+ * @param {*} batchSize The size of the batches to retrieve
+ * @param {*} findAllOptions Options object as defined in [sequelize](https://sequelize.org/api/v6/class/src/model.js~model#static-method-findAll); Will overwrite all the default (user) options excepting the limit and offset.
+ * @returns A list of the users (or objects) found in the database.
+ */
 const getUsersInBatches = async (
   userModel,
   batchNumber = 0,
@@ -45,6 +53,7 @@ const getUsersInBatches = async (
   return await userModel.findAll(options);
 };
 
+
 const sendPushNotifications = async (message, usersPushIds) => {
   try {
     // TODO: send push notifications.
@@ -56,6 +65,12 @@ const sendPushNotifications = async (message, usersPushIds) => {
   }
 };
 
+/**
+ * Function that sends a bulk of SMS messages using [Twilio Messaging Services](https://www.twilio.com/docs/messaging/services). It requires that appropriate `TWILIO_ACCOUNT_SID` `TWILIO_AUTH_TOKEN` `TWILIO_MESSAGE_SERVICE_SID` are defined in the .env file.
+ * @param {*} message 
+ * @param {*} usersPhoneNumbers 
+ * @returns ``true`` if at least 10% of the messages are accepted by Twilio. `false` otherwise.
+ */
 const sendSmsNotifications = async (message, usersPhoneNumbers) => {
   try {
     const smsPromises = usersPhoneNumbers.map((number) => {
