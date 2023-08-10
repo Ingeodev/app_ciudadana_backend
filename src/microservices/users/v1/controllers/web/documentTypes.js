@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../../../../../middleware/formatDate.js");
-const validator = require("../../../utils/validators/documentTypes/web.js");
+const validator = require("../../../utils/validators/web/documentTypes.js");
 
 /**
  * Create a document type

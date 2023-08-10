@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
-const usersWeb = require("../controllers/users/web.js");
-const documentTypes = require("../controllers/documentTypes/web.js");
+const usersWeb = require("../controllers/web/users.js");
+const documentTypes = require("../controllers/web/documentTypes.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
 // TODO: -- Start - Endpoints copied from mobileController

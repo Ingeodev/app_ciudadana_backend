@@ -3,7 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../../../../../middleware/formatDate.js");
-const validator = require("../../../utils/validators/users/mobile.js");
+const validator = require("../../../utils/validators/mobile/users.js");
 
 // const Op = db.Sequelize.Op;
 
