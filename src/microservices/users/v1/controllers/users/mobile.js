@@ -26,7 +26,6 @@ exports.postAccountInfo = async (req, res, next) => {
     }
 
     // ! Evitar la inyeccion de codigo SQL
-    const dateNow = formatDate(new Date());
     const dataUser = {
       name,
       lastName,
@@ -38,7 +37,6 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: true,
-      createdAt: dateNow,
     };
 
     await db.User.create(
@@ -84,10 +82,8 @@ exports.postAccountFullLogin = async (req, res, next) => {
       serviceReceiptUri,
       siteUri,
     };
-    const dateNow = formatDate(new Date());
     const extraDataUser = {
       loginPhase: "inVerification",
-      updatedAt: dateNow,
     };
 
     const resultUpdate = await db.User.update(
@@ -227,13 +223,9 @@ exports.postAccountUpdateUser = async (req, res, next) => {
       residenceAddress,
       phone,
     };
-    const dateNow = formatDate(new Date());
-    const extraDataUser = {
-      updatedAt: dateNow,
-    };
 
     const resultUpdate = await db.User.update(
-      { ...dataUser, ...extraDataUser },
+      dataUser,
       {
         where: {
           clientId,

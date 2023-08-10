@@ -38,7 +38,6 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: false,
-      createdAt: formatDate(new Date()),
     };
 
     const result = await db.User.create(dataUser);
@@ -88,7 +87,6 @@ exports.postAccountFullLogin = async (req, res, next) => {
       serviceReceiptUri,
       siteUri,
       loginPhase: "inVerification",
-      updatedAt: formatDate(new Date()),
     };
 
     const userInDb = await db.User.findOne({
@@ -225,7 +223,6 @@ exports.postAccountUpdateUser = async (req, res, next) => {
       lastName,
       residenceAddress,
       phone,
-      updatedAt: formatDate(new Date()),
     };
 
     const userInDb = await db.User.findOne({
@@ -310,35 +307,33 @@ exports.getUsersListAll = async (req, res, next) => {
  * Update the status of the users.disabled field (to false) for a user
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUsersUpdateDisabled = async (req, res, next) => {
+exports.postUsersUpdateDelete = async (req, res, next) => {
   try {
-    const { clientId } = await validator.vPostUsersUpdateDisabled(req.body);
+    const { clientId } = await validator.vPostUsersUpdateDeleted(req.body);
     const dataUser = {
       disabled: true,
-      deleteAt: formatDate(new Date()),
     };
 
     const userInDb = await db.User.findOne({
-      where: {
-        clientId
-      },
+      where: { clientId },
     });
 
     if (userInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The user with clientId=${clientId} does not exist`,
+        message: `The user does not exist`,
       };
     }
 
-    await userInDb.update(dataUser);
+    // await userInDb.update(dataUser);
+    await userInDb.destroy(dataUser);
     
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: { clientId }
     });
   } catch (error) {
-    console.error("users could not be updated: ", error.message);
+    console.error("users could not be deleted: ", error.message);
     return next(error);
   }
 };
@@ -352,7 +347,6 @@ exports.postUsersFullLogin = async (req, res, next) => {
     const { clientId } = await validator.vPostUsersUpdateLoginPhaseFullLogin(req.body);
     const dataUser = {
       loginPhase: "fullLogin",
-      updatedAt: formatDate(new Date()),
     };
 
     const userInDb = await db.User.findOne({

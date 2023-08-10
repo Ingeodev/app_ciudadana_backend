@@ -80,7 +80,7 @@ router.get(
 router.post(
   "/delete",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postUsersUpdateDisabled
+  usersWeb.postUsersUpdateDelete
 );
 
 router.post(

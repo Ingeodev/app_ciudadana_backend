@@ -35,27 +35,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        // ! allowNull: true?
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        // ! allowNull: true?
-      },
-      deleteAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        // ! allowNull: true?
-      },
     },
     {
       sequelize,
       modelName: "Dependency",
       tableName: "Dependencies",
       schema: "public",
+      paranoid: true,
+      timestamps: true,
     }
   );
   return Dependencies;

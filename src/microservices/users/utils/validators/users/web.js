@@ -38,8 +38,8 @@ const getUsersListAllSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
-const postUsersUpdateDisabledSchema = joi.object({
-  clientId: joi.string().trim().required().empty("")
+const postUsersUpdateDeletedSchema = joi.object({
+  clientId: joi.string().trim().required().empty(""),
 });
 
 const postUsersUpdateLoginPhaseFullLoginSchema = joi.object({
@@ -79,8 +79,8 @@ module.exports = {
   vGetUsersListAll: async (inputData) => {
     return await use_validator_on_data(getUsersListAllSchema, inputData);
   },
-  vPostUsersUpdateDisabled: async (inputData) => {
-    return await use_validator_on_data(postUsersUpdateDisabledSchema, inputData);
+  vPostUsersUpdateDeleted: async (inputData) => {
+    return await use_validator_on_data(postUsersUpdateDeletedSchema, inputData);
   },
   vPostUsersUpdateLoginPhaseFullLogin: async (inputData) => {
     return await use_validator_on_data(postUsersUpdateLoginPhaseFullLoginSchema, inputData);

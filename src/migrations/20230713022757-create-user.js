@@ -77,7 +77,7 @@ module.exports = {
         },
         createdAt: {
           type: "TIMESTAMP",
-          allowNull: true,
+          allowNull: false,
           // ! allowNull: true?
           // type: Sequelize.DATE
         },
@@ -87,7 +87,7 @@ module.exports = {
           // ! allowNull: true?
           // type: Sequelize.DATE
         },
-        deleteAt: {
+        deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
           // ! allowNull: true?

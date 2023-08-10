@@ -153,18 +153,6 @@ exports.getOneById = async (req, res, next) => {
 exports.postStatus = async (req, res, next) => {
   try {
     const { id, active } = await validator.vWebPostStatus(req.body);
-    let dataQuery = {};
-    if (active === false) {
-      dataQuery = {
-        active,
-        deleteAt: formatDate(new Date()),
-      };
-    }
-    dataQuery = {
-      active,
-      updatedAt: formatDate(new Date()),
-    };
-
     const docTypeInDb = await db.DocumentType.findByPk(id);
 
     if (docTypeInDb === null) {
@@ -174,7 +162,7 @@ exports.postStatus = async (req, res, next) => {
       };
     }
 
-    await docTypeInDb.update(dataQuery);
+    await docTypeInDb.update(active);
 
     return res
       .status(StatusCodes.OK)
