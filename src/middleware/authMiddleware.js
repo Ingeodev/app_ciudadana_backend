@@ -42,6 +42,27 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+const checkPermissions = (allowedPermission) => {
+  try {
+    return (req, res, next) => {
+      const permissions = res.locals.permissions;
+      console.log("registered permissions", permissions);
+      const validatedPermissions = permissions.filter((permission) => {
+        return permission === allowedPermission
+      });
+      if (validatedPermissions.length > 0) {
+        return next();
+      }
+      throw {
+        status: StatusCodes.FORBIDDEN,
+        message: "Your role has no access to the requested resource",
+      };
+    };
+  } catch (error) {
+    return next(error);
+  }
+};
+
 const hasPermissions = (params) => {
   try {
     return (req, res, next) => {
@@ -56,9 +77,12 @@ const hasPermissions = (params) => {
   } catch (error) {
     return next(error);
   }
-
 };
 
 module.exports = {
-  authMiddleware, hasPermissions, appFirebase, adminFirebase
+  authMiddleware,
+  hasPermissions,
+  checkPermissions,
+  appFirebase,
+  adminFirebase,
 };
