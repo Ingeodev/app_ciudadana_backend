@@ -42,7 +42,7 @@ const alertSchema = joi.object({
   alertList: joi.bool().required(),
   siteUri: uri_string.required(),
   imageUri: uri_string.required(),
-  expiresAt: joi.date(),
+  expiresAt: joi.date().greater('now'),
 });
 
 const simplePaginationSchema = joi.object({
