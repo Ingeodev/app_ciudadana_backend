@@ -120,7 +120,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountInfo = async (req, res, next) => {
-  // ! un usuario incognito tiene clienteId?
   try {
     const clientId = res.locals.uid;
 
@@ -164,7 +163,6 @@ exports.getAccountInfo = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountLoginPhase = async (req, res, next) => {
-  // ! un usuario incognito tiene clienteId?
   try {
     const clientId = res.locals.uid;
 

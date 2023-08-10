@@ -78,19 +78,16 @@ module.exports = {
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
-          // ! allowNull: true?
           // type: Sequelize.DATE
         },
         updatedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // ! allowNull: true?
           // type: Sequelize.DATE
         },
         deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // ! allowNull: true?
           // type: Sequelize.DATE
         },
       },

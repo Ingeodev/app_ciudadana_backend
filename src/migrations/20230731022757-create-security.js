@@ -49,17 +49,14 @@ module.exports = {
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
-          // ! allowNull: true?
         },
         updatedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // ! allowNull: true?
         },
         deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // ! allowNull: true?
         },
       },
       {

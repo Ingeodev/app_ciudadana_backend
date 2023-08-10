@@ -77,7 +77,6 @@ router.post(
 );
 //#endregion
 
-// ! Retornar lista de endpoints?
 router.get("/", (req, res) => {
   res.status(200).json("Web API - Notificacions Microservice");
 });

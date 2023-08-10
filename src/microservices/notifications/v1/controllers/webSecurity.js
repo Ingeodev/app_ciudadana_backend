@@ -13,7 +13,6 @@ exports.postRegister = async (req, res, next) => {
   try {
     const { name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
 
-    // ! Evitar la inyeccion de codigo SQL
     const dataQuery = {
       name,
       phone,
@@ -24,7 +23,6 @@ exports.postRegister = async (req, res, next) => {
       createdAt: formatDate(new Date()),
     };
     
-    // ! Como retornar el id??
     const result = await db.AttentionLine.create(dataQuery);
     return res.status(StatusCodes.OK).json({ meta: null, data: result });
   } catch (error) {
@@ -46,7 +44,6 @@ exports.postUpdate = async (req, res, next) => {
     const { id, name, phone, imageUri, siteUri, address } =
       await validator.vWebPostUpdate(req.body);
 
-    // ! Evitar la inyeccion de codigo SQL
     const dataQuery = {
       id,
       name,
@@ -99,30 +96,6 @@ exports.getListAll = async (req, res, next) => {
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
-
-    // // ! Filtrar los usuarios activos solamente?
-    // const totalRecords = await db.AttentionLine.count();
-    // if (totalRecords === 0) {
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "attention lines could not be recovered",
-    //   };
-    // }
-
-    // const totalPages = Math.ceil(totalRecords / objPage.size);
-    // if (objPage.number > totalPages) {
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "The requested page does not exist",
-    //   };
-    // }
-
-    // const attLinesInDb = await db.AttentionLine.findAll({
-    //   limit: objPage.size,
-    //   offset: (objPage.number - 1) * objPage.size,
-    //   // ! Verificar filtro ordenamiento
-    //   order: [["createdAt", "DESC"]], // Ordena por la fecha de creación en orden descendente
-    // });
 
     const attLinesInDb = await db.AttentionLine.findAndCountAll({
       limit: objPage.size,
