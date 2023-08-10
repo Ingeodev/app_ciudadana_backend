@@ -1,6 +1,9 @@
 const request = require("supertest");
 
-const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/document_types`;
+// Deployed
+// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/document_types`;
+// Local
+const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/users/document_types`;
 describe("Web - Document Type management API points: ", () => {
   jest.setTimeout(8000);
 

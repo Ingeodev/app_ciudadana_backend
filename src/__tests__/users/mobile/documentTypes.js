@@ -1,6 +1,9 @@
 const request = require("supertest");
 
-const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/document_types`;
+// Deployed
+// const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/document_types`;
+// Local
+const usedHost = `${global.usersMicroserviceLocalHost}/api/mobile/v1/users/document_types`;
 describe("Mobile - Document Type management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -11,14 +14,14 @@ describe("Mobile - Document Type management API points: ", () => {
   // ! Obtained in alphabetical order - Therefore, they must be modified
   // ! First object returned
   const testDocType0 = {
-    id: 11,
+    id: 28,
     // name: "Cedula de extranjeria",
     abbreviation: "CE",
   };
 
   // ! Second object returned
   const testDocType1 = {
-    id: 5,
+    id: 6,
     // name: "Cedula de ciudadania",
     abbreviation: "CC",
   };

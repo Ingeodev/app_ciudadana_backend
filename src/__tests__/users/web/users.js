@@ -1,6 +1,9 @@
 const request = require("supertest");
 
-const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users`;
+// Deployed
+// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users`;
+// Local
+const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/users`;
 describe("Web - Users management API points: ", () => {
   jest.setTimeout(25000);
 
