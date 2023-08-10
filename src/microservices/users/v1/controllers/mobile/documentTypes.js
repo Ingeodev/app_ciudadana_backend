@@ -26,10 +26,16 @@ exports.getAll = async (req, res, next) => {
       order: [["abbreviation", "ASC"]],
     });
 
-    if (docTypesInDb.count === 0) {
+    if (docTypesInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "Document types could not be recovered",
+        message: "There are no Document types registered in the database",
+      };
+    }
+    if (docTypesInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
       };
     }
     return res.status(StatusCodes.OK).send(docTypesInDb.rows);

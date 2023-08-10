@@ -14,7 +14,7 @@ router.post(
 router.post(
   "/account/full_login",
   // hasPermissions({ role: "super_master_user" }),
-  usersMobile.postAccountFullLogin
+  usersMobile.postAccountBaseLogin
 );
 
 router.get(
@@ -32,7 +32,7 @@ router.get(
 router.post(
   "/account/edit",
   // hasPermissions({ role: "super_master_user" }),
-  usersMobile.postAccountUpdateUser
+  usersMobile.postAccountFullLogin
 );
 
 // TODO: -- Start - DocumentTypes Endpoints

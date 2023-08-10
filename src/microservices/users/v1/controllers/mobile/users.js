@@ -15,7 +15,6 @@ const validator = require("../../../utils/validators/mobile/users.js");
 exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
-    // ! Validar los campos que son requeridos - Monday
     const { name, lastName, phone, email } = await validator.vPostAccountInfo(req.body);
 
     if (!clientId) {
@@ -25,7 +24,6 @@ exports.postAccountInfo = async (req, res, next) => {
       };
     }
 
-    // ! Evitar la inyeccion de codigo SQL
     const dataUser = {
       name,
       lastName,
@@ -55,7 +53,7 @@ exports.postAccountInfo = async (req, res, next) => {
  * @param {object} req - Object containing: documentTypeId, numberDocument, residenceAddress, serviceReceiptUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.postAccountFullLogin = async (req, res, next) => {
+exports.postAccountBaseLogin = async (req, res, next) => {
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
@@ -74,7 +72,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       serviceReceiptUri,
       siteUri,
     } = await validator.vPostAccountFullLogin(req.body);
-    
+
     const dataUser = {
       documentTypeId,
       numberDocument,
@@ -202,7 +200,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
  * @param {object} req - Object containing: name, lastName, phone, residenceAddress
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.postAccountUpdateUser = async (req, res, next) => {
+exports.postAccountFullLogin = async (req, res, next) => {
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;

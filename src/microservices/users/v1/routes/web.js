@@ -15,7 +15,7 @@ router.post(
 router.post(
   "/account/full_login",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postAccountFullLogin
+  usersWeb.postAccountBaseLogin
 );
 
 router.get(
@@ -33,7 +33,7 @@ router.get(
 router.post(
   "/account/edit",
   // hasPermissions({ role: "super_master_user" }),
-  usersWeb.postAccountUpdateUser
+  usersWeb.postAccountFullLogin
 );
 // TODO: -- End - Endpoints copied from mobileController
 

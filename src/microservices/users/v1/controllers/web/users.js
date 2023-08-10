@@ -60,7 +60,7 @@ exports.postAccountInfo = async (req, res, next) => {
  * @param {object} req - Object containing: documentTypeId, numberDocument, residenceAddress, serviceReceiptUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.postAccountFullLogin = async (req, res, next) => {
+exports.postAccountBaseLogin = async (req, res, next) => {
   try {
     // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
@@ -204,7 +204,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
  * @param {object} req - Object containing: name, lastName, phone, residenceAddress
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.postAccountUpdateUser = async (req, res, next) => {
+exports.postAccountFullLogin = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
 
@@ -247,7 +247,7 @@ exports.postAccountUpdateUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error("account full_login could not be retrieved: ", error);
-    
+
     if (
       error &&
       error.errors &&
@@ -278,16 +278,18 @@ exports.getUsersListAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (usersInDb.count <= 0)
+    if (usersInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "There are no Users registered in the database",
       };
-    if (usersInDb.rows.length <= 0)
+    }
+    if (usersInDb.rows.length <= 0) {
       throw {
         status: StatusCodes.BAD_REQUEST,
         message: '"page.number" is too large for the number of possible pages',
       };
+    }
     const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
     const responseCustom = {

@@ -93,10 +93,16 @@ exports.getAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (docTypesInDb.count === 0) {
+    if (docTypesInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "The requested page does not exist",
+        message: "There are no Document types registered in the database",
+      };
+    }
+    if (docTypesInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
       };
     }
     const totalPages = Math.ceil(docTypesInDb.count / objPage.size);
