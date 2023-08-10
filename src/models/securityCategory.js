@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Security extends Model {
+  class SecurityCategory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.SecurityCategory, {
+      SecurityCategory.hasOne(models.Security, {
         foreignKey: {
           name: "categoryId",
           allowNull: false,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  Security.init(
+  SecurityCategory.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -26,50 +26,35 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      categoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false,
-      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: false,
-      },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: false,
+        unique: true,
       },
       imageUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       siteUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: false,
-      },
-      active: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
+      color: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
         unique: false,
       },
     },
     {
       sequelize,
-      modelName: "Security",
-      tableName: "Securities",
+      modelName: "SecurityCategory",
+      tableName: "SecurityCategories",
       schema: "public",
       paranoid: true,
       timestamps: true,
     }
   );
-  return Security;
+  return SecurityCategory;
 };

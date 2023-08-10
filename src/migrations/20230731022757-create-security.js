@@ -12,6 +12,11 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
+        categoryId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          unique: false,
+        },
         name: {
           type: Sequelize.STRING(128),
           allowNull: false,
@@ -64,6 +69,17 @@ module.exports = {
         schema: "public",
       }
     );
+    return await queryInterface.addConstraint("Securities", {
+      name: "fk_Securities_Categories",
+      fields: ["categoryId"],
+      type: "foreign key",
+      references: {
+        table: "SecurityCategories",
+        field: "id",
+      },
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Securities");
