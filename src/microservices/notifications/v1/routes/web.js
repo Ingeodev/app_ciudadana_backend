@@ -43,7 +43,7 @@ router.post(
 router.post(
   "/security/delete",
   // hasPermissions({ role: "super_master_user" }),
-  securityController.postUpdateActive
+  securityController.postDelete
 );
 
 router.get(

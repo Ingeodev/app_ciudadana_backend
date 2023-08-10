@@ -28,9 +28,9 @@ const getGetOneSchema = joi.object({
   id: joi.number().required().empty("").greater(0).invalid(0),
 });
 
-const postUpdateActiveSchema = joi.object({
+const postDeleteSchema = joi.object({
   id: joi.number().required().empty("").greater(0).invalid(0),
-  active: joi.boolean().required(),
+  // active: joi.boolean().required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------
@@ -78,8 +78,8 @@ module.exports = {
   vWebGetOne: async (inputData) => {
     return await use_validator_on_data(getGetOneSchema, inputData);
   },
-  vWebPostUpdateActive: async (inputData) => {
-    return await use_validator_on_data(postUpdateActiveSchema, inputData);
+  vWebPostDelete: async (inputData) => {
+    return await use_validator_on_data(postDeleteSchema, inputData);
   },
   // * ------------------ END - Web - Attention Lines -----------------
   // * ------------------ Mobile - Attention Lines -----------------

@@ -23,8 +23,8 @@ exports.postRegister = async (req, res, next) => {
       createdAt: formatDate(new Date()),
     };
     
-    const result = await db.AttentionLine.create(dataQuery);
-    return res.status(StatusCodes.OK).json({ meta: null, data: result });
+    const result = await db.Security.create(dataQuery);
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     console.error(
       "attention line could not be created: ",
@@ -53,7 +53,7 @@ exports.postUpdate = async (req, res, next) => {
       address,
     };
 
-    const attLInDb = await db.AttentionLine.findByPk(id);
+    const attLInDb = await db.Security.findByPk(id);
 
     if (attLInDb === null) {
       throw {
@@ -97,7 +97,7 @@ exports.getListAll = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
-    const attLinesInDb = await db.AttentionLine.findAndCountAll({
+    const attLinesInDb = await db.Security.findAndCountAll({
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
@@ -138,7 +138,7 @@ exports.getAttentionLine = async (req, res, next) => {
       id: parseInt(req.params.id),
     });
 
-    const attentionLInDb = await db.AttentionLine.findByPk(id);
+    const attentionLInDb = await db.Security.findByPk(id);
 
     if (attentionLInDb === null) {
       throw {
@@ -160,11 +160,10 @@ exports.getAttentionLine = async (req, res, next) => {
  * Update the status of the attentionLines.active field (enabled/disabled) for a attention line
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUpdateActive = async (req, res, next) => {
+exports.postDelete = async (req, res, next) => {
   try {
-    const { id, active } = await validator.vWebPostUpdateActive(req.body);
-    
-    const attLInDb = await db.AttentionLine.findByPk(id);
+    const { id } = await validator.vWebPostDelete(req.body);
+    const attLInDb = await db.Security.findByPk(id);
 
     if (attLInDb === null) {
       throw {
@@ -173,7 +172,7 @@ exports.postUpdateActive = async (req, res, next) => {
       };
     }
 
-    await attLInDb.update(active);
+    await attLInDb.destroy();
 
     // return res.status(StatusCodes.OK).json({
     //   meta: null,
@@ -181,7 +180,7 @@ exports.postUpdateActive = async (req, res, next) => {
     // });
     return res
       .status(StatusCodes.OK)
-      .send({ meta: null, data: { id, active } });
+      .send({ meta: null, data: { id } });
   } catch (error) {
     console.error("attention line could not be updated: ", error.message);
     return next(error);

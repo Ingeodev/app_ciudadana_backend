@@ -3,7 +3,7 @@ const router = express.Router();
 const authorization = require("../../../../middleware/authMiddleware.js");
 
 const publicityController = require('../controllers/mobilePublicity.js');
-const attentionLinesController = require('../controllers/mobileAttentionLines.js');
+const securityController = require('../controllers/mobileSecurity.js');
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -16,23 +16,23 @@ router.get('/publicity/', publicityController.getUncategorized);
 router.get('/publicity/banners', publicityController.getCategorized);
 //#endregion
 
-//#region Attention Lines end-points
+//#region Security end-points
 router.get(
-  "/attention_lines",
+  "/security",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.getListAll
+  securityController.getListAll
 );
 
 router.get(
-  "/attention_lines/dependencies",
+  "/security/dependencies",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.getDependencies
+  securityController.getDependencies
 );
 
 router.post(
-  "/attention_lines/pqrsdf",
+  "/security/pqrsdf",
   // hasPermissions({ role: "super_master_user" }),
-  attentionLinesController.postPqrsdf
+  securityController.postPqrsdf
 );
 //#endregion
 

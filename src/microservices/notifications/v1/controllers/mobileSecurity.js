@@ -15,7 +15,7 @@ exports.getListAll = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : 100,
     });
 
-    const attentionLInDb = await db.AttentionLine.findAndCountAll({
+    const attentionLInDb = await db.Security.findAndCountAll({
       where: { active: true },
       attributes: ["name", "phone", "address"],
       limit: objPage.size,
