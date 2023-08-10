@@ -54,8 +54,8 @@ exports.postAccountInfo = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountBaseLogin = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
   try {
-    // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
 
     if (!clientId) {
@@ -84,25 +84,36 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       loginPhase: "inVerification",
     };
 
-    const resultUpdate = await db.User.update(
-      { ...dataUser, ...extraDataUser },
-      {
-        where: {
-          clientId,
-          loginPhase: "baseLogin",
-        },
-      }
-    );
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "baseLogin",
+      },
+    });
 
-    if (resultUpdate[0] === 0) {
+    if (userInDb === null) {
       throw {
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        message: "there was an error updating the record",
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="baseLogin does not exist`,
       };
     }
+
+    const resultUpdate = await userInDb.update(dataUser, { transaction });
+
+    // notify the administrator
+    const dataNotif = {
+      type: "user-inVerification",
+      referenceId: resultUpdate.id,
+      tableName: "Users",
+      message: "",
+    };
+    await db.AdminNotification.create(dataNotif);
+    await transaction.commit();
+
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
-    console.error("account full_login could not be retrieved: ", error);
+    await transaction.rollback();
+    console.error("account full_login could not be updated: ", error);
     if (
       error &&
       error.errors &&
@@ -220,22 +231,22 @@ exports.postAccountFullLogin = async (req, res, next) => {
       phone,
     };
 
-    const resultUpdate = await db.User.update(
-      dataUser,
-      {
-        where: {
-          clientId,
-          loginPhase: "fullLogin",
-        },
-      }
-    );
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "fullLogin",
+      },
+    });
 
-    if (resultUpdate[0] === 0) {
+    if (userInDb === null) {
       throw {
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        message: "there was an error updating the record",
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="fullLogin" does not exist`,
       };
     }
+
+    await userInDb.update(dataUser);
+
     return res.status(StatusCodes.OK).json(dataUser);
   } catch (error) {
     console.error("account full_login could not be retrieved: ", error);
