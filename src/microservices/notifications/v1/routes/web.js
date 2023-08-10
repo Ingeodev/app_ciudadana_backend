@@ -4,6 +4,7 @@ const authorization = require("../../../../middleware/authMiddleware.js");
 
 const advertisingController = require('../controllers/webAdvertisement');
 const securityController = require("../controllers/webSecurity");
+const securityCatController = require("../controllers/webSecurityCategories.js");
 const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 
@@ -37,7 +38,7 @@ router.post(
 router.post(
   "/security/edit",
   // hasPermissions({ role: "super_master_user" }),
-  securityController.postUpdate
+  securityController.postEdit
 );
 
 router.post(
@@ -56,6 +57,35 @@ router.get(
   "/security/:id",
   // hasPermissions({ role: "super_master_user" }),
   securityController.getAttentionLine
+);
+router.post(
+  "/security/category/",
+  // hasPermissions({ role: "super_master_user" }),
+  securityCatController.postRegister
+);
+
+router.post(
+  "/security/category/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  securityCatController.postEdit
+);
+
+// router.post(
+//   "/security/category/status",
+//   // hasPermissions({ role: "super_master_user" }),
+//   securityCatController.postStatus
+// );
+
+router.get(
+  "/security/category",
+  // hasPermissions({ role: "super_master_user" }),
+  securityCatController.getAll
+);
+
+router.get(
+  "/security/category/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  securityCatController.getOneById
 );
 //#endregion
 

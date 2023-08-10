@@ -5,15 +5,16 @@ const { formatDate } = require("../../../../middleware/formatDate.js");
 const validator = require("../../utils/validatorSecurity.js");
 
 /**
- * Create attention line
+ * Create an attention line of security/emergency
  * @param {object} req - Object containing the name, phone, imageUri, siteUri, address
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
+    const { categoryId, name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
+      categoryId,
       name,
       phone,
       imageUri,
@@ -26,26 +27,24 @@ exports.postRegister = async (req, res, next) => {
     const result = await db.Security.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
-    console.error(
-      "attention line could not be created: ",
-      error.message
-    );
+    // console.error("attention line of security/emergency could not be created: ", error.message);
     return next(error);
   }
 };
 
 /**
- * Update attention line
+ * Update an attention line of security/emergency
  * @param {object} req - Object containing the id, name, phone, imageUri, siteUri, address
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUpdate = async (req, res, next) => {
+exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, phone, imageUri, siteUri, address } =
+    const { id, categoryId, name, phone, imageUri, siteUri, address } =
       await validator.vWebPostUpdate(req.body);
 
     const dataQuery = {
       id,
+      categoryId,
       name,
       phone,
       imageUri,
@@ -58,7 +57,7 @@ exports.postUpdate = async (req, res, next) => {
     if (attLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The attention line with id=${id} does not exist`,
+        message: `The attention line of security/emergency with id=${id} does not exist`,
       };
     }
 
@@ -69,10 +68,7 @@ exports.postUpdate = async (req, res, next) => {
       data: resultUpdate,
     });
   } catch (error) {
-    console.error(
-      "attention line could not be updated: ",
-      error.message
-    );
+    // console.error("attention line of security/emergency could not be updated: ", error.message);
     if (
       error &&
       error.errors &&
@@ -87,7 +83,7 @@ exports.postUpdate = async (req, res, next) => {
 
 
 /**
- * Get all attention lines
+ * Get all attention lines of security/emergency
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAll = async (req, res, next) => {
@@ -103,12 +99,16 @@ exports.getListAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (attLinesInDb.count === 0) {
+    if (attLinesInDb.count <= 0)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "The requested page does not exist",
+        message: "There are no an attention lines of security/emergency registered in the database",
       };
-    }
+    if (attLinesInDb.rows.length <= 0)
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
     const totalPages = Math.ceil(attLinesInDb.count / objPage.size);
 
     const responseCustom = {
@@ -123,13 +123,13 @@ exports.getListAll = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    console.error("attention lines could not be recovered: ", error.message);
+    // console.error("attention lines could not be recovered: ", error.message);
     return next(error);
   }
 };
 
 /**
- * Get attention line by id
+ * Get an attention line of security/emergency by id
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAttentionLine = async (req, res, next) => {
@@ -143,7 +143,7 @@ exports.getAttentionLine = async (req, res, next) => {
     if (attentionLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "attention line information could not be retrieved",
+        message: "attention line of security/emergency information could not be retrieved",
       };
     }
 
@@ -151,13 +151,13 @@ exports.getAttentionLine = async (req, res, next) => {
       .status(StatusCodes.OK)
       .send({ meta: null, data: attentionLInDb });
   } catch (error) {
-    console.error("attention lines could not be recovered: ", error.message);
+    // console.error("attention lines could not be recovered: ", error.message);
     return next(error);
   }
 };
 
 /**
- * Update the status of the attentionLines.active field (enabled/disabled) for a attention line
+ * Destroy (Soft delete) an attention line of security/emergency
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
@@ -168,7 +168,7 @@ exports.postDelete = async (req, res, next) => {
     if (attLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The attention line with id=${id} does not exist`,
+        message: `The attention line of security/emergency with id=${id} does not exist`,
       };
     }
 
@@ -182,7 +182,7 @@ exports.postDelete = async (req, res, next) => {
       .status(StatusCodes.OK)
       .send({ meta: null, data: { id } });
   } catch (error) {
-    console.error("attention line could not be updated: ", error.message);
+    // console.error("attention line could not be updated: ", error.message);
     return next(error);
   }
 };

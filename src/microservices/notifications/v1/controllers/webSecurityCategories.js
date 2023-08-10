@@ -1,0 +1,178 @@
+const { StatusCodes } = require("http-status-codes");
+const db = require("../../../../../models/index.js");
+// const firebase = require("../utils/firebaseAdmin.js");
+// const { formatDate } = require("../../../../../middleware/formatDate.js");
+const validator = require("../../utils/validatorSecurityCategory.js");
+
+/**
+ * Create a security category
+ * @param {object} req - Object containing the name, imageUri, siteUri, color
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postRegister = async (req, res, next) => {
+  try {
+    const { name, imageUri, siteUri, color } = await validator.vWebPostRegister(
+      req.body
+    );
+
+    const dataQuery = {
+      name,
+      imageUri,
+      siteUri,
+      color,
+    };
+
+    const result = await db.SecurityCategory.create(dataQuery);
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
+  } catch (error) {
+    console.error("security category could not be created: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Update security category
+ * @param {object} req - Object containing the id, name, imageUri, siteUri, color
+ * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postEdit = async (req, res, next) => {
+  try {
+    const { id, name, imageUri, siteUri, color } = await validator.vWebPostEdit(req.body);
+
+    const dataQuery = {
+      id,
+      name,
+      imageUri,
+      siteUri,
+      color,
+    };
+
+    const categoryInDb = await db.SecurityCategory.findByPk(id);
+
+    if (categoryInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The security category with id=${id} does not exist`,
+      };
+    }
+
+    const resultUpdate = await categoryInDb.update(dataQuery);
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
+  } catch (error) {
+    console.error("security categories could not be updated: ", error.message);
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
+    return next(error);
+  }
+};
+
+/**
+ * Get all security categories
+ * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getAll = async (req, res, next) => {
+  try {
+    const objPage = await validator.vWebGetAll({
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+    });
+
+    const categInDb = await db.SecurityCategory.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
+
+    if (categInDb.count <= 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "There are no security categories registered in the database",
+      };
+    }
+    if (categInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    }
+    const totalPages = Math.ceil(categInDb.count / objPage.size);
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: categInDb.count,
+        totalPages: totalPages,
+      },
+      data: categInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    console.error("security categories could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Get security category by id
+ * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getOneById = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebGetOneById({
+      id: parseInt(req.params.id),
+    });
+
+    const categInDb = await db.SecurityCategory.findByPk(id);
+
+    if (categInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "Security category information could not be retrieved",
+      };
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: categInDb });
+  } catch (error) {
+    console.error("Security category could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Update the status of the documentType.active field (enabled/disabled) for a security categories
+ * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ */
+// exports.postStatus = async (req, res, next) => {
+//   try {
+//     const { id, active } = await validator.vWebPostStatus(req.body);
+//     const categoryInDb = await db.SecurityCategory.findByPk(id);
+
+//     if (categoryInDb === null) {
+//       throw {
+//         status: StatusCodes.NOT_FOUND,
+//         message: `The security categories with id=${id} does not exist`,
+//       };
+//     }
+
+//     const result = await categoryInDb.update(active);
+
+//     return res.status(StatusCodes.OK).send({ meta: null, data: result });
+//   } catch (error) {
+//     console.error("security categories could not be updated: ", error.message);
+//     return next(error);
+//   }
+// };
