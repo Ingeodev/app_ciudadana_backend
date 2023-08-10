@@ -35,10 +35,14 @@ const deleteAdvertisementSchema = joi.object({
 });
 
 const alertSchema = joi.object({
+  title: joi.string().required(),
   message: joi.string().required(),
   push: joi.bool().required(),
   sms: joi.bool().required(),
   alertList: joi.bool().required(),
+  siteUri: uri_string.required(),
+  imageUri: uri_string.required(),
+  expiresAt: joi.date(),
 });
 
 const simplePaginationSchema = joi.object({
