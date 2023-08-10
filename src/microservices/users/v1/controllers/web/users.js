@@ -306,16 +306,12 @@ exports.getUsersListAll = async (req, res, next) => {
 };
 
 /**
- * Update the status of the users.disabled field (to false) for a user
+ * Destroy the user (soft delete)
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-exports.postUsersUpdateDelete = async (req, res, next) => {
+exports.postUsersDelete = async (req, res, next) => {
   try {
-    const { clientId } = await validator.vPostUsersUpdateDeleted(req.body);
-    const dataUser = {
-      disabled: true,
-    };
-
+    const { clientId } = await validator.vPostUsersDeleted(req.body);
     const userInDb = await db.User.findOne({
       where: { clientId },
     });
@@ -327,12 +323,41 @@ exports.postUsersUpdateDelete = async (req, res, next) => {
       };
     }
 
-    // await userInDb.update(dataUser);
-    await userInDb.destroy(dataUser);
+    await userInDb.destroy();
     
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: { clientId }
+    });
+  } catch (error) {
+    console.error("users could not be deleted: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Destroy the user (soft delete)
+ * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postUsersStatus = async (req, res, next) => {
+  try {
+    const { clientId, disabled } = await validator.vPostUsersStatus(req.body);
+    const userInDb = await db.User.findOne({
+      where: { clientId },
+    });
+
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user does not exist`,
+      };
+    }
+
+    const result = await userInDb.update({ disabled });
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { result },
     });
   } catch (error) {
     console.error("users could not be deleted: ", error.message);
