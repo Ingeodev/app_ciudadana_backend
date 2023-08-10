@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Model } = require("sequelize");
 
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
@@ -10,10 +11,10 @@ const db = require("../../../../models/index");
 
 /**
  * Function that returns a batch of rows from the database, but defaults to users data.
- * @param {*} userModel The Sequelize model to use (for users if default)
- * @param {*} batchNumber The number of the batch to retrieve, batches start at 0
- * @param {*} batchSize The size of the batches to retrieve
- * @param {*} findAllOptions Options object as defined in [sequelize](https://sequelize.org/api/v6/class/src/model.js~model#static-method-findAll); Will overwrite all the default (user) options excepting the limit and offset.
+ * @param {Model} userModel The Sequelize model to use (for users if default)
+ * @param {number} batchNumber The number of the batch to retrieve, batches start at 0
+ * @param {number} batchSize The size of the batches to retrieve
+ * @param {object} findAllOptions Options object as defined in [sequelize](https://sequelize.org/api/v6/class/src/model.js~model#static-method-findAll); Will overwrite all the default (user) options excepting the limit and offset.
  * @returns A list of the users (or objects) found in the database.
  */
 const getUsersInBatches = async (
@@ -54,7 +55,7 @@ const getUsersInBatches = async (
 };
 
 
-const sendPushNotifications = async (message, usersPushIds) => {
+const sendPushNotifications = async (title, message) => {
   try {
     // TODO: send push notifications.
     console.log("TODO: send push notifications.");
@@ -67,8 +68,8 @@ const sendPushNotifications = async (message, usersPushIds) => {
 
 /**
  * Function that sends a bulk of SMS messages using [Twilio Messaging Services](https://www.twilio.com/docs/messaging/services). It requires that appropriate `TWILIO_ACCOUNT_SID` `TWILIO_AUTH_TOKEN` `TWILIO_MESSAGE_SERVICE_SID` are defined in the .env file.
- * @param {*} message 
- * @param {*} usersPhoneNumbers 
+ * @param {string} message The message to send in the SMS.
+ * @param {string[]} usersPhoneNumbers List of users' phone numbers (MUST include the zone identifier, e.g. +57).
  * @returns ``true`` if at least 10% of the messages are accepted by Twilio. `false` otherwise.
  */
 const sendSmsNotifications = async (message, usersPhoneNumbers) => {
@@ -112,6 +113,11 @@ const sendAlerts = async (req, res, next) => {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
         message: "At least one alert option must be true: push, sms, alertList",
       };
+    const adminUserId = await db.User.findOne({
+      where: { disabled: false, userMobile: true, clientId: req.locals.uid },
+      attributes: ['id'],
+    });
+    console.log(adminUserId); //TODO: continue
     const usersCount = await db.User.count({
       where: { disabled: false, userMobile: true },
     });
