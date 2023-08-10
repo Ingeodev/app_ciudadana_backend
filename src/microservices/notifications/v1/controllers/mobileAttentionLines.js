@@ -63,12 +63,16 @@ exports.getDependencies = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (dependenciesInDb.count === 0) {
+    if (dependenciesInDb.count <= 0)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "Dependencies could not be recovered",
+        message: "There are no Dependencies registered in the database",
       };
-    }
+    if (dependenciesInDb.rows.length <= 0)
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
     // const totalPages = Math.ceil(dependenciesInDb.count / objPage.size);
 
     return res.status(StatusCodes.OK).send(dependenciesInDb.rows);
