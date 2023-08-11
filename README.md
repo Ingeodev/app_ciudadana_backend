@@ -487,18 +487,105 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| title   	| String 	|      Yes     	| Title of the notification.    	|
-| message   	| String 	|      Yes     	| Message body of the notification.    	|
-| siteUri   	| String (URI) 	|      Yes     	| URL to website linked to the notification.    	|
-| imageUri   	| String (URI) 	|      Yes     	| URL to an image to show in the notification.    	|
-| push   	| Boolean 	|      Yes     	| Whether the alert service should use PUSH notifications.    	|
-| sms   	| Boolean 	|      Yes     	| Whether the alert service should use SMSs.    	|
-| alertList   	| Boolean 	|      Yes     	| Whether the alert service should use Alert List notifications.    	|
-| expiresAt   	| Date 	|      No     	| Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format.    	|
+| _title_   	| String 	|      Yes     	| Title of the notification.    	|
+| _message_   	| String 	|      Yes     	| Message body of the notification.    	|
+| _siteUri_   	| String (URI) 	|      Yes     	| URL to website linked to the notification.    	|
+| _imageUri_   	| String (URI) 	|      Yes     	| URL to an image to show in the notification.    	|
+| _push_   	| Boolean 	|      Yes     	| Whether the alert service should use PUSH notifications.    	|
+| _sms_   	| Boolean 	|      Yes     	| Whether the alert service should use SMSs.    	|
+| _alertList_   	| Boolean 	|      Yes     	| Whether the alert service should use Alert List notifications.    	|
+| _expiresAt_   	| Date 	|      No     	| Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format.    	|
 
-It returns **202 _Accepted_** and the updated object on success.
+At least one of `push`, `sms`, or `alertList` must be `true`.
+
+It returns **202 _Accepted_** and the created alert object on success.
 
 **Examples**
+
+1. Send PUSH notification only without specific expiration date
+
+    Request body:
+      >```JSON
+      >{
+      >  "title": "test",
+      >  "message": "test body",
+      >  "siteUri": "http://sample.uri/of/site",
+      >  "imageUri": "http://sample.image.uri/1234",
+      >  "push": true,
+      >  "sms": false,
+      >  "alertList": false
+      >}
+      >```
+
+    Response:
+      > _Status code: **202 Acepted**_
+      > ```JSON
+      > {
+      >   "meta": {
+      >       "message": "The alerts are being sent by the external services.",
+      >       "successfulAlerts": {
+      >           "push": true
+      >       }
+      >   },
+      >   "data": {
+      >       "id": 23,
+      >       "title": "test",
+      >       "message": "test body",
+      >       "siteUri": "http://sample.uri/of/site",
+      >       "imageUri": "http://sample.image.uri/1234",
+      >       "sentBy": 38,
+      >       "isPUSH": true,
+      >       "isSMS": false,
+      >       "isAlertList": false,
+      >       "expiresAt": "2023-08-12T15:54:51.000Z",
+      >       "updatedAt": "2023-08-11T15:54:51.214Z",
+      >       "createdAt": "2023-08-11T15:54:51.214Z"
+      >   }
+      > }
+      > ```
+
+2. Send PUSH notification only with specific expiration date
+
+    Request body:
+      >```JSON
+      >{
+      >  "title": "test",
+      >  "message": "test body",
+      >  "siteUri": "http://sample.uri/of/site",
+      >  "imageUri": "http://sample.image.uri/1234",
+      >  "push": true,
+      >  "sms": false,
+      >  "alertList": false,
+      >  "expiresAt": "2023-08-15T23:16:41.000Z"
+      >}
+      >```
+
+    Response:
+      > _Status code: **202 Acepted**_
+      > ```JSON
+      > {
+      >   "meta": {
+      >       "message": "The alerts are being sent by the external services.",
+      >       "successfulAlerts": {
+      >           "push": true
+      >       }
+      >   },
+      >   "data": {
+      >       "id": 23,
+      >       "title": "test",
+      >       "message": "test body",
+      >       "siteUri": "http://sample.uri/of/site",
+      >       "imageUri": "http://sample.image.uri/1234",
+      >       "sentBy": 38,
+      >       "isPUSH": true,
+      >       "isSMS": false,
+      >       "isAlertList": false,
+      >       "expiresAt": "2023-08-15T23:16:41.000Z",
+      >       "updatedAt": "2023-08-11T15:56:46.311Z",
+      >       "createdAt": "2023-08-11T15:56:46.311Z"
+      >   }
+      > }
+      > ```
 
 ------------
 
