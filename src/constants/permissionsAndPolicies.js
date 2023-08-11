@@ -1,5 +1,5 @@
 const POLICY_TEMPLATE = {
-  resource: '*',
+  resource: '',
   policies: ['']
 }
 
@@ -8,6 +8,10 @@ const ROLE_PERMISSIONS = {
   edit: "role:edit",
   show: "role:show",
   delete: "role:delete"
+}
+
+const COMPANY_PERMISSIONS = {
+  show: "company:show",
 }
 
 module.exports = {

@@ -102,6 +102,21 @@ Run the generated image in your environment
     docker push <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
 
 ```
+Migration to cloud run
+```
+
+    # from your root directory execute
+    docker build --platform linux/amd64 -t app_mobility_admin_ms -f src/microservices/admin/Dockerfile .
+    
+    # then 
+    docker run -d -p 3000:3000 app_mobility_admin_ms
+    
+    # for deployment tag your versions, this is an example
+    docker tag app_mobility_admin_ms:latest us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest 
+
+    # 
+```
+
 ------------
 ## 4. Microservices
 ------------

@@ -6,11 +6,17 @@ const { ROLE_PERMISSIONS } = require("../../../../constants/permissionsAndPolici
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 // router.use(authorization.authMiddleware);
-
 router.post(
   "/create",
    authorization.checkPermissions(ROLE_PERMISSIONS.create),
    webRoleController.createRole
+);
+
+// created_by: 'uid'
+router.post(
+  "/edit/123445566",
+  authorization.checkPermissions(ROLE_PERMISSIONS.create),
+  webRoleController.createRole
 );
 
 router.get("/", (req, res) => {

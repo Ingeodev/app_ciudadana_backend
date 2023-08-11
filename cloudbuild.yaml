@@ -1,0 +1,16 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: "bash"
+  args: [ "-c", "mkdir -p workspace/secrets && echo $$API_KEY > workspace/secrets/account_service_key.json" ]
+  secretEnv: [ "API_KEY" ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: "bash"
+  args: [ "-c", "cd workspace && cd secrets && ls" ]
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/Dockerfile', '.']
+images:
+- 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest'
+availableSecrets:
+  secretManager:
+    - versionName: projects/85094745134/secrets/service_key/versions/1
+      env: API_KEY
