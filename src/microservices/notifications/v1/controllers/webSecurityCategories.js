@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const db = require("../../../../../models/index.js");
+const db = require("../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 // const { formatDate } = require("../../../../../middleware/formatDate.js");
 const validator = require("../../utils/validatorSecurityCategory.js");

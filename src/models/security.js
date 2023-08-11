@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.SecurityCategory, {
+      Security.belongsTo(models.SecurityCategory, {
         foreignKey: {
           name: "categoryId",
           allowNull: false,

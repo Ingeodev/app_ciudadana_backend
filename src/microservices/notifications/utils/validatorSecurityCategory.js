@@ -8,7 +8,7 @@ const registerSchema = joi.object({
   name: joi.string().trim().required().empty("").invalid(" "),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  color: joi.number().integer().greater(0).required(),
+  color: joi.number().integer().required(),
 });
 
 const editSchema = joi.object({
