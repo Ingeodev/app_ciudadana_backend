@@ -13,16 +13,11 @@ module.exports = {
           unique: true,
         },
         code: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          unique: true,
-        },
-        name: {
           type: Sequelize.STRING,
           allowNull: false,
           unique: true,
         },
-        abbreviation: {
+        name: {
           type: Sequelize.STRING,
           allowNull: false,
           unique: true,

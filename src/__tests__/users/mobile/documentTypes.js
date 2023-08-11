@@ -16,14 +16,14 @@ describe("Mobile - Document Type management API points: ", () => {
   const testDocType0 = {
     id: 28,
     // name: "Cedula de extranjeria",
-    abbreviation: "CE",
+    code: "CE",
   };
 
   // ! Second object returned
   const testDocType1 = {
     id: 6,
     // name: "Cedula de ciudadania",
-    abbreviation: "CC",
+    code: "CC",
   };
 
   beforeAll(async () => {
@@ -41,17 +41,17 @@ describe("Mobile - Document Type management API points: ", () => {
     //   {
     //     id: 6,
     //     name: "Cedula de ciudadania",
-    //     abbreviation: "CC",
+    //     code: "CC",
     //   },
     //   {
     //     id: 1,
     //     name: "Registro civil",
-    //     abbreviation: "RC",
+    //     code: "RC",
     //   },
     //   {
     //     id: 5,
     //     name: "Tarjeta de identidad",
-    //     abbreviation: "TI",
+    //     code: "TI",
     //   },
     // ]
     test("should respond with status 200 and a list of objects containing the two created objects.", async () => {

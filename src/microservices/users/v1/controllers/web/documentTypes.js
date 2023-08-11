@@ -11,14 +11,13 @@ const validator = require("../../../utils/validators/web/documentTypes.js");
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { code, name, abbreviation } = await validator.vWebPostRegister(
+    const { code, name } = await validator.vWebPostRegister(
       req.body
     );
 
     const dataQuery = {
       code,
       name,
-      abbreviation,
       active: true,
     };
 
@@ -37,13 +36,12 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, code, name, abbreviation } = await validator.vWebPostEdit(req.body);
+    const { id, code, name } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
       code,
       name,
-      abbreviation,
     };
 
     const docTypeInDb = await db.DocumentType.findByPk(id);

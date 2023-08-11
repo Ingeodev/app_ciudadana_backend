@@ -5,16 +5,14 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  code: joi.number().integer().greater(0).required(),
   name: joi.string().trim().required().empty("").invalid(" "),
-  abbreviation: joi.string().trim().required().empty("").invalid(" "),
+  code: joi.string().trim().required().empty("").invalid(" "),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required(),
-  code: joi.number().integer().greater(0),
   name: joi.string().trim().empty("").invalid(" "),
-  abbreviation: joi.string().trim().empty("").invalid(" "),
+  code: joi.string().trim().empty("").invalid(" "),
 });
 
 const getAllSchema = joi.object({

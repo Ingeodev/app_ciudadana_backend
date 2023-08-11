@@ -12,27 +12,23 @@ describe("Web - Document Type management API points: ", () => {
   };
 
   const testDocType0 = {
-    code: 22,
     name: "Cedula de extranjeria",
-    abbreviation: "CE",
+    code: "CE",
   };
 
   const testDocType1 = {
-    code: 41,
     name: "Pasaporte",
-    abbreviation: "PA",
+    code: "PA",
   };
 
   const editDocType0 = {
-    code: 22,
     name: "Cedula de extranjeria - Test",
-    abbreviation: "CE",
+    code: "CE",
   };
 
   const editDocType1 = {
-    code: 41,
     name: "Pasaporte - Test",
-    abbreviation: "PA",
+    code: "PA",
   };
 
   beforeAll(async () => {
@@ -53,7 +49,7 @@ describe("Web - Document Type management API points: ", () => {
     //       "id": 1,
     //       "code": 11,
     //       "name": "Registro civil de nacimiento",
-    //       "abbreviation": "RC",
+    //       "code": "RC",
     //       "active": true,
     //       "updatedAt": "2023-08-07T21:12:58.889Z",
     //       "createdAt": "2023-08-07T21:12:58.889Z",
@@ -94,34 +90,6 @@ describe("Web - Document Type management API points: ", () => {
     // "code": "Bad Request"
     // }
     test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
-      const response0 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testDocType0,
-          code: "should be a number",
-        });
-      expect(response0.statusCode).toBe(400);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 400);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-
-      const response1 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testDocType0,
-          code: "should be a number",
-        });
-      expect(response1.statusCode).toBe(400);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
-
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -164,7 +132,7 @@ describe("Web - Document Type management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testDocType1,
-          code: 22,
+          code: "PA",
         });
       expect(response1.statusCode).toBe(500);
       expect(response1.body).not.toHaveProperty("meta");
@@ -328,7 +296,7 @@ describe("Web - Document Type management API points: ", () => {
     //         "id": 1,
     //         "code": 11,
     //         "name": "Registro civil",
-    //         "abbreviation": "RC",
+    //         "code": "RC",
     //         "active": true,
     //         "createdAt": "2023-08-07T21:12:58.889Z",
     //         "updatedAt": "2023-08-07T21:25:28.687Z",
@@ -473,7 +441,7 @@ describe("Web - Document Type management API points: ", () => {
     //     "id": 1,
     //     "code": 11,
     //     "name": "Registro civil",
-    //     "abbreviation": "RC",
+    //     "code": "RC",
     //     "active": true,
     //     "createdAt": "2023-08-07T21:12:58.889Z",
     //     "updatedAt": "2023-08-07T21:22:03.684Z",
@@ -558,25 +526,6 @@ describe("Web - Document Type management API points: ", () => {
 
       // {
       //     "status": 400,
-      //     "detail": "\"code\" must be a number",
-      //     "code": "Bad Request"
-      // }
-      const response1 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editDocType0,
-          code: "should be a number",
-        });
-      expect(response1.statusCode).toBe(400);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
-
-      // {
-      //     "status": 400,
       //     "detail": "\"code\" must be greater than 0",
       //     "code": "Bad Request"
       // }
@@ -585,7 +534,7 @@ describe("Web - Document Type management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editDocType0,
-          code: 0,
+          code: -5,
         });
       expect(response3.statusCode).toBe(400);
       expect(response3.body).not.toHaveProperty("meta");
@@ -593,25 +542,6 @@ describe("Web - Document Type management API points: ", () => {
       expect(response3.body).toHaveProperty("status", 400);
       expect(response3.body).toHaveProperty("code");
       expect(response3.body).toHaveProperty("detail");
-
-      // {
-      //     "status": 400,
-      //     "detail": "\"abbreviation\" must be a string",
-      //     "code": "Bad Request"
-      // }      
-      const response4 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editDocType0,
-          abbreviation: 0,
-        });
-      expect(response4.statusCode).toBe(400);
-      expect(response4.body).not.toHaveProperty("meta");
-      expect(response4.body).not.toHaveProperty("data");
-      expect(response4.body).toHaveProperty("status", 400);
-      expect(response4.body).toHaveProperty("code");
-      expect(response4.body).toHaveProperty("detail");
 
       // {
       //     "status": 400,
@@ -644,8 +574,7 @@ describe("Web - Document Type management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testDocType1,
-          ...editDocType1,
-          code: 22,
+          code: "CE",
         });
       expect(response0.statusCode).toBe(500);
       expect(response0.body).not.toHaveProperty("meta");

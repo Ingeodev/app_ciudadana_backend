@@ -27,16 +27,11 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       code: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true,
-      },
-      name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      abbreviation: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
