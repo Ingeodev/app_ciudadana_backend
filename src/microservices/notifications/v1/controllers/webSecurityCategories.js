@@ -176,3 +176,33 @@ exports.getOneById = async (req, res, next) => {
 //     return next(error);
 //   }
 // };
+
+/**
+ * Destroy a security category (soft delete)
+ * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postDelete = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebPostDelete(req.body);
+    const categInDb = await db.SecurityCategory.findOne({
+      where: { id },
+    });
+
+    if (categInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The security category does not exist`,
+      };
+    }
+
+    await categInDb.destroy();
+    
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { id }
+    });
+  } catch (error) {
+    // console.error("users could not be deleted: ", error.message);
+    return next(error);
+  }
+};

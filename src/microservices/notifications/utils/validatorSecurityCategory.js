@@ -12,11 +12,11 @@ const registerSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0),
+  id: joi.number().required().integer().empty("").greater(0).invalid(0),
   name: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
-  color: joi.number().integer().greater(0),
+  color: joi.number().integer(),
 });
 
 const getAllSchema = joi.object({
@@ -31,6 +31,10 @@ const getOneSchema = joi.object({
 const postActiveSchema = joi.object({
   id: joi.number().required().empty("").greater(0).invalid(0),
   active: joi.boolean().required(),
+});
+
+const postDeleteSchema = joi.object({
+  id: joi.number().required().empty("").greater(0).invalid(0),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -66,5 +70,8 @@ module.exports = {
   },
   vWebPostStatus: async (inputData) => {
     return await use_validator_on_data(postActiveSchema, inputData);
+  },
+  vWebPostDelete: async (inputData) => {
+    return await use_validator_on_data(postDeleteSchema, inputData);
   },
 };

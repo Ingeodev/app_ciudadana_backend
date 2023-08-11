@@ -56,34 +56,34 @@ router.get(
 router.get(
   "/security/:id",
   // hasPermissions({ role: "super_master_user" }),
-  securityController.getAttentionLine
+  securityController.getSecurity
 );
 router.post(
-  "/security/category/",
+  "/security_category/",
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.postRegister
 );
 
 router.post(
-  "/security/category/edit",
+  "/security_category/edit",
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.postEdit
 );
 
-// router.post(
-//   "/security/category/status",
-//   // hasPermissions({ role: "super_master_user" }),
-//   securityCatController.postStatus
-// );
+router.post(
+  "/security_category/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  securityCatController.postDelete
+);
 
 router.get(
-  "/security/category",
+  "/security_category",
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.getAll
 );
 
 router.get(
-  "/security/category/:id",
+  "/security_category/:id",
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.getOneById
 );
