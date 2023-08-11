@@ -6,6 +6,7 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 
 - [CALI MOBILITY BACKEND](#cali-mobility-backend)
   - [1. Tools](#1-tools)
+  - [**Postman**: Documentation Link](#postman-documentation-link)
   - [2. Architecture](#2-architecture)
     - [2.1. Response Format](#21-response-format)
       - [Successful HTTP Request](#successful-http-request)
@@ -13,22 +14,30 @@ This backend has been generated from scratch to support the Cali Mobility Applic
   - [3. Run local](#3-run-local)
   - [4. Microservices](#4-microservices)
     - [4.1. Users Microservice](#41-users-microservice)
-		- [App Runner](#app-runner)
-		- [How to run in local](#how-to-run-in-local)
-		- [List of endpoints](#413-list-of-endpoints)
+      - [App Runner](#app-runner)
+      - [How to run in local](#how-to-run-in-local)
+      - [List of endpoints](#list-of-endpoints)
+        - [Mobile App](#mobile-app)
+        - [Web App](#web-app)
     - [4.2. Notifications Microservice](#42-notifications-microservice)
-      - [4.2.1 Advertising](#421-advertising)
+      - [App Runner](#app-runner-1)
+      - [4.2.1. Advertising](#421-advertising)
         - [_POST_ save new advertisement](#post-save-new-advertisement)
         - [_GET_ list advertisements](#get-list-advertisements)
         - [_POST_ update advertisement](#post-update-advertisement)
         - [_POST_ change advertisement status](#post-change-advertisement-status)
         - [_POST_ delete advertisement](#post-delete-advertisement)
-      - [4.2.2. Publicity](#423-publicity)
+      - [4.2.2 Publicity](#422-publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
       - [4.2.3. Attention Lines](#423-attention-lines)
+      - [List of endpoints](#list-of-endpoints-1)
+        - [Mobile App](#mobile-app-1)
+        - [Web App](#web-app-1)
       - [4.2.4. Service Lines](#424-service-lines)
-      - [4.2.5. Alert](#425-alert)
+      - [4.2.5. Alerts](#425-alerts)
+        - [_GET_ All Alerts](#get-all-alerts)
+        - [_POST_ Send Alert](#post-send-alert)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
@@ -389,6 +398,7 @@ Response:
   >    }
   > }
   > ```
+
 ------------
 #### 4.2.2 Publicity 
 
@@ -448,12 +458,19 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 | /attention_lines/edit  | POST  | postUpdate  | Update an attention line  |
 | /attention_lines/status  | POST  | postUpdateActive | Activate or deactivate an attention line |
 | /attention_lines/:id | GET | getAttentionLine | Get an attention line by id |
+
 ------------
+
 #### 4.2.4. Service Lines 
+
 ------------
-#### 4.2.5. Alert 
-#### List of endpoints
-##### Web App
+
+#### 4.2.5. Alerts
+
+The Alerts endpoints allow web users to send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List), and list the previously-delivered alerts.
+
+**_List of endpoints_**
+**Web App**
 	Path: http:localhost:3000/api/web/v1/notifications/alert
 	Controller: src\microservices\notifications\v1\controllers\webAlert.js
 	Route: src\microservices\notifications\v1\routes\web.js
@@ -463,9 +480,33 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 | /alert | GET | getlistAll | Get all alerts |
 | /alert | POST | sendAlerts | Send alerts to users |
 
+##### _GET_ All Alerts
+
+##### _POST_ Send Alert
+\(\<Your_Host\>/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| title   	| String 	|      Yes     	| Title of the notification.    	|
+| message   	| String 	|      Yes     	| Message body of the notification.    	|
+| siteUri   	| String (URI) 	|      Yes     	| URL to website linked to the notification.    	|
+| imageUri   	| String (URI) 	|      Yes     	| URL to an image to show in the notification.    	|
+| push   	| Boolean 	|      Yes     	| Whether the alert service should use PUSH notifications.    	|
+| sms   	| Boolean 	|      Yes     	| Whether the alert service should use SMSs.    	|
+| alertList   	| Boolean 	|      Yes     	| Whether the alert service should use Alert List notifications.    	|
+| expiresAt   	| Date 	|      No     	| Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format.    	|
+
+It returns **202 _Accepted_** and the updated object on success.
+
+**Examples**
+
+------------
+
+
 ------------
 ### 4.3. Third-Party Microservice
 This microservice handles third-party APIs.
+
 ------------
 ## 5. Contributors
 
