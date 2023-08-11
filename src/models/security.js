@@ -9,12 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Security.belongsTo(models.SecurityCategory, {
-        foreignKey: {
-          name: "categoryId",
-          allowNull: false,
-        },
-      });
     }
   }
   Security.init(
@@ -25,11 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
         unique: true,
-      },
-      categoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false,
       },
       name: {
         type: DataTypes.STRING,

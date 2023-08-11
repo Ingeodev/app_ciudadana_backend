@@ -11,10 +11,9 @@ const validator = require("../../utils/validatorSecurity.js");
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { categoryId, name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
+    const { name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
-      categoryId,
       name,
       phone,
       imageUri,
@@ -39,12 +38,11 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, categoryId, name, phone, imageUri, siteUri, address } =
+    const { id, name, phone, imageUri, siteUri, address } =
       await validator.vWebPostUpdate(req.body);
 
     const dataQuery = {
       id,
-      categoryId,
       name,
       phone,
       imageUri,
@@ -132,7 +130,7 @@ exports.getListAll = async (req, res, next) => {
  * Get an attention line of security/emergency by id
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
-exports.getAttentionLine = async (req, res, next) => {
+exports.getSecurity = async (req, res, next) => {
   try {
     const { id } = await validator.vWebGetOne({
       id: parseInt(req.params.id),
