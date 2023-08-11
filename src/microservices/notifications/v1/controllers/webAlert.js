@@ -1,14 +1,16 @@
 const { StatusCodes } = require("http-status-codes");
 const { Model } = require("sequelize");
-const { appFirebase } = require("../../../../middleware/authMiddleware")
 
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
 const twilioClient = require("twilio")(twilioAccountSid, twilioAuthToken);
 
+const { appFirebase } = require("../../../../middleware/authMiddleware")
 const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
+
+const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
 
 /**
  * Function that returns a batch of rows from the database, but defaults to users data.
@@ -55,10 +57,16 @@ const getUsersInBatches = async (
   return await userModel.findAll(options);
 };
 
-
+/**
+ * Function that sends push notifications using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging). It requires that an appropriate `FCM_TOPIC_NAME_MOBILE` is defined in the .env file.
+ * @param {string} title The title for the push notification
+ * @param {string} message The message for the push notification
+ * @param {string} imageUri The URI to an image to show in the push notification
+ * @param {string} siteUri The URI to a website to use from the push notification
+ * @returns `true` if Firebase accepts the notification, `false` otherwise.
+ */
 const sendPushNotifications = async (title, message, imageUri, siteUri) => {
   try {
-    const topic = process.env.FCM_TOPIC_NAME_MOBILE;
     // Code from https://firebase.google.com/docs/cloud-messaging/android/send-image?hl=es-419#build_the_send_request updated from current API (https://firebase.google.com/docs/reference/admin/node/firebase-admin.messaging.messaging.md#messagingsend).
     const notification = {
       notification: {
@@ -82,11 +90,11 @@ const sendPushNotifications = async (title, message, imageUri, siteUri) => {
         headers: { image: imageUri, },
         notification: { image: imageUri },
       },
-      topic,
+      topic: firebaseCMTopicName,
     };
     const firebaseResponse = await appFirebase.messaging().send(notification);
     // Code based on the API (https://firebase.google.com/docs/reference/admin/node/firebase-admin.messaging.messaging.md#messagingsendtotopic).
-    // const firebaseResponse = await appFirebase.messaging().sendToTopic(topic, {
+    // const firebaseResponse = await appFirebase.messaging().sendToTopic(firebaseCMTopicName, {
     //   notification: {
     //     title,
     //     body: message,
@@ -98,7 +106,7 @@ const sendPushNotifications = async (title, message, imageUri, siteUri) => {
     // }, {
     //   dryRun: true
     // });
-    console.log('firebaseResponse', firebaseResponse);
+    console.log('firebaseResponse:', firebaseResponse);
     return true;
   } catch (error) {
     console.error(error);
@@ -114,16 +122,17 @@ const sendPushNotifications = async (title, message, imageUri, siteUri) => {
  */
 const sendSmsNotifications = async (message, usersPhoneNumbers) => {
   try {
-    const smsPromises = usersPhoneNumbers.map((number) => {
-      twilioClient.messages.create({
+    const smsPromises = usersPhoneNumbers.map(async (number) => {
+      return twilioClient.messages.create({
         messagingServiceSid: twilioMessageServiceSid,
         body: message,
         to: number,
       });
     });
     const smsResponses = await Promise.allSettled(smsPromises);
+    console.log('smsResponses: ', smsResponses);
     const fulfilled = smsResponses.filter(resp => (resp.status === 'fulfilled'));
-    if (fulfilled.length() < smsResponses.length() * 0.1)
+    if (fulfilled.length < smsResponses.length * 0.1)
       return false;
     return true;
   } catch (error) {
@@ -154,12 +163,12 @@ const sendAlerts = async (req, res, next) => {
         message: "At least one alert option must be true: push, sms, alertList",
       };
     const adminUserData = await db.User.findOne({
-      where: { disabled: false, userMobile: true, clientId: res.locals.uid },
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ['id'],
     });
-    if (adminUserData.id == null)
+    if (adminUserData == null || adminUserData.id == null)
       throw {
-        message: 'Requesting user is not registered in the database yet.',
+        message: 'Requesting user is not allowed to send alerts or is not registered in the database yet.',
         status: StatusCodes.FORBIDDEN,
       };
     const sentBy = adminUserData.id;
@@ -172,19 +181,19 @@ const sendAlerts = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
     const totalBatches = Math.floor(usersCount / batchSize);
-    const alertsSent = {};
+    const successfulAlerts = {};
     if (push)
-      alertsSent.push = await sendPushNotifications(title, message, imageUri, siteUri);
+      successfulAlerts.push = await sendPushNotifications(title, message, imageUri, siteUri);
     if (sms || alertList) {
       for (let i = 0; i <= totalBatches; i++) {
         const usersDataBatch = await getUsersInBatches(db.User, i, batchSize);
         if (sms) {
           const usersPhoneNumbers = usersDataBatch.map((user) => user.phone);
-          alertsSent.sms = await sendSmsNotifications(message, usersPhoneNumbers);
+          successfulAlerts.sms = await sendSmsNotifications(message, usersPhoneNumbers);
         }
         if (alertList) {
           const usersAlertListIds = usersDataBatch.map((user) => user.id); // TODO: Revisar; no sé cómo sería.
-          alertsSent.alertList = await sendAlertListNotifications(
+          successfulAlerts.alertList = await sendAlertListNotifications(
             message,
             usersAlertListIds
           );
@@ -193,7 +202,7 @@ const sendAlerts = async (req, res, next) => {
     }
     let expirationDate;
     if (expiresAt == null)
-      expirationDate = new Date().toUTCString();
+      expirationDate = new Date(Date.now() + (3600 * 1000 * 24)).toUTCString();
     else
       expirationDate = expiresAt.toUTCString();
     const savedAlert = await db.Alert.create({
@@ -209,6 +218,7 @@ const sendAlerts = async (req, res, next) => {
       .json({
         meta: {
           message: "The alerts are being sent by the external services.",
+          successfulAlerts
         },
         data: { ...savedAlert.dataValues, deletedAt: undefined },
       });
