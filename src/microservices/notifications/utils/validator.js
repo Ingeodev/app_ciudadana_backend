@@ -54,6 +54,17 @@ const getAlertsListAllSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
+const registerPushSchema = joi.object({
+  deviceToken: joi.string().trim().min(5).required(),
+});
+
+/**
+ * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
+ * @param {joi.ObjectSchema} validator_schema Validation schema to use.
+ * @param {object} data Incoming data to validate.
+ * @returns {object} Validated data.
+ * @throws Validation error and BAD_REQUEST (400) status on validation failure.
+ */
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -87,6 +98,9 @@ module.exports = {
   },
   validateAlertSchema: async (inputData) => {
     return await use_validator_on_data(alertSchema, inputData);
+  },
+  validateRegisterPushSchema: async (inputData) => {
+    return await use_validator_on_data(registerPushSchema, inputData);
   },
   validateSimplePaginationSchema: async (inputData) => {
     return await use_validator_on_data(simplePaginationSchema, inputData);
