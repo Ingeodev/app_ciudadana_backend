@@ -92,6 +92,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
+      pushDeviceToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false,
+      },
     },
     {
       sequelize,
