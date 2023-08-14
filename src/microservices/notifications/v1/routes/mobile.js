@@ -40,8 +40,17 @@ router.get(
 );
 //#endregion
 
+//#region AttentionLines end-points
+router.get(
+  "/attention_lines/",
+  // hasPermissions({ role: "super_master_user" }),
+  attentionController.getAttentionLine
+);
+//#endregion
+
 //#region Alerts (Notifications in swagger) end-points
-router.post('/alert/register', alertController.registerPush);
+router.post('/register', alertController.registerPush);
+router.get('/', alertController.getListActive);
 //#endregion
 
 module.exports = router
