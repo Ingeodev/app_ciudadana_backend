@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const authorization = require("../../../../middleware/authMiddleware.js");
-const publicityController = require('../controllers/mobilePublicity.js');
-const securityController = require("../controllers/mobileSecurity.js");
-const attentionController = require("../controllers/mobileAttentionLines.js");
+
+const authorization = require("../../../../middleware/authMiddleware");
+const publicityController = require('../controllers/mobilePublicity');
+const securityController = require("../controllers/mobileSecurity");
+const attentionController = require("../controllers/mobileAttentionLines");
+const alertController = require("../controllers/mobileAlert");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -35,14 +37,6 @@ router.get(
   "/security",
   // hasPermissions({ role: "super_master_user" }),
   securityController.getListAll
-);
-//#endregion
-
-//#region AttentionLines end-points
-router.get(
-  "/attention_lines/",
-  // hasPermissions({ role: "super_master_user" }),
-  attentionController.getAttentionLine
 );
 //#endregion
 

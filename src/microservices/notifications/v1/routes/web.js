@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const authorization = require("../../../../middleware/authMiddleware.js");
 
+const authorization = require("../../../../middleware/authMiddleware");
 const advertisingController = require('../controllers/webAdvertisement');
 const securityController = require("../controllers/webSecurity");
-const securityCatController = require("../controllers/webSecurityCategories.js");
+const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 
