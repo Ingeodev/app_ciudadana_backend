@@ -385,7 +385,7 @@ It returns **200 _OK_** and the updated object on success.
 Request body:
   >```JSON
   >{
-  >    "id": 38,
+  >    "id": 38
   >}
   >```
 
@@ -470,6 +470,48 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 The Alerts endpoints allow web users to send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List), and list the previously-delivered alerts.
 
 **_List of endpoints_**
+**Mobile App**
+	Path: http:localhost:3000/api/web/v1/notifications/
+	Controller: src\microservices\notifications\v1\controllers\mobileAlert.js
+	Route: src\microservices\notifications\v1\routes\mobile.js
+
+| Endpoint  | Method  |  Location in Controller |  Description |
+| :------------ | :------------ | :------------ | :------------ |
+| / | GET | getListActive | Get active alerts |
+| /register | POST | registerPush | Send alerts to users |
+
+##### _GET_ Active Alerts (mobile)
+\(\<Your_Host\>/web/v1/notifications/\)
+
+
+##### _POST_ Register Device Token (mobile)
+\(\<Your_Host\>/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _deviceToken_   	| String 	|      Yes     	| Token produced by Firebase to identify the device (i.e. smartphone)   	|
+
+It returns **200 _OK_** and the device token on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >    "deviceToken": "14095475-7695-4fd5-b334-4e521d0c3262"
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >    "data": {
+  >        "deviceToken": "14095475-7695-4fd5-b334-4e521d0c3262"
+  >    }
+  > }
+  > ```
+
 **Web App**
 	Path: http:localhost:3000/api/web/v1/notifications/alert
 	Controller: src\microservices\notifications\v1\controllers\webAlert.js
