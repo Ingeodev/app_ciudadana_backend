@@ -6,6 +6,13 @@ const postRegisterchema = joi.object({
   phone: joi.number().integer().greater(0).less(9999999999).required(),
   whatsapp: joi.number().integer().greater(0).less(9999999999).required(),
 });
+// * ------------------ END - Web - Attention Lines -----------------
+// * ------------------ Mobile - Attention Lines -----------------
+// const mGetListAllSchema = joi.object({
+//   number: joi.number().integer().greater(0),
+//   size: joi.number().integer().greater(0),
+// });
+// * ------------------ END - Mobile - Attention Lines -----------------
 
 const use_validator_on_data = async (validator_schema, data) => {
   try {

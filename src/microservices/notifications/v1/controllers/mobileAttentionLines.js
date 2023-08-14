@@ -5,16 +5,23 @@ const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorAttentionLines.js");
 
 /**
- * Get all attention lines
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
+ * Get current attention line
+ * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
-exports.getListAll = async (req, res, next) => {
+exports.getAttentionLine = async (req, res, next) => {
   try {
-    const objPage = await validator.vMobileMGetListAll({
-      number: req.query.page ? parseInt(req.query.page.number) : 1,
-      size: req.query.page ? parseInt(req.query.page.size) : 100,
+    // const objPage = await validator.vMobileMGetListAll({
+    //   number: req.query.page ? parseInt(req.query.page.number) : 1,
+    //   size: req.query.page ? parseInt(req.query.page.size) : 100,
+    // });
+
+    const attentionLineDb = await db.AttentionLine.findOne({
+      attributes: ["phone", "whatsapp"],
+      // Ordered from current date
+      order: [["createdAt", "DESC"]],
     });
 
+<<<<<<< HEAD
     const attentionLInDb = await db.AttentionLine.findAndCountAll({
       where: { active: true },
       attributes: ["name", "phone", "address"],
@@ -74,22 +81,18 @@ exports.getDependencies = async (req, res, next) => {
         message: '"page.number" is too large for the number of possible pages',
       };
     // const totalPages = Math.ceil(dependenciesInDb.count / objPage.size);
+=======
+    if (attentionLineDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "attention line information could not be retrieved",
+      };
+    }
+>>>>>>> feature/attention_lines/get_v0.1.1
 
-    return res.status(StatusCodes.OK).send(dependenciesInDb.rows);
+    return res.status(StatusCodes.OK).send(attentionLineDb);
   } catch (error) {
-    console.error("Dependencies could not be recovered: ", error.message);
+    console.error("attention lines could not be recovered: ", error.message);
     return next(error);
   }
-};
-
-/**
- * Register a pqrsdf
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
- */
-exports.postPqrsdf = async (req, res, next) => {
-  return res.status(StatusCodes.OK).json({
-    status: StatusCodes.OK,
-    code: "OK",
-    detail: "endpoint in construction",
-  });
 };
