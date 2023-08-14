@@ -40,8 +40,8 @@ router.get(
 );
 //#endregion
 
-router.get("/", (req, res) => {
-  res.status(200).json("Mobile API - Notifications Microservice");
-});
+//#region Alerts (Notifications in swagger) end-points
+router.post('/alert/register', alertController.registerPush);
+//#endregion
 
 module.exports = router
