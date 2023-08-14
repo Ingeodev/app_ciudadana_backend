@@ -31,13 +31,11 @@ const registerPush = async (req, res, next) => {
         status = StatusCodes.UNPROCESSABLE_ENTITY;
       throw { status, message };
     }
-    // const updatedUser = await userData.update({ pushDeviceToken: deviceToken }); // TODO: implement in DB
-    // { ...updatedUser.dataValues, deletedAt: undefined }
+    await userData.update({ pushDeviceToken: deviceToken });
+    console.log({ firebaseResponse });
     return res
       .status(StatusCodes.OK)
-      .json({
-        data: firebaseResponse,
-      });
+      .json({ deviceToken });
   } catch (error) {
     next(error);
   }
