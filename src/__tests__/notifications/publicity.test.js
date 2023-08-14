@@ -19,7 +19,7 @@ describe("Publicity consumption API points: ", () => {
         const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
             .post('/accounts:signInWithPassword')
             .query({ key: global.firebaseKey })
-            .send(global.firebaseTestUserLogin);
+            .send(global.firebaseTestMobileUserLogin);
         requestHeaders.Authorization += firebaseAuth.body.idToken;
         // console.log(requestHeaders);
     });
