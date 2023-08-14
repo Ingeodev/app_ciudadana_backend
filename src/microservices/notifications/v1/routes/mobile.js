@@ -23,11 +23,11 @@ router.get(
   attentionController.getDependencies
 );
 
-router.post(
-  "/attention_lines/pqrsdf",
-  // hasPermissions({ role: "super_master_user" }),
-  attentionController.postPqrsdf
-);
+// router.post(
+//   "/attention_lines/pqrsdf",
+//   // hasPermissions({ role: "super_master_user" }),
+//   attentionController.postPqrsdf
+// );
 //#endregion
 
 //#region Security end-points
