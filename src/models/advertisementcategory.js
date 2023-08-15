@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    color: DataTypes.STRING(10),
   }, {
     sequelize,
     modelName: 'AdvertisementCategory',
