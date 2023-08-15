@@ -3,6 +3,7 @@ const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersWeb = require("../controllers/web/users.js");
 const adminNotif = require("../controllers/web/adminNotifications.js");
+const adminController = require("../controllers/web/admins.js");
 const documentTypes = require("../controllers/web/documentTypes.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
@@ -96,11 +97,38 @@ router.post(
   usersWeb.postUsersFullLogin
 );
 
-router.get(
-  "/admin/notifications",
+// TODO: -- Start - Admin Endpoints
+//#region Admin end-points
+ router.get(
+  "/admins/notifications",
+   // hasPermissions({ role: "super_master_user" }),
+   adminNotif.getAllNotifications
+ );
+
+router.post(
+  "/admins/",
   // hasPermissions({ role: "super_master_user" }),
-  adminNotif.getAllNotifications
+  adminController.postRegister
 );
 
+// router.post(
+//   "/admins/delete",
+//   // hasPermissions({ role: "super_master_user" }),
+//   adminController.postDelete
+// );
+
+// router.get(
+//   "/admins",
+//   // hasPermissions({ role: "super_master_user" }),
+//   adminController.getAll
+// );
+
+// router.get(
+//   "/admins/:id",
+//   // hasPermissions({ role: "super_master_user" }),
+//   adminController.getOneById
+// );
+//#endregion - Admin
+// TODO: -- End - Admin Endpoints
 
 module.exports = router;

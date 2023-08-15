@@ -1,0 +1,257 @@
+const { StatusCodes } = require("http-status-codes");
+const db = require("../../../../../models/index.js");
+const firebase = require("../../../utils/firebaseAdmin.js");
+// const { formatDate } = require("../../../../../middleware/formatDate.js");
+const validator = require("../../../utils/validators/web/admins.js");
+
+/**
+ * Generates a (random) string of length n.
+ * @param {integer} length - String length.
+ * @return {string} string (random).
+ */
+function generateSecureRandomString(length) {
+  try {
+    if (!Number.isInteger(length) || length <= 0) {
+      throw new Error("Length must be a positive integer");
+    }
+  } catch (error) {
+    console.error("Error capturado:", error.message);
+    return null;
+  }
+  let result = "";
+  // const validChars =
+  //   "!#%*,-./0123456789:=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_abcdefghijklmnopqrstuvwxyz";
+  const validChars =
+    ".0123456789:=@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+  const charactersLength = validChars.length;
+  // const bytes = crypto.randomBytes(length);
+  for (let i = 0; i < length; i = 1) {
+    // result = validChars.charAt(Math.floor(Math.random() * charactersLength));
+    // result = validChars.charAt(bytes[i] % charactersLength);
+    result = validChars.charAt(crypto.randomInt(0, charactersLength));
+  }
+  return result;
+}
+
+/**
+ * Create a admin
+ * @param {object} req - Object containing the code, name, abbreviation
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postRegister = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const {
+      roleId,
+      name,
+      lastName,
+      email,
+      documentTypeId,
+      numberDocument,
+      phone,
+    } = await validator.vWebPostRegister(req.body);
+
+    // Create the user in firebase and return clientId
+    const dataUser = {
+      displayName: `${name} ${lastName}`,
+      password: "123456",
+      // password: generateSecureRandomString(16),
+      email,
+    };
+    const clientId = await firebase.createUser(dataUser, { transaction });
+
+    if (clientId.status === 500) {
+      throw {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        message: clientId.detail,
+      };
+    }
+
+    const dataQuery = {
+      clientId,
+      // ! Propongo guardar el admin inicialmente, con rolId=NULL
+      // ! Despues de asignarle permisos en Firebase, actualizar el rol del admin
+      // ! Lo mejor sería asignar el rol mediante otro servicio
+      // roleId,
+      name,
+      lastName,
+      email,
+      documentTypeId,
+      numberDocument,
+      phone,
+      disabled: false,
+    };
+
+    const userInDb = await db.Admin.create(dataQuery);
+
+    if (!userInDb) {
+      await transaction.rollback();
+      throw {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        message: `Error saving admin user`,
+      };
+    }
+
+    // ! Pendiente: Consultar la tabla roles
+    const role = "super_master_user";
+    await firebase.addCustomClaim(clientId, role);
+
+    userInDb.set({ roleId: roleId });
+    const resUpdate = await userInDb.save();
+    await transaction.commit();
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ meta: null, data: resUpdate });
+  } catch (error) {
+    await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
+ * Update admin
+ * @param {object} req - Object containing the code, name, abbreviation
+ * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postEdit = async (req, res, next) => {
+  try {
+    const { id, phone, imageUri, siteUri } = await validator.vWebPostEdit(
+      req.body
+    );
+
+    const dataQuery = {
+      id,
+      phone,
+      imageUri,
+      siteUri,
+    };
+
+    const adminInDb = await db.Admin.findByPk(id);
+
+    if (adminInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The admin with id=${id} does not exist`,
+      };
+    }
+
+    const resultUpdate = await adminInDb.update(dataQuery);
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
+  } catch (error) {
+    // console.error("admin could not be updated: ", error.message);
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
+    return next(error);
+  }
+};
+
+/**
+ * Get all admins
+ * @return {object} Response contains: statuscode (integer), json (objeto): data admins. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getAll = async (req, res, next) => {
+  try {
+    const objPage = await validator.vWebGetAll({
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+    });
+
+    const adminsInDb = await db.Admin.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+    });
+
+    if (adminsInDb.count <= 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "There are no admins registered in the database",
+      };
+    }
+    if (adminsInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    }
+    const totalPages = Math.ceil(adminsInDb.count / objPage.size);
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: adminsInDb.count,
+        totalPages: totalPages,
+      },
+      data: adminsInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    // console.error("document types could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Get admin by id
+ * @return {object} Response contains: statuscode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getOneById = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebGetOneById({
+      id: parseInt(req.params.id),
+    });
+
+    const adminInDb = await db.Admin.findByPk(id);
+
+    if (adminInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "Admin information could not be retrieved",
+      };
+    }
+
+    return res.status(StatusCodes.OK).send({ meta: null, data: adminInDb });
+  } catch (error) {
+    // console.error("Admin could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Delete an admin
+ * @return {object} Response contains: statuscode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postDelete = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebPostDelete(req.body);
+    const adminInDb = await db.Admin.findByPk(id);
+
+    if (adminInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The admin with id=${id} does not exist`,
+      };
+    }
+
+    await adminInDb.destroy();
+
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: { id, active } });
+  } catch (error) {
+    // console.error("admin could not be updated: ", error.message);
+    return next(error);
+  }
+};

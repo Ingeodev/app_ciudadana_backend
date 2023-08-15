@@ -1,20 +1,50 @@
+const { StatusCodes } = require("http-status-codes");
 const { appFirebase, adminFirebase } = require("../../../middleware/authMiddleware.js");
 
-const createUserWithRole = async (displayName, password, email) => {
-  const { uid } = await appFirebase.auth().createUser({
-    displayName,
-    password,
-    email,
-  });
-  await appFirebase.auth().setCustomUserClaims(uid, { role: "external_user" });
+exports.createUser = async (data) => {
+  try {
+    const { uid } = await appFirebase.auth().createUser({
+      displayName: data.displayName,
+      password: data.password,
+      email: data.email,
+    });
+
+    if (uid === null) {
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error creating admin user`,
+        code: "Internal Server Error",
+      };
+    }
+
+    return uid;
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error creating admin user: ${error.message}`,
+      code: "Internal Server Error",
+    };
+  }
 };
 
-const addCustomClaimToUser = async (uid) => {
-  const additionalClaims = {
-    role: "super_master_user",
-  };
-  const response = await appFirebase.auth().setCustomUserClaims(uid, additionalClaims);
-  console.log(response);
+exports.addCustomClaim = async (uid, role) => {
+  try {
+    const additionalClaims = {
+      // role: "super_master_user",
+      role,
+    };
+    const response = await appFirebase
+      .auth()
+      .setCustomUserClaims(uid, additionalClaims);
+
+    return response;
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error creating admin user: ${error.message}`,
+      code: "Internal Server Error",
+    };
+  }
 };
 
 const createCustomTokens = async (uid) => {
