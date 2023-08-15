@@ -16,12 +16,15 @@ const getAllAdvertisements = async (req, res, next) => {
             limit: pagination.size,
             include: [{
                 model: db.AdvertisementCategory,
-                attributes: ['name'],
+                attributes: ['name', 'color'],
                 required: false,
             }],
             attributes: {
                 exclude: ["deletedAt", "AdvertisementCategory"],
-                include: [[Sequelize.col('"AdvertisementCategory"."name"'), 'categoryName']],
+                include: [
+                    [Sequelize.col('"AdvertisementCategory"."name"'), 'categoryName'],
+                    [Sequelize.col('"AdvertisementCategory"."color"'), 'categoryColor']
+                ],
             },
         });
         if (pageAdvertisements.count <= 0)
