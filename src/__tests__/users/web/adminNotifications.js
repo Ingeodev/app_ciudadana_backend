@@ -1,9 +1,9 @@
 const request = require("supertest");
 
 // Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users`;
+// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/admins/notifications`;
 // Local
-const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/users/admin/notifications`;
+const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/users/admins/notifications`;
 describe("Web - AdminNotifications management API points: ", () => {
   jest.setTimeout(25000);
 
