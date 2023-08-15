@@ -5,7 +5,11 @@ steps:
   secretEnv: [ "API_KEY" ]
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: "bash"
-  args: [ "-c", "cd workspace && cd secrets && ls" ]
+  args: [ "-c", "mkdir -p workspace/config && echo $$DB_SECRETS > workspace/config/config.json" ]
+  secretEnv: [ "DB_SECRETS" ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: "bash"
+  args: [ "-c", "cd workspace && ls" ]
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/Dockerfile', '.']
 images:
@@ -14,3 +18,5 @@ availableSecrets:
   secretManager:
     - versionName: projects/85094745134/secrets/service_key/versions/1
       env: API_KEY
+    - versionName: projects/85094745134/secrets/db_secrets/versions/1
+      env: DB_SECRETS

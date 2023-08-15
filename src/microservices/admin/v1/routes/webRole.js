@@ -5,7 +5,7 @@ const webRoleController = require("../controllers/webRole")
 const { ROLE_PERMISSIONS } = require("../../../../constants/permissionsAndPolicies")
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
-// router.use(authorization.authMiddleware);
+router.use(authorization.authMiddleware);
 router.post(
   "/create",
    authorization.checkPermissions(ROLE_PERMISSIONS.create),

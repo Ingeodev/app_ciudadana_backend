@@ -113,8 +113,11 @@ Migration to cloud run
     
     # for deployment tag your versions, this is an example
     docker tag app_mobility_admin_ms:latest us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest 
-
     # 
+    
+    # because we are using CI/CD with google, it is mandatory to use 
+    gcloud builds submit --config cloudbuild.yaml
+ 
 ```
 
 ------------

@@ -24,7 +24,10 @@ COPY src/package-lock.json /src
 COPY src/middleware /src/middleware/
 COPY src/models /src/models/
 COPY src/config /src/config/
+COPY src/constants /src/constants/
+COPY src/utils /src/utils/
 COPY workspace/secrets/account_service_key.json /src
+COPY workspace/config/config.json /src/config
 
 RUN npm install --production
 
