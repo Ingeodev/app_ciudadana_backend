@@ -20,6 +20,7 @@ exports.postRegister = async (req, res, next) => {
       iconMap,
       siteUri,
       color,
+      active: true
     };
 
     const result = await db.ThirdPartyCategory.create(dataQuery);
@@ -80,6 +81,36 @@ exports.postEdit = async (req, res, next) => {
 };
 
 /**
+ * Changes the boolean value of ThirdPartyCategory.active
+ * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdPartyCategory. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postStatus = async (req, res, next) => {v
+  try {
+    const { id, active } = await validator.vWebPostStatus(req.body);
+    const catInDb = await db.ThirdPartyCategory.findOne({
+      where: { id },
+    });
+
+    if (catInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `Third-party category does not exist`,
+      };
+    }
+
+    const result = await catInDb.update({ active });
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { result },
+    });
+  } catch (error) {
+    // console.error("ThirdPartyCategory could not be deleted: ", error.message);
+    return next(error);
+  }
+};
+
+/**
  * Get all ThirdParty categories
  * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
  */
@@ -99,7 +130,7 @@ exports.getAll = async (req, res, next) => {
     if (categInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no ThirdParty categories registered in the database",
+        message: "There are no Third-party categories registered in the database",
       };
     }
     if (categInDb.rows.length <= 0) {
@@ -142,7 +173,7 @@ exports.getOneById = async (req, res, next) => {
     if (categInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "ThirdParty category information could not be retrieved",
+        message: "Third-party category information could not be retrieved",
       };
     }
 
@@ -167,7 +198,7 @@ exports.postDelete = async (req, res, next) => {
     if (categInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `ThirdParty category does not exist`,
+        message: `Third-party category does not exist`,
       };
     }
 

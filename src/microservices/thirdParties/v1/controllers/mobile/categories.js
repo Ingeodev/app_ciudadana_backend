@@ -7,8 +7,8 @@ const validator = require("../../../utils/validators/mobile/categories.js");
 
 
 /**
- * Get all document types
- * @return {object} Response contains: statuscode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
+ * Get all ThirdPartyCategories
+ * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdPartyCategories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -17,28 +17,28 @@ exports.getAll = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : 100,
     });
 
-    const docTypesInDb = await db.DocumentType.findAndCountAll({
+    const categoriesInDb = await db.ThirdPartyCategory.findAndCountAll({
       where: { active: true },
       attributes: ["id", "name", "color", "icon", "iconMap"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       // Ordered from A-Z
-      order: [["code", "ASC"]],
+      order: [["name", "ASC"]],
     });
 
-    if (docTypesInDb.count <= 0) {
+    if (categoriesInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no Document types registered in the database",
+        message: "There are no third-party categories registered",
       };
     }
-    if (docTypesInDb.rows.length <= 0) {
+    if (categoriesInDb.rows.length <= 0) {
       throw {
         status: StatusCodes.BAD_REQUEST,
         message: '"page.number" is too large for the number of possible pages',
       };
     }
-    return res.status(StatusCodes.OK).send(docTypesInDb.rows);
+    return res.status(StatusCodes.OK).send(categoriesInDb.rows);
   } catch (error) {
     // console.error("Document types could not be recovered: ", error.message);
     return next(error);
