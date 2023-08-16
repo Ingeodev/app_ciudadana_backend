@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require('sequelize');
 // const joi = require("joi");
 const db = require("../../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
@@ -278,6 +279,17 @@ exports.getUsersListAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      include: [
+        {
+          model: db.DocumentType,
+          attributes: ["name"],
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ["deletedAt", "DocumentType"],
+        include: [[Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"]],
+      },
     });
 
     if (usersInDb.count <= 0) {
@@ -294,6 +306,13 @@ exports.getUsersListAll = async (req, res, next) => {
     }
     const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
+    // Additional processing to remove the object from documentType
+    const adjustedUsers = usersInDb.rows.map((user) => {
+      const userData = user.toJSON(); // Convierte el modelo Sequelize a un objeto regular
+      delete userData.DocumentType; // Elimina la propiedad DocumentType
+      return userData;
+    });
+
     const responseCustom = {
       meta: {
         page: objPage.number,
@@ -301,7 +320,8 @@ exports.getUsersListAll = async (req, res, next) => {
         totalRecords: usersInDb.count,
         totalPages: totalPages,
       },
-      data: usersInDb.rows,
+      data: adjustedUsers,
+      // data: usersInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
