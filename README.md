@@ -27,15 +27,21 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_POST_ update advertisement](#post-update-advertisement)
         - [_POST_ change advertisement status](#post-change-advertisement-status)
         - [_POST_ delete advertisement](#post-delete-advertisement)
-      - [4.2.2 Publicity](#422-publicity)
+      - [4.2.2. Advertisement Categories](#422-advertisement-categories)
+        - [_POST_ save new advertisement category](#post-save-new-advertisement-category)
+        - [_GET_ list advertisement categories](#get-list-advertisement-categories)
+        - [_POST_ delete advertisement category](#post-delete-advertisement-category)
+      - [4.2.3. Publicity](#423-publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
         - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
-      - [4.2.3. Attention Lines](#423-attention-lines)
+      - [4.2.4. Attention Lines](#424-attention-lines)
       - [List of endpoints](#list-of-endpoints-1)
         - [Mobile App](#mobile-app-1)
         - [Web App](#web-app-1)
-      - [4.2.4. Service Lines](#424-service-lines)
-      - [4.2.5. Alerts](#425-alerts)
+      - [4.2.5. Service Lines](#425-service-lines)
+      - [4.2.6. Alerts](#426-alerts)
+        - [_GET_ Active Alerts (mobile)](#get-active-alerts-mobile)
+        - [_POST_ Register Device Token (mobile)](#post-register-device-token-mobile)
         - [_GET_ All Alerts](#get-all-alerts)
         - [_POST_ Send Alert](#post-send-alert)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
@@ -113,28 +119,28 @@ Run the generated image in your environment
 	Path: http:localhost:3000/api/mobile/v1/users
 	Controller: src\microservices\users\v1\controllers\mobileUsers.js
 	Route: src\microservices\users\v1\routes\mobile.js
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-| /account/info  | POST  | postAccountInfo  | Create the user base information - loginPhase="baseLogin"  |
-| /account/full_login  | POST  | postAccountFullLogin  | Update missing user data - when loginPhase="baseLogin"  |
-|  /account/info | GET  |  getAccountInfo | Get user data and login phase  |
-| /account/login/phase  | GET  | getAccountLoginPhase  | Get the user loginPhase state  |
-|  /account/edit | POST  |  postAccountUpdateUser | Update user data - when loginPhase="fullLogin"  |
+| Endpoint             | Method | Location in Controller | Description                                               |
+| :------------------- | :----- | :--------------------- | :-------------------------------------------------------- |
+| /account/info        | POST   | postAccountInfo        | Create the user base information - loginPhase="baseLogin" |
+| /account/full_login  | POST   | postAccountFullLogin   | Update missing user data - when loginPhase="baseLogin"    |
+| /account/info        | GET    | getAccountInfo         | Get user data and login phase                             |
+| /account/login/phase | GET    | getAccountLoginPhase   | Get the user loginPhase state                             |
+| /account/edit        | POST   | postAccountUpdateUser  | Update user data - when loginPhase="fullLogin"            |
 
 ##### Web App
 	Path: http:localhost:3000/api/web/v1/users
 	Controller: src\microservices\users\v1\controllers\webUsers.js
 	Route: src\microservices\users\v1\routes\web.js
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-|  / | GET  |  getUsersListAll | Get all users (web + app) |
-|  /delete | POST  |  postUsersUpdateDisabled | Update  status user.disabled=true |
-|  /full_login | POST  |  postUsersFullLogin | Update users.loginPhase to fullLogin |
-| /account/info  | POST  | postAccountInfo  | Create the user base information - loginPhase="baseLogin"  |
-| /account/full_login  | POST  | postAccountFullLogin  | Update missing user data - when loginPhase="baseLogin"  |
-|  /account/info | GET  |  getAccountInfo | Get user data and login phase  |
-| /account/login/phase  | GET  | getAccountLoginPhase  | Get the user loginPhase state  |
-|  /account/edit | POST  |  postAccountUpdateUser | Update user data - when loginPhase="fullLogin"  |
+| Endpoint             | Method | Location in Controller  | Description                                               |
+| :------------------- | :----- | :---------------------- | :-------------------------------------------------------- |
+| /                    | GET    | getUsersListAll         | Get all users (web + app)                                 |
+| /delete              | POST   | postUsersUpdateDisabled | Update  status user.disabled=true                         |
+| /full_login          | POST   | postUsersFullLogin      | Update users.loginPhase to fullLogin                      |
+| /account/info        | POST   | postAccountInfo         | Create the user base information - loginPhase="baseLogin" |
+| /account/full_login  | POST   | postAccountFullLogin    | Update missing user data - when loginPhase="baseLogin"    |
+| /account/info        | GET    | getAccountInfo          | Get user data and login phase                             |
+| /account/login/phase | GET    | getAccountLoginPhase    | Get the user loginPhase state                             |
+| /account/edit        | POST   | postAccountUpdateUser   | Update user data - when loginPhase="fullLogin"            |
 
 
 ------------
@@ -246,7 +252,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:19.426Z",
 >            "updatedAt": "2023-07-28T22:27:19.426Z",
->            "categoryName": "sample"
+>            "categoryName": "sample",
+>            "categoryColor": "#2d96ad"
 >        },
 >        {
 >            "id": 38,
@@ -256,7 +263,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "active": true,
 >            "createdAt": "2023-07-28T22:27:17.369Z",
 >            "updatedAt": "2023-07-28T22:27:17.369Z",
->            "categoryName": null
+>            "categoryName": null,
+>            "categoryColor": null
 >        },
 >        {
 >            "id": 37,
@@ -266,7 +274,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "active": true,
 >            "createdAt": "2023-07-28T22:22:04.139Z",
 >            "updatedAt": "2023-07-28T22:22:04.139Z",
->            "categoryName": null
+>            "categoryName": null,
+>            "categoryColor": null
 >        },
 >        {
 >            "id": 36,
@@ -276,7 +285,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "active": true,
 >            "createdAt": "2023-07-28T20:41:14.745Z",
 >            "updatedAt": "2023-07-28T20:41:14.745Z",
->            "categoryName": null
+>            "categoryName": null,
+>            "categoryColor": null
 >        },
 >        {
 >            "id": 35,
@@ -286,7 +296,8 @@ It returns **200 _OK_** and the list of objects on success.
 >            "active": true,
 >            "createdAt": "2023-07-28T20:39:40.947Z",
 >            "updatedAt": "2023-07-28T20:39:40.947Z",
->            "categoryName": "sample"
+>            "categoryName": "sample",
+>            "categoryColor": "#2d96ad"
 >        }
 >    ]
 >}
@@ -400,7 +411,90 @@ Response:
   > ```
 
 ------------
-#### 4.2.2 Publicity 
+#### 4.2.2. Advertisement Categories
+
+The Advertisement Categories end-points allow the web user to manage the advertisement categories that can classify the [**advertisements**](#421-advertising).
+
+##### _POST_ save new advertisement category
+\(\<Your_Host\>/web/v1/notifications/advertisementCategory/\) allows web users to save a new advertisement category into the database. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _name_   	| String 	|      Yes     	| Category name.    	|
+| _color_    	| String (Hex Color) 	|      Yes     	| Colorof the category.                               	|
+
+It returns **201 _created_** and the created object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >  "name": "testCat000",
+  >  "color": "#feF37e"
+  >}
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >   "data": {
+  >       "id": 3,
+  >       "name": "testCat000",
+  >       "color": "#feF37e",
+  >       "createdAt": "2023-08-16T15:21:37.943Z"
+  >    }
+  > }
+  > ```
+
+##### _GET_ list advertisement categories
+\(\<Your_Host\>/web/v1/notifications/advertisementCategory/\) allows web users to list a set of the advertisement categories from the database. It receives the following query parameters:
+
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
+| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> 
+> ```
+
+##### _POST_ delete advertisement category
+\(\<Your_Host\>/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to edit.    	|
+
+It returns **200 _OK_** and the updated object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >    "id": 3
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >    "data": {
+  >        "id": 3
+  >    }
+  > }
+  > ```
+
+------------
+#### 4.2.3. Publicity 
 
 The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
 
@@ -435,37 +529,37 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 > ```
 
 ------------
-#### 4.2.3. Attention Lines 
+#### 4.2.4. Attention Lines 
 #### List of endpoints
 ##### Mobile App
 	Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines
 	Controller: src\microservices\notifications\v1\controllers\mobileAttentionLines.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-| /attention_lines  | GET  | getListAll  | Get all attention lines  |
-| /attention_lines/dependencies  | GET  | getDependencies  | Get all the dependencies to submit a pqrsdf  |
+| Endpoint                      | Method | Location in Controller | Description                                 |
+| :---------------------------- | :----- | :--------------------- | :------------------------------------------ |
+| /attention_lines              | GET    | getListAll             | Get all attention lines                     |
+| /attention_lines/dependencies | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
 
 ##### Web App
 	Path: http:localhost:3000/api/web/v1/notifications/attention_lines
 	Controller: src\microservices\notifications\v1\controllers\webAttentionLines.js
 	Route: src\microservices\notifications\v1\routes\web.js
 
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-| /attention_lines | GET | getListAll | Get all attention lines |
-| /attention_lines/  | POST  | postRegister  | Create an attention line  |
-| /attention_lines/edit  | POST  | postUpdate  | Update an attention line  |
-| /attention_lines/status  | POST  | postUpdateActive | Activate or deactivate an attention line |
-| /attention_lines/:id | GET | getAttentionLine | Get an attention line by id |
+| Endpoint                | Method | Location in Controller | Description                              |
+| :---------------------- | :----- | :--------------------- | :--------------------------------------- |
+| /attention_lines        | GET    | getListAll             | Get all attention lines                  |
+| /attention_lines/       | POST   | postRegister           | Create an attention line                 |
+| /attention_lines/edit   | POST   | postUpdate             | Update an attention line                 |
+| /attention_lines/status | POST   | postUpdateActive       | Activate or deactivate an attention line |
+| /attention_lines/:id    | GET    | getAttentionLine       | Get an attention line by id              |
 
 ------------
 
-#### 4.2.4. Service Lines 
+#### 4.2.5. Service Lines 
 
 ------------
 
-#### 4.2.5. Alerts
+#### 4.2.6. Alerts
 
 The Alerts endpoints allow web users to send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List), and list the previously-delivered alerts.
 
@@ -475,10 +569,10 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 	Controller: src\microservices\notifications\v1\controllers\mobileAlert.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-| / | GET | getListActive | Get active alerts |
-| /register | POST | registerPush | Send alerts to users |
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /         | GET    | getListActive          | Get active alerts    |
+| /register | POST   | registerPush           | Send alerts to users |
 
 ##### _GET_ Active Alerts (mobile)
 \(\<Your_Host\>/web/v1/notifications/\)
@@ -517,10 +611,10 @@ Response:
 	Controller: src\microservices\notifications\v1\controllers\webAlert.js
 	Route: src\microservices\notifications\v1\routes\web.js
 
-| Endpoint  | Method  |  Location in Controller |  Description |
-| :------------ | :------------ | :------------ | :------------ |
-| /alert | GET | getlistAll | Get all alerts |
-| /alert | POST | sendAlerts | Send alerts to users |
+| Endpoint | Method | Location in Controller | Description          |
+| :------- | :----- | :--------------------- | :------------------- |
+| /alert   | GET    | getlistAll             | Get all alerts       |
+| /alert   | POST   | sendAlerts             | Send alerts to users |
 
 ##### _GET_ All Alerts
 
