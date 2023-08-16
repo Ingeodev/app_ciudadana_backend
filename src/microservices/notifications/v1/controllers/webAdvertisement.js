@@ -110,7 +110,7 @@ const postAdvertisementStatus = async (req, res, next) => {
 // Delete an advertisement.
 const postAdvertisementDelete = async (req, res, next) => {
     try {
-        const { id } = await validator.validateDeleteAdvertisementSchema(req.body);
+        const { id } = await validator.validateSimpleDeleteByIdSchema(req.body);
         const advertisement = await db.Advertisement.findByPk(id);
         if (advertisement == null)
             throw {

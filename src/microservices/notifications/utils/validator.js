@@ -31,7 +31,7 @@ const statusAdvertisementSchema = joi.object({
   active: joi.bool().required(),
 });
 
-const deleteAdvertisementSchema = joi.object({
+const simpleDeleteByIdSchema = joi.object({
   id: non_negative_integer.required()
 });
 
@@ -99,8 +99,8 @@ module.exports = {
   validateStatusAdvertisementSchema: async (inputData) => {
     return await use_validator_on_data(statusAdvertisementSchema, inputData);
   },
-  validateDeleteAdvertisementSchema: async (inputData) => {
-    return await use_validator_on_data(deleteAdvertisementSchema, inputData);
+  validateSimpleDeleteByIdSchema: async (inputData) => {
+    return await use_validator_on_data(simpleDeleteByIdSchema, inputData);
   },
   validateAdvertisementCategorySchema: async (inputData) => {
     return await use_validator_on_data(advertisementCategorySchema, inputData);
