@@ -164,7 +164,7 @@ exports.getOneById = async (req, res, next) => {
 //     if (categoryInDb === null) {
 //       throw {
 //         status: StatusCodes.NOT_FOUND,
-//         message: `The security categories with id=${id} does not exist`,
+//         message: `The security category with id=${id} does not exist`,
 //       };
 //     }
 
@@ -172,7 +172,7 @@ exports.getOneById = async (req, res, next) => {
 
 //     return res.status(StatusCodes.OK).send({ meta: null, data: result });
 //   } catch (error) {
-//     console.error("security categories could not be updated: ", error.message);
+//     console.error("Security category could not be updated: ", error.message);
 //     return next(error);
 //   }
 // };
