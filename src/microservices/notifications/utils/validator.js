@@ -5,6 +5,7 @@ const uri_string = joi.string().uri();
 const integer_number = joi.number().integer();
 const positive_integer = integer_number.positive();
 const non_negative_integer = integer_number.min(0);
+const hex_color_string = joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
 
 const page_object = joi.object({
   size: positive_integer.required(),
@@ -32,6 +33,11 @@ const statusAdvertisementSchema = joi.object({
 
 const deleteAdvertisementSchema = joi.object({
   id: non_negative_integer.required()
+});
+
+const advertisementCategorySchema = joi.object({
+  name: joi.string().trim().min(3).required(),
+  color: hex_color_string.required(),
 });
 
 const alertSchema = joi.object({
@@ -95,6 +101,9 @@ module.exports = {
   },
   validateDeleteAdvertisementSchema: async (inputData) => {
     return await use_validator_on_data(deleteAdvertisementSchema, inputData);
+  },
+  validateAdvertisementCategorySchema: async (inputData) => {
+    return await use_validator_on_data(advertisementCategorySchema, inputData);
   },
   validateAlertSchema: async (inputData) => {
     return await use_validator_on_data(alertSchema, inputData);
