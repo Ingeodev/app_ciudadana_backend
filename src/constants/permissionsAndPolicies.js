@@ -1,5 +1,5 @@
 const POLICY_TEMPLATE = {
-  resource: '',
+  resource: '*',
   policies: ['']
 }
 

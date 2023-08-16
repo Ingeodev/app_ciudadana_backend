@@ -106,11 +106,11 @@ Migration to cloud run
 ```
 
     # from your root directory execute
-    docker build --platform linux/amd64 -t app_mobility_admin_ms -f src/microservices/admin/Dockerfile .
+    docker build -t app_mobility_admin_ms -f src/microservices/admin/Dockerfile .
     
-    # then 
-    docker run -d -p 3000:3000 app_mobility_admin_ms
-    
+    # then -v will mount a friendly name volume  
+    # bind mounts start with /local_path:/docker_path
+    docker run -d -p 3000:3000 -v storage:/var/storage app_mobility_admin_ms    
     # for deployment tag your versions, this is an example
     docker tag app_mobility_admin_ms:latest us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest 
     # 

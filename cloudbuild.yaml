@@ -11,7 +11,7 @@ steps:
   entrypoint: "bash"
   args: [ "-c", "cd workspace && ls" ]
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/Dockerfile', '.']
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/gcp.Dockerfile', '.']
 images:
 - 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest'
 availableSecrets:

@@ -5,6 +5,9 @@ jspm_packages
 # Serverless directories
 .serverless
 
+# workspace
+workspace
+
 # Logs
 logs
 *.log
