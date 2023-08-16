@@ -111,23 +111,31 @@ router.post(
   adminController.postRegister
 );
 
+router.post(
+  "/admins/role/",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.postAddRole
+);
+
+// ! Pendiente: Diferenciar el usuario admin por rol
 // router.post(
 //   "/admins/delete",
 //   // hasPermissions({ role: "super_master_user" }),
 //   adminController.postDelete
 // );
 
+// ! Pendiente: Diferenciar el usuario admin por rol
 // router.get(
 //   "/admins",
 //   // hasPermissions({ role: "super_master_user" }),
 //   adminController.getAll
 // );
 
-// router.get(
-//   "/admins/:id",
-//   // hasPermissions({ role: "super_master_user" }),
-//   adminController.getOneById
-// );
+router.get(
+  "/admins/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.getOneById
+);
 //#endregion - Admin
 // TODO: -- End - Admin Endpoints
 

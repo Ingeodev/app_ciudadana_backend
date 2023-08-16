@@ -3,6 +3,7 @@ const db = require("../../../../../models/index.js");
 const firebase = require("../../../utils/firebaseAdmin.js");
 // const { formatDate } = require("../../../../../middleware/formatDate.js");
 const validator = require("../../../utils/validators/web/admins.js");
+// const firebaseAppWeb = require("../../../utils/firebaseAppWeb.js");
 
 /**
  * Generates a (random) string of length n.
@@ -35,14 +36,12 @@ function generateSecureRandomString(length) {
 
 /**
  * Create a admin
- * @param {object} req - Object containing the code, name, abbreviation
+ * @param {object} req - Object containing name, lastName, email, documentTypeId, numberDocument, phone
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction();
   try {
     const {
-      roleId,
       name,
       lastName,
       email,
@@ -58,7 +57,7 @@ exports.postRegister = async (req, res, next) => {
       // password: generateSecureRandomString(16),
       email,
     };
-    const clientId = await firebase.createUser(dataUser, { transaction });
+    const clientId = await firebase.createUser(dataUser);
 
     if (clientId.status === 500) {
       throw {
@@ -69,10 +68,6 @@ exports.postRegister = async (req, res, next) => {
 
     const dataQuery = {
       clientId,
-      // ! Propongo guardar el admin inicialmente, con rolId=NULL
-      // ! Despues de asignarle permisos en Firebase, actualizar el rol del admin
-      // ! Lo mejor sería asignar el rol mediante otro servicio
-      // roleId,
       name,
       lastName,
       email,
@@ -80,9 +75,12 @@ exports.postRegister = async (req, res, next) => {
       numberDocument,
       phone,
       disabled: false,
+      userMobile: false,
+      loginPhase: "fullLogin",
+      // ! Pendiente: Preguntar por serviceReceipt, loginPhase, residenceAddress
     };
 
-    const userInDb = await db.Admin.create(dataQuery);
+    const userInDb = await db.User.create(dataQuery);
 
     if (!userInDb) {
       await transaction.rollback();
@@ -91,19 +89,34 @@ exports.postRegister = async (req, res, next) => {
         message: `Error saving admin user`,
       };
     }
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ meta: null, data: resUpdate });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Add role an admin
+ * @param {object} req - Object containing the id, roleId
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postAddRole = async (req, res, next) => {
+  try {
+    const { id, roleId } = await validator.vWebPostAddRole(req.body);
+    const adminInDb = await db.Admin.findByPk(id);
 
     // ! Pendiente: Consultar la tabla roles
     const role = "super_master_user";
     await firebase.addCustomClaim(clientId, role);
 
-    userInDb.set({ roleId: roleId });
-    const resUpdate = await userInDb.save();
-    await transaction.commit();
+    const resultUpdate = await adminInDb.update(roleId);
+
     return res
       .status(StatusCodes.CREATED)
-      .json({ meta: null, data: resUpdate });
+      .json({ meta: null, data: resultUpdate });
   } catch (error) {
-    await transaction.rollback();
     return next(error);
   }
 };
@@ -126,7 +139,7 @@ exports.postEdit = async (req, res, next) => {
       siteUri,
     };
 
-    const adminInDb = await db.Admin.findByPk(id);
+    const adminInDb = await db.User.findByPk(id);
 
     if (adminInDb === null) {
       throw {
@@ -166,7 +179,8 @@ exports.getAll = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
-    const adminsInDb = await db.Admin.findAndCountAll({
+    // ! Pendiente filtrar por tipo de admin role 
+    const adminsInDb = await db.User.findAndCountAll({
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
@@ -213,12 +227,12 @@ exports.getOneById = async (req, res, next) => {
       id: parseInt(req.params.id),
     });
 
-    const adminInDb = await db.Admin.findByPk(id);
+    const adminInDb = await db.User.findByPk(id);
 
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "Admin information could not be retrieved",
+        message: "User admin information could not be retrieved",
       };
     }
 
@@ -236,7 +250,7 @@ exports.getOneById = async (req, res, next) => {
 exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const adminInDb = await db.Admin.findByPk(id);
+    const adminInDb = await db.User.findByPk(id);
 
     if (adminInDb === null) {
       throw {
@@ -245,6 +259,7 @@ exports.postDelete = async (req, res, next) => {
       };
     }
 
+    // ! Pendiente: Verificar que el usuario admin no este siendo usado (fk) en otras tablas
     await adminInDb.destroy();
 
     return res

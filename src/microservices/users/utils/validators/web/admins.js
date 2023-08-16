@@ -14,6 +14,11 @@ const registerSchema = joi.object({
   phone: joi.number().integer().greater(0).less(10000000000).required(),
 });
 
+const addRoleSchema = joi.object({
+  id: joi.number().integer().empty("").invalid(0).required(),
+  roleId: joi.number().integer().greater(0).required(),  
+});
+
 const resetPassSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required()
 });
@@ -59,6 +64,9 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
   vWebPostRegister: async (inputData) => {
     return await use_validator_on_data(registerSchema, inputData);
+  },
+  vWebPostAddRole: async (inputData) => {
+    return await use_validator_on_data(addRoleSchema, inputData);
   },
   vWebPostResetPasswd: async (inputData) => {
     return await use_validator_on_data(resetPassSchema, inputData);
