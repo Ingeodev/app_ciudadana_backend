@@ -153,31 +153,6 @@ exports.getOneById = async (req, res, next) => {
 };
 
 /**
- * Update the status of the documentType.active field (enabled/disabled) for a security categories
- * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
- */
-// exports.postStatus = async (req, res, next) => {
-//   try {
-//     const { id, active } = await validator.vWebPostStatus(req.body);
-//     const categoryInDb = await db.SecurityCategory.findByPk(id);
-
-//     if (categoryInDb === null) {
-//       throw {
-//         status: StatusCodes.NOT_FOUND,
-//         message: `The security category with id=${id} does not exist`,
-//       };
-//     }
-
-//     const result = await categoryInDb.update(active);
-
-//     return res.status(StatusCodes.OK).send({ meta: null, data: result });
-//   } catch (error) {
-//     console.error("Security category could not be updated: ", error.message);
-//     return next(error);
-//   }
-// };
-
-/**
  * Destroy a security category (soft delete)
  * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
