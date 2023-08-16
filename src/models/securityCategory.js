@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       color: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },

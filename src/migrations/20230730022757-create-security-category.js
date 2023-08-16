@@ -28,7 +28,7 @@ module.exports = {
           unique: false,
         },
         color: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(10),
           allowNull: true,
           unique: false,
         },
