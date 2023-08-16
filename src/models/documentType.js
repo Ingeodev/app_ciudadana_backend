@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      DocumentType.hasOne(models.User, {
-        foreignKey: {
-          name: "documentTypeId",
-          allowNull: true,
-        },
-      });
+      // DocumentType.hasOne(models.User, {
+      //   foreignKey: {
+      //     name: "documentTypeId",
+      //     allowNull: true,
+      //   },
+      // });
 
       DocumentType.hasOne(models.Admin, {
         foreignKey: {

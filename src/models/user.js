@@ -16,12 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      User.belongsTo(models.DocumentType, {
-        foreignKey: {
-          name: "documentTypeId",
-          allowNull: true,
-        },
-      });
+      // User.belongsTo(models.DocumentType, {
+      //   foreignKey: {
+      //     name: "documentTypeId",
+      //     allowNull: true,
+      //   },
+      // });
     }
   }
   User.init(
@@ -47,7 +47,8 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       documentTypeId: {
-        type: DataTypes.INTEGER,
+        // type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },

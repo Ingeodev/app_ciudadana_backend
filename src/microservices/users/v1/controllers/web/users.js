@@ -279,17 +279,17 @@ exports.getUsersListAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
-      include: [
-        {
-          model: db.DocumentType,
-          attributes: ["name"],
-          required: false,
-        },
-      ],
-      attributes: {
-        exclude: ["deletedAt", "DocumentType"],
-        include: [[Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"]],
-      },
+      // include: [
+      //   {
+      //     model: db.DocumentType,
+      //     attributes: ["name"],
+      //     required: false,
+      //   },
+      // ],
+      // attributes: {
+      //   exclude: ["deletedAt", "DocumentType"],
+      //   include: [[Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"]],
+      // },
     });
 
     if (usersInDb.count <= 0) {
@@ -307,11 +307,11 @@ exports.getUsersListAll = async (req, res, next) => {
     const totalPages = Math.ceil(usersInDb.count / objPage.size);
 
     // Additional processing to remove the object from documentType
-    const adjustedUsers = usersInDb.rows.map((user) => {
-      const userData = user.toJSON(); // Convierte el modelo Sequelize a un objeto regular
-      delete userData.DocumentType; // Elimina la propiedad DocumentType
-      return userData;
-    });
+    // const adjustedUsers = usersInDb.rows.map((user) => {
+    //   const userData = user.toJSON(); // Convierte el modelo Sequelize a un objeto regular
+    //   delete userData.DocumentType; // Elimina la propiedad DocumentType
+    //   return userData;
+    // });
 
     const responseCustom = {
       meta: {
@@ -320,8 +320,8 @@ exports.getUsersListAll = async (req, res, next) => {
         totalRecords: usersInDb.count,
         totalPages: totalPages,
       },
-      data: adjustedUsers,
-      // data: usersInDb.rows,
+      // data: adjustedUsers,
+      data: usersInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
@@ -362,7 +362,7 @@ exports.postUsersDelete = async (req, res, next) => {
 };
 
 /**
- * Destroy the user (soft delete)
+ * Changes the boolean value of User.disabled
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersStatus = async (req, res, next) => {

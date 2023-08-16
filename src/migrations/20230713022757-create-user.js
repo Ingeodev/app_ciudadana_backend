@@ -30,7 +30,8 @@ module.exports = {
           unique: true,
         },
         documentTypeId: {
-          type: Sequelize.INTEGER,
+          // type: Sequelize.INTEGER,
+          type: Sequelize.STRING(50),
           allowNull: true,
           unique: false,
         },
@@ -96,19 +97,20 @@ module.exports = {
         schema: "public",
       }
     );
-    return await queryInterface.addConstraint("Users", {
-      name: "fk_Users_DocumentTypes",
-      fields: ["documentTypeId"],
-      type: "foreign key",
-      references: {
-        table: "DocumentTypes",
-        field: "id",
-      },
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    });
+    // return await queryInterface.addConstraint("Users", {
+    //   name: "fk_Users_DocumentTypes",
+    //   fields: ["documentTypeId"],
+    //   type: "foreign key",
+    //   references: {
+    //     table: "DocumentTypes",
+    //     field: "id",
+    //   },
+    //   onDelete: "RESTRICT",
+    //   onUpdate: "cascade",
+    // });
   },
   async down(queryInterface, Sequelize) {
+    // await queryInterface.removeConstraint("Users", "fk_Users_DocumentTypes");
     await queryInterface.dropTable("Users");
   },
 };
