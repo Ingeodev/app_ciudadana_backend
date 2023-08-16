@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authorization = require("../../../../middleware/authMiddleware");
 const advertisingController = require('../controllers/webAdvertisement');
+const advertisementCategoryController = require('../controllers/webAdvertisementCategory');
 const securityController = require("../controllers/webSecurity");
 const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
@@ -26,6 +27,17 @@ router.post('/advertising/status', advertisingController.postAdvertisementStatus
 
 // Delete an advertisement.
 router.post('/advertising/delete', advertisingController.postAdvertisementDelete);
+//#endregion
+
+//#region Advertisement Categories end-points
+// Retrieve all the advertisement Categories.
+router.get('/advertisementCategory', advertisementCategoryController.getAllCategories);
+
+// Create a new advertisement Category.
+router.post('/advertisementCategory', advertisementCategoryController.postCategory);
+
+// Delete an advertisement Category.
+router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
 //#endregion
 
 //#region Security end-points
