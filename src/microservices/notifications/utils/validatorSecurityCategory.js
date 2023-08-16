@@ -8,7 +8,7 @@ const registerSchema = joi.object({
   name: joi.string().trim().required().empty("").invalid(" "),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  color: joi.number().integer().required(),
+  color: joi.string().trim().empty("").invalid(" ").max(7).pattern(/^#[0-9A-F]{1,6}$/).required(),
 });
 
 const editSchema = joi.object({
@@ -16,7 +16,7 @@ const editSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
-  color: joi.number().integer(),
+  color: joi.string().trim().empty("").invalid(" ").max(7).pattern(/^#[0-9A-F]{1,6}$/),
 });
 
 const getAllSchema = joi.object({
