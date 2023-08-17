@@ -42,15 +42,30 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-const checkPermissions = (allowedPermission) => {
+const checkActionsMatching = (policies, allowedAction) => {
+  const validatedActions = policies.filter((policy) => {
+    const foundActions = policy.actions.filter((action) => {
+      return action === allowedAction
+    })
+    return foundActions.length > 0
+  });
+
+  if (validatedActions.length > 0) {
+    return { allowed: true, scope: validatedActions[0].resource}
+  } else {
+    return { allowed: false, scope: null}
+  }
+};
+
+const checkActions = (allowedAction) => {
   try {
     return (req, res, next) => {
-      const permissions = res.locals.permissions;
-      console.log("registered permissions", permissions);
-      const validatedPermissions = permissions.filter((permission) => {
-        return permission === allowedPermission
-      });
-      if (validatedPermissions.length > 0) {
+      const role = res.locals.role;
+      const policies = role.policies;
+      console.log("registered policies", policies);
+      const actionValidation = checkActionsMatching(policies, allowedAction);
+      if (actionValidation.allowed) {
+        res.scope = actionValidation.resource
         return next();
       }
       throw {
@@ -82,7 +97,7 @@ const hasPermissions = (params) => {
 module.exports = {
   authMiddleware,
   hasPermissions,
-  checkPermissions,
+  checkActions,
   appFirebase,
   adminFirebase,
 };
