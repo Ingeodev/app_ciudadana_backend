@@ -52,7 +52,9 @@ _meta
 
 # GCP STUFF
 src/account_service_key.json
-
+src/account_service_key_app_web.json
+src/email_service_key.json
+src/account_service_key_notery.json
 
 /.eslintcache
 /.nyc_output

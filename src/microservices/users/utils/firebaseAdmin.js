@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { appFirebase, adminFirebase } = require("../../../middleware/authMiddleware.js");
+// const emailService = require("./sendEmail.js");
 
 exports.createUser = async (data) => {
   try {
@@ -46,6 +47,53 @@ exports.addCustomClaim = async (uid, role) => {
     };
   }
 };
+
+// exports.passwordReset = async (userEmail) => {
+//   try {
+//     const actionCodeSettings = {
+//       // URL you want to redirect back to. The domain (www.example.com) for
+//       // this URL must be whitelisted in the Firebase Console.
+//       url: "http://localhost:3000",
+//       // This must be true for email link sign-in.
+//       handleCodeInApp: true,
+//       // iOS: {
+//       //   bundleId: "com.example.ios",
+//       // },
+//       // android: {
+//       //   packageName: "com.example.android",
+//       //   installApp: true,
+//       //   minimumVersion: "12",
+//       // },
+//       // FDL custom domain.
+//       // dynamicLinkDomain: "",
+//     };
+
+//     // Admin SDK API to generate the password reset link.
+//     const response = await appFirebase
+//       .auth()
+//       .generatePasswordResetLink(userEmail, actionCodeSettings)
+//       .then((link) => {
+//         // Construct password reset email template, embed the link and send
+//         // using custom SMTP server.
+//         return emailService.sendCustomPasswordResetEmail(userEmail, link);
+//       })
+//       .catch((error) => {
+//         return {
+//           status: StatusCodes.INTERNAL_SERVER_ERROR,
+//           detail: `Error password reset admin: ${error.message}`,
+//           code: "Internal Server Error",
+//         };
+//       });
+
+//     return response;
+//   } catch (error) {
+//     return {
+//       status: StatusCodes.INTERNAL_SERVER_ERROR,
+//       detail: `Error creating admin user: ${error.message}`,
+//       code: "Internal Server Error",
+//     };
+//   }
+// };
 
 const createCustomTokens = async (uid) => {
   const additionalClaims = {

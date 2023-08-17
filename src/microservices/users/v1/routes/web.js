@@ -136,6 +136,12 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   adminController.getOneById
 );
+
+// router.post(
+//   "/admins/reset_passwd",
+//   // hasPermissions({ role: "super_master_user" }),
+//   adminController.postSendMailResetPasswd
+// );
 //#endregion - Admin
 // TODO: -- End - Admin Endpoints
 
