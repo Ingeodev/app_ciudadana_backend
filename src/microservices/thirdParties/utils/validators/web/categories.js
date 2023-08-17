@@ -9,7 +9,7 @@ const registerSchema = joi.object({
   icon: joi.string().uri().trim().empty("").invalid(" ").required(),
   iconMap: joi.string().uri().trim().empty("").invalid(" ").required(),
   siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
-  color: joi.string().trim().empty("").invalid(" ").max(7).pattern(/^#[0-9A-F]{1,6}$/).required(),
+  color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
 });
 
 const editSchema = joi.object({
@@ -18,7 +18,7 @@ const editSchema = joi.object({
   icon: joi.string().uri().trim().empty("").invalid(" "),
   iconMap: joi.string().uri().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
-  color: joi.string().trim().empty("").invalid(" ").max(7).pattern(/^#[0-9A-F]{1,6}$/),
+  color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
 });
 
 const getAllSchema = joi.object({
