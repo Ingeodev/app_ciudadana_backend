@@ -14,7 +14,7 @@ describe("Mobile - Attention Lines management API points: ", () => {
     )
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
+      .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
