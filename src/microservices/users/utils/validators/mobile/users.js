@@ -15,7 +15,7 @@ const postAccountInfoSchema = joi.object({
 
 const postAccountFullLoginSchema = joi.object({
   documentTypeId: joi.number().integer().greater(0).required(),
-  numberDocument: joi.string().trim().required().empty("").invalid(" "),
+  document: joi.string().trim().required().empty("").invalid(" "),
   address: joi.string().trim().required().empty("").invalid(" "),
   serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
 });

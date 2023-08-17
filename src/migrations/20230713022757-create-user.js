@@ -40,7 +40,7 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        numberDocument: {
+        document: {
           type: Sequelize.STRING(50),
           allowNull: true,
           // ! unique: true? Diversidad de tipos de documentos
