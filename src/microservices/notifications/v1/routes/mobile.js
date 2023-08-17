@@ -6,6 +6,7 @@ const publicityController = require('../controllers/mobilePublicity');
 const securityController = require("../controllers/mobileSecurity");
 const attentionController = require("../controllers/mobileAttentionLines");
 const alertController = require("../controllers/mobileAlert");
+const socialNetworkController = require("../controllers/mobileSocialNetwork");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -51,6 +52,13 @@ router.get(
 //#region Alerts (Notifications in swagger) end-points
 router.post('/register', alertController.registerPush);
 router.get('/', alertController.getListActive);
+//#endregion
+
+//#region AttentionLines end-points
+router.get(
+  "/social_networks/",
+  socialNetworkController.getSocialNetworks
+);
 //#endregion
 
 module.exports = router

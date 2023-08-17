@@ -8,6 +8,7 @@ const securityController = require("../controllers/webSecurity");
 const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
+const socialNetworkController = require('../controllers/webSocialNetwork');
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -116,6 +117,33 @@ router.post(
   "/attention_lines/",
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postRegister
+);
+//#endregion
+
+//#region Social Networks end-points
+router.get(
+  "/social_networks/",
+  socialNetworkController.listSocialNetworks
+);
+router.get(
+  "/social_networks/types",
+  socialNetworkController.listSocialNetworkTypes
+);
+router.post(
+  "/social_networks/",
+  socialNetworkController.registerSocialNetwork
+);
+router.post(
+  "/social_networks/edit",
+  socialNetworkController.updateSocialNetwork
+);
+router.post(
+  "/social_networks/status",
+  socialNetworkController.changeStatusSocialNetwork
+);
+router.post(
+  "/social_networks/delete",
+  socialNetworkController.deleteSocialNetwork
 );
 //#endregion
 
