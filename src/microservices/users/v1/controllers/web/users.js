@@ -383,7 +383,7 @@ exports.postUsersStatus = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { result },
+      data: result,
     });
   } catch (error) {
     // console.error("users could not be deleted: ", error.message);
