@@ -154,25 +154,25 @@ exports.getOneById = async (req, res, next) => {
  * Update the status of the documentType.active field (enabled/disabled) for a document type
  * @return {object} Response contains: statuscode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
  */
-exports.postStatus = async (req, res, next) => {
-  try {
-    const { id, active } = await validator.vWebPostStatus(req.body);
-    const docTypeInDb = await db.DocumentType.findByPk(id);
+// exports.postStatus = async (req, res, next) => {
+//   try {
+//     const { id, active } = await validator.vWebPostStatus(req.body);
+//     const docTypeInDb = await db.DocumentType.findByPk(id);
 
-    if (docTypeInDb === null) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: `The document type with id=${id} does not exist`,
-      };
-    }
+//     if (docTypeInDb === null) {
+//       throw {
+//         status: StatusCodes.NOT_FOUND,
+//         message: `The document type with id=${id} does not exist`,
+//       };
+//     }
 
-    await docTypeInDb.update(active);
+//     await docTypeInDb.update(active);
 
-    return res
-      .status(StatusCodes.OK)
-      .send({ meta: null, data: { id, active } });
-  } catch (error) {
-    // console.error("document type could not be updated: ", error.message);
-    return next(error);
-  }
-};
+//     return res
+//       .status(StatusCodes.OK)
+//       .send({ meta: null, data: { id, active } });
+//   } catch (error) {
+//     // console.error("document type could not be updated: ", error.message);
+//     return next(error);
+//   }
+// };

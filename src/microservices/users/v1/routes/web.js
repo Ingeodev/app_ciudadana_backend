@@ -53,11 +53,11 @@ router.post(
   documentTypes.postEdit
 );
 
-router.post(
-  "/document_types/status",
-  // hasPermissions({ role: "super_master_user" }),
-  documentTypes.postStatus
-);
+// router.post(
+//   "/document_types/status",
+//   // hasPermissions({ role: "super_master_user" }),
+//   documentTypes.postStatus
+// );
 
 router.get(
   "/document_types",
