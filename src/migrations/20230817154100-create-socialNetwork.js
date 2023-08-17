@@ -26,7 +26,7 @@ module.exports = {
         icon: {
           type: Sequelize.STRING(150),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         active: {
           type: Sequelize.BOOLEAN,

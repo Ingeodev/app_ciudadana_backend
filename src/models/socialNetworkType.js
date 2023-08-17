@@ -32,8 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "socialNetworkType",
-      tableName: "socialNetworkType",
+      modelName: "SocialNetworkType",
+      tableName: "SocialNetworkType",
       schema: "public",
       paranoid: true,
       timestamps: true,

@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      SocialNetwork.belongsTo(models.socialNetworkType, {
+      SocialNetwork.belongsTo(models.SocialNetworkType, {
         foreignKey: {
           name: "socialNetworkTypeId",
           allowNull: true,
@@ -34,10 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       url: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: false,
       },
       icon: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: false,
       },
       active: {
         type: DataTypes.BOOLEAN,

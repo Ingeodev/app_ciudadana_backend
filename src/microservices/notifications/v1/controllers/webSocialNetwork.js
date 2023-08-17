@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-const { Model } = require("sequelize");
+const { Sequelize } = require('sequelize');
+
 
 const validator = require("../../utils/validatorSocialNetwork");
 const db = require("../../../../models/index");
@@ -132,6 +133,7 @@ const listSocialNetworks = async (req, res, next) => {
 
 const listSocialNetworkTypes = async (req, res, next) => {
     try {
+      console.log(db)
         const socialNetworkTypeInDb = await db.SocialNetworkType.findAndCountAll({
             unique: true,
             paranoid: true,
