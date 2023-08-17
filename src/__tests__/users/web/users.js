@@ -20,8 +20,8 @@ describe("Web - Users management API points: ", () => {
 
   const editUser0 = {
     documentTypeId: 6,
-    numberDocument: "123456789",
-    residenceAddress: "testDireccion",
+    document: "123456789",
+    address: "testDireccion",
     serviceReceiptUri:
       "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
   };
@@ -30,7 +30,7 @@ describe("Web - Users management API points: ", () => {
     name: "Juan Francisco",
     lastName: "Perez",
     phone: "3123334455",
-    residenceAddress: "direccionActualizada",
+    address: "direccionActualizada",
   };
 
   beforeAll(async () => {
@@ -280,7 +280,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          numberDocument: undefined,
+          document: undefined,
         });
       expect(response4.statusCode).toBe(400);
       expect(response4.body).not.toHaveProperty("meta");
@@ -295,7 +295,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          numberDocument: "        ",
+          document: "        ",
         });
       expect(response5.statusCode).toBe(400);
       expect(response5.body).not.toHaveProperty("meta");
@@ -310,7 +310,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          numberDocument: 0,
+          document: 0,
         });
       expect(response6.statusCode).toBe(400);
       expect(response6.body).not.toHaveProperty("meta");
@@ -325,7 +325,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          numberDocument: null,
+          document: null,
         });
       expect(response7.statusCode).toBe(400);
       expect(response7.body).not.toHaveProperty("meta");
@@ -340,7 +340,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          residenceAddress: undefined,
+          address: undefined,
         });
       expect(response8.statusCode).toBe(400);
       expect(response8.body).not.toHaveProperty("meta");
@@ -355,7 +355,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          residenceAddress: "        ",
+          address: "        ",
         });
       expect(response9.statusCode).toBe(400);
       expect(response9.body).not.toHaveProperty("meta");
@@ -370,7 +370,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          residenceAddress: 0,
+          address: 0,
         });
       expect(response10.statusCode).toBe(400);
       expect(response10.body).not.toHaveProperty("meta");
@@ -385,7 +385,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          residenceAddress: null,
+          address: null,
         });
       expect(response11.statusCode).toBe(400);
       expect(response11.body).not.toHaveProperty("meta");
@@ -756,7 +756,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0FullLogin,
-          residenceAddress: -55,
+          address: -55,
         });
       expect(response10.statusCode).toBe(400);
       expect(response10.body).not.toHaveProperty("meta");
@@ -833,8 +833,8 @@ describe("Web - Users management API points: ", () => {
       expect(response0.body.data[0].lastName).toBe("Perez");
       expect(response0.body.data[0]).toHaveProperty("phone");
       expect(response0.body.data[0].phone).toBe("3123334455");
-      expect(response0.body.data[0]).toHaveProperty("residenceAddress");
-      expect(response0.body.data[0].residenceAddress).toBe("direccionActualizada");
+      expect(response0.body.data[0]).toHaveProperty("address");
+      expect(response0.body.data[0].address).toBe("direccionActualizada");
     });
 
     test("should fail with status 400 and an error with a message if pagination is not provided.", async () => {
