@@ -5,10 +5,33 @@ const { Sequelize } = require('sequelize');
 const validator = require("../../utils/validatorSocialNetwork");
 const db = require("../../../../models/index");
 
+const isAvailableSocialNetwork = async (socialNetworkTypeId, actualId) => {
+  const socialNetwork = await db.SocialNetwork.findOne({
+    where: {  socialNetworkTypeId: socialNetworkTypeId }
+  });
+  if (socialNetwork == null || socialNetwork == undefined) {
+    return true;
+  } 
+  if(actualId == null) {
+    return false;
+  }
+  if (actualId == socialNetwork.id) {
+    return true;
+  }
+  return false;
+}
+
 
 const registerSocialNetwork = async (req, res, next) => {
     try {
         const { socialNetworkTypeId, url, icon } = await validator.vWebPostRegister(req.body);
+        const isAvailable = await isAvailableSocialNetwork(socialNetworkTypeId, null);
+        if (!isAvailable) {
+          throw {
+            status: StatusCodes.BAD_REQUEST,
+            message: `The requested SocialNetworkType with id ${socialNetworkTypeId} does not available.`
+        };
+        }
         const newSocialNetwork = await db.SocialNetwork.create({
             socialNetworkTypeId,
             url,
@@ -25,6 +48,13 @@ const updateSocialNetwork = async (req, res, next) => {
     try {
         const update = await validator.vWebPostUpdate(req.body);
         const socialNetwork = await db.SocialNetwork.findByPk(update.id);
+        const isAvailable = await isAvailableSocialNetwork(update.socialNetworkTypeId, update.id);
+        if (!isAvailable) {
+          throw {
+            status: StatusCodes.BAD_REQUEST,
+            message: `The requested SocialNetworkType with id ${update.socialNetworkTypeId} does not available.`
+        }
+        }
         if (socialNetwork == null)
             throw {
                 status: StatusCodes.NOT_FOUND,
