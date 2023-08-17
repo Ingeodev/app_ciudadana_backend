@@ -36,7 +36,7 @@ function generateSecureRandomString(length) {
 
 /**
  * Create a admin
- * @param {object} req - Object containing name, lastName, email, documentTypeId, numberDocument, phone
+ * @param {object} req - Object containing name, lastName, email, documentTypeId, document, phone
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -46,7 +46,7 @@ exports.postRegister = async (req, res, next) => {
       lastName,
       email,
       documentTypeId,
-      numberDocument,
+      document,
       phone,
     } = await validator.vWebPostRegister(req.body);
 
@@ -72,7 +72,7 @@ exports.postRegister = async (req, res, next) => {
       lastName,
       email,
       documentTypeId,
-      numberDocument,
+      document,
       phone,
       disabled: false,
       userMobile: false,

@@ -10,7 +10,7 @@ const registerSchema = joi.object({
   lastName: joi.string().trim().required().empty("").invalid(" "),
   email: joi.string().trim().email().required().empty("").invalid(" "),
   documentTypeId: joi.number().integer().greater(0).required(),
-  numberDocument: joi.string().trim().required().empty("").invalid(" "),
+  document: joi.string().trim().required().empty("").invalid(" "),
   phone: joi.number().integer().greater(0).less(10000000000).required(),
 });
 
