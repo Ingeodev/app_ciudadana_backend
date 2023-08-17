@@ -6,11 +6,8 @@ const publicityController = require('../controllers/mobilePublicity');
 const securityController = require("../controllers/mobileSecurity");
 const attentionController = require("../controllers/mobileAttentionLines");
 const alertController = require("../controllers/mobileAlert");
-<<<<<<< HEAD
 const socialNetworkController = require("../controllers/mobileSocialNetwork");
-=======
 const reportController = require("../controllers/mobileReports");
->>>>>>> [Feat]: Create report and tests added.
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
