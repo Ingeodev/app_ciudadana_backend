@@ -77,7 +77,7 @@ exports.postRegister = async (req, res, next) => {
       disabled: false,
       userMobile: false,
       loginPhase: "fullLogin",
-      // ! Pendiente: Preguntar por serviceReceipt, loginPhase, residenceAddress
+      // ! Pendiente: Preguntar por serviceReceipt, loginPhase, address
     };
 
     const userInDb = await db.User.create(dataQuery);
@@ -121,20 +121,21 @@ exports.postAddRole = async (req, res, next) => {
 
 /**
  * Update admin
- * @param {object} req - Object containing the code, name, abbreviation
+ * @param {object} req - Object containing the id, phone, imageUri
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, phone, imageUri, siteUri } = await validator.vWebPostEdit(
+    const { id, phone, imageUri } = await validator.vWebPostEdit(
       req.body
     );
 
     const dataQuery = {
       id,
+      // ! Pendiente: Eliminar phone
       phone,
+      // ! Pendiente: Eliminar imageUri
       imageUri,
-      siteUri,
     };
 
     const adminInDb = await db.User.findByPk(id);
