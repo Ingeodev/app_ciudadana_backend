@@ -89,9 +89,7 @@ exports.postRegister = async (req, res, next) => {
         message: `Error saving admin user`,
       };
     }
-    return res
-      .status(StatusCodes.CREATED)
-      .json({ meta: null, data: resUpdate });
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: userInDb });
   } catch (error) {
     return next(error);
   }
@@ -105,7 +103,7 @@ exports.postRegister = async (req, res, next) => {
 exports.postAddRole = async (req, res, next) => {
   try {
     const { id, roleId } = await validator.vWebPostAddRole(req.body);
-    const adminInDb = await db.Admin.findByPk(id);
+    const adminInDb = await db.User.findByPk(id);
 
     // ! Pendiente: Consultar la tabla roles
     const role = "super_master_user";
@@ -270,3 +268,38 @@ exports.postDelete = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * Send mail to allow admin user to create (reset) his password
+ * @param {object} req - Object containing the code, name, abbreviation
+ * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+// exports.postSendMailResetPasswd = async (req, res, next) => {
+//   try {
+//     const { id } = await validator.vWebPostResetPasswd(req.body);
+//     const adminInDb = await db.User.findByPk(id);
+
+//     if (adminInDb == null)
+//       throw {
+//         status: StatusCodes.NOT_FOUND,
+//         message: `The requested admin with id ${update.id} does not exist.`,
+//       };
+
+//     // const resultSend = await firebaseAppWeb.passwordResetEmail(adminInDb.email);
+//     const resultSend = await firebase.passwordReset(adminInDb.email);
+//     return res
+//       .status(StatusCodes.CREATED)
+//       .json({ meta: null, data: resultSend });
+//       // .json({ meta: null, data: {email: adminInDb.email} });
+//   } catch (error) {
+//     if (
+//       error &&
+//       error.errors &&
+//       error.errors.length > 0 &&
+//       error.errors[0].message
+//     ) {
+//       error.message = error.errors[0].message;
+//     }
+//     return next(error);
+//   }
+// };
