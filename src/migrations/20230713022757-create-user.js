@@ -51,7 +51,7 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        residenceAddress: {
+        address: {
           type: Sequelize.STRING(50),
           allowNull: true,
           unique: false,

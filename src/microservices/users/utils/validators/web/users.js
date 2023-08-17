@@ -16,7 +16,7 @@ const postAccountFullLoginSchema = joi.object({
   // documentTypeId: joi.number().integer().greater(0).required(),
   documentTypeId: joi.string().trim().required().empty("").invalid(" "),
   numberDocument: joi.string().trim().required().empty("").invalid(" "),
-  residenceAddress: joi.string().trim().required().empty("").invalid(" "),
+  address: joi.string().trim().required().empty("").invalid(" "),
   serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
 });
 
@@ -24,7 +24,7 @@ const postAccountUpdateUserSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" "),
   lastName: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
-  residenceAddress: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" "),
 });
 
 // * ------------- App Web --------------------------------
