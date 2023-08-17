@@ -11,7 +11,6 @@ const registerSchema = joi.object({
   email: joi.string().trim().email().required().empty("").invalid(" "),
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().required().empty("").invalid(" "),
-  phone: joi.number().integer().greater(0).less(10000000000).required(),
 });
 
 const addRoleSchema = joi.object({
@@ -25,7 +24,6 @@ const resetPassSchema = joi.object({
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required(),
-  phone: joi.number().integer().greater(0).less(10000000000),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
 });
 

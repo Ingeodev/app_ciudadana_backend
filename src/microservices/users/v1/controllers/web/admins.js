@@ -36,7 +36,7 @@ function generateSecureRandomString(length) {
 
 /**
  * Create a admin
- * @param {object} req - Object containing name, lastName, email, documentTypeId, document, phone
+ * @param {object} req - Object containing name, lastName, email, documentTypeId, document
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -47,7 +47,6 @@ exports.postRegister = async (req, res, next) => {
       email,
       documentTypeId,
       document,
-      phone,
     } = await validator.vWebPostRegister(req.body);
 
     // Create the user in firebase and return clientId
@@ -73,7 +72,6 @@ exports.postRegister = async (req, res, next) => {
       email,
       documentTypeId,
       document,
-      phone,
       disabled: false,
       userMobile: false,
       loginPhase: "fullLogin",
@@ -121,19 +119,17 @@ exports.postAddRole = async (req, res, next) => {
 
 /**
  * Update admin
- * @param {object} req - Object containing the id, phone, imageUri
+ * @param {object} req - Object containing the id, imageUri
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, phone, imageUri } = await validator.vWebPostEdit(
+    const { id, imageUri } = await validator.vWebPostEdit(
       req.body
     );
 
     const dataQuery = {
       id,
-      // ! Pendiente: Eliminar phone
-      phone,
       // ! Pendiente: Eliminar imageUri
       imageUri,
     };
