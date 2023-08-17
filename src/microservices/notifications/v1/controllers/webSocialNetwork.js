@@ -118,7 +118,7 @@ const listSocialNetworks = async (req, res, next) => {
             offset: (objPage.number - 1) * objPage.size,
             include: [{
                 model: db.SocialNetworkType,
-                attributes: ['name', 'code'],
+                attributes: [],
                 required: false,
             }],
             attributes: {

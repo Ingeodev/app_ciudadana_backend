@@ -10,7 +10,7 @@ const getSocialNetworks = async (req, res, next) => {
     const socialNetworksInDb = await db.SocialNetwork.findAll({
       include: [{
         model: db.SocialNetworkType,
-        attributes: ['name', 'code'],
+        attributes: [],
         required: false,
     }],
       attributes: [[Sequelize.col('"SocialNetworkType"."code"'), 'type'], "url", "icon"],
