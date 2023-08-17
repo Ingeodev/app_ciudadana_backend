@@ -15,13 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       //     allowNull: true,
       //   },
       // });
-
-      DocumentType.hasOne(models.Admin, {
-        foreignKey: {
-          name: "documentTypeId",
-          allowNull: false,
-        },
-      });
     }
   }
   DocumentType.init(
