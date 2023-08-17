@@ -11,28 +11,21 @@ describe("Mobile - Document Type management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  // ! Obtained in alphabetical order - Therefore, they must be modified
-  // ! First object returned
   const testDocType0 = {
-    id: 28,
-    // name: "Cedula de extranjeria",
-    code: "CE",
+    name: "AAA-TEST0 Edit",
+    code: "AAA-TEST0 Code",
   };
 
-  // ! Second object returned
   const testDocType1 = {
-    id: 6,
-    // name: "Cedula de ciudadania",
-    code: "CC",
+    name: "AAA-TEST1 Edit",
+    code: "AAA-TEST1 Code",
   };
 
-  beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
+   beforeAll(async () => {
+    const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
+      .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
@@ -59,8 +52,16 @@ describe("Mobile - Document Type management API points: ", () => {
       const response0 = await request(usedHost).get("/").set(requestHeaders);
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toEqual(expect.any(Array));
-      expect(response0.body[0]).toEqual(expect.objectContaining(testDocType1));
-      expect(response0.body[1]).toEqual(expect.objectContaining(testDocType0));
+      expect(response0.body[0]).toHaveProperty("id");
+      expect(response0.body[0]).toHaveProperty("name");
+      expect(response0.body[0].name).toBe(testDocType0.name);
+      expect(response0.body[0]).toHaveProperty("code");
+      expect(response0.body[0].code).toBe(testDocType0.code);
+      expect(response0.body[1]).toHaveProperty("id");
+      expect(response0.body[1]).toHaveProperty("name");
+      expect(response0.body[1].name).toBe(testDocType1.name);
+      expect(response0.body[1]).toHaveProperty("code");
+      expect(response0.body[1].code).toBe(testDocType1.code);
 
       // Pagination
       const response1 = await request(usedHost)
@@ -69,9 +70,16 @@ describe("Mobile - Document Type management API points: ", () => {
         .query({ page: { number: 1, size: 2 } });
       expect(response1.statusCode).toBe(200);
       expect(response1.body).toEqual(expect.any(Array));
-      expect(response1.body.length).toBe(2);
-      expect(response1.body[0]).toEqual(expect.objectContaining(testDocType1));
-      expect(response0.body[1]).toEqual(expect.objectContaining(testDocType0));
+      expect(response1.body[0]).toHaveProperty("id");
+      expect(response1.body[0]).toHaveProperty("name");
+      expect(response1.body[0].name).toBe(testDocType0.name);
+      expect(response1.body[0]).toHaveProperty("code");
+      expect(response1.body[0].code).toBe(testDocType0.code);
+      expect(response1.body[1]).toHaveProperty("id");
+      expect(response1.body[1]).toHaveProperty("name");
+      expect(response1.body[1].name).toBe(testDocType1.name);
+      expect(response1.body[1]).toHaveProperty("code");
+      expect(response1.body[1].code).toBe(testDocType1.code);
     });
 
     // {

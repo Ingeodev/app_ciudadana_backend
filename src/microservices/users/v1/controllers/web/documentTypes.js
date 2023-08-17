@@ -88,7 +88,7 @@ exports.getAll = async (req, res, next) => {
     const docTypesInDb = await db.DocumentType.findAndCountAll({
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
-      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      order: [["code", "ASC"]],
     });
 
     if (docTypesInDb.count <= 0) {

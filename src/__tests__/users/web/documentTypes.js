@@ -12,32 +12,30 @@ describe("Web - Document Type management API points: ", () => {
   };
 
   const testDocType0 = {
-    name: "Cedula de extranjeria",
-    code: "CE",
+    name: "AAA-TEST0",
+    code: "AAA-TEST0 Code",
   };
 
   const testDocType1 = {
-    name: "Pasaporte",
-    code: "PA",
+    name: "AAA-TEST1",
+    code: "AAA-TEST1 Code",
   };
 
   const editDocType0 = {
-    name: "Cedula de extranjeria - Test",
-    code: "CE",
+    name: "AAA-TEST0 Edit",
+    code: "AAA-TEST0 Code",
   };
 
   const editDocType1 = {
-    name: "Pasaporte - Test",
-    code: "PA",
+    name: "AAA-TEST1 Edit",
+    code: "AAA-TEST1 Code",
   };
 
   beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
+    const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
+      .send(global.firebaseTestWebUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
@@ -116,10 +114,6 @@ describe("Web - Document Type management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send(testDocType0);
-        // .send({
-        //   ...testDocType0,
-        //   code: -5,
-        // });
       expect(response0.statusCode).toBe(500);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -130,10 +124,7 @@ describe("Web - Document Type management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testDocType1,
-          code: "PA",
-        });
+        .send(testDocType1);
       expect(response1.statusCode).toBe(500);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -171,12 +162,16 @@ describe("Web - Document Type management API points: ", () => {
       expect(response0.body).toHaveProperty("data");
       expect(response0.body.data).toEqual(expect.any(Array));
       expect(response0.body.data.length).toBe(2);
-      expect(response0.body.data[0]).toEqual(
-        expect.objectContaining(testDocType1)
-      );
-      expect(response0.body.data[1]).toEqual(
-        expect.objectContaining(testDocType0)
-      );
+      expect(response0.body.data[0]).toHaveProperty("id");
+      expect(response0.body.data[0]).toHaveProperty("name");
+      expect(response0.body.data[0].name).toBe(testDocType0.name);
+      expect(response0.body.data[0]).toHaveProperty("code");
+      expect(response0.body.data[0].code).toBe(testDocType0.code);
+      expect(response0.body.data[1]).toHaveProperty("id");
+      expect(response0.body.data[1]).toHaveProperty("name");
+      expect(response0.body.data[1].name).toBe(testDocType1.name);
+      expect(response0.body.data[1]).toHaveProperty("code");
+      expect(response0.body.data[1].code).toBe(testDocType1.code);
     });
 
     // {
@@ -574,7 +569,7 @@ describe("Web - Document Type management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testDocType1,
-          code: "CE",
+          code: testDocType0.code,
         });
       expect(response0.statusCode).toBe(500);
       expect(response0.body).not.toHaveProperty("meta");
