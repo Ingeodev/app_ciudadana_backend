@@ -15,6 +15,19 @@ const imageFilter = (req, file, cb) => {
     }
 };
 
+const pdfFilter = (req, file, cb) => {
+    const allowedMimetypes = ['application/pdf'];
+    try {
+        if (allowedMimetypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    } catch (error) {
+        cb(error);
+    }
+};
+
 const imagePdfFilter = (req, file, cb) => {
     const allowedMimetypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
     try {
@@ -37,6 +50,15 @@ const uploadSingleImage = multer({
     }
 });
 
+const uploadSinglePdf = multer({
+    storage,
+    fileFilter: pdfFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024,     // 5MB
+        files: 1,               // Would only allow to use upload.single
+    }
+});
+
 const uploadImagesPdfs = multer({
     storage,
     fileFilter: imagePdfFilter,
@@ -47,5 +69,6 @@ const uploadImagesPdfs = multer({
 
 module.exports = {
     uploadSingleImage,
+    uploadSinglePdf,
     uploadImagesPdfs,
 };
