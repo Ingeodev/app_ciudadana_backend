@@ -51,10 +51,8 @@ _meta
 .serverless
 
 # GCP STUFF
-src/account_service_key.json
-src/account_service_key_app_web.json
+src/account_service_key*
 src/email_service_key.json
-src/account_service_key_notery.json
 
 /.eslintcache
 /.nyc_output
