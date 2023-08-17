@@ -110,7 +110,7 @@ Migration to cloud run
     
     # then -v will mount a friendly name volume  
     # bind mounts start with /local_path:/docker_path
-    docker run -d -p 3000:3000 -v storage:/var/storage app_mobility_admin_ms    
+    docker run -d -p 3000:3000 -v $(pwd)/src/uploads:/src/uploads app_mobility_admin_ms    
     # for deployment tag your versions, this is an example
     docker tag app_mobility_admin_ms:latest us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest 
     # 
