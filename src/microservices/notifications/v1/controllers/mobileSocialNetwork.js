@@ -16,7 +16,6 @@ const getSocialNetworks = async (req, res, next) => {
       attributes: [[Sequelize.col('"SocialNetworkType"."code"'), 'type'], "url", "icon"],
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
-    console.log("🚀 ~ file: mobileSocialNetwork.js:13 ~ getSocialNetworks ~ socialNetworksInDb:", socialNetworksInDb)
 
     return res.status(StatusCodes.OK).send(socialNetworksInDb);
   } catch (error) {
