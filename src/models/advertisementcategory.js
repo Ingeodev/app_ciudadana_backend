@@ -32,7 +32,6 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'AdvertisementCategory',
     timestamps: true,
     paranoid: true,
-    updatedAt: false,
   });
   return AdvertisementCategory;
 };
