@@ -27,7 +27,6 @@ const editSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required(),
   phone: joi.number().integer().greater(0).less(10000000000),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().trim().empty("").invalid(" "),
 });
 
 const getAllSchema = joi.object({
