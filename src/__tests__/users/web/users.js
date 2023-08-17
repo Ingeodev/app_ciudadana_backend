@@ -24,7 +24,6 @@ describe("Web - Users management API points: ", () => {
     residenceAddress: "testDireccion",
     serviceReceiptUri:
       "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    siteUri: "http://test.site.url",
   };
 
   const editUser0FullLogin = {
@@ -454,66 +453,6 @@ describe("Web - Users management API points: ", () => {
       expect(response15.body).toHaveProperty("status", 400);
       expect(response15.body).toHaveProperty("code");
       expect(response15.body).toHaveProperty("detail");
-
-      // 17. ---------------------------------------------------------------
-      const response16 = await request(usedHost)
-        .post("/account/full_login")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          siteUri: undefined,
-        });
-      expect(response16.statusCode).toBe(400);
-      expect(response16.body).not.toHaveProperty("meta");
-      expect(response16.body).not.toHaveProperty("data");
-      expect(response16.body).toHaveProperty("status", 400);
-      expect(response16.body).toHaveProperty("code");
-      expect(response16.body).toHaveProperty("detail");
-
-      // 18. ---------------------------------------------------------------
-      const response17 = await request(usedHost)
-        .post("/account/full_login")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          siteUri: "        ",
-        });
-      expect(response17.statusCode).toBe(400);
-      expect(response17.body).not.toHaveProperty("meta");
-      expect(response17.body).not.toHaveProperty("data");
-      expect(response17.body).toHaveProperty("status", 400);
-      expect(response17.body).toHaveProperty("code");
-      expect(response17.body).toHaveProperty("detail");
-
-      // 19. ---------------------------------------------------------------
-      const response18 = await request(usedHost)
-        .post("/account/full_login")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          siteUri: 0,
-        });
-      expect(response18.statusCode).toBe(400);
-      expect(response18.body).not.toHaveProperty("meta");
-      expect(response18.body).not.toHaveProperty("data");
-      expect(response18.body).toHaveProperty("status", 400);
-      expect(response18.body).toHaveProperty("code");
-      expect(response18.body).toHaveProperty("detail");
-
-      // 20. ---------------------------------------------------------------
-      const response19 = await request(usedHost)
-        .post("/account/full_login")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          siteUri: "is.not.uri",
-        });
-      expect(response19.statusCode).toBe(400);
-      expect(response19.body).not.toHaveProperty("meta");
-      expect(response19.body).not.toHaveProperty("data");
-      expect(response19.body).toHaveProperty("status", 400);
-      expect(response19.body).toHaveProperty("code");
-      expect(response19.body).toHaveProperty("detail");
     });
 
     test("should fail with status 500 and an error with a message if the data cannot be saved - documentTypeId = 999.", async () => {

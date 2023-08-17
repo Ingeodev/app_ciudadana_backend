@@ -61,11 +61,6 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        siteUri: {
-          type: Sequelize.STRING,
-          allowNull: true,
-          unique: false,
-        },
         loginPhase: {
           type: Sequelize.STRING(50),
           allowNull: false,

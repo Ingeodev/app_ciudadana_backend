@@ -53,7 +53,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="baseLogin"
- * @param {object} req - Object containing: documentTypeId, numberDocument, residenceAddress, serviceReceiptUri, siteUri
+ * @param {object} req - Object containing: documentTypeId, numberDocument, residenceAddress, serviceReceiptUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountBaseLogin = async (req, res, next) => {
@@ -73,7 +73,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
-      siteUri,
     } = await validator.vPostAccountFullLogin(req.body);
 
     const dataUser = {
@@ -81,7 +80,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       numberDocument,
       residenceAddress,
       serviceReceiptUri,
-      siteUri,
       loginPhase: "inVerification",
     };
 
