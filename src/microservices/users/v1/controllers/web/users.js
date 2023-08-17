@@ -282,12 +282,14 @@ exports.getUsersListAll = async (req, res, next) => {
       // include: [
       //   {
       //     model: db.DocumentType,
-      //     attributes: ["name"],
+      //     attributes: [],
+      //     // attributes: ["name"],
       //     required: false,
       //   },
       // ],
       // attributes: {
-      //   exclude: ["deletedAt", "DocumentType"],
+      //   exclude: ["deletedAt"],
+      //   // exclude: ["deletedAt", "DocumentType"],
       //   include: [[Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"]],
       // },
     });
