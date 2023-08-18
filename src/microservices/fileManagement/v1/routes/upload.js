@@ -12,14 +12,14 @@ router.post(
   "/image",
   // hasPermissions({ role: "super_master_user" }),
   uploadSingleImage.single('image'),
-  uploadController.postSingleImage,
+  uploadController.postSingleFile,
 );
 
 router.post(
   "/pdf",
   // hasPermissions({ role: "super_master_user" }),
   uploadSinglePdf.single('file'),
-  uploadController.postSinglePdf,
+  uploadController.postSingleFile,
 );
 
 module.exports = router;

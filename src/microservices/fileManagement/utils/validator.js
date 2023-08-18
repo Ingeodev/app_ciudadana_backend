@@ -15,7 +15,7 @@ const multerMemorySingleItemSchema = joi.object({
     mimetype: joi.string().required(),
     size: joi.number().required(),
     buffer: joi.binary().required(),
-}).required();
+}).required().error(new Error('A valid file is required.'));
 
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.

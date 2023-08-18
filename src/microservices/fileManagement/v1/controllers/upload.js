@@ -5,34 +5,27 @@ const { v4: uuidV4 } = require('uuid');
 const { StatusCodes } = require('http-status-codes');
 
 const validator = require('../../utils/validator');
+const { checkIfExists } = require('../../utils/accessCheck');
 
 const uploadsFolder = path.join('..', '..', 'uploads'); // TODO: transform in env var; ask Esteban.
 
-// TODO: check if folders exists and create them.
-
-const postSingleImage = async (req, res, next) => {
+const postSingleFile = async (req, res, next) => {
     try {
         const imageFile = await validator.validateMulterMemorySingleItemSchema(req.file);
         const { folder } = await validator.validateSaveFolderSchema(req.body);
         const filename = uuidV4() + path.extname(imageFile.originalname);
-        const uploadPath = path.join(uploadsFolder, folder, filename);
+        const folderPath = path.join(uploadsFolder, folder);
+        await checkIfExists(folderPath, true);
+        const uploadPath = path.join(folderPath, filename);
         await fs.writeFile(uploadPath, imageFile.buffer);
-        const imageUri = `${req.protocol}://${req.hostname}/api/v1/file_management/download/${folder}/${filename}`;
+        const host = req.get('host');
+        const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
         return res.status(StatusCodes.OK)
             .json({
                 data: {
                     imageUri,
                 }
             });
-    } catch (error) {
-        return next(error);
-    }
-};
-
-const postSinglePdf = async (req, res, next) => {
-    try {
-        return res.status(StatusCodes.OK)
-            .json({ msg: 'TODO' });
     } catch (error) {
         return next(error);
     }
@@ -48,6 +41,6 @@ const postDeleteFile = async (req, res, next) => {
 };
 
 module.exports = {
-    postSingleImage,
-    postSinglePdf,
+    postSingleFile,
+    postDeleteFile,
 };

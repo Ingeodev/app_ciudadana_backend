@@ -11,6 +11,9 @@ const downloadRouter = require("./v1/routes/download.js");
 
 const app = express();
 
+// Set port
+const PORT = process.env.PORT || 3000;
+
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
@@ -34,8 +37,8 @@ app.use((req, res, next) => {
   return next(error);
 });
 
-app.use(errorHandler); 
+app.use(errorHandler);
 
-app.listen(3000, function () {
-  console.log("running with port 3000");
+app.listen(PORT, function () {
+  console.log(`running in port ${PORT}`);
 });
