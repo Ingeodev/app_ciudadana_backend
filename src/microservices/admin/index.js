@@ -18,8 +18,8 @@ app.get("/health", function (req, res) {
 });
 
 //#region Web-oriented end-points
-app.use("/api/web/v1/admins", webAdminRouter);
-app.use("/api/web/v1/admins/role", webRoleRouter);
+app.use("/api/web/v1/admin", webAdminRouter);
+app.use("/api/web/v1/admin/role", webRoleRouter);
 
 //#region Error handling
 // Not found route!
