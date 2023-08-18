@@ -19,11 +19,11 @@ const postSingleFile = async (req, res, next) => {
         const uploadPath = path.join(folderPath, filename);
         await fs.writeFile(uploadPath, imageFile.buffer);
         const host = req.get('host');
-        const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
-        return res.status(StatusCodes.OK)
+        const downloadUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
+        return res.status(StatusCodes.CREATED)
             .json({
                 data: {
-                    imageUri,
+                    downloadUri,
                 }
             });
     } catch (error) {
