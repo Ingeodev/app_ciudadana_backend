@@ -3,7 +3,7 @@ const router = express.Router();
 const downloadController = require("../controllers/download");
 
 router.get(
-  "/:folder/:file",
+  "/:folder/:fileName",
   downloadController.downloadFile
 );
 

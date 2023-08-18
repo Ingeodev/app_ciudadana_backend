@@ -13,7 +13,7 @@ const postSingleFile = async (req, res, next) => {
     try {
         const imageFile = await validator.validateMulterMemorySingleItemSchema(req.file);
         const { folder } = await validator.validateSaveFolderSchema(req.body);
-        const filename = uuidV4() + path.extname(imageFile.originalname);
+        const filename = uuidV4() + path.extname(imageFile.originalname);   // TODO: Ask whether a table for stored files is necessary.
         const folderPath = path.join(uploadsFolder, folder);
         await checkIfExists(folderPath, true);
         const uploadPath = path.join(folderPath, filename);

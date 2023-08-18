@@ -17,6 +17,11 @@ const multerMemorySingleItemSchema = joi.object({
     buffer: joi.binary().required(),
 }).required().error(new Error('A valid file is required.'));
 
+const downloadSchema = joi.object({
+    folder: not_path_string.required(),
+    fileName: not_path_string.required(),
+});
+
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
  * @param {joi.ObjectSchema} validator_schema Validation schema to use.
@@ -48,5 +53,8 @@ module.exports = {
     },
     validateSaveFolderSchema: async inputData => {
         return await use_validator_on_data(saveFolderSchema, inputData);
+    },
+    validateDownloadSchema: async inputData => {
+        return await use_validator_on_data(downloadSchema, inputData);
     },
 };
