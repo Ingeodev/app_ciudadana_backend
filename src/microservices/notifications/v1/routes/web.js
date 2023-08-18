@@ -9,6 +9,7 @@ const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 const socialNetworkController = require('../controllers/webSocialNetwork');
+const reportController = require("../controllers/webReports");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -100,6 +101,11 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.getOneById
 );
+//#endregion
+
+//#region Reports end-points
+// Retrieve all the reports by user.
+router.get('/security/reports/:id', reportController.getListAllByUser);
 //#endregion
 
 //#region Alerts end-points
