@@ -92,14 +92,18 @@ Run the generated image in your environment
     # from your root directory execute
     docker build --platform linux/amd64 -t app_mobility_users_ms -f src/microservices/users/Dockerfile .
     docker build --platform linux/amd64 -t app_mobility_notifications_ms -f src/microservices/notifications/Dockerfile .
+    docker build --platform linux/amd64 -t app_mobility_third_parties_ms -f src/microservices/thirdParties/Dockerfile .
+    docker build --platform linux/amd64 -t app_mobility_file_management_ms -f src/microservices/fileManagement/Dockerfile .
     
     # then 
     docker run -d -p 3000:3000 app_mobility_users_ms
-    docker run -d -p 8080:3000 app_mobility_notifications_ms 
+    docker run -d -p 3001:3000 app_mobility_notifications_ms 
+    docker run -d -p 3002:3000 app_mobility_third_parties_ms 
+    docker run -d -p 3003:3000 app_mobility_file_management_ms 
     
     # for deployment tag your versions, this is an example
-    docker tag app_mobility_notifications_ms:latest <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
-    docker push <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_notifications_ms:latest
+    docker tag app_mobility_<microservice>_ms:latest <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_<microservice>_ms:latest
+    docker push <your_aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/app_mobility_<microservice>_ms:latest
 
 ```
 Migration to cloud run
