@@ -72,5 +72,8 @@ npm-debug.log
 config.json
 jest.config.js
 
+# uploaded files
+uploads
+
 # jest snapshots
 __snapshots__
