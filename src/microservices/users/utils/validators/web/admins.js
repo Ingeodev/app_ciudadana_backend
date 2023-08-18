@@ -5,7 +5,6 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  roleId: joi.number().integer().greater(0).required(),
   name: joi.string().trim().required().empty("").invalid(" "),
   lastName: joi.string().trim().required().empty("").invalid(" "),
   email: joi.string().trim().email().required().empty("").invalid(" "),
