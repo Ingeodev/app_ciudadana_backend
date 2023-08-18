@@ -12,6 +12,9 @@ steps:
   args: [ "-c", "cd workspace && ls" ]
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/gcp.Dockerfile', '.']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args: ['run', 'deploy', 'admin', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '--region', 'us-central1']
 images:
 - 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest'
 availableSecrets:
