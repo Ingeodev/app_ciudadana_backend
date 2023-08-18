@@ -1,14 +1,28 @@
 const { StatusCodes } = require('http-status-codes');
 const { Op } = require('sequelize');
-const { ne } = Op;
+const { ne, eq } = Op;
 
 const db = require('../../../../models');
 
 
 // Retrieve the advertisements that have no category attached.
 const getUncategorized = async (req, res, next) => {
-    return res.status(StatusCodes.OK)
-        .json({ msg: '@Daniel, este es el punto que devuelve todos los que no tienen categoría.' });
+    try {
+        const notCategorizedAdvertisements = await db.Advertisement.findAll({
+            where: {
+                active: true,
+                categoryId: { [eq]: null },
+            },
+            attributes: {
+                include: [['imageUri', 'image'], ['siteUri', 'url']],
+                exclude: ['id', 'imageUri', 'siteUri', 'categoryId', 'active', 'createdAt', 'updatedAt', 'deletedAt'],
+            }
+        });
+        return res.status(StatusCodes.OK)
+            .json(notCategorizedAdvertisements);
+    } catch (error) {
+        return next(error);
+    }
 };
 
 // Retrieve the advertisements with a category attached.
