@@ -51,6 +51,8 @@ This backend has been generated from scratch to support the Cali Mobility Applic
       - [List of endpoints](#list-of-endpoints-2)
         - [Download](#download)
         - [Upload](#upload)
+        - [_POST_ Upload Image](#post-upload-image)
+        - [_POST_ Upload PDF](#post-upload-pdf)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
 
@@ -770,7 +772,7 @@ This microservice handles the files upload and download for the web application.
     # On the console
     cd src\microservices\fileManagement
     node index.js
-    
+
 #### List of endpoints
 ##### Download
 	Path: http://localhost:3000/api/v1/file_management/
@@ -779,6 +781,8 @@ This microservice handles the files upload and download for the web application.
 | Endpoint  | Method | Location in Controller | Description                 |
 | :-------- | :----- | :--------------------- | :-------------------------- |
 | /download | GET    | downloadFile           | Download the specified file |
+
+The download endpoint allows anyone to download saved resources. This endpoint is not protected.
 
 ##### Upload
 	Path: http://localhost:3000/api/web/v1/file_management/upload
@@ -789,7 +793,63 @@ This microservice handles the files upload and download for the web application.
 | /image   | POST   | postSingleFile         | Upload an image file (JPG, PNG or JPEG) |
 | /pdf     | POST   | postSingleFile         | Upload a PDF document                   |
 
+The upload endpoints allow web users to save images and PDF documents into the file server. 
 
+##### _POST_ Upload Image
+\(\<Your_Host\>/api/web/v1/file_management/upload/image\) saves images in the file server. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _image_   	| File 	|      Yes     	| Image File.    	|
+| _folder_   	| String 	|      Yes     	| Name of the folder that should host the file. Path-like names are not allowed.    	|
+
+It returns **201 _Created_** and the download url of the uploaded image.
+
+**Example**
+
+Request body (form-data):
+  >``` js
+  > image: <image file>,
+  > folder: "test"
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >   "data": {
+  >       "downloadUri": "http://localhost:3000/api/v1/file_management/download/testPDF/323fab55-3b63-4f27-b40d-486cc92d9df7.png"
+  >    }
+  > }
+  > ```
+
+##### _POST_ Upload PDF
+\(\<Your_Host\>/api/web/v1/file_management/upload/pdf\) saves images in the file server. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _file_   	| File 	|      Yes     	| PDF File.    	|
+| _folder_   	| String 	|      Yes     	| Name of the folder that should host the file. Path-like names are not allowed.    	|
+
+It returns **201 _Created_** and the download url of the uploaded document.
+
+**Example**
+
+Request body (form-data):
+  >``` js
+  > file: <pdf file>,
+  > folder: "test"
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >   "data": {
+  >       "downloadUri": "http://localhost:3000/api/v1/file_management/download/testPDF/323fab55-3b63-4f27-b40d-486cc92d9df9.pdf"
+  >    }
+  > }
+  > ```
 
 ------------
 ## 5. Contributors
