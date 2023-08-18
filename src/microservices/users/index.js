@@ -11,7 +11,7 @@ const errorHandler = require("../../middleware/errorMiddleware.js");
 const app = express();
 
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get("/health", function (req, res) {
