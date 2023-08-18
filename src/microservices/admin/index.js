@@ -6,6 +6,7 @@ const { StatusCodes } = require('http-status-codes');
 
 const errorHandler = require('../../middleware/errorMiddleware');
 const webRoleRouter = require("./v1/routes/webRole");
+const webAdminRouter = require("./v1/routes/webAdmin");
 
 const app = express();
 
@@ -17,7 +18,8 @@ app.get("/health", function (req, res) {
 });
 
 //#region Web-oriented end-points
-app.use('/web/v1/admin/role', webRoleRouter);
+app.use("/api/web/v1/admins", webAdminRouter);
+app.use("/api/web/v1/admins/role", webRoleRouter);
 
 //#region Error handling
 // Not found route!

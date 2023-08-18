@@ -1,8 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
-const db = require("../../../../../models/index.js");
-const firebase = require("../../../utils/firebaseAdmin.js");
-// const { formatDate } = require("../../../../../middleware/formatDate.js");
-const validator = require("../../../utils/validators/web/admins.js");
+const db = require("../../../../models/index.js");
+const firebase = require("../../utils/firebaseAdmin.js");
+const validator = require("../../utils/adminsValidator.js");
 // const firebaseAppWeb = require("../../../utils/firebaseAppWeb.js");
 
 /**
@@ -41,13 +40,8 @@ function generateSecureRandomString(length) {
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const {
-      name,
-      lastName,
-      email,
-      documentTypeId,
-      document,
-    } = await validator.vWebPostRegister(req.body);
+    const { name, lastName, email, documentTypeId, document } =
+      await validator.vWebPostRegister(req.body);
 
     // Create the user in firebase and return clientId
     const dataUser = {
@@ -58,9 +52,9 @@ exports.postRegister = async (req, res, next) => {
     };
     const clientId = await firebase.createUser(dataUser);
 
-    if (clientId.status === 500) {
+    if (clientId.status) {
       throw {
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        status: clientId.status,
         message: clientId.detail,
       };
     }
@@ -74,17 +68,18 @@ exports.postRegister = async (req, res, next) => {
       document,
       disabled: false,
       userMobile: false,
-      loginPhase: "fullLogin",
-      // ! Pendiente: Preguntar por serviceReceipt, loginPhase, address
+      // ! Preguntar sobre loginPhase
+      loginPhase: "unverifiedEmail",
     };
 
     const userInDb = await db.User.create(dataQuery);
+    // const sendEmail = await firebase.passwordReset(dataUser.email);
+    const sendEmail = await firebase.emailVerification(dataUser.email);
 
-    if (!userInDb) {
-      await transaction.rollback();
+    if (sendEmail.status) {
       throw {
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        message: `Error saving admin user`,
+        status: sendEmail.status,
+        message: sendEmail.detail,
       };
     }
     return res.status(StatusCodes.CREATED).json({ meta: null, data: userInDb });
@@ -124,9 +119,7 @@ exports.postAddRole = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, imageUri } = await validator.vWebPostEdit(
-      req.body
-    );
+    const { id, imageUri } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
@@ -174,7 +167,7 @@ exports.getAll = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
-    // ! Pendiente filtrar por tipo de admin role 
+    // ! Pendiente filtrar por tipo de admin role
     const adminsInDb = await db.User.findAndCountAll({
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
@@ -271,32 +264,32 @@ exports.postDelete = async (req, res, next) => {
  * @param {object} req - Object containing the code, name, abbreviation
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-// exports.postSendMailResetPasswd = async (req, res, next) => {
-//   try {
-//     const { id } = await validator.vWebPostResetPasswd(req.body);
-//     const adminInDb = await db.User.findByPk(id);
+exports.postSendMailResetPasswd = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebPostResetPasswd(req.body);
+    const adminInDb = await db.User.findByPk(id);
 
-//     if (adminInDb == null)
-//       throw {
-//         status: StatusCodes.NOT_FOUND,
-//         message: `The requested admin with id ${update.id} does not exist.`,
-//       };
+    if (adminInDb == null)
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The requested admin with id ${update.id} does not exist.`,
+      };
 
-//     // const resultSend = await firebaseAppWeb.passwordResetEmail(adminInDb.email);
-//     const resultSend = await firebase.passwordReset(adminInDb.email);
-//     return res
-//       .status(StatusCodes.CREATED)
-//       .json({ meta: null, data: resultSend });
-//       // .json({ meta: null, data: {email: adminInDb.email} });
-//   } catch (error) {
-//     if (
-//       error &&
-//       error.errors &&
-//       error.errors.length > 0 &&
-//       error.errors[0].message
-//     ) {
-//       error.message = error.errors[0].message;
-//     }
-//     return next(error);
-//   }
-// };
+    // const resultSend = await firebaseAppWeb.passwordResetEmail(adminInDb.email);
+    const resultSend = await firebase.passwordReset(adminInDb.email);
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ meta: null, data: resultSend });
+    // .json({ meta: null, data: {email: adminInDb.email} });
+  } catch (error) {
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }
+    return next(error);
+  }
+};

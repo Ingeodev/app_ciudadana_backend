@@ -1,9 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-// const joi = require("joi");
-const db = require("../../../../../models/index.js");
-// const firebase = require("../utils/firebaseAdmin.js");
-// const { formatDate } = require("../../../../../middleware/formatDate.js");
-const validator = require("../../../utils/validators/web/adminNotifications.js");
+const db = require("../../../../models/index.js");
+const validator = require("../../utils/adminNotificationsValidator.js");
 
 // const Op = db.Sequelize.Op;
 

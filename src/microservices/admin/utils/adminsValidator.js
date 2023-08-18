@@ -14,11 +14,11 @@ const registerSchema = joi.object({
 
 const addRoleSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required(),
-  roleId: joi.number().integer().greater(0).required(),  
+  roleId: joi.number().integer().greater(0).required(),
 });
 
 const resetPassSchema = joi.object({
-  id: joi.number().integer().empty("").invalid(0).required()
+  id: joi.number().integer().empty("").invalid(0).required(),
 });
 
 const editSchema = joi.object({
@@ -36,7 +36,7 @@ const getOneSchema = joi.object({
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0)
+  id: joi.number().required().empty("").greater(0).invalid(0),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
