@@ -17,7 +17,7 @@ const postAccountFullLoginSchema = joi.object({
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().required().empty("").invalid(" "),
   address: joi.string().trim().required().empty("").invalid(" "),
-  serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  // serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
 });
 
 const postAccountUpdateUserSchema = joi.object({
@@ -26,6 +26,15 @@ const postAccountUpdateUserSchema = joi.object({
   phone: joi.string().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
 });
+
+const vFileSchema = joi.object({
+    fieldname: joi.string().required(),
+    originalname: joi.string().required(),
+    encoding: joi.string().required(),
+    mimetype: joi.string().required(),
+    size: joi.number().required(),
+    buffer: joi.binary().required(),
+}).required().error(new Error('A valid file is required.'));
 
 const use_validator_on_data = async (validator_schema, data) => {
     try {
@@ -53,8 +62,10 @@ module.exports = {
   vPostAccountFullLogin: async (inputData) => {
     return await use_validator_on_data(postAccountFullLoginSchema, inputData);
   },
-
   vPostAccountUpdateUser: async (inputData) => {
     return await use_validator_on_data(postAccountUpdateUserSchema, inputData);
+  },
+  vfileFullLogin: async (inputData) => {
+    return await use_validator_on_data(vFileSchema, inputData);
   }
 };

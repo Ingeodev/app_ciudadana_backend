@@ -1,10 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
+const fs = require("fs/promises");
+const path = require("path");
+const { v4: uuidV4 } = require("uuid");
 // const joi = require("joi");
 const db = require("../../../../../models/index.js");
 // const firebase = require("../utils/firebaseAdmin.js");
 const { formatDate } = require("../../../../../middleware/formatDate.js");
 const validator = require("../../../utils/validators/mobile/users.js");
-
+const { checkIfExists } = require("../../../utils/accessCheck.js");
 // const Op = db.Sequelize.Op;
 
 /**
@@ -69,17 +72,12 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       documentTypeId,
       document,
       address,
-      serviceReceiptUri,
-    } = await validator.vPostAccountFullLogin(req.body);
+    } = await validator.vPostAccountFullLogin(JSON.parse(req.body.info));
 
     const dataUser = {
       documentTypeId,
       document,
       address,
-      serviceReceiptUri,
-    };
-    const extraDataUser = {
-      loginPhase: "inVerification",
     };
 
     const userInDb = await db.User.findOne({
@@ -92,11 +90,29 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     if (userInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The user with clientId=${clientId} and loginPhase="baseLogin does not exist`,
+        message: `The user in baseLogin does not exist`,
       };
     }
 
-    const resultUpdate = await userInDb.update(dataUser, { transaction });
+    const imageFile = await validator.vfileFullLogin(req.file);
+    const folder = "uploads/users/mobile/public_service_receipt";
+    const filename = uuidV4() + path.extname(imageFile.originalname);
+    const host = req.get("host");
+    const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
+
+    const uploadDir = path.resolve(`./${folder}/`);
+    const filepath = path.join(uploadDir, filename);
+    await checkIfExists(uploadDir, true);
+    fs.writeFile(filepath, imageFile.buffer);
+
+    const resultUpdate = await userInDb.update(
+      {
+        ...dataUser,
+        serviceReceiptUri: imageUri,
+        loginPhase: "inVerification",
+      },
+      { transaction }
+    );
 
     // notify the administrator
     const dataNotif = {
@@ -108,7 +124,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     await db.AdminNotification.create(dataNotif);
     await transaction.commit();
 
-    return res.status(StatusCodes.OK).json(dataUser);
+    return res.status(StatusCodes.OK).json({ ...dataUser, file: imageUri });
   } catch (error) {
     await transaction.rollback();
     // console.error("account full_login could not be updated: ", error);
@@ -239,7 +255,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
     if (userInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The user with clientId=${clientId} and loginPhase="fullLogin" does not exist`,
+        message: `The user in fullLogin does not exist`,
       };
     }
 

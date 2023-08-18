@@ -3,6 +3,7 @@ const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersMobile = require("../controllers/mobile/users.js");
 const documentTypes = require("../controllers/mobile/documentTypes.js");
+const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
 
 // * ------------------ Endpoints - appMobile -----------------------------
 router.post(
@@ -14,6 +15,7 @@ router.post(
 router.post(
   "/account/full_login",
   // hasPermissions({ role: "super_master_user" }),
+  uploadImagesPdfs.single("file"),
   usersMobile.postAccountBaseLogin
 );
 
