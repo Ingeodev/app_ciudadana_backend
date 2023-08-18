@@ -45,6 +45,12 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_GET_ All Alerts](#get-all-alerts)
         - [_POST_ Send Alert](#post-send-alert)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
+    - [4.4. File Management Microservice](#44-file-management-microservice)
+      - [App Runner](#app-runner-2)
+      - [How to run in local](#how-to-run-in-local-1)
+      - [List of endpoints](#list-of-endpoints-2)
+        - [Download](#download)
+        - [Upload](#upload)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
 
@@ -751,6 +757,39 @@ It returns **202 _Accepted_** and the created alert object on success.
 ------------
 ### 4.3. Third-Party Microservice
 This microservice handles third-party APIs.
+
+
+------------
+### 4.4. File Management Microservice
+This microservice handles the files upload and download for the web application.
+
+#### App Runner
+    -- Pending --
+
+#### How to run in local
+    # On the console
+    cd src\microservices\fileManagement
+    node index.js
+    
+#### List of endpoints
+##### Download
+	Path: http://localhost:3000/api/v1/file_management/
+	Controller: src\microservices\fileManagement\v1\controllers\download.js
+	Route: src\microservices\fileManagement\v1\routes\download.js
+| Endpoint  | Method | Location in Controller | Description                 |
+| :-------- | :----- | :--------------------- | :-------------------------- |
+| /download | GET    | downloadFile           | Download the specified file |
+
+##### Upload
+	Path: http://localhost:3000/api/web/v1/file_management/upload
+	Controller: src\microservices\fileManagement\v1\controllers\upload.js
+	Route: src\microservices\fileManagement\v1\routes\upload.js
+| Endpoint | Method | Location in Controller | Description                             |
+| :------- | :----- | :--------------------- | :-------------------------------------- |
+| /image   | POST   | postSingleFile         | Upload an image file (JPG, PNG or JPEG) |
+| /pdf     | POST   | postSingleFile         | Upload a PDF document                   |
+
+
 
 ------------
 ## 5. Contributors
