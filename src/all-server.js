@@ -15,6 +15,10 @@ const mobileRouterNotification = require("./microservices/notifications/v1/route
 const webRouterUser = require("./microservices/users/v1/routes/web.js");
 const mobileRouterUser = require("./microservices/users/v1/routes/mobile.js");
 
+// Third parties
+const webRouterThird = require("./microservices/thirdParties/v1/routes/web.js");
+const mobileRouterThird = require("./microservices/thirdParties/v1/routes/mobile.js");
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -39,6 +43,15 @@ app.use('/api/web/v1/users', webRouterUser);
 
 //#region Mobile-oriented end-points
 app.use("/api/mobile/v1/users", mobileRouterUser);
+//#endregion
+
+//#region Web-oriented end-points
+app.use("/api/web/v1/third_parties", webRouterThird);
+//#endregion
+
+//#region Mobile-oriented end-points
+app.use("/api/mobile/v1/third_parties", mobileRouterThird);
+//#endregion
 
 //#region Error handling
 // Not found route!
