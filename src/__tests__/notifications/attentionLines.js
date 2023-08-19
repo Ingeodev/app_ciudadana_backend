@@ -24,7 +24,7 @@ describe("Web - Attention Lines management API points: ", () => {
     )
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
+      .send(global.firebaseTestWebUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
