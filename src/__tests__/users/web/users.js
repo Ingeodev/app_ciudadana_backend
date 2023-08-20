@@ -19,8 +19,9 @@ describe("Web - Users management API points: ", () => {
   };
 
   const editUser0 = {
-    documentTypeId: 6,
-    document: "123456789",
+    // ! Pendiendte: Fk DocumentType desactivada temporalmente
+    documentTypeId: "6",
+    document: "7659373893",
     address: "testDireccion",
     serviceReceiptUri:
       "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
