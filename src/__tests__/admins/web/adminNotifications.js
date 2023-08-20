@@ -3,7 +3,7 @@ const request = require("supertest");
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/admins/notifications`;
 // Local
-const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/users/admins/notifications`;
+const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/admin/notifications`;
 describe("Web - AdminNotifications management API points: ", () => {
   jest.setTimeout(25000);
 
@@ -195,7 +195,7 @@ describe("Web - AdminNotifications management API points: ", () => {
       expect(response8.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 404 and an error with a message of adminNotifications not found. Test disabled - AdminNotifications table must not have any records", async () => {
+    test("DISABLED - AdminNotifications table must not have any records. should fail with status 404 and an error with a message of adminNotifications not found.", async () => {
       // 1. ------------------------------------------------
       // {
       //     "status": 404,
@@ -220,7 +220,7 @@ describe("Web - AdminNotifications management API points: ", () => {
     //     "code": "Unauthorized"
     // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).get("/");
+      const response0 = await request(usedHost).get("/").query({ page: { number: 1, size: 2 } });
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
