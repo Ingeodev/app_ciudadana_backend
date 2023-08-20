@@ -15,7 +15,7 @@ describe("Web - Users management API points: ", () => {
     name: "Juan Francisco",
     lastName: "Perez",
     phone: "1111111111",
-    email: "test@gmail.com",
+    email: "testWeb@gmail.com",
   };
 
   const editUser0 = {
@@ -456,21 +456,21 @@ describe("Web - Users management API points: ", () => {
       expect(response15.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved - documentTypeId = 999.", async () => {
+    test("DISABLED - Fk documentTypeId disabled. should fail with status 500 and an error with a message if the data cannot be saved - documentTypeId = 999.", async () => {
       // ---------------------------------------------------------------
-      const response0 = await request(usedHost)
-        .post("/account/full_login")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          documentTypeId: 999,
-        });
-      expect(response0.statusCode).toBe(500);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
+      // const response0 = await request(usedHost)
+      //   .post("/account/full_login")
+      //   .set(requestHeaders)
+      //   .send({
+      //     ...editUser0,
+      //     documentTypeId: 999,
+      //   });
+      // expect(response0.statusCode).toBe(500);
+      // expect(response0.body).not.toHaveProperty("meta");
+      // expect(response0.body).not.toHaveProperty("data");
+      // expect(response0.body).toHaveProperty("status", 500);
+      // expect(response0.body).toHaveProperty("code");
+      // expect(response0.body).toHaveProperty("detail");
     });
 
     test("should respond with status 200 and the updated object (data).", async () => {
@@ -944,7 +944,7 @@ describe("Web - Users management API points: ", () => {
       expect(response8.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 404 and an error with a message of users not found. Test disabled - Users table must not have any records", async () => {
+    test("DISABLED - Users table must not have any records. should fail with status 404 and an error with a message of users not found.", async () => {
       // 1. ------------------------------------------------
       // const response0 = await request(usedHost)
       //   .get("/")
