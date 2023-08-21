@@ -3,11 +3,11 @@ const joi = require("joi");
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
-  name: joi.string().required().trim().empty("").invalid(" "),
-  phone: joi.string().required().trim().empty("").invalid(" "),
-  imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  address: joi.string().required().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").required(),
+  phone: joi.string().trim().empty("").invalid(" ").required(),
+  imageUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").required(),
 });
 
 const postUpdatechema = joi.object({
@@ -25,12 +25,11 @@ const getListAllSchema = joi.object({
 });
 
 const getGetOneSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
-  // active: joi.boolean().required(),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------

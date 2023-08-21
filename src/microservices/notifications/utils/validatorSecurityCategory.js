@@ -5,15 +5,15 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().required().empty("").invalid(" "),
-  imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  imageUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
 });
 
 const editSchema = joi.object({
-  id: joi.number().required().integer().empty("").greater(0).invalid(0),
-  name: joi.string().trim().empty("").invalid(" "),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  name: joi.string().trim().empty("").invalid(" ").max(50),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
@@ -25,16 +25,16 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const postActiveSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
   active: joi.boolean().required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

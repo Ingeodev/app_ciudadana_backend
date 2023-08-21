@@ -5,19 +5,19 @@ const joi = require('joi');
 // const integer_number = joi.number().integer();
 
 const postAccountInfoSchema = joi.object({
-  name: joi.string().trim().required().empty("").invalid(" "),
-  lastName: joi.string().trim().required().empty("").invalid(" "),
-  phone: joi.string().trim().required().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").required(),
+  lastName: joi.string().trim().empty("").invalid(" ").required(),
+  phone: joi.string().trim().empty("").invalid(" ").required(),
   // ! HU-B1 Monday - Solo el email es requerido?. Requerido en la db o para la solicitud HTTP?
-  email: joi.string().trim().email().required().empty("").invalid(" "),
+  email: joi.string().trim().email().empty("").invalid(" ").required(),
 });
 
 const postAccountFullLoginSchema = joi.object({
   // documentTypeId: joi.number().integer().greater(0).required(),
-  documentTypeId: joi.string().trim().required().empty("").invalid(" "),
-  document: joi.string().trim().required().empty("").invalid(" "),
-  address: joi.string().trim().required().empty("").invalid(" "),
-  serviceReceiptUri: joi.string().uri().required().trim().empty("").invalid(" "),
+  documentTypeId: joi.string().trim().empty("").invalid(" ").required(),
+  document: joi.string().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").required(),
+  serviceReceiptUri: joi.string().uri().trim().empty("").invalid(" ").required(),
 });
 
 const postAccountUpdateUserSchema = joi.object({
@@ -39,16 +39,16 @@ const getUsersListAllSchema = joi.object({
 });
 
 const postUsersDeletedSchema = joi.object({
-  clientId: joi.string().trim().required().empty(""),
+  clientId: joi.string().trim().empty("").required(),
 });
 
 const postUsersStatusSchema = joi.object({
-  clientId: joi.string().trim().required().empty(""),
+  clientId: joi.string().trim().empty("").required(),
   disabled: joi.boolean().required(),
 });
 
 const postUsersUpdateLoginPhaseFullLoginSchema = joi.object({
-  clientId: joi.string().trim().required().empty(""),
+  clientId: joi.string().trim().empty("").required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
