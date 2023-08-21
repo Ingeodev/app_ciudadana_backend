@@ -11,7 +11,7 @@ const postRegisterchema = joi.object({
 });
 
 const postUpdatechema = joi.object({
-  id: joi.number().empty("").invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),

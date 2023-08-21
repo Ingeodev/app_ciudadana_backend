@@ -4,6 +4,7 @@ const request = require("supertest");
 // const usedHost = `${global.notificationsMicroserviceOnlineHost}/web/v1/notifications/security_category`;
 // Local
 const usedHost = `${global.notificationsMicroserviceLocalHost}/web/v1/notifications/security_category`;
+
 describe("Web - Security Categories management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -15,24 +16,22 @@ describe("Web - Security Categories management API points: ", () => {
     name: "Comida",
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     siteUri: "http://test.site.url",
-    color: 0,
+    color: "#E40F81",
   };
 
   const testCategory1 = {
     name: "Ropa",
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     siteUri: "http://test.site.url",
-    color: 1,
+    color: "#002955",
   };
 
   beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
+    const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
-    requestHeaders.Authorization += firebaseAuth.body.idToken;
+      .send(global.firebaseTestWebUserLogin);
+    requestHeaders.Authorization += firebaseAuth.body.idToken; // console.log(requestHeaders);
   });
 
   describe("POST / ", () => {
@@ -84,7 +83,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          color: "should be a number",
+          color: "should be a hexadecimal",
         });
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -439,7 +438,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          color: "should be a number",
+          color: "should be a hexadecimal",
         });
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");

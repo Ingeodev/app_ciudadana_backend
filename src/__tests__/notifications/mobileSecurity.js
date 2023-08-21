@@ -11,28 +11,12 @@ describe("Mobile - Security management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  const testCategory0 = {
-    name: "Comida",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    siteUri: "http://test.site.url",
-    color: 0,
-  };
-
-  const testCategory1 = {
-    name: "Ropa",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    siteUri: "http://test.site.url",
-    color: 1,
-  };
-
   beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
+    const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
-      .send(global.firebaseTestUserLogin);
-    requestHeaders.Authorization += firebaseAuth.body.idToken;
+      .send(global.firebaseTestMobileUserLogin);
+    requestHeaders.Authorization += firebaseAuth.body.idToken; // console.log(requestHeaders);
   });
 
   describe("GET / ", () => {
