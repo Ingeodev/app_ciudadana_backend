@@ -3,7 +3,7 @@ const request = require("supertest");
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/categories`;
 // Local
-const usedHost = `${global.usersMicroserviceLocalHost}/api/web/v1/third_parties/categories`;
+const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/web/v1/third_parties/categories`;
 describe("Web - Third Party Categories management API points: ", () => {
   jest.setTimeout(8000);
 

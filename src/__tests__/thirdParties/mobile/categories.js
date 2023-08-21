@@ -3,7 +3,7 @@ const request = require("supertest");
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/categories`;
 // Local
-const usedHost = `${global.usersMicroserviceLocalHost}/api/mobile/v1/third_parties/categories`;
+const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/categories`;
 describe("Mobile - Third Party Categories management API points: ", () => {
   jest.setTimeout(8000);
 
