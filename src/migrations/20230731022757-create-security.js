@@ -15,7 +15,7 @@ module.exports = {
         name: {
           type: Sequelize.STRING(128),
           allowNull: false,
-          unique: false,
+          unique: true,
         },
         phone: {
           // ! Limite de tamanio del String?

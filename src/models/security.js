@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: false,
+        unique: true,
       },
       phone: {
         type: DataTypes.STRING,
