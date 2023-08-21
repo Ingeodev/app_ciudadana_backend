@@ -3,8 +3,7 @@ const router = express.Router();
 const categoryController = require("../controllers/web/categories.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
-// TODO: -- Start - DocumentTypes Endpoints
-//#region DocumentTypes end-points
+//#region Categories end-points
 router.post(
   "/categories/",
   // hasPermissions({ role: "super_master_user" }),
@@ -34,7 +33,6 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   categoryController.getOneById
 );
-//#endregion - DocumentTypes
-// TODO: -- End - DocumentTypes Endpoints 
+//#endregion - Categories
 
 module.exports = router;

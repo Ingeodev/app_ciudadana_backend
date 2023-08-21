@@ -5,7 +5,7 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").required(),
+  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
   icon: joi.string().uri().trim().empty("").invalid(" ").required(),
   iconMap: joi.string().uri().trim().empty("").invalid(" ").required(),
   siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
@@ -13,8 +13,8 @@ const registerSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().required().integer().empty("").greater(0).invalid(0),
-  name: joi.string().trim().empty("").invalid(" "),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  name: joi.string().trim().empty("").invalid(" ").max(50),
   icon: joi.string().uri().trim().empty("").invalid(" "),
   iconMap: joi.string().uri().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
@@ -27,16 +27,16 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const postActiveSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
   active: joi.boolean().required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

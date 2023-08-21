@@ -1,7 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index");
-// const firebase = require("../utils/firebaseAdmin.js");
-// const { formatDate } = require("../../../../../middleware/formatDate.js");
 const validator = require("../../../utils/validators/web/categories.js");
 
 /**
@@ -56,7 +54,7 @@ exports.postEdit = async (req, res, next) => {
     if (categoryInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `ThirdParty category with id=${id} does not exist`,
+        message: `ThirdParty category does not exist`,
       };
     }
 
@@ -84,7 +82,7 @@ exports.postEdit = async (req, res, next) => {
  * Changes the boolean value of ThirdPartyCategory.active
  * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdPartyCategory. Or if there's error, json (objeto): status, code, detail
  */
-exports.postStatus = async (req, res, next) => {v
+exports.postStatus = async (req, res, next) => {
   try {
     const { id, active } = await validator.vWebPostStatus(req.body);
     const catInDb = await db.ThirdPartyCategory.findOne({
@@ -102,7 +100,7 @@ exports.postStatus = async (req, res, next) => {v
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { result },
+      data: result,
     });
   } catch (error) {
     // console.error("ThirdPartyCategory could not be deleted: ", error.message);
