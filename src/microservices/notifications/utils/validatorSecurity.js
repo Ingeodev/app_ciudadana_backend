@@ -6,7 +6,7 @@ const postRegisterchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: joi.string().uri().trim().empty("").invalid(" ").required(),
-  siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().allow(null).uri().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" ").required(),
 });
 

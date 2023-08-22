@@ -11,7 +11,11 @@ const validator = require("../../utils/validatorSecurity.js");
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, phone, imageUri, siteUri, address } = await validator.vWebPostRegister(req.body);
+    const { name, phone, imageUri, siteUri, address } =
+      await validator.vWebPostRegister({
+        ...req.body,
+        siteUri: req.body.siteUri ? req.body.siteUri : null,
+      });
 
     const dataQuery = {
       name,

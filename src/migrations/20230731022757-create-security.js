@@ -32,7 +32,7 @@ module.exports = {
         siteUri: {
           // ! Limite de tamanio del String?
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         address: {
