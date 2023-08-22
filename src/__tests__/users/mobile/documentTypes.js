@@ -189,5 +189,19 @@ describe("Mobile - Document Type management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
+
+    test("DISABLED - DocumentTypes table must not have any records. should fail with status 404 and an error with a message of document types not found.", async () => {
+      // 1. ------------------------------------------------
+      // const response0 = await request(usedHost)
+      //   .get("/")
+      //   .set(requestHeaders)
+      //   .query({ page: { number: 1, size: 2 } });
+      // expect(response0.statusCode).toBe(404);
+      // expect(response0.body).not.toHaveProperty("meta");
+      // expect(response0.body).not.toHaveProperty("data");
+      // expect(response0.body).toHaveProperty("status", 404);
+      // expect(response0.body).toHaveProperty("code");
+      // expect(response0.body).toHaveProperty("detail");
+    });
   });
 });

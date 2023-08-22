@@ -54,7 +54,7 @@ describe("Web - Third Party Categories management API points: ", () => {
   });
 
   describe("POST /categories/ ", () => {
-    test("should respond with status 201 and the new object (data) after creating a new document type", async () => {
+    test("should respond with status 201 and the new object (data) after creating a new category", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -321,6 +321,20 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
+
+    test("DISABLED - Categories table must not have any records. should fail with status 404 and an error with a message of categories not found.", async () => {
+      // 1. ------------------------------------------------
+      // const response0 = await request(usedHost)
+      //   .get("/")
+      //   .set(requestHeaders)
+      //   .query({ page: { number: 1, size: 2 } });
+      // expect(response0.statusCode).toBe(404);
+      // expect(response0.body).not.toHaveProperty("meta");
+      // expect(response0.body).not.toHaveProperty("data");
+      // expect(response0.body).toHaveProperty("status", 404);
+      // expect(response0.body).toHaveProperty("code");
+      // expect(response0.body).toHaveProperty("detail");
+    });
   });
 
   describe("GET /categories/:id ", () => {
@@ -349,7 +363,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(testCategory1.name);
     });
 
-    test("should fail with status 400 and an error with a message id must be anumber", async () => {
+    test("should fail with status 400 and an error with a message id must be a number", async () => {
       const response0 = await request(usedHost)
         .get(`/ddd`)
         .set(requestHeaders);
@@ -367,7 +381,7 @@ describe("Web - Third Party Categories management API points: ", () => {
     //     "code": "Unauthorized"
     // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).get("/");
+      const response0 = await request(usedHost).get(`/${testCategory0.id}`);
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -528,7 +542,7 @@ describe("Web - Third Party Categories management API points: ", () => {
 
     // {
     //     "status": 404,
-    //     "detail": "The document type with id=99 does not exist",
+    //     "detail": "The category with id=99 does not exist",
     //     "code": "Not Found"
     // }
     test("should fail with status 404 and an error with a message if the id does not exist", async () => {
@@ -680,7 +694,7 @@ describe("Web - Third Party Categories management API points: ", () => {
 
     // {
     //     "status": 404,
-    //     "detail": "The document type with id=999 does not exist",
+    //     "detail": "The category with id=999 does not exist",
     //     "code": "Not Found"
     // }
     test("should fail with status 404 and an error with a message if the id does not exist", async () => {
