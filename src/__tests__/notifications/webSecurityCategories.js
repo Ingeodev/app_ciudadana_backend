@@ -15,14 +15,12 @@ describe("Web - Security Categories management API points: ", () => {
   const testCategory0 = {
     name: "Comida",
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    siteUri: "http://test.site.url",
     color: "#E40F81",
   };
 
   const testCategory1 = {
     name: "Ropa",
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    siteUri: "http://test.site.url",
     color: "#002955",
   };
 
@@ -36,19 +34,6 @@ describe("Web - Security Categories management API points: ", () => {
 
   describe("POST / ", () => {
     test("should respond with status 201 and the new object (data) after creating a new document type", async () => {
-      // {
-      //     "meta": null,
-      //     "data": {
-      //         "id": 1,
-      //         "name": "Comida",
-      //         "imageUri": "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-      //         "siteUri": "http://test.site.url",
-      //         "color": 0,
-      //         "updatedAt": "2023-08-11T06:56:47.533Z",
-      //         "createdAt": "2023-08-11T06:56:47.533Z",
-      //         "deletedAt": null
-      //     }
-      // }
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -106,19 +91,6 @@ describe("Web - Security Categories management API points: ", () => {
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
 
-      const response2 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCategory0,
-          siteUri: "is.not.uri",
-        });
-      expect(response2.statusCode).toBe(400);
-      expect(response2.body).not.toHaveProperty("meta");
-      expect(response2.body).not.toHaveProperty("data");
-      expect(response2.body).toHaveProperty("status", 400);
-      expect(response2.body).toHaveProperty("code");
-      expect(response2.body).toHaveProperty("detail");
     });
 
     // {

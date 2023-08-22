@@ -6,19 +6,18 @@ const validator = require("../../utils/validatorSecurityCategory.js");
 
 /**
  * Create a security category
- * @param {object} req - Object containing the name, imageUri, siteUri, color
+ * @param {object} req - Object containing the name, imageUri, color
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, imageUri, siteUri, color } = await validator.vWebPostRegister(
+    const { name, imageUri, color } = await validator.vWebPostRegister(
       req.body
     );
 
     const dataQuery = {
       name,
       imageUri,
-      siteUri,
       color,
     };
 
@@ -32,18 +31,17 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update security category
- * @param {object} req - Object containing the id, name, imageUri, siteUri, color
+ * @param {object} req - Object containing the id, name, imageUri, color
  * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, imageUri, siteUri, color } = await validator.vWebPostEdit(req.body);
+    const { id, name, imageUri, color } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
       name,
       imageUri,
-      siteUri,
       color,
     };
 

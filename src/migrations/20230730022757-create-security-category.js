@@ -22,11 +22,6 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        siteUri: {
-          type: Sequelize.STRING,
-          allowNull: true,
-          unique: false,
-        },
         color: {
           type: Sequelize.STRING(10),
           allowNull: true,
