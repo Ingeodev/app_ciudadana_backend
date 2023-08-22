@@ -114,17 +114,20 @@ exports.postAddRole = async (req, res, next) => {
 
 /**
  * Update admin
- * @param {object} req - Object containing the id, imageUri
+ * @param {object} req - Object containing the name, lastName, email, documentTypeId, document
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, imageUri } = await validator.vWebPostEdit(req.body);
+    const { id, name, lastName, email, documentTypeId, document } =
+      await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
-      id,
-      // ! Pendiente: Eliminar imageUri
-      imageUri,
+      name,
+      lastName,
+      email,
+      documentTypeId,
+      document,
     };
 
     const adminInDb = await db.User.findByPk(id);
@@ -132,7 +135,7 @@ exports.postEdit = async (req, res, next) => {
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The admin with id=${id} does not exist`,
+        message: `The admin does not exist`,
       };
     }
 
@@ -220,7 +223,7 @@ exports.getOneById = async (req, res, next) => {
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "User admin information could not be retrieved",
+        message: "Admin information could not be retrieved",
       };
     }
 
@@ -243,7 +246,7 @@ exports.postDelete = async (req, res, next) => {
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The admin with id=${id} does not exist`,
+        message: `The admin does not exist`,
       };
     }
 
@@ -252,7 +255,7 @@ exports.postDelete = async (req, res, next) => {
 
     return res
       .status(StatusCodes.OK)
-      .send({ meta: null, data: { id, active } });
+      .send({ meta: null, data: { id } });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
     return next(error);

@@ -18,25 +18,31 @@ router.post(
   adminController.postRegister
 );
 
-// router.post(
-//   "/role/",
-//   // hasPermissions({ role: "super_master_user" }),
-//   adminController.postAddRole
-// );
+router.post(
+  "/add_role/",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.postAddRole
+);
+
+router.post(
+  "/edit/",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.postEdit
+);
 
 // ! Pendiente: Diferenciar el usuario admin por rol
-// router.post(
-//   "/admins/delete",
-//   // hasPermissions({ role: "super_master_user" }),
-//   adminController.postDelete
-// );
+router.post(
+  "/admins/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.postDelete
+);
 
 // ! Pendiente: Diferenciar el usuario admin por rol
-// router.get(
-//   "/admins",
-//   // hasPermissions({ role: "super_master_user" }),
-//   adminController.getAll
-// );
+router.get(
+  "/admins",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.getAll
+);
 
 router.get(
   "/:id",

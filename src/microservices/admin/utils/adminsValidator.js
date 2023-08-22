@@ -5,11 +5,11 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().required().empty("").invalid(" "),
-  lastName: joi.string().trim().required().empty("").invalid(" "),
-  email: joi.string().trim().email().required().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").required(),
+  lastName: joi.string().trim().empty("").invalid(" ").required(),
+  email: joi.string().trim().email().empty("").invalid(" ").required(),
   documentTypeId: joi.number().integer().greater(0).required(),
-  document: joi.string().trim().required().empty("").invalid(" "),
+  document: joi.string().trim().empty("").invalid(" ").required(),
 });
 
 const addRoleSchema = joi.object({
@@ -23,7 +23,11 @@ const resetPassSchema = joi.object({
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").invalid(0).required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" "),
+  lastName: joi.string().trim().empty("").invalid(" "),
+  email: joi.string().trim().email().empty("").invalid(" "),
+  documentTypeId: joi.number().integer().greater(0),
+  document: joi.string().trim().empty("").invalid(" "),
 });
 
 const getAllSchema = joi.object({
@@ -32,11 +36,11 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
