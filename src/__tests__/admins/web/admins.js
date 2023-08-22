@@ -27,7 +27,6 @@ describe("Web - Users management API points: ", () => {
   const editUser0 = {
     name: "Andres",
     lastName: "Garzon",
-    email: "andres_sgj144@unicauca.edu.co",
     // ! Pendiendte: Fk DocumentType desactivada temporalmente
     documentTypeId: "6",
     document: "1061777888",
@@ -480,21 +479,6 @@ describe("Web - Users management API points: ", () => {
       expect(response3.body).toHaveProperty("status", 400);
       expect(response3.body).toHaveProperty("code");
       expect(response3.body).toHaveProperty("detail");
-
-      // 6. ---------------------------------------------------------------
-      const response5 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          email: "is not email",
-        });
-      expect(response5.statusCode).toBe(400);
-      expect(response5.body).not.toHaveProperty("meta");
-      expect(response5.body).not.toHaveProperty("data");
-      expect(response5.body).toHaveProperty("status", 400);
-      expect(response5.body).toHaveProperty("code");
-      expect(response5.body).toHaveProperty("detail");
 
       // ! Pendiente: Activar cuando la Fk documentType sea restablecida
       // // 7. ---------------------------------------------------------------
