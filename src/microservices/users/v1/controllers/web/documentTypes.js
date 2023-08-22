@@ -49,7 +49,7 @@ exports.postEdit = async (req, res, next) => {
     if (docTypeInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The document type with id=${id} does not exist`,
+        message: `The document type does not exist`,
       };
     }
 
@@ -162,7 +162,7 @@ exports.getOneById = async (req, res, next) => {
 //     if (docTypeInDb === null) {
 //       throw {
 //         status: StatusCodes.NOT_FOUND,
-//         message: `The document type with id=${id} does not exist`,
+//         message: `The document type does not exist`,
 //       };
 //     }
 

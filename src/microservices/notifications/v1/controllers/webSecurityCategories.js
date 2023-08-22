@@ -52,7 +52,7 @@ exports.postEdit = async (req, res, next) => {
     if (categoryInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The security category with id=${id} does not exist`,
+        message: `The security category does not exist`,
       };
     }
 

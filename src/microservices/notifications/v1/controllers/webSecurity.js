@@ -55,7 +55,7 @@ exports.postEdit = async (req, res, next) => {
     if (attLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The attention line of security/emergency with id=${id} does not exist`,
+        message: `The attention line of security/emergency does not exist`,
       };
     }
 
@@ -166,7 +166,7 @@ exports.postDelete = async (req, res, next) => {
     if (attLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The attention line of security/emergency with id=${id} does not exist`,
+        message: `The attention line of security/emergency does not exist`,
       };
     }
 
