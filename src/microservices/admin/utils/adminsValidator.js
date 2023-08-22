@@ -25,7 +25,6 @@ const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" "),
   lastName: joi.string().trim().empty("").invalid(" "),
-  email: joi.string().trim().email().empty("").invalid(" "),
   documentTypeId: joi.number().integer().greater(0),
   document: joi.string().trim().empty("").invalid(" "),
 });

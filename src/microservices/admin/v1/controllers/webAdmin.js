@@ -114,18 +114,17 @@ exports.postAddRole = async (req, res, next) => {
 
 /**
  * Update admin
- * @param {object} req - Object containing the name, lastName, email, documentTypeId, document
+ * @param {object} req - Object containing the name, lastName, documentTypeId, document
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, lastName, email, documentTypeId, document } =
+    const { id, name, lastName, documentTypeId, document } =
       await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       name,
       lastName,
-      email,
       documentTypeId,
       document,
     };
