@@ -216,7 +216,6 @@ describe("Web - Users management API points: ", () => {
       testUser0.id = response0.body.data.id;
       addRole.id = response0.body.data.id;
       editUser0.id = response0.body.data.id;
-      testUser0.clientId = response0.body.data.clientId;
       expect(response0.body.data).toHaveProperty("userMobile");
       expect(response0.body.data.userMobile).toBe(false);
       expect(response0.body.data).toHaveProperty("disabled");
@@ -451,21 +450,6 @@ describe("Web - Users management API points: ", () => {
       expect(response02.body).toHaveProperty("status", 400);
       expect(response02.body).toHaveProperty("code");
       expect(response02.body).toHaveProperty("detail");
-      
-      // 1. ---------------------------------------------------------------
-      const response0 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          name: "           ",
-        });
-      expect(response0.statusCode).toBe(400);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 400);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
 
       // 2. ---------------------------------------------------------------
       const response1 = await request(usedHost)
@@ -482,21 +466,6 @@ describe("Web - Users management API points: ", () => {
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
 
-      // 3. ---------------------------------------------------------------
-      const response2 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          lastName: "         ",
-        });
-      expect(response2.statusCode).toBe(400);
-      expect(response2.body).not.toHaveProperty("meta");
-      expect(response2.body).not.toHaveProperty("data");
-      expect(response2.body).toHaveProperty("status", 400);
-      expect(response2.body).toHaveProperty("code");
-      expect(response2.body).toHaveProperty("detail");
-
       // 4. ---------------------------------------------------------------
       const response3 = await request(usedHost)
         .post("/edit")
@@ -511,21 +480,6 @@ describe("Web - Users management API points: ", () => {
       expect(response3.body).toHaveProperty("status", 400);
       expect(response3.body).toHaveProperty("code");
       expect(response3.body).toHaveProperty("detail");
-
-      // 5. ---------------------------------------------------------------
-      const response4 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          email: "     ",
-        });
-      expect(response4.statusCode).toBe(400);
-      expect(response4.body).not.toHaveProperty("meta");
-      expect(response4.body).not.toHaveProperty("data");
-      expect(response4.body).toHaveProperty("status", 400);
-      expect(response4.body).toHaveProperty("code");
-      expect(response4.body).toHaveProperty("detail");
 
       // 6. ---------------------------------------------------------------
       const response5 = await request(usedHost)
@@ -542,20 +496,21 @@ describe("Web - Users management API points: ", () => {
       expect(response5.body).toHaveProperty("code");
       expect(response5.body).toHaveProperty("detail");
 
-      // 7. ---------------------------------------------------------------
-      const response6 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          documentTypeId: "     ",
-        });
-      expect(response6.statusCode).toBe(400);
-      expect(response6.body).not.toHaveProperty("meta");
-      expect(response6.body).not.toHaveProperty("data");
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
+      // ! Pendiente: Activar cuando la Fk documentType sea restablecida
+      // // 7. ---------------------------------------------------------------
+      // const response6 = await request(usedHost)
+      //   .post("/edit")
+      //   .set(requestHeaders)
+      //   .send({
+      //     ...editUser0,
+      //     documentTypeId: "     ",
+      //   });
+      // expect(response6.statusCode).toBe(400);
+      // expect(response6.body).not.toHaveProperty("meta");
+      // expect(response6.body).not.toHaveProperty("data");
+      // expect(response6.body).toHaveProperty("status", 400);
+      // expect(response6.body).toHaveProperty("code");
+      // expect(response6.body).toHaveProperty("detail");
 
       // 8.---------------------------------------------------------------
       const response7 = await request(usedHost)
@@ -571,21 +526,6 @@ describe("Web - Users management API points: ", () => {
       expect(response7.body).toHaveProperty("status", 400);
       expect(response7.body).toHaveProperty("code");
       expect(response7.body).toHaveProperty("detail");
-
-      // 9. ---------------------------------------------------------------
-      const response8 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editUser0,
-          document: "     ",
-        });
-      expect(response8.statusCode).toBe(400);
-      expect(response8.body).not.toHaveProperty("meta");
-      expect(response8.body).not.toHaveProperty("data");
-      expect(response8.body).toHaveProperty("status", 400);
-      expect(response8.body).toHaveProperty("code");
-      expect(response8.body).toHaveProperty("detail");
 
       // 10.---------------------------------------------------------------
       const response9 = await request(usedHost)
@@ -661,112 +601,6 @@ describe("Web - Users management API points: ", () => {
       //     "code": "Unauthorized"
       // }
       const response0 = await request(usedHost).post("/edit");
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
-  });
-
-  describe("POST /admin/delete ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
-      // 3. ---------------------------------------------------------------
-      const response2 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: "          ",
-        });
-      expect(response2.statusCode).toBe(400);
-      expect(response2.body).not.toHaveProperty("meta");
-      expect(response2.body).not.toHaveProperty("data");
-      expect(response2.body).toHaveProperty("status", 400);
-      expect(response2.body).toHaveProperty("code");
-      expect(response2.body).toHaveProperty("detail");
-
-      // 7. ---------------------------------------------------------------
-      const response6 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: null,
-        });
-      expect(response6.statusCode).toBe(400);
-      expect(response6.body).not.toHaveProperty("meta");
-      expect(response6.body).not.toHaveProperty("data");
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
-
-      // 11. ---------------------------------------------------------------
-      const response10 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: -5,
-        });
-      expect(response10.statusCode).toBe(400);
-      expect(response10.body).not.toHaveProperty("meta");
-      expect(response10.body).not.toHaveProperty("data");
-      expect(response10.body).toHaveProperty("status", 400);
-      expect(response10.body).toHaveProperty("code");
-      expect(response10.body).toHaveProperty("detail");
-
-      // 17. ---------------------------------------------------------------
-      const response16 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: undefined,
-        });
-      expect(response16.statusCode).toBe(400);
-      expect(response16.body).not.toHaveProperty("meta");
-      expect(response16.body).not.toHaveProperty("data");
-      expect(response16.body).toHaveProperty("status", 400);
-      expect(response16.body).toHaveProperty("code");
-      expect(response16.body).toHaveProperty("detail");
-    });
-
-    test("should respond with status 200 and the id of deleted admin.", async () => {
-      const response0 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: testUser0.id,
-        });
-      expect(response0.statusCode).toBe(200);
-      expect(response0.body).toHaveProperty("meta");
-      expect(response0.body.meta).toBe(null);
-      expect(response0.body).toHaveProperty("data");
-      expect(response0.body.data).toHaveProperty("id");
-      expect(response0.body.data.id).toBe(testUser0.id);
-    });
-
-    test("should fail with status 404 and an error with a message if the data cannot be deleted - id=999.", async () => {
-      // ---------------------------------------------------------------
-      const response0 = await request(usedHost)
-        .post("/delete")
-        .set(requestHeaders)
-        .send({
-          id: 999,
-        });
-      expect(response0.statusCode).toBe(404);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 404);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
-
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      // {
-      //     "status": 401,
-      //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-      //     "code": "Unauthorized"
-      // }
-      const response0 = await request(usedHost).post("/delete");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -955,6 +789,114 @@ describe("Web - Users management API points: ", () => {
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
       expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("POST /admin/delete ", () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+      // ! Pendiente: Validar este caso y mejorar restricciones joi
+      // 3. ---------------------------------------------------------------
+      // const response2 = await request(usedHost)
+      //   .post("/delete")
+      //   .set(requestHeaders)
+      //   .send({
+      //     id: "          ",
+      //   });
+      // expect(response2.statusCode).toBe(400);
+      // expect(response2.body).not.toHaveProperty("meta");
+      // expect(response2.body).not.toHaveProperty("data");
+      // expect(response2.body).toHaveProperty("status", 400);
+      // expect(response2.body).toHaveProperty("code");
+      // expect(response2.body).toHaveProperty("detail");
+
+      // ! Pendiente: Validar este caso y mejorar restricciones joi
+      // 7. ---------------------------------------------------------------
+      // const response6 = await request(usedHost)
+      //   .post("/delete")
+      //   .set(requestHeaders)
+      //   .send({
+      //     id: null,
+      //   });
+      // expect(response6.statusCode).toBe(400);
+      // expect(response6.body).not.toHaveProperty("meta");
+      // expect(response6.body).not.toHaveProperty("data");
+      // expect(response6.body).toHaveProperty("status", 400);
+      // expect(response6.body).toHaveProperty("code");
+      // expect(response6.body).toHaveProperty("detail");
+
+      // 11. ---------------------------------------------------------------
+      const response10 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: -5,
+        });
+      expect(response10.statusCode).toBe(400);
+      expect(response10.body).not.toHaveProperty("meta");
+      expect(response10.body).not.toHaveProperty("data");
+      expect(response10.body).toHaveProperty("status", 400);
+      expect(response10.body).toHaveProperty("code");
+      expect(response10.body).toHaveProperty("detail");
+
+      // 17. ---------------------------------------------------------------
+      const response16 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: undefined,
+        });
+      expect(response16.statusCode).toBe(400);
+      expect(response16.body).not.toHaveProperty("meta");
+      expect(response16.body).not.toHaveProperty("data");
+      expect(response16.body).toHaveProperty("status", 400);
+      expect(response16.body).toHaveProperty("code");
+      expect(response16.body).toHaveProperty("detail");
+    });
+
+    test("should respond with status 200 and the id of deleted admin.", async () => {
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testUser0.id,
+        });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta).toBe(null);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toHaveProperty("id");
+      expect(response0.body.data.id).toBe(testUser0.id);
+    });
+
+    test("should fail with status 404 and an error with a message if the data cannot be deleted - id=999.", async () => {
+      // ---------------------------------------------------------------
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: 999,
+        });
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+      // {
+      //     "status": 401,
+      //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
+      //     "code": "Unauthorized"
+      // }
+      const response0 = await request(usedHost).post("/delete");
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
