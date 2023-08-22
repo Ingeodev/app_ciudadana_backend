@@ -13,16 +13,16 @@ const registerSchema = joi.object({
 });
 
 const addRoleSchema = joi.object({
-  id: joi.number().integer().empty("").invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   roleId: joi.number().integer().greater(0).required(),
 });
 
 const resetPassSchema = joi.object({
-  id: joi.number().integer().empty("").invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" "),
   lastName: joi.string().trim().empty("").invalid(" "),
   email: joi.string().trim().email().empty("").invalid(" "),
@@ -36,11 +36,11 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
