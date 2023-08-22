@@ -16,7 +16,6 @@ describe("Mobile - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/icon.png",
     iconMap: "http://localhost:3000/iconMap.png",
     color: "#DB85D6",
-    siteUri: "http://mobility.com",
   };
 
   const testCategory1 = {
@@ -24,7 +23,6 @@ describe("Mobile - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/iconUniversity.png",
     iconMap: "http://localhost:3000/iconMapUniversity.png",
     color: "#E40F81",
-    siteUri: "http://university.com",
   };
 
 

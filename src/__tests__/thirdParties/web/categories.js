@@ -16,7 +16,6 @@ describe("Web - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/icon.png",
     iconMap: "http://localhost:3000/iconMap.png",
     color: "#DB85D6",
-    siteUri: "http://mobility.com",
   };
 
   const testCategory1 = {
@@ -24,7 +23,6 @@ describe("Web - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/iconUniversity.png",
     iconMap: "http://localhost:3000/iconMapUniversity.png",
     color: "#E40F81",
-    siteUri: "http://university.com",
   };
 
   const editCategory0 = {
@@ -32,7 +30,6 @@ describe("Web - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/icon-modified.png",
     iconMap: "http://localhost:3000/iconMap-modified.png",
     color: "#805cf7",
-    siteUri: "http://mobility-modified.com",
   };
 
   const editCategory1 = {
@@ -40,7 +37,6 @@ describe("Web - Third Party Categories management API points: ", () => {
     icon: "http://localhost:3000/iconUniversity-modified.png",
     iconMap: "http://localhost:3000/iconMapUniversity-modified.png",
     color: "#E40F81",
-    siteUri: "http://university-modified.com",
   };
 
   beforeAll(async () => {
@@ -143,21 +139,6 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response5.body).toHaveProperty("status", 400);
       expect(response5.body).toHaveProperty("code");
       expect(response5.body).toHaveProperty("detail");
-
-      // 5. ----------------------------------------------
-      const response6 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCategory0,
-          siteUri: "is not uri",
-        });
-      expect(response6.statusCode).toBe(400);
-      expect(response6.body).not.toHaveProperty("meta");
-      expect(response6.body).not.toHaveProperty("data");
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
     });
 
     test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
@@ -507,20 +488,6 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response6.body).toHaveProperty("code");
       expect(response6.body).toHaveProperty("detail");
 
-      // 6. -------------------------------------
-      const response7 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editCategory0,
-          siteUri: "not uri",
-        });
-      expect(response7.statusCode).toBe(400);
-      expect(response7.body).not.toHaveProperty("meta");
-      expect(response7.body).not.toHaveProperty("data");
-      expect(response7.body).toHaveProperty("status", 400);
-      expect(response7.body).toHaveProperty("code");
-      expect(response7.body).toHaveProperty("detail");
     });
 
     

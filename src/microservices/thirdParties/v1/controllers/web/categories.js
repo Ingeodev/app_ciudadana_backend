@@ -4,19 +4,18 @@ const validator = require("../../../utils/validators/web/categories.js");
 
 /**
  * Create a thirdParty category
- * @param {object} req - Object containing the name, icon, iconMap, siteUri, color
+ * @param {object} req - Object containing the name, icon, iconMap, color
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, icon, iconMap, siteUri, color } =
+    const { name, icon, iconMap, color } =
       await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
       name,
       icon,
       iconMap,
-      siteUri,
       color,
       active: true
     };
@@ -31,12 +30,12 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update a thirdParty category
- * @param {object} req - Object containing the id, name, icon, iconMap, siteUri, color
+ * @param {object} req - Object containing the id, name, icon, iconMap, color
  * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, icon, iconMap, siteUri, color } = await validator.vWebPostEdit(
+    const { id, name, icon, iconMap, color } = await validator.vWebPostEdit(
       req.body
     );
 
@@ -45,7 +44,6 @@ exports.postEdit = async (req, res, next) => {
       name,
       icon,
       iconMap,
-      siteUri,
       color,
     };
 
