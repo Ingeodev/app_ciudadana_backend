@@ -12,7 +12,7 @@ exports.sendEmail = async (data) => {
   try {
     const msg = {
       to: data.to,
-      from: "andres.garzon@thebitbang.company",
+      from: sgKey.email,
       subject: data.subject,
       html: data.html,
     };
