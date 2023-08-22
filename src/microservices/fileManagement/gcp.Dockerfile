@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 ENV MNT_DIR /src/uploads
 
 WORKDIR /src
-COPY src/microservices/admin/ /src/microservices/admin
+COPY src/microservices/fileManagement/ /src/microservices/fileManagement
 COPY src/package.json /src
 COPY src/package-lock.json /src
 COPY src/middleware /src/middleware/
@@ -42,7 +42,6 @@ COPY src/config /src/config/
 COPY src/constants /src/constants/
 COPY src/utils /src/utils/
 COPY workspace/secrets/account_service_key.json /src
-COPY workspace/secrets/email_service_key.json /src
 COPY workspace/config/config.json /src/config
 
 RUN npm install --production
@@ -51,9 +50,9 @@ RUN npm install --production
 # https://github.com/krallin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-WORKDIR /src/microservices/admin
+WORKDIR /src/microservices/fileManagement
 # Ensure the script is executable
 RUN chmod +x gcsfuse_run.sh
 
-CMD ["/src/microservices/admin/gcsfuse_run.sh"]
+CMD ["/src/microservices/fileManagement/gcsfuse_run.sh"]
 # [END cloudrun_fuse_dockerfile]
