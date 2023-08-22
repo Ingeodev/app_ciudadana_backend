@@ -48,6 +48,12 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   reportController.postRegister
 );
+
+router.get(
+  "/security/reports",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.getListAllClosest
+);
 //#endregion
 
 //#region AttentionLines end-points

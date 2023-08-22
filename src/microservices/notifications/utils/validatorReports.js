@@ -21,6 +21,16 @@ const postRegisterSchema = joi.object({
   lat: joi.number().min(-90).max(90), // not required??
   lon: joi.number().min(-180).max(180), // not required??
 });
+
+const getGetCoordinatesSchema = joi.object({
+  lat: joi.number().min(-90).max(90),
+  lon: joi.number().min(-180).max(180),
+});
+
+const getListAllClosestSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
 // * ------------------ END - Mobile - Reports -----------------
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -49,10 +59,16 @@ module.exports = {
   vWebGetListAllByUser: async (inputData) => {
     return await use_validator_on_data(getListAllByUserSchema, inputData);
   },
-  // * ------------------ END - Web - Attention Lines -----------------
-  // * ------------------ Mobile - Attention Lines -----------------
+  // * ------------------ END - Web - Reports -----------------
+  // * ------------------ Mobile - Reports -----------------
   vMobilePostRegister: async (inputData) => {
     return await use_validator_on_data(postRegisterSchema, inputData);
   },
-  // * ------------------ END - Mobile - Attention Lines -----------------
+  vMobileGetCoordinates: async (inputData) => {
+    return await use_validator_on_data(getGetCoordinatesSchema, inputData);
+  },
+  vMobileGetListAllClosest: async (inputData) => {
+    return await use_validator_on_data(getListAllClosestSchema, inputData);
+  },
+  // * ------------------ END - Mobile - Reports -----------------
 };
