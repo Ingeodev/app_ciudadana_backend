@@ -46,10 +46,10 @@ describe("Web - Reports management API points: ", () => {
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
-  describe("GET /notifications/security/reports/:id ", () => {
+  describe("GET /security/reports ", () => {
     test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
       const response0 = await request(usedHost)
-        .get(`/${testReport1.id}`)
+        .get("/")
         .set(requestHeaders)
         .query({ page: { number: 1, size: 2 } });
       expect(response0.statusCode).toBe(200);
