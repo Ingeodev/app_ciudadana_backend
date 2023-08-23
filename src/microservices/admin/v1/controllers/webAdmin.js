@@ -50,17 +50,17 @@ exports.postRegister = async (req, res, next) => {
       // password: generateSecureRandomString(16),
       email,
     };
-    const clientId = await firebase.createUser(dataUser);
+    const resCreate = await firebase.createUser(dataUser);
 
-    if (clientId.status) {
+    if (resCreate.uid.status) {
       throw {
-        status: clientId.status,
-        message: clientId.detail,
+        status: resCreate.uid.status,
+        message: resCreate.uid.detail,
       };
     }
 
     const dataQuery = {
-      clientId,
+      clientId: resCreate.uid,
       name,
       lastName,
       email,
@@ -68,8 +68,8 @@ exports.postRegister = async (req, res, next) => {
       document,
       disabled: false,
       userMobile: false,
-      // ! Preguntar sobre loginPhase
-      loginPhase: "unverifiedEmail",
+      loginPhase: null,
+      emailVerified: resCreate.emailVerified,
     };
 
     const userInDb = await db.User.create(dataQuery);

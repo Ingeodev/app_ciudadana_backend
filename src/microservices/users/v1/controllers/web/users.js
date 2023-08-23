@@ -17,6 +17,8 @@ const validator = require("../../../utils/validators/web/users.js");
 exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
+    const emailVerified = res.locals.emailVerified;
+    // ! El email se podría obtener directamente desde el token
     const { name, lastName, phone, email } = await validator.vPostAccountInfo(
       req.body
     );
@@ -37,6 +39,7 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: false,
+      emailVerified: emailVerified,
     };
 
     const result = await db.User.create(dataUser);

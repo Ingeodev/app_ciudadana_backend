@@ -58,6 +58,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: true,
       },
+      emailVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
       documentTypeId: {
         // type: DataTypes.INTEGER,
         type: DataTypes.STRING,
@@ -87,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       loginPhase: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       disabled: {

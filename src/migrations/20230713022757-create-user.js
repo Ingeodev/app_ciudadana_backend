@@ -63,7 +63,7 @@ module.exports = {
         },
         loginPhase: {
           type: Sequelize.STRING(50),
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         disabled: {

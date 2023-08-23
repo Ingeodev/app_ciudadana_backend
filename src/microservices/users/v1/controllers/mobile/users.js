@@ -18,7 +18,11 @@ const { checkIfExists } = require("../../../utils/accessCheck.js");
 exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
-    const { name, lastName, phone, email } = await validator.vPostAccountInfo(req.body);
+    const emailVerified = res.locals.emailVerified;
+    // ! El email se podría obtener directamente desde el token
+    const { name, lastName, phone, email } = await validator.vPostAccountInfo(
+      req.body
+    );
 
     if (!clientId) {
       throw {
@@ -38,11 +42,10 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: true,
+      emailVerified: emailVerified,
     };
 
-    await db.User.create(
-      { ...dataUser, ...extraDataUser }
-    );
+    await db.User.create({ ...dataUser, ...extraDataUser });
 
     return res.status(StatusCodes.CREATED).json(dataUser);
   } catch (error) {
