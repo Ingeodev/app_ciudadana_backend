@@ -3,6 +3,15 @@ const db = require('../../../../models');
 const validator = require('../../utils/validator');
 const { Sequelize } = require('sequelize');
 
+const checkCategoryExists = async (categoryId) => {
+    if (categoryId != null) {
+        const categoryExists = await db.AdvertisementCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
+        if (categoryExists == null)
+            return false;
+    }
+    return true;
+};
+
 // Retrieve all the advertisements whether they have a category or not.
 const getAllAdvertisements = async (req, res, next) => {
     try {
@@ -58,6 +67,11 @@ const getAllAdvertisements = async (req, res, next) => {
 const postAdvertisement = async (req, res, next) => {
     try {
         const { imageUri, siteUri, categoryId } = await validator.validateAdvertisementSchema(req.body);
+        if (!await checkCategoryExists(categoryId))
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The assigned category does not exist.',
+            };
         const newAdvertisement = await db.Advertisement.create({
             imageUri,
             siteUri,
@@ -81,6 +95,11 @@ const postAdvertisementEdit = async (req, res, next) => {
                 message: `The requested Advertisement with id ${update.id} does not exist.`
             };
         delete update.id;
+        if (!await checkCategoryExists(update.categoryId))
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: 'The assigned category does not exist.',
+            };
         const updatedAdvertisement = await advertisement.update(update);
         return res.status(StatusCodes.OK)
             .json({ data: { ...updatedAdvertisement.dataValues, deletedAt: undefined } });

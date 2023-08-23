@@ -148,16 +148,16 @@ describe("Advertisement management API points: ", () => {
             expect(response6.body).toHaveProperty("detail");
         });
 
-        test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+        test("should fail with status 404 and an error with a message if the category does not exist", async () => {
             const response0 = await request(usedHost).post('/')
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement1,
                     categoryId: -5,
                 });
-            expect(response0.statusCode).toBe(500);
+            expect(response0.statusCode).toBe(404);
             expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 500);
+            expect(response0.body).toHaveProperty("status", 404);
             expect(response0.body).toHaveProperty("code");
             expect(response0.body).toHaveProperty("detail");
         });
@@ -376,16 +376,16 @@ describe("Advertisement management API points: ", () => {
             expect(response6.body).toHaveProperty("detail");
         });
 
-        test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+        test("should fail with status 404 and an error with a message if the category does not exist.", async () => {
             const response0 = await request(usedHost).post('/edit')
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement1,
                     categoryId: -5,
                 });
-            expect(response0.statusCode).toBe(500);
+            expect(response0.statusCode).toBe(404);
             expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 500);
+            expect(response0.body).toHaveProperty("status", 404);
             expect(response0.body).toHaveProperty("code");
             expect(response0.body).toHaveProperty("detail");
         });
