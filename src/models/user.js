@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      User.hasOne(models.ThirdPartyCompany, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+        },
+      });
+
       // User.belongsTo(models.DocumentType, {
       //   foreignKey: {
       //     name: "documentTypeId",

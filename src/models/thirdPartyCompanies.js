@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class ThirdPartyCategory extends Model {
+  class ThirdPartyCompany extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -9,7 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      ThirdPartyCategory.hasOne(models.ThirdPartyCompany, {
+      ThirdPartyCompany.belongsTo(models.User, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
+      ThirdPartyCompany.belongsTo(models.ThirdPartyCategory, {
         foreignKey: {
           name: "thirdPartyCategoryId",
           allowNull: false,
@@ -18,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  ThirdPartyCategory.init(
+  ThirdPartyCompany.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -27,35 +35,63 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
+      createdBy: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      icon: {
+      description: {
+        type: DataTypes.TEXT,
+      },
+      phone: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
-      iconMap: {
+      siteUri: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
-      color: {
+      address: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      imageUri: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+      },
+      lat: {
+        type: DataTypes.FLOAT,
         allowNull: true,
+        unique: false,
+      },
+      lon: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        unique: false,
+      },
+      thirdPartyCategoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
         unique: false,
       },
     },
     {
       sequelize,
-      modelName: "ThirdPartyCategory",
-      tableName: "ThirdPartyCategories",
+      modelName: "ThirdPartyCompany",
+      tableName: "ThirdPartyCompanies",
       schema: "public",
       paranoid: true,
       timestamps: true,
     }
   );
-  return ThirdPartyCategory;
+  return ThirdPartyCompany;
 };
