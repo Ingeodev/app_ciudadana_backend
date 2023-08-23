@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       phone: {
@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       imageUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       lat: {

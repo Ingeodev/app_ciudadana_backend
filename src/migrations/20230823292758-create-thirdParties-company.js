@@ -27,7 +27,6 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
-
         thirdPartyCategoryId: {
           type: Sequelize.INTEGER,
           allowNull: false,
@@ -35,7 +34,7 @@ module.exports = {
         },
         description: {
           type: Sequelize.TEXT,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         phone: {
@@ -55,7 +54,7 @@ module.exports = {
         },
         imageUri: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         lat: {
