@@ -16,17 +16,37 @@ exports.postRegister = async (req, res, next) => {
       title, 
       description, 
       securityCategoryId, 
-      userId, 
       imageUri, 
       lat, 
       lon 
     } = await validator.vMobilePostRegister(req.body);
 
+    const userData = await db.User.findOne({
+      where: { disabled: false, userMobile: true, clientId: res.locals.uid },
+      attributes: ['id'],
+    });
+
+    if (userData == null || userData.id == null)
+      throw {
+        message: 'Requesting user is not allowed to create reports or is not registered in the database yet.',
+        status: StatusCodes.FORBIDDEN,
+      };
+
+    const usersCount = await db.User.count({
+      where: { disabled: false, userMobile: true },
+    });
+
+    if (usersCount <= 0)
+      throw {
+        message: 'No mobile users registered in the database.',
+        status: StatusCodes.NOT_FOUND,
+      };
+
     const dataQuery = {
       title, 
       description, 
       securityCategoryId, 
-      userId, 
+      userId: userData.id, 
       imageUri, 
       lat, 
       lon

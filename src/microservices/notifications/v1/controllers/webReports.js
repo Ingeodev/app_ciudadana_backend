@@ -16,12 +16,29 @@ exports.getListAllByUser = async (req, res, next) => {
     });
     const offset = (objPage.number - 1) * objPage.size;
 
-    const { id } = await validator.vWebGetOne({
-      id: parseInt(req.params.id),
+    const userData = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ['id'],
     });
 
+    if (userData == null || userData.id == null)
+      throw {
+        message: 'Requesting user is not allowed to get reports or is not registered in the database yet.',
+        status: StatusCodes.FORBIDDEN,
+      };
+
+    const usersCount = await db.User.count({
+      where: { disabled: false, userMobile: false },
+    });
+
+    if (usersCount <= 0)
+      throw {
+        message: 'No web users registered in the database.',
+        status: StatusCodes.NOT_FOUND,
+      };
+
     const reportsDb = await db.Report.findAndCountAll({
-      where: { userId: id },
+      where: { userId: userData.id },
       unique: true,
       paranoid: true,
       order: [["createdAt", "DESC"]],
