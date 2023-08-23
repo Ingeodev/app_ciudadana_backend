@@ -50,8 +50,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
+      thirdPartyCategoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
+      },
       description: {
         type: DataTypes.TEXT,
+        allowNull: false,
+        unique: false,
       },
       phone: {
         type: DataTypes.STRING,
@@ -75,16 +82,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       lat: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       lon: {
         type: DataTypes.FLOAT,
-        allowNull: true,
-        unique: false,
-      },
-      thirdPartyCategoryId: {
-        type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },

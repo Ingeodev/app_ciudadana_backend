@@ -27,8 +27,16 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
+
+        thirdPartyCategoryId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          unique: false,
+        },
         description: {
           type: Sequelize.TEXT,
+          allowNull: false,
+          unique: false,
         },
         phone: {
           type: Sequelize.STRING(50),
@@ -52,14 +60,11 @@ module.exports = {
         },
         lat: {
           type: Sequelize.FLOAT,
-          allowNull: true,
+          allowNull: false,
+          unique: false,
         },
         lon: {
           type: Sequelize.FLOAT,
-          allowNull: true,
-        },
-        thirdPartyCategoryId: {
-          type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
         },
