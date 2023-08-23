@@ -105,7 +105,7 @@ router.get(
 
 //#region Reports end-points
 // Retrieve all the reports by user.
-router.get('/security/reports/:id', reportController.getListAllByUser);
+router.get('/security/reports', reportController.getListAllByUser);
 //#endregion
 
 //#region Alerts end-points
