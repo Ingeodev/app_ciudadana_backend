@@ -33,6 +33,7 @@ const authMiddleware = async (req, res, next) => {
       ...res.locals,
       uid: decodedToken.user_id,
       role: decodedToken.role,
+      emailVerified: decodedToken.email_verified,
     };
     return next();
   } catch (error) {
