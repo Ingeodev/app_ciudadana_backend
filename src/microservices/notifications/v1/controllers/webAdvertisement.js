@@ -3,6 +3,11 @@ const db = require('../../../../models');
 const validator = require('../../utils/validator');
 const { Sequelize } = require('sequelize');
 
+/**
+ * Checks whether an AdvertisementCategory ID exists and refers to an existing category.
+ * @param {number} categoryId The ID of an AdvertisementCategory, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the AdvertisementCategory table. ``false`` otherwise.
+ */
 const checkCategoryExists = async (categoryId) => {
     if (categoryId != null) {
         const categoryExists = await db.AdvertisementCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
