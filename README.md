@@ -773,6 +773,20 @@ It returns **202 _Accepted_** and the created alert object on success.
 
 ------------
 
+#### 4.2.7. Reports
+
+The Reports endpoints allow mobile users to report accidents to both other mobile users and web users using their location.
+
+**_List of endpoints_**
+**Mobile App**
+	Path: http:localhost:3000/api/web/v1/notifications/
+	Controller: src\microservices\notifications\v1\controllers\mobileReports.js
+	Route: src\microservices\notifications\v1\routes\mobile.js
+
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /security/reports         | GET    | getListAllClosest      | Get closest reports  |
+| /security/reports | POST   | postRegister           | Create report        |
 
 ------------
 ### 4.3. Third-Party Microservice
