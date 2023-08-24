@@ -2,19 +2,19 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
 // * ------------------ Web - Reports -----------------
-const getListAllByUserSchema = joi.object({
-  number: joi.number().integer().greater(0).required(),
-  size: joi.number().integer().greater(0).required(),
-});
+// const getListAllByUserSchema = joi.object({
+//   number: joi.number().integer().greater(0).required(),
+//   size: joi.number().integer().greater(0).required(),
+// });
 // * ------------------ END - Web - Reports -----------------
 // * ------------------ Mobile - Reports -----------------
 const postRegisterSchema = joi.object({
   title: joi.string().trim().required().empty("").invalid(" "),
-  description: joi.string().trim().max(200).empty("").invalid(" "), // required??
+  description: joi.string().trim().max(200).empty("").invalid(" "),
   securityCategoryId: joi.number().empty("").invalid(0).required(),
   imageUri: joi.string().uri().required().trim().empty("").invalid(" "),
-  lat: joi.number().min(-90).max(90), // required??
-  lon: joi.number().min(-180).max(180), // required??
+  lat: joi.number().min(-90).max(90),
+  lon: joi.number().min(-180).max(180),
 });
 
 const getGetCoordinatesSchema = joi.object({
@@ -48,9 +48,9 @@ const use_validator_on_data = async (validator_schema, data) => {
 
 module.exports = {
   // * ------------------ Web - Reports -----------------
-  vWebGetListAllByUser: async (inputData) => {
-    return await use_validator_on_data(getListAllByUserSchema, inputData);
-  },
+  // vWebGetListAllByUser: async (inputData) => {
+  //   return await use_validator_on_data(getListAllByUserSchema, inputData);
+  // },
   // * ------------------ END - Web - Reports -----------------
   // * ------------------ Mobile - Reports -----------------
   vMobilePostRegister: async (inputData) => {
