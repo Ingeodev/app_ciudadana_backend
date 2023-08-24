@@ -6,6 +6,20 @@ const validator = require("../../utils/validatorReports.js");
 const { Sequelize } = require("sequelize");
 
 /**
+ * Checks whether an SecurityCategory ID exists and refers to an existing category.
+ * @param {number} categoryId The ID of an SecurityCategory, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the SecurityCategory table. ``false`` otherwise.
+ */
+const checkCategoryExists = async (categoryId) => {
+  if (categoryId != null) {
+    const categoryExists = await db.SecurityCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
+    if (categoryExists == null)
+      return false;
+  }
+  return true;
+};
+
+/**
  * Create report
  * @param {object} req - Object containing the title, description, securityCategoryId, userId, imageUri, lat, lon
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
@@ -20,6 +34,12 @@ exports.postRegister = async (req, res, next) => {
       lat, 
       lon 
     } = await validator.vMobilePostRegister(req.body);
+
+    if (!await checkCategoryExists(securityCategoryId))
+      throw {
+          status: StatusCodes.NOT_FOUND,
+          message: 'The assigned category does not exist.',
+      };
 
     const userData = await db.User.findOne({
       where: { disabled: false, userMobile: true, clientId: res.locals.uid },
