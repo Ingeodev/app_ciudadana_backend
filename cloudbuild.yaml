@@ -45,7 +45,7 @@ images:
 - 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-notifications/notifications:latest'
 availableSecrets:
   secretManager:
-    - versionName: projects/85094745134/secrets/service_key/versions/1
+    - versionName: projects/85094745134/secrets/service_key/versions/2
       env: API_KEY
     - versionName: projects/85094745134/secrets/email_key/versions/1
       env: EMAIL_KEY
