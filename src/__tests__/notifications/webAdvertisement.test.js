@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const usedHost = `${global.notificationsMicroserviceLocalHost}/web/v1/notifications/advertising`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/advertising`;
 
 describe("Advertisement management API points: ", () => {
     jest.setTimeout(8000);
