@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const categoryController = require("../controllers/web/categories.js");
+const companyController = require("../controllers/web/companies.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
 //#region Categories end-points
@@ -28,5 +29,31 @@ router.get(
   categoryController.getOneById
 );
 //#endregion - Categories
+
+//#region Company end-points
+router.post(
+  "/company/",
+  // hasPermissions({ role: "super_master_user" }),
+  companyController.postRegister
+);
+
+// router.post(
+//   "/company/edit",
+//   // hasPermissions({ role: "super_master_user" }),
+//   companyController.postEdit
+// );
+
+// router.get(
+//   "/company/:id",
+//   // hasPermissions({ role: "super_master_user" }),
+//   companyController.getProfile
+// );
+
+// router.get(
+//   "/company/delete",
+//   // hasPermissions({ role: "super_master_user" }),
+//   companyController.postDelete
+// );
+//#endregion - Company
 
 module.exports = router;
