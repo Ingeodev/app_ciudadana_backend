@@ -8,8 +8,8 @@ const non_negative_integer = integer_number.min(0);
 const hex_color_string = joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
 
 const page_object = joi.object({
-  size: positive_integer.required(),
-  number: positive_integer.required(),
+  size: positive_integer.label('page[size]').required(),
+  number: positive_integer.label('page[number]').required(),
 });
 
 const advertisementSchema = joi.object({

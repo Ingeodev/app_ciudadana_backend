@@ -5,19 +5,43 @@ const validator = require('../../utils/validator');
 // Retrieve all the advertisement categories.
 const getAllCategories = async (req, res, next) => {
     try {
-        const pageAdvertisements = await db.AdvertisementCategory.findAll({
+        const { page: pagination } = await validator.validateSimplePaginationSchema({
+            page: {
+                number: 1,
+                size: 100,
+            },
+            ...req.query,
+        });
+        const offset = (pagination.number - 1) * pagination.size;
+        const pageCategories = await db.AdvertisementCategory.findAndCountAll({
             unique: true,
             paranoid: true,
             order: [["createdAt", "DESC"]],
             attributes: {
-                exclude: ["deletedAt", "AdvertisementCategory"],
+                exclude: ["deletedAt"],
                 include: ["id", "name", "color"],
             },
+            limit: pagination.size,
+            offset,
         });
+        if (pageCategories.count <= 0)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: 'There are no Advertisement Categories registered in the database.',
+            };
+        if (pageCategories.rows.length <= 0)
+            throw {
+                status: StatusCodes.BAD_REQUEST,
+                message: '"page[number]" is too large for the number of possible pages.',
+            };
         return res.status(StatusCodes.OK).json({
-            message: 'TODO: implement list all',
-            meta: {},
-            data: pageAdvertisements,
+            meta: {
+                page: pagination.number,
+                pageSize: pagination.size,
+                totalRecords: pageCategories.count,
+                totalPages: Math.ceil(pageCategories.count / pagination.size),
+            },
+            data: pageCategories.rows,
         });
     } catch (error) {
         return next(error);
