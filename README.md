@@ -484,15 +484,33 @@ Response:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
-| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+| _page[number]_    	| Integer (positive) 	|      No     	| Page number for pagination.                               	|
+| _page[size]_ 	|    Integer (positive)   	|      No      	| Page size for pagination. 	|
+
+If one of the query parameters (`page[number]` or `page[size]`) is present, the other becomes mandatory.
 
 It returns **200 _OK_** and the list of objects on success.
 
 **Example Response**
 > _Status Code: **200 OK**_
 > ```JSON
-> 
+> {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 20,
+>         "totalRecords": 1,
+>         "totalPages": 1
+>     },
+>     "data": [
+>         {
+>             "id": 2,
+>             "name": "sample",
+>             "color": "#2d96ad",
+>             "createdAt": "2023-07-26T17:06:30.812Z",
+>             "updatedAt": "2023-08-16T23:02:30.252Z"
+>         }
+>     ]
+> }
 > ```
 
 ##### _POST_ delete advertisement category
