@@ -30,7 +30,6 @@ const pdfFilter = (req, file, cb) => {
 
 const excelFilter = (req, file, cb) => {
     const allowedMimetypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    console.log('file.mimetype', file.mimetype);
     try {
         if (allowedMimetypes.includes(file.mimetype)) {
             cb(null, true);
