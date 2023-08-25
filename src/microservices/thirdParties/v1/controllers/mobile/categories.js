@@ -18,7 +18,6 @@ exports.getAll = async (req, res, next) => {
     });
 
     const categoriesInDb = await db.ThirdPartyCategory.findAndCountAll({
-      where: { active: true },
       attributes: ["id", "name", "color", "icon", "iconMap"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,

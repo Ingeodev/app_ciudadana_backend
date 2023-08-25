@@ -16,12 +16,6 @@ router.post(
   categoryController.postEdit
 );
 
-router.post(
-  "/categories/status",
-  // hasPermissions({ role: "super_master_user" }),
-  categoryController.postStatus
-);
-
 router.get(
   "/categories",
   // hasPermissions({ role: "super_master_user" }),

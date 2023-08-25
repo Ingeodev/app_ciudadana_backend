@@ -32,11 +32,6 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        active: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          unique: false,
-        },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,

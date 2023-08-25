@@ -28,11 +28,6 @@ const getOneSchema = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
-const postActiveSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
-  active: joi.boolean().required(),
-});
-
 const postDeleteSchema = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
 });
@@ -67,9 +62,6 @@ module.exports = {
   },
   vWebGetOneById: async (inputData) => {
     return await use_validator_on_data(getOneSchema, inputData);
-  },
-  vWebPostStatus: async (inputData) => {
-    return await use_validator_on_data(postActiveSchema, inputData);
   },
   vWebPostDelete: async (inputData) => {
     return await use_validator_on_data(postDeleteSchema, inputData);

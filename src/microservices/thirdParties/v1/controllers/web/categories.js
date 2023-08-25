@@ -17,7 +17,6 @@ exports.postRegister = async (req, res, next) => {
       icon,
       iconMap,
       color,
-      active: true
     };
 
     const result = await db.ThirdPartyCategory.create(dataQuery);
@@ -72,36 +71,6 @@ exports.postEdit = async (req, res, next) => {
     ) {
       error.message = error.errors[0].message;
     }
-    return next(error);
-  }
-};
-
-/**
- * Changes the boolean value of ThirdPartyCategory.active
- * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdPartyCategory. Or if there's error, json (objeto): status, code, detail
- */
-exports.postStatus = async (req, res, next) => {
-  try {
-    const { id, active } = await validator.vWebPostStatus(req.body);
-    const catInDb = await db.ThirdPartyCategory.findOne({
-      where: { id },
-    });
-
-    if (catInDb === null) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: `Third-party category does not exist`,
-      };
-    }
-
-    const result = await catInDb.update({ active });
-
-    return res.status(StatusCodes.OK).json({
-      meta: null,
-      data: result,
-    });
-  } catch (error) {
-    // console.error("ThirdPartyCategory could not be deleted: ", error.message);
     return next(error);
   }
 };
