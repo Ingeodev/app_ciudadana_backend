@@ -1,5 +1,5 @@
 const { Client } = require("@googlemaps/google-maps-services-js");
-const mapKey = require("../maps_service_key.json");
+const mapKey = require("../google_maps_service_key.json");
 const { StatusCodes } = require("http-status-codes");
 // https://mapsplatform.google.com/pricing/?hl=es-419
 // https://developers.google.com/maps/documentation/geocoding/usage-and-billing?hl=es_419
