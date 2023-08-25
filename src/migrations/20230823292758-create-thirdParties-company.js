@@ -67,6 +67,11 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
+        geolocation: {
+          type: Sequelize.GEOMETRY,
+          allowNull: false,
+          unique: false,
+        },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,

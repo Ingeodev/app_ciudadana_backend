@@ -90,6 +90,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
+      geolocation: {
+        type: DataTypes.GEOMETRY,
+        allowNull: false,
+        unique: false,
+      },
     },
     {
       sequelize,

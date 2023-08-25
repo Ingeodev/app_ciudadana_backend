@@ -1,11 +1,15 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companies.js");
+const geocoding = require("../../../../../utils/geocoding.js");
+// const geocoding = require("../../../../../utils/geocoding_vNodeGeocoder.js");
+// {  lat: 2.4883636,  lng: -76.56589699999999,  type: null,  address: 'Cl. 70 Nte. #17-17, Popayán, Cauca, Colombia' }
 
 /**
  * Create a company
  * @param {object} req - Object containing the name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -21,7 +25,7 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon  } =
+    const { name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon } =
       await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
@@ -36,7 +40,8 @@ exports.postRegister = async (req, res, next) => {
       imageUri,
       lat,
       lon,
-    };    
+      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+    };
 
     const result = await db.ThirdPartyCompany.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
@@ -47,9 +52,33 @@ exports.postRegister = async (req, res, next) => {
 };
 
 /**
+ * Obtain the coordinates (latitude and longitude) of a street address.
+ * @param {object} req - Object containing the address (string)
+ * @return {object} Response contains: statuscode (integer), json (object): latitude (lat), longitude (lon), type, and address, if 200OK. Or if there's error, json (object): status, code, detail
+ */
+exports.postGeocoding = async (req, res, next) => {
+  try {
+    const { address } = await validator.vWebPostGeocoding(req.body);
+    const geocode = await geocoding.getGeocoding(address);
+
+    if (geocode.status) {
+      throw {
+        status: geocode.status,
+        message: geocode.detail,
+      };
+    }
+
+    return res.status(StatusCodes.OK).json({ meta: null, data: geocode });
+  } catch (error) {
+    // console.error("The address could not be geocoded: ", error.message);
+    return next(error);
+  }
+};
+
+/**
  * Update a company
  * @param {object} req - Object containing the id, name, icon, iconMap, color
- * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -96,7 +125,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get the data of company and your services - to profile 
- * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (object): data ThirdParty categories. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
   try {
@@ -122,7 +151,7 @@ exports.getProfile = async (req, res, next) => {
 
 /**
  * Destroy a company (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {

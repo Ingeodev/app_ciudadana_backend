@@ -15,6 +15,10 @@ const registerSchema = joi.object({
   lon: joi.number().min(-180).max(180).required(),
 });
 
+const geocodeSchema = joi.object({
+  address: joi.string().trim().empty("").invalid(" ").required(),
+  });
+
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").max(50),
@@ -58,6 +62,9 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
   vWebPostRegister: async (inputData) => {
     return await use_validator_on_data(registerSchema, inputData);
+  },
+  vWebPostGeocoding: async (inputData) => {
+    return await use_validator_on_data(geocodeSchema, inputData);
   },
   vWebPostEdit: async (inputData) => {
     return await use_validator_on_data(editSchema, inputData);
