@@ -227,152 +227,138 @@ describe("Advertisement Category management API points: ", () => {
         });
     });
 
-    // describe("POST /notifications/advertisementCategory/edit ", () => {
-    //     test("should respond with status 200 and the edited object (data)", async () => {
-    //         const response0 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory0, ...editCategory0
-    //             });
-    //         expect(response0.statusCode).toBe(200);
-    //         expect(response0.body).toHaveProperty("data");
-    //         expect(response0.body.data).toEqual(expect.objectContaining({
-    //             ...testCategory0, ...editCategory0
-    //         }));
-    //         const response1 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory1, ...editAdvertisement1
-    //             });
-    //         expect(response1.statusCode).toBe(200);
-    //         expect(response1.body).toHaveProperty("data");
-    //         expect(response1.body.data).toEqual(expect.objectContaining({
-    //             ...testCategory1, ...editAdvertisement1
-    //         }));
-    //     });
+    describe("POST /notifications/advertisementCategory/edit ", () => {
+        test("should respond with status 200 and the edited object (data)", async () => {
+            const response0 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory0, ...editCategory0
+                });
+            expect(response0.statusCode).toBe(200);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual(expect.objectContaining({
+                ...testCategory0, ...editCategory0
+            }));
+            const response1 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory1, ...editAdvertisement1
+                });
+            expect(response1.statusCode).toBe(200);
+            expect(response1.body).toHaveProperty("data");
+            expect(response1.body.data).toEqual(expect.objectContaining({
+                ...testCategory1, ...editAdvertisement1
+            }));
+        });
 
-    //     test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
-    //         const response0 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory0,
-    //                 id: undefined
-    //             });
-    //         expect(response0.statusCode).toBe(400);
-    //         expect(response0.body).not.toHaveProperty("data");
-    //         expect(response0.body).toHaveProperty("status", 400);
-    //         expect(response0.body).toHaveProperty("code");
-    //         expect(response0.body).toHaveProperty("detail");
+        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+            const response0 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory0,
+                    id: undefined
+                });
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
 
-    //         const response1 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory0,
-    //                 siteUri: 'not.an.URI.str'
-    //             });
-    //         expect(response1.statusCode).toBe(400);
-    //         expect(response1.body).not.toHaveProperty("data");
-    //         expect(response1.body).toHaveProperty("status", 400);
-    //         expect(response1.body).toHaveProperty("code");
-    //         expect(response1.body).toHaveProperty("detail");
+            const response1 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory0,
+                    name: ['not a string']
+                });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
 
-    //         const response2 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory0,
-    //                 imageUri: 0
-    //             });
-    //         expect(response2.statusCode).toBe(400);
-    //         expect(response2.body).not.toHaveProperty("data");
-    //         expect(response2.body).toHaveProperty("status", 400);
-    //         expect(response2.body).toHaveProperty("code");
-    //         expect(response2.body).toHaveProperty("detail");
+            const response2 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory0,
+                    color: 'not.an.HEXColor.str'
+                });
+            expect(response2.statusCode).toBe(400);
+            expect(response2.body).not.toHaveProperty("data");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
 
-    //         const response3 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory0,
-    //                 siteUri: { url: 'http://test.site.url' }
-    //             });
-    //         expect(response3.statusCode).toBe(400);
-    //         expect(response3.body).not.toHaveProperty("data");
-    //         expect(response3.body).toHaveProperty("status", 400);
-    //         expect(response3.body).toHaveProperty("code");
-    //         expect(response3.body).toHaveProperty("detail");
+            const response3 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory0,
+                    name: 0
+                });
+            expect(response3.statusCode).toBe(400);
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
 
-    //         const response4 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory1,
-    //                 categoryId: "not a number"
-    //             });
-    //         expect(response4.statusCode).toBe(400);
-    //         expect(response4.body).not.toHaveProperty("data");
-    //         expect(response4.body).toHaveProperty("status", 400);
-    //         expect(response4.body).toHaveProperty("code");
-    //         expect(response4.body).toHaveProperty("detail");
+            const response4 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory1,
+                    color: "Blue"
+                });
+            expect(response4.statusCode).toBe(400);
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
 
-    //         const response5 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory1,
-    //                 categoryId: 1.5
-    //             });
-    //         expect(response5.statusCode).toBe(400);
-    //         expect(response5.body).not.toHaveProperty("data");
-    //         expect(response5.body).toHaveProperty("status", 400);
-    //         expect(response5.body).toHaveProperty("code");
-    //         expect(response5.body).toHaveProperty("detail");
+            const response5 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory1,
+                    color: "0xFAFEF0"
+                });
+            expect(response5.statusCode).toBe(400);
+            expect(response5.body).not.toHaveProperty("data");
+            expect(response5.body).toHaveProperty("status", 400);
+            expect(response5.body).toHaveProperty("code");
+            expect(response5.body).toHaveProperty("detail");
 
-    //         const response6 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 id: testCategory1.id
-    //             });
-    //         expect(response6.statusCode).toBe(400);
-    //         expect(response6.body).not.toHaveProperty("data");
-    //         expect(response6.body).toHaveProperty("status", 400);
-    //         expect(response6.body).toHaveProperty("code");
-    //         expect(response6.body).toHaveProperty("detail");
-    //     });
+            const response6 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    id: testCategory1.id
+                });
+            expect(response6.statusCode).toBe(400);
+            expect(response6.body).not.toHaveProperty("data");
+            expect(response6.body).toHaveProperty("status", 400);
+            expect(response6.body).toHaveProperty("code");
+            expect(response6.body).toHaveProperty("detail");
+        });
 
-    //     test("should fail with status 404 and an error with a message if the category does not exist.", async () => {
-    //         const response0 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory1,
-    //                 categoryId: -5,
-    //             });
-    //         expect(response0.statusCode).toBe(404);
-    //         expect(response0.body).not.toHaveProperty("data");
-    //         expect(response0.body).toHaveProperty("status", 404);
-    //         expect(response0.body).toHaveProperty("code");
-    //         expect(response0.body).toHaveProperty("detail");
-    //     });
+        test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+            const response0 = await request(usedHost).post('/edit')
+                .set(requestHeaders)
+                .send({
+                    ...testCategory1,
+                    id: testCategory1.id + 98976545120
+                });
+            expect(response0.statusCode).toBe(404);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 404);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
 
-    //     test("should fail with status 404 and an error with a message if the id does not exist", async () => {
-    //         const response0 = await request(usedHost).post('/edit')
-    //             .set(requestHeaders)
-    //             .send({
-    //                 ...testCategory1,
-    //                 id: testCategory1.id + 98976545120
-    //             });
-    //         expect(response0.statusCode).toBe(404);
-    //         expect(response0.body).not.toHaveProperty("data");
-    //         expect(response0.body).toHaveProperty("status", 404);
-    //         expect(response0.body).toHaveProperty("code");
-    //         expect(response0.body).toHaveProperty("detail");
-    //     });
-
-    //     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-    //         const response0 = await request(usedHost).post('/edit');
-    //         expect(response0.statusCode).toBe(401);
-    //         expect(response0.body).not.toHaveProperty("data");
-    //         expect(response0.body).toHaveProperty("status", 401);
-    //         expect(response0.body).toHaveProperty("code");
-    //         expect(response0.body).toHaveProperty("detail");
-    //     });
-    // });
+        test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+            const response0 = await request(usedHost).post('/edit');
+            expect(response0.statusCode).toBe(401);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 401);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
+    });
 
     describe("POST /notifications/advertisementCategory/delete ", () => {
         test("should respond with status 200 and the deleted object's id (data)", async () => {
