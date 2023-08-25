@@ -30,6 +30,7 @@ This backend has been generated from scratch to support the Cali Mobility Applic
       - [4.2.2. Advertisement Categories](#422-advertisement-categories)
         - [_POST_ save new advertisement category](#post-save-new-advertisement-category)
         - [_GET_ list advertisement categories](#get-list-advertisement-categories)
+        - [_POST_ edit advertisement category](#post-edit-advertisement-category)
         - [_POST_ delete advertisement category](#post-delete-advertisement-category)
       - [4.2.3. Publicity](#423-publicity)
         - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
@@ -44,6 +45,7 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_POST_ Register Device Token (mobile)](#post-register-device-token-mobile)
         - [_GET_ All Alerts](#get-all-alerts)
         - [_POST_ Send Alert](#post-send-alert)
+      - [4.2.7. Reports](#427-reports)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
     - [4.4. File Management Microservice](#44-file-management-microservice)
       - [App Runner](#app-runner-2)
@@ -417,7 +419,7 @@ Response:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement to delete.    	|
 
 It returns **200 _OK_** and the updated object on success.
 
@@ -451,7 +453,7 @@ The Advertisement Categories end-points allow the web user to manage the adverti
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
 | _name_   	| String 	|      Yes     	| Category name.    	|
-| _color_    	| String (Hex Color) 	|      Yes     	| Colorof the category.                               	|
+| _color_    	| String (Hex Color) 	|      Yes     	| Color of the category.                               	|
 
 It returns **201 _created_** and the created object on success.
 
@@ -513,12 +515,50 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
+##### _POST_ edit advertisement category
+\(\<Your_Host\>/web/v1/notifications/advertisementCategory/edit\) allows web users to edit an existing advertisement category in the database. It receives the following parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to edit.    	|
+| _name_   	| String 	|      No     	| Category name.    	|
+| _color_    	| String (Hex Color) 	|      No     	| Color of the category.                               	|
+
+At least one of the optional (_name_, _color_) parameters must be passed.
+
+It returns **200 _OK_** and the updated object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >  "id": 2,
+  >  "name": "editedCategory",
+  >  "color": "#00FF00"
+  >}
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >   "data": {
+  >       "id": 2,
+  >       "name": "editedCategory",
+  >       "color": "#00FF00",
+  >       "createdAt": "2023-07-26T17:06:30.812Z",
+  >       "updatedAt": "2023-08-25T14:11:48.550Z"
+  >    }
+  > }
+  > ```
+
 ##### _POST_ delete advertisement category
 \(\<Your_Host\>/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to edit.    	|
+| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to delete.    	|
 
 It returns **200 _OK_** and the updated object on success.
 
@@ -783,10 +823,10 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 	Controller: src\microservices\notifications\v1\controllers\mobileReports.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 
-| Endpoint  | Method | Location in Controller | Description          |
-| :-------- | :----- | :--------------------- | :------------------- |
-| /security/reports         | GET    | getListAllClosest      | Get closest reports  |
-| /security/reports | POST   | postRegister           | Create report        |
+| Endpoint          | Method | Location in Controller | Description         |
+| :---------------- | :----- | :--------------------- | :------------------ |
+| /security/reports | GET    | getListAllClosest      | Get closest reports |
+| /security/reports | POST   | postRegister           | Create report       |
 
 ------------
 ### 4.3. Third-Party Microservice
