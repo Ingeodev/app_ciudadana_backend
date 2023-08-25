@@ -63,6 +63,25 @@ const postCategory = async (req, res, next) => {
     }
 };
 
+// Edit an existing advertisement category.
+const postEditCategory = async (req, res, next) => {
+    try {
+        const update = await validator.validateEditAdvertisementCategorySchema(req.body);
+        const category = await db.AdvertisementCategory.findByPk(update.id);
+        if (category == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Advertisement Category with id ${update.id} does not exist.`
+            };
+        delete update.id;
+        const updatedCategory = await category.update(update);
+        return res.status(StatusCodes.OK)
+            .json({ data: { ...updatedCategory.dataValues, deletedAt: undefined } });
+    } catch (error) {
+        return next(error);
+    }
+};
+
 // Delete an advertisement category ONLY IF NO ADVERTISEMENTS HAS THAT CATEGORY.
 const postCategoryDelete = async (req, res, next) => {
     try {
@@ -99,5 +118,6 @@ const postCategoryDelete = async (req, res, next) => {
 module.exports = {
     getAllCategories,
     postCategory,
+    postEditCategory,
     postCategoryDelete,
 };

@@ -40,6 +40,12 @@ const advertisementCategorySchema = joi.object({
   color: hex_color_string.required(),
 });
 
+const editAdvertisementCategorySchema = joi.object({
+  id: non_negative_integer.required(),
+  name: joi.string().trim().min(3),
+  color: hex_color_string,
+}).or('name', 'color');
+
 const alertSchema = joi.object({
   title: joi.string().required(),
   message: joi.string().required(),
@@ -104,6 +110,9 @@ module.exports = {
   },
   validateAdvertisementCategorySchema: async (inputData) => {
     return await use_validator_on_data(advertisementCategorySchema, inputData);
+  },
+  validateEditAdvertisementCategorySchema: async (inputData) => {
+    return await use_validator_on_data(editAdvertisementCategorySchema, inputData);
   },
   validateAlertSchema: async (inputData) => {
     return await use_validator_on_data(alertSchema, inputData);

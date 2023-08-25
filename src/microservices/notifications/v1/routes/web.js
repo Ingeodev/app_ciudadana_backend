@@ -39,6 +39,9 @@ router.get('/advertisementCategory', advertisementCategoryController.getAllCateg
 // Create a new advertisement Category.
 router.post('/advertisementCategory', advertisementCategoryController.postCategory);
 
+// Edit an existing advertisement Category.
+router.post('/advertisementCategory/edit', advertisementCategoryController.postEditCategory);
+
 // Delete an advertisement Category.
 router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
 //#endregion
