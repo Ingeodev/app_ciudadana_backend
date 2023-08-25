@@ -163,7 +163,6 @@ const listSocialNetworks = async (req, res, next) => {
 
 const listSocialNetworkTypes = async (req, res, next) => {
     try {
-      console.log(db)
         const socialNetworkTypeInDb = await db.SocialNetworkType.findAndCountAll({
             unique: true,
             paranoid: true,

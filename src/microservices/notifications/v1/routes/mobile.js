@@ -8,6 +8,7 @@ const attentionController = require("../controllers/mobileAttentionLines");
 const alertController = require("../controllers/mobileAlert");
 const socialNetworkController = require("../controllers/mobileSocialNetwork");
 const reportController = require("../controllers/mobileReports");
+const mobileServiceController = require("../controllers/mobileMobileService");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -75,5 +76,7 @@ router.get(
   socialNetworkController.getSocialNetworks
 );
 //#endregion
+
+router.get('/services/', mobileServiceController.getMobileServices);
 
 module.exports = router

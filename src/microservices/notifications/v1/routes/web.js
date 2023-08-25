@@ -10,6 +10,7 @@ const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 const socialNetworkController = require('../controllers/webSocialNetwork');
 const reportController = require("../controllers/webReports");
+const mobileServiceController = require('../controllers/webMobileService');
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -150,6 +151,33 @@ router.post(
 router.post(
   "/social_networks/delete",
   socialNetworkController.deleteSocialNetwork
+);
+//#endregion
+
+//#region Mobile Services end-points
+router.get(
+  "/mobile_services/",
+  mobileServiceController.listMobileServices
+);
+router.get(
+  "/mobile_services/access",
+  mobileServiceController.listMobileServiceTypes
+);
+router.post(
+  "/mobile_services/",
+  mobileServiceController.registerMobileService
+);
+router.post(
+  "/mobile_services/edit",
+  mobileServiceController.updateMobileService
+);
+router.post(
+  "/mobile_services/status",
+  mobileServiceController.changeStatusMobileService
+);
+router.post(
+  "/mobile_services/delete",
+  mobileServiceController.deleteMobileService
 );
 //#endregion
 

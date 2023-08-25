@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Security extends Model {
+  class MobileService extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Security.init(
+  MobileService.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -66,5 +66,5 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
-  return Security;
+  return MobileService;
 };
