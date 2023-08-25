@@ -28,6 +28,20 @@ const pdfFilter = (req, file, cb) => {
     }
 };
 
+const excelFilter = (req, file, cb) => {
+    const allowedMimetypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    console.log('file.mimetype', file.mimetype);
+    try {
+        if (allowedMimetypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    } catch (error) {
+        cb(error);
+    }
+};
+
 const imagePdfFilter = (req, file, cb) => {
     const allowedMimetypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
     try {
@@ -59,6 +73,15 @@ const uploadSinglePdf = multer({
     }
 });
 
+const uploadSingleExcel = multer({
+    storage,
+    fileFilter: excelFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024,     // 5MB
+        files: 1,               // Would only allow to use upload.single
+    }
+});
+
 const uploadImagesPdfs = multer({
     storage,
     fileFilter: imagePdfFilter,
@@ -70,5 +93,6 @@ const uploadImagesPdfs = multer({
 module.exports = {
     uploadSingleImage,
     uploadSinglePdf,
+    uploadSingleExcel,
     uploadImagesPdfs,
 };

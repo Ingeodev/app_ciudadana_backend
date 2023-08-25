@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const authorization = require("../../../../middleware/authMiddleware");
+const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
+
 const advertisingController = require('../controllers/webAdvertisement');
 const advertisementCategoryController = require('../controllers/webAdvertisementCategory');
 const securityController = require("../controllers/webSecurity");
@@ -10,6 +12,7 @@ const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 const socialNetworkController = require('../controllers/webSocialNetwork');
 const reportController = require("../controllers/webReports");
+const dependenciesController = require("../controllers/webDependencies");
 const mobileServiceController = require('../controllers/webMobileService');
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
@@ -182,6 +185,16 @@ router.post(
   "/mobile_services/delete",
   mobileServiceController.deleteMobileService
 );
+//#endregion
+
+//#region Dependencies end-points
+// List All dependencies (WEB).
+// router.get('/dependencies', dependenciesController.getAllDependencies);
+
+// Upload excel file with dependencies.
+router.post('/dependencies/excel',
+  uploadSingleExcel.single('file'),
+  dependenciesController.postUploadXlsxDependencies);
 //#endregion
 
 router.get("/", (req, res) => {

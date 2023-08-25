@@ -70,6 +70,16 @@ const registerPushSchema = joi.object({
   deviceToken: joi.string().trim().min(5).required(),
 });
 
+const multerMemorySingleItemSchema = joi.object({
+  fieldname: joi.string().required(),
+  originalname: joi.string().required(),
+  encoding: joi.string().required(),
+  mimetype: joi.string().required(),
+  size: joi.number().required(),
+  buffer: joi.binary().required(),
+}).required().error(new Error('A valid file is required.'));
+
+
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
  * @param {joi.ObjectSchema} validator_schema Validation schema to use.
@@ -125,5 +135,8 @@ module.exports = {
   },
   vGetAlertsListAll: async (inputData) => {
     return await use_validator_on_data(getAlertsListAllSchema, inputData);
+  },
+  validateMulterMemorySingleItemSchema: async inputData => {
+    return await use_validator_on_data(multerMemorySingleItemSchema, inputData);
   },
 };
