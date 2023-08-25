@@ -98,12 +98,14 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     }
 
     const imageFile = await validator.vfileFullLogin(req.file);
-    const folder = "uploads/users/mobile/public_service_receipt";
+    // const folder = "uploads/users/mobile/public_service_receipt";
+    const folder = "uploads";
+    const endpoint = "mobileUsersPublicServiceReceipt";
     const filename = uuidV4() + path.extname(imageFile.originalname);
     const host = req.get("host");
-    const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
+    const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${endpoint}/${filename}`;
 
-    const uploadDir = path.resolve(`./${folder}/`);
+    const uploadDir = path.resolve(`./${folder}/${endpoint}/`);
     const filepath = path.join(uploadDir, filename);
     await checkIfExists(uploadDir, true);
     fs.writeFile(filepath, imageFile.buffer);
