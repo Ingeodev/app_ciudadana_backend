@@ -15,22 +15,6 @@ module.exports = {
         allowNull: false,
         unique: false,
       },
-      email: {
-        type: Sequelize.STRING(50),
-        // ! Verificar si Firebase en ocasiones email=null
-        allowNull: true,
-        unique: true,
-      },
-      phone: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        unique: false,
-      },
-      active: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        unique: false,
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
