@@ -70,6 +70,18 @@ const registerPushSchema = joi.object({
   deviceToken: joi.string().trim().min(5).required(),
 });
 
+const dependenciesExcelContentsSchema = joi.array().length(1).items(joi.object({
+  name: joi.string(),
+  data: joi.array().min(2).items(joi.array().length(2).items(
+    joi.alternatives([non_negative_integer, joi.string().max(200)])
+  )),
+}));
+
+const dependencySchema = joi.object({
+  id: non_negative_integer.required(),
+  name: joi.string().max(200).required(),
+});
+
 const multerMemorySingleItemSchema = joi.object({
   fieldname: joi.string().required(),
   originalname: joi.string().required(),
@@ -135,6 +147,12 @@ module.exports = {
   },
   vGetAlertsListAll: async (inputData) => {
     return await use_validator_on_data(getAlertsListAllSchema, inputData);
+  },
+  validateDependenciesExcelContentsSchema: async (inputData) => {
+    return await use_validator_on_data(dependenciesExcelContentsSchema, inputData);
+  },
+  validateDependencySchema: async (inputData) => {
+    return await use_validator_on_data(dependencySchema, inputData);
   },
   validateMulterMemorySingleItemSchema: async inputData => {
     return await use_validator_on_data(multerMemorySingleItemSchema, inputData);
