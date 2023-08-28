@@ -1,5 +1,4 @@
 # CALI MOBILITY BACKEND
-
 This backend has been generated from scratch to support the Cali Mobility Application
 
 **Table of Contents**
