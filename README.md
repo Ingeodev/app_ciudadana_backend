@@ -819,14 +819,139 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 
 **_List of endpoints_**
 **Mobile App**
-	Path: http:localhost:3000/api/web/v1/notifications/
+	Path: http:localhost:3000/api/mobile/v1/notifications/
 	Controller: src\microservices\notifications\v1\controllers\mobileReports.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 
-| Endpoint          | Method | Location in Controller | Description         |
-| :---------------- | :----- | :--------------------- | :------------------ |
-| /security/reports | GET    | getListAllClosest      | Get closest reports |
-| /security/reports | POST   | postRegister           | Create report       |
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /security/reports         | GET    | getListAllClosest      | Get closest reports  |
+| /security/reports | POST   | postRegister           | Create report        |
+
+##### _GET_ Closest Reports (mobile)
+\(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
+
+| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
+|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
+| _lat_    | Float   |      Yes      | Latitude where incident was reported.      |
+| _lon_     | Float   |      Yes      | Longitude where incident was reported.      |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": null,
+>     "data": [
+>         {
+>           "id": 25,
+>           "title": "test title",
+>           "description": "test description",
+>           "securityCategoryId": 3,
+>           "userId": 7,
+>           "imageUri": "http://sample.image.uri/1234",
+>           "lat": 3.347622,
+>           "lon": -72.654755,
+>           "updatedAt": "2023-08-25T01:18:45.027Z",
+>           "createdAt": "2023-08-25T01:18:45.027Z",
+>           "securityCategoryName": "Calzado"
+>         }
+>     ]
+> }
+> ```
+
+##### _POST_ Register Report (mobile)
+\(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
+
+| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
+|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
+| _title_     | String  |      Yes      | Report title.      |
+| _description_     | String  |      No      | Report description.     |
+| _securityCategoryId_     | Integer  |      Yes      | Security category identifier.      |
+| _imageUri_    | String (URI)  |      Yes      | URL to an image to show in the report.      |
+| _lat_    | Float   |      Yes      | Latitude where incident was reported.      |
+| _lon_     | Float   |      Yes      | Longitude where incident was reported.      |
+
+It returns **201 _created_** and the created object on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  >{
+  >  "title": "test title",
+  >  "description": "test description",
+  >  "securityCategoryId": 3,
+  >  "imageUri": "http://sample.image.uri/1234",
+  >  "lat": 3.347622,
+  >  "lon": -72.654755
+  >}
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >   "data": {
+  >       "id": 25,
+  >       "title": "test title",
+  >       "description": "test description",
+  >       "securityCategoryId": 3,
+  >       "userId": 7,
+  >       "imageUri": "http://sample.image.uri/1234",
+  >       "lat": 3.347622,
+  >       "lon": -72.654755,
+  >       "updatedAt": "2023-08-25T01:18:45.027Z",
+  >       "createdAt": "2023-08-25T01:18:45.027Z",
+  >       "deletedAt": null
+  >    }
+  > }
+  > ```
+
+  **Web App**
+  Path: http:localhost:3000/api/web/v1/notifications/
+  Controller: src\microservices\notifications\v1\controllers\webReports.js
+  Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /security/reports         | GET    | getListAllByUser      | Get reports by user identifier  |
+
+##### _GET_ User Reports (web)
+\(\<Your_Host\>/web/v1/notifications/security/reports\) allows web users to list its own reports from the database. It receives the following query parameters:
+
+| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
+|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
+| _page[number]_      | Integer (positive)  |      No       | Page number for pagination.                                 |
+| _page[size]_  |    Integer (positive)     |      No       | Page size for pagination.   |
+
+If one of the query parameters (`page[number]` or `page[size]`) is present, the other becomes mandatory.
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": null,
+>     "data": [
+>         {
+>           "id": 25,
+>           "title": "test title",
+>           "description": "test description",
+>           "securityCategoryId": 3,
+>           "userId": 7,
+>           "imageUri": "http://sample.image.uri/1234",
+>           "lat": 3.347622,
+>           "lon": -72.654755,
+>           "updatedAt": "2023-08-25T01:18:45.027Z",
+>           "createdAt": "2023-08-25T01:18:45.027Z",
+>           "securityCategoryName": "Calzado"
+>         }
+>     ]
+> }
+> ```
 
 ------------
 ### 4.3. Third-Party Microservice
