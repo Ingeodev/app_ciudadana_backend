@@ -29,14 +29,18 @@ const postUploadXlsxDependencies = async (req, res, next) => {
                 message,
             };
         }
+        const createdDependencies = await db.Dependency.bulkCreate(dependencies, {
+            fields: ['id', 'name'],
+            updateOnDuplicate: ["name", "updatedAt", "deletedAt"],
+            validate: true
+        });
+        const returnDependencies = createdDependencies.map(dep => {
+            return { ...dep.dataValues, deletedAt: undefined };
+        });
         return res.status(StatusCodes.CREATED)
             .json({
-                meta: {
-                    message: `The excel file ${xlsxFile.originalname} has been uploaded successfully.`,
-                },
                 data: {
-                    file: { ...xlsxFile, buffer: null },
-                    dependencies,
+                    createdDependencies: returnDependencies,
                 },
             });
     } catch (error) {
