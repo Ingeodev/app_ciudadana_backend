@@ -39,9 +39,7 @@ const postUploadXlsxDependencies = async (req, res, next) => {
         });
         return res.status(StatusCodes.CREATED)
             .json({
-                data: {
-                    createdDependencies: returnDependencies,
-                },
+                data: returnDependencies,
             });
     } catch (error) {
         return next(error);
