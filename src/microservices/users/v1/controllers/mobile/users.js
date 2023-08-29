@@ -2,10 +2,8 @@ const { StatusCodes } = require("http-status-codes");
 const fs = require("fs/promises");
 const path = require("path");
 const { v4: uuidV4 } = require("uuid");
-// const joi = require("joi");
 const db = require("../../../../../models/index.js");
-// const firebase = require("../utils/firebaseAdmin.js");
-const { formatDate } = require("../../../../../middleware/formatDate.js");
+const firebase = require("../../../../../utils/firebaseAdmin.js");
 const validator = require("../../../utils/validators/mobile/users.js");
 const { checkIfExists } = require("../../../utils/accessCheck.js");
 // const Op = db.Sequelize.Op;
@@ -164,10 +162,18 @@ exports.getAccountInfo = async (req, res, next) => {
       where: { clientId },
     });
     
-    if (userInDb === null) {
+    const UserInFirebase = await firebase.getUserByClientId(clientId);
+    if (userInDb === null && UserInFirebase.uid) {
+      return res.status(StatusCodes.OK).json({
+        loginPhase: "notRegistered",
+        userInfo: null,
+      });
+    }
+
+    if (UserInFirebase.status) {
       throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "user information could not be retrieved",
+        status: UserInFirebase.status,
+        message: UserInFirebase.message,
       };
     }
 
@@ -206,10 +212,17 @@ exports.getAccountLoginPhase = async (req, res, next) => {
       where: { clientId },
     });
 
-    if (userInDb === null) {
+    const UserInFirebase = await firebase.getUserByClientId(clientId);
+    if (userInDb === null && UserInFirebase.uid) {
+      return res.status(StatusCodes.OK).json({
+        loginPhase: "notRegistered",
+      });
+    }
+
+    if (UserInFirebase.status) {
       throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "user information could not be retrieved",
+        status: UserInFirebase.status,
+        message: UserInFirebase.message,
       };
     }
 

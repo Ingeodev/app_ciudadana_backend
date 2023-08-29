@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models/index.js");
-const firebase = require("../../utils/firebaseAdmin.js");
+const firebase = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
 // const firebaseAppWeb = require("../../../utils/firebaseAppWeb.js");
 

@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-const { appFirebase, adminFirebase } = require("../../../middleware/authMiddleware.js");
-const emailService = require("./sendEmail.js");
+const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js");
+const emailService = require("../microservices/admin/utils/sendEmail.js");
 
 exports.createUser = async (data) => {
   try {
@@ -149,26 +149,33 @@ const createCustomTokens = async (uid) => {
 /**
  * Get data user by clientId corresponds to a user in Firebase
  * @param {string} clientId
- * @return {object} Contains: statusCode (integer - HTTP response status codes), msg (string - Descriptive message), data.
+ * @return {object} Data user, if 200 ok. Or if there's error, json (objeto): status, code, detail
  */
 exports.getUserByClientId = async (clientId) => {
   try {
-    const userRecord = await adminFirebase.auth().getUser(clientId);
+    const userRecord = await appFirebase.auth().getUser(clientId);
 
     if (userRecord) {
-      return {
-        code: 200,
-        msg: `User with ID: ${clientId} exists`,
-        data: userRecord,
-      };
+      return userRecord;
     } else {
-      return { code: 404, msg: "User not found", data: null };
+      return {
+        status: StatusCodes.NOT_FOUND,
+        message: "User not found",
+      };
     }
   } catch (error) {
-    return { code: 500, msg: "Error checking user: " + error, data: null };
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    };
   }
 };
 
+/**
+ * Get data user by email corresponds to a user in Firebase
+ * @param {string} email
+ * @return {object} Data user, if 200 ok. Or if there's error, json (objeto): status, code, detail
+ */
 exports.getUserDataByEmail = async (email) => {
   try {
     const userRecord = await adminFirebase.auth().getUserByEmail(email);
