@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const categoryController = require("../controllers/web/categories.js");
 const companyController = require("../controllers/web/companies.js");
+const companyServicesController = require("../controllers/web/companyServices.js");
 
 // * ------------------ Endpoints - appWeb -----------------------------
 //#region Categories end-points
@@ -41,6 +42,12 @@ router.post(
   "/company/geocoding",
   // hasPermissions({ role: "super_master_user" }),
   companyController.postGeocoding
+);
+
+router.post(
+  "/company/service",
+  // hasPermissions({ role: "super_master_user" }),
+  companyServicesController.postServices
 );
 
 // router.post(
