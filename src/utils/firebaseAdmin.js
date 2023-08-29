@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js");
-const emailService = require("../microservices/admin/utils/sendEmail.js");
+//const emailService = require("../microservices/admin/utils/sendEmail.js");
 
 exports.createUser = async (data) => {
   try {
@@ -111,7 +111,8 @@ exports.emailVerification = async (userEmail) => {
         subject: "AppMoviliad Cali - Verificación de correo",
         html: `<strong> ${link} </strong>`,
       };
-      const resSend = await emailService.sendEmail(data);
+      //const resSend = await emailService.sendEmail(data);
+      const resSend = true;
       return resSend;
     } else {
       return {

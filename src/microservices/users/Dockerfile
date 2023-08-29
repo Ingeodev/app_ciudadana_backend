@@ -24,7 +24,10 @@ COPY src/models /srv/models/
 COPY src/middleware /srv/middleware/
 COPY src/config /srv/config/
 COPY src/account_service_key.json /srv
+COPY src/utils /srv/utils/
 
 RUN npm install --production
 
-CMD ["node", "./microservices/users/index.js"]
+WORKDIR /srv/microservices/users
+
+CMD ["node", "./index.js"]

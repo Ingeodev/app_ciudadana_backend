@@ -17,14 +17,16 @@ RUN node --version
 RUN npm --version
 
 WORKDIR /srv
-COPY src/microservices/users/ /srv/microservices/users
+COPY src/microservices/thirdParties/ /srv/microservices/thirdParties
 COPY src/package.json /srv
 COPY src/package-lock.json /srv
 COPY src/models /srv/models/
 COPY src/middleware /srv/middleware/
 COPY src/config /srv/config/
 COPY src/account_service_key.json /srv
+COPY src/utils /srv/utils/
 
 RUN npm install --production
+WORKDIR /srv/microservices/thirdParties
 
-CMD ["node", "./microservices/users/index.js"]
+CMD ["node", "./index.js"]
