@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      ThirdPartyCompany.hasOne(models.ThirdPartyService, {
+        foreignKey: {
+          name: "thirdPartyCompanyId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   ThirdPartyCompany.init(

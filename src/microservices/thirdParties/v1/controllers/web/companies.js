@@ -2,9 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const { Sequelize } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companies.js");
-const geocoding = require("../../../../../utils/geocoding.js");
-// const geocoding = require("../../../../../utils/geocoding_vNodeGeocoder.js");
-// {  lat: 2.4883636,  lng: -76.56589699999999,  type: null,  address: 'Cl. 70 Nte. #17-17, Popayán, Cauca, Colombia' }
+// const geocoding = require("../../../../../utils/geocoding.js");
 
 /**
  * Create a company
@@ -58,8 +56,13 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postGeocoding = async (req, res, next) => {
   try {
+    return res
+      .status(StatusCodes.OK)
+      .json({ meta: null, data: "Endpoint under construction" });
     const { address } = await validator.vWebPostGeocoding(req.body);
-    const geocode = await geocoding.getGeocoding(address);
+    // const geocode = await geocoding.getGeocodingGoogle(address);
+    // const geocode = await geocoding.getGeocodingHere(address);
+    // const geocode = await geocoding.getGeocodingMapbox(address);
 
     if (geocode.status) {
       throw {
@@ -68,7 +71,9 @@ exports.postGeocoding = async (req, res, next) => {
       };
     }
 
-    return res.status(StatusCodes.OK).json({ meta: null, data: geocode });
+    return res
+      .status(StatusCodes.OK)
+      .json({ meta: { length: geocode.length }, data: geocode });
   } catch (error) {
     // console.error("The address could not be geocoded: ", error.message);
     return next(error);
