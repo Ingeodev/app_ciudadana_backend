@@ -1,6 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models");
-const { formatDate } = require("../../../../middleware/formatDate.js");
 const validator = require("../../utils/validatorReports.js");
 const { Sequelize } = require("sequelize");
 
