@@ -29,10 +29,18 @@ const postUploadXlsxDependencies = async (req, res, next) => {
                 message,
             };
         }
-        const createdDependencies = await db.Dependency.bulkCreate(dependencies, {
-            fields: ['id', 'name'],
-            updateOnDuplicate: ["name", "updatedAt", "deletedAt"],
-            validate: true
+        const createdDependencies = await db.sequelize.transaction(async transaction => {
+            await db.Dependency.destroy({
+                where: { deletedAt: null },
+                transaction,
+            });
+            const allDependencies = await db.Dependency.bulkCreate(dependencies, {
+                fields: ['id', 'name'],
+                updateOnDuplicate: ["name", "updatedAt", "deletedAt"],
+                validate: true,
+                transaction,
+            });
+            return allDependencies;
         });
         const returnDependencies = createdDependencies.map(dep => {
             return { ...dep.dataValues, deletedAt: undefined };
