@@ -33,7 +33,7 @@ provider "google" {
 resource "google_artifact_registry_repository" "artifactory_repository" {
   project       = var.project_id
   location      = var.region
-  repository_id = "cali-mobility-third-party"
+  repository_id = "cali-mobility-third-parties"
   format        = "DOCKER"
   description   = "cali-mobility-third-party repository "
 }
