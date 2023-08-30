@@ -241,7 +241,7 @@ router.post(
 
 //#region Dependencies end-points
 // List All dependencies (WEB).
-// router.get('/dependencies', dependenciesController.getAllDependencies);
+router.get('/dependencies', dependenciesController.getAllDependencies);
 
 // Get dependencies excel template (WEB).
 router.get('/dependencies/template', dependenciesController.getDownloadXlsxTemplate);

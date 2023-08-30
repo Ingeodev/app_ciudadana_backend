@@ -6,6 +6,7 @@ const xlsx = require('node-xlsx');
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
 
+// Upload an excel file that will replace all existing dependencies in the database.
 const postUploadXlsxDependencies = async (req, res, next) => {
     try {
         const xlsxFile = await validator.validateMulterMemorySingleItemSchema(req.file);
@@ -56,10 +57,13 @@ const postUploadXlsxDependencies = async (req, res, next) => {
     }
 };
 
+// Download the excel file of all existing dependencies.
 const getDownloadXlsxDependencies = async (req, res, next) => {
     try {
         const excelData = [['ID Único', 'Nombre Dependencia']];
-        const dependencies = await db.Dependency.findAll();
+        const dependencies = await db.Dependency.findAll({
+            attributes: ['id', 'name']
+        });
         dependencies.forEach(element => {
             excelData.push([element.id, element.name]);
         });
@@ -74,6 +78,7 @@ const getDownloadXlsxDependencies = async (req, res, next) => {
     }
 };
 
+// Download the template to create new Dependencies.
 const getDownloadXlsxTemplate = async (req, res, next) => {
     try {
         const downloadPath = path.resolve(path.join(".", "static", "Plantilla Dependencias.xlsx"));
@@ -85,9 +90,49 @@ const getDownloadXlsxTemplate = async (req, res, next) => {
     }
 };
 
+// Retrieve all the available dependencies.
+const getAllDependencies = async (req, res, next) => {
+    try {
+        const { page: pagination } = await validator.validateSimplePaginationSchema(req.query);
+        const offset = (pagination.number - 1) * pagination.size;
+        const pageDependencies = await db.Dependency.findAndCountAll({
+            unique: true,
+            paranoid: true,
+            order: [["createdAt", "DESC"]],
+            offset,
+            limit: pagination.size,
+            attributes: {
+                exclude: ["deletedAt"],
+            },
+        });
+        if (pageDependencies.count <= 0)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: 'There are no Dependencies registered in the database.',
+            };
+        if (pageDependencies.rows.length <= 0)
+            throw {
+                status: StatusCodes.BAD_REQUEST,
+                message: '"page[number]" is too large for the number of possible pages.',
+            };
+        const data = pageDependencies.rows.map(row => row.dataValues);
+        return res.status(StatusCodes.OK).json({
+            meta: {
+                page: pagination.number,
+                pageSize: pagination.size,
+                totalRecords: pageDependencies.count,
+                totalPages: Math.ceil(pageDependencies.count / pagination.size),
+            },
+            data,
+        });
+    } catch (error) {
+        return next(error);
+    }
+};
 
 module.exports = {
     postUploadXlsxDependencies,
     getDownloadXlsxDependencies,
     getDownloadXlsxTemplate,
+    getAllDependencies,
 };
