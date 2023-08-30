@@ -19,15 +19,15 @@ module.exports = (sequelize, DataTypes) => {
 
       ThirdPartyCompany.belongsTo(models.ThirdPartyCategory, {
         foreignKey: {
-          name: "thirdPartyCategoryId",
+          name: "categoryId",
           allowNull: false,
           unique: false,
         },
       });
 
-      ThirdPartyCompany.hasOne(models.ThirdPartyService, {
+      ThirdPartyCompany.hasMany(models.ThirdPartyService, {
         foreignKey: {
-          name: "thirdPartyCompanyId",
+          name: "companyId",
           allowNull: false,
           unique: false,
         },
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      thirdPartyCategoryId: {
+      categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
@@ -111,6 +111,21 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      hooks: {
+        // It also eliminates the services that the company has
+        beforeDestroy: async (company, options) => {
+          try {
+            await company.getThirdPartyServices().then((services) => {
+              services.forEach(async (service) => {
+                await service.destroy({ force: false }); // Here, force: false, makes it a soft-delete.
+              });
+            });
+          } catch (error) {
+            throw new Error("Error deleting company services");
+          }
+          
+        },
+      },
     }
   );
   return ThirdPartyCompany;

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       ThirdPartyCategory.hasOne(models.ThirdPartyCompany, {
         foreignKey: {
-          name: "thirdPartyCategoryId",
+          name: "categoryId",
           allowNull: false,
           unique: false,
         },
@@ -55,6 +55,20 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      hooks: {
+        async beforeDestroy(category, options) {
+          const companies = await sequelize.models.ThirdPartyCompany.count({
+            where: {
+              categoryId: category.id,
+              deletedAt: null, // considers only records that are not "soft deleted".
+            },
+          });
+
+          if (companies > 0) {
+            throw new Error("Category Deleting error");
+          }
+        },
+      },
     }
   );
   return ThirdPartyCategory;

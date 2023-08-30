@@ -17,7 +17,7 @@ module.exports = {
           allowNull: false,
           // unique: true,
         },
-        thirdPartyCompanyId: {
+        companyId: {
           type: Sequelize.INTEGER,
           allowNull: false,
           // unique: false,
@@ -44,13 +44,13 @@ module.exports = {
       }
     );
     await queryInterface.addConstraint("ThirdPartyServices", {
-      fields: ["thirdPartyCompanyId", "service"],
+      fields: ["companyId", "service"],
       type: "unique",
       name: "unique_thirdPartyCompanyId_service",
     });
     return await queryInterface.addConstraint("ThirdPartyServices", {
       name: "fk_ThirdPartyServices_Company",
-      fields: ["thirdPartyCompanyId"],
+      fields: ["companyId"],
       type: "foreign key",
       references: {
         table: "ThirdPartyCompanies",

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       ThirdPartyService.belongsTo(models.ThirdPartyCompany, {
         foreignKey: {
-          name: "thirdPartyCompanyId",
+          name: "companyId",
           allowNull: false,
           unique: false,
         },
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         // unique: true,
       },
-      thirdPartyCompanyId: {
+      companyId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         // unique: false,
@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         {
           unique: true,
-          fields: ["thirdPartyCompanyId", "service"],
+          fields: ["companyId", "service"],
         },
       ],
     }

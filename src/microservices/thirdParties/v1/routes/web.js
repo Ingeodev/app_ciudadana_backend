@@ -45,28 +45,40 @@ router.post(
 );
 
 router.post(
-  "/company/service",
+  "/company/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  companyController.postEdit
+);
+
+router.get(
+  "/company/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  companyController.getProfile
+);
+
+router.post(
+  "/company/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  companyController.postDelete
+);
+
+router.post(
+  "/company_service",
   // hasPermissions({ role: "super_master_user" }),
   companyServicesController.postServices
 );
 
-// router.post(
-//   "/company/edit",
-//   // hasPermissions({ role: "super_master_user" }),
-//   companyController.postEdit
-// );
+router.post(
+  "/company_service/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  companyServicesController.postEdit
+);
 
-// router.get(
-//   "/company/:id",
-//   // hasPermissions({ role: "super_master_user" }),
-//   companyController.getProfile
-// );
-
-// router.get(
-//   "/company/delete",
-//   // hasPermissions({ role: "super_master_user" }),
-//   companyController.postDelete
-// );
+router.post(
+  "/company_service/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  companyServicesController.postDelete
+);
 //#endregion - Company
 
 module.exports = router;

@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasOne(models.Alert, {
+      User.hasMany(models.Alert, {
         foreignKey: {
           name: "sentBy",
           allowNull: false,
         },
       });
 
-      User.hasOne(models.ThirdPartyCompany, {
+      User.hasMany(models.ThirdPartyCompany, {
         foreignKey: {
           name: "createdBy",
           allowNull: false,
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      User.hasOne(models.GenderCategory, {
+      User.hasMany(models.GenderCategory, {
         foreignKey: {
           name: "createdBy",
           allowNull: false,
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      User.hasOne(models.GenderAttentionLine, {
+      User.hasMany(models.GenderAttentionLine, {
         foreignKey: {
           name: "createdBy",
           allowNull: false,

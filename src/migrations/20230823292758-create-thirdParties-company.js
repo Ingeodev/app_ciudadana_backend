@@ -27,7 +27,7 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
-        thirdPartyCategoryId: {
+        categoryId: {
           type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
@@ -106,7 +106,7 @@ module.exports = {
     });
     return await queryInterface.addConstraint("ThirdPartyCompanies", {
       name: "fk_ThirdPartyCompanies_CategoryId",
-      fields: ["thirdPartyCategoryId"],
+      fields: ["categoryId"],
       type: "foreign key",
       references: {
         table: "ThirdPartyCategories",

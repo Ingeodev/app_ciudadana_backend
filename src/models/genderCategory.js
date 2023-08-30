@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
           const attentionLinesCount = await sequelize.models.GenderAttentionLine.count({
               where: {
                 categoryId: genderCategory.id,
-                deletedAt: null, // considera solo registros no "eliminados" (soft delete)
+                deletedAt: null, // considers only records that are not "soft deleted".
               },
             });
 

@@ -30,7 +30,7 @@ exports.postRegister = async (req, res, next) => {
       createdBy: createdBy.id,
       name,
       nit,
-      thirdPartyCategoryId: categoryId,
+      categoryId,
       description,
       phone,
       siteUri,
@@ -42,6 +42,10 @@ exports.postRegister = async (req, res, next) => {
     };
 
     const result = await db.ThirdPartyCompany.create(dataQuery);
+    delete result.dataValues.createdBy;
+    // ! Front necesita la variable de geolocation?? 
+    delete result.dataValues.geolocation;
+    delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("company could not be created: ", error.message);
@@ -82,38 +86,77 @@ exports.postGeocoding = async (req, res, next) => {
 
 /**
  * Update a company
- * @param {object} req - Object containing the id, name, icon, iconMap, color
+ * @param {object} req - Object containing the id, name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon
  * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, icon, iconMap, color } = await validator.vWebPostEdit(
-      req.body
-    );
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
+    });
+
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found",
+        status: StatusCodes.NOT_FOUND,
+      };
+
+    const {
+      id,
+      name,
+      nit,
+      categoryId,
+      description,
+      phone,
+      siteUri,
+      address,
+      imageUri,
+      lat,
+      lon,
+    } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
       name,
-      icon,
-      iconMap,
-      color,
+      nit,
+      categoryId,
+      description,
+      phone,
+      siteUri,
+      address,
+      imageUri,
+      lat,
+      lon,
+      // ! Decirle al front que siempre envie el par alt, lon
+      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
     };
 
-    const categoryInDb = await db.ThirdPartyCategory.findByPk(id);
-
-    if (categoryInDb === null) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: `company does not exist`,
-      };
-    }
-
-    const resultUpdate = await categoryInDb.update(dataQuery);
-
-    return res.status(StatusCodes.OK).json({
-      meta: null,
-      data: resultUpdate,
+    // Validate that the company belongs to the user
+    const companyInDb = await db.ThirdPartyCompany.findOne({
+      where: {
+        id,
+        // ! Pendiente: Validar permisos del usuario
+        createdBy: createdBy.id,
+      },
     });
+
+    if (companyInDb == null)
+      throw {
+        message: "Company editing failure",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+
+    // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
+
+    const resultUpdate = await companyInDb.update(dataQuery);
+    delete resultUpdate.dataValues.createdBy;
+    // ! Front necesita la variable de geolocation??
+    delete resultUpdate.dataValues.geolocation;
+    delete resultUpdate.dataValues.deletedAt;
+
+    return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
     if (
@@ -134,20 +177,58 @@ exports.postEdit = async (req, res, next) => {
  */
 exports.getProfile = async (req, res, next) => {
   try {
-    const { id } = await validator.vWebGetOneById({
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
+    });
+
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found",
+        status: StatusCodes.NOT_FOUND,
+      };
+
+    const { id } = await validator.vWebGetProfile({
       id: parseInt(req.params.id),
     });
 
-    const categInDb = await db.ThirdPartyCategory.findByPk(id);
+    // Validate that the company belongs to the user
+    const companyInDb = await db.ThirdPartyCompany.findOne({
+      where: {
+        id,
+        // ! Pendiente: Validar permisos del usuario
+        createdBy: createdBy.id,
+      },
+    });
 
-    if (categInDb === null) {
+    if (companyInDb == null)
       throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "Third-party category information could not be retrieved",
+        message: "Company could not be retrieved",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
-    }
 
-    return res.status(StatusCodes.OK).send({ meta: null, data: categInDb });
+    // Get company services
+    const servicesInDb = await db.ThirdPartyService.findAndCountAll({
+      where: {
+        companyId: companyInDb.id,
+      },
+      attributes: ["id", "service", "companyId", "createdAt", "updatedAt"],
+    });
+
+    // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
+    delete companyInDb.dataValues.createdBy;
+    // ! Front necesita la variable de geolocation??
+    delete companyInDb.dataValues.geolocation;
+    delete companyInDb.dataValues.deletedAt;
+
+    return res.status(StatusCodes.OK).send({
+      meta: null,
+      data: {
+        company: companyInDb,
+        services: servicesInDb.rows,
+      },
+    });
   } catch (error) {
     // console.error("company could not be recovered: ", error.message);
     return next(error);
@@ -160,21 +241,35 @@ exports.getProfile = async (req, res, next) => {
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    const { id } = await validator.vWebPostDelete(req.body);
-    const categInDb = await db.ThirdPartyCompany.findOne({
-      where: { id },
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
     });
 
-    if (categInDb === null) {
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found",
+        status: StatusCodes.NOT_FOUND,
+      };
+    
+    const { id } = await validator.vWebPostDelete(req.body);
+    const companyInDb = await db.ThirdPartyCompany.findOne({
+      where: {
+        id,
+        // ! Pendiente: Validar permisos del usuario
+        createdBy: createdBy.id,
+      },
+    });
+
+    if (companyInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `Third-party category does not exist`,
+        message: `Company does not exist`,
       };
     }
 
-    // ! Pendiente: Verificar que la categoria no este siendo usada en otras tablas
-
-    await categInDb.destroy();
+    await companyInDb.destroy();
 
     return res.status(StatusCodes.OK).json({
       meta: null,

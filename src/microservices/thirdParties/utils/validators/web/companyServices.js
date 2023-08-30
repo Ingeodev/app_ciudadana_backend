@@ -22,6 +22,17 @@ const servicesSchema = joi.object({
     }),
 });
 
+const editSchema = joi.object({
+  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  service: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
+});
+
+const postDeleteSchema = joi.object({
+  id: joi.number().empty("").greater(0).invalid(0).required(),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -43,5 +54,11 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
   vWebPostServices: async (inputData) => {
     return await use_validator_on_data(servicesSchema, inputData);
+  },
+  vWebPostEdit: async (inputData) => {
+    return await use_validator_on_data(editSchema, inputData);
+  },
+  vWebPostDelete: async (inputData) => {
+    return await use_validator_on_data(postDeleteSchema, inputData);
   },
 };
