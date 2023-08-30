@@ -20,6 +20,23 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {
           name: "createdBy",
           allowNull: false,
+          unique: false,
+        },
+      });
+
+      User.hasOne(models.GenderCategory, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
+      User.hasOne(models.GenderAttentionLine, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
         },
       });
 
