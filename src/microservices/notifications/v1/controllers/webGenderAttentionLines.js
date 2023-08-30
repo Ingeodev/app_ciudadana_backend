@@ -52,17 +52,17 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id, categoryId, name, phone, address, imageUri } =
       await validator.vWebPostUpdate(req.body);
@@ -80,15 +80,16 @@ exports.postEdit = async (req, res, next) => {
     const attLInDb = await db.GenderAttentionLine.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (attLInDb == null)
       throw {
-        message: "Attention line editing failure",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "Attention line not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     const resultUpdate = await attLInDb.update(dataQuery);
@@ -116,21 +117,22 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all attention lines of gender equity
+ * @param {object} req.query - Object containing the number and size
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAll = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const objPage = await validator.vWebGetListAll({
       number: req.query.page ? parseInt(req.query.page.number) : null,
@@ -138,9 +140,8 @@ exports.getListAll = async (req, res, next) => {
     });
 
     const attLinesInDb = await db.GenderAttentionLine.findAndCountAll({
-      // ! Pendiente: Validar permisos del usuario
-      where: { createdBy: createdBy.id },
-      // ! Para front es necesario los timestamps?
+      // // ! Pendiente: Validar permisos del usuario
+      // where: { createdBy: createdBy.id },
       attributes: ["id", "categoryId", "name", "phone", "address", "imageUri"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
@@ -150,8 +151,7 @@ exports.getListAll = async (req, res, next) => {
     if (attLinesInDb.count <= 0)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message:
-          "There are no an attention lines of gender equity registered in the database",
+        message: "There are no an attention lines of gender equity registered in the database",
       };
     if (attLinesInDb.rows.length <= 0)
       throw {
@@ -211,31 +211,31 @@ exports.getListAll = async (req, res, next) => {
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
     
     const { id } = await validator.vWebPostDelete(req.body);
     const attLInDb = await db.GenderAttentionLine.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (attLInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The attention line of gender equity does not exist`,
+        message: `The attention line of gender equity not found`,
       };
     }
 

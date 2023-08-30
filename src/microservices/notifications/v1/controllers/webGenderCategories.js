@@ -3,7 +3,7 @@ const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorGenderCategory.js");
 
 /**
- * Create a security category
+ * Create a gender attention lines category
  * @param {object} req - Object containing the name, imageUri, color
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
@@ -38,29 +38,29 @@ exports.postRegister = async (req, res, next) => {
     // ! Para front es necesario los timestamps?
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
-    // console.error("security category could not be created: ", error.message);
+    // console.error("gender attention lines category could not be created: ", error.message);
     return next(error);
   }
 };
 
 /**
- * Update security category
+ * Update gender attention lines category
  * @param {object} req - Object containing the id, name, imageUri, color
  * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id, name, imageUri, color } = await validator.vWebPostEdit(
       req.body
@@ -73,19 +73,20 @@ exports.postEdit = async (req, res, next) => {
       color,
     };
 
-    // Validate that the genderCategory belongs to the user
+    // Validate that the gender attention linesCategory belongs to the user
     const categoryInDb = await db.GenderCategory.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (categoryInDb == null)
       throw {
-        message: "Category editing failure",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "Category not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     const resultUpdate = await categoryInDb.update(dataQuery);
@@ -97,7 +98,7 @@ exports.postEdit = async (req, res, next) => {
       data: resultUpdate,
     });
   } catch (error) {
-    // console.error("security categories could not be updated: ", error.message);
+    // console.error("gender attention lines categories could not be updated: ", error.message);
     if (
       error &&
       error.errors &&
@@ -111,13 +112,13 @@ exports.postEdit = async (req, res, next) => {
 };
 
 /**
- * Get all security categories
- * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ * Get all gender attention lines categories
+ * @param {object} req.query - Object containing the number and size
+ * @return {object} Response contains: statuscode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
     // ! Por el momento, las categorias se pueden obtener sin importar si es de su creador o no.
-    // ! Dado que fueron creadas por el admin
     // // ! Pendiente: Validar permisos del usuario
     // const createdBy = await db.User.findOne({
     //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
@@ -136,7 +137,7 @@ exports.getAll = async (req, res, next) => {
     });
 
     const categInDb = await db.GenderCategory.findAndCountAll({
-      // ! Pendiente: Validar permisos del usuario
+      // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
       attributes: ["id", "name", "imageUri", "color"],
       limit: objPage.size,
@@ -147,7 +148,7 @@ exports.getAll = async (req, res, next) => {
     if (categInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no security categories registered in the database",
+        message: "There are no gender attention lines categories registered in the database",
       };
     }
     if (categInDb.rows.length <= 0) {
@@ -170,14 +171,14 @@ exports.getAll = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    // console.error("security categories could not be recovered: ", error.message);
+    // console.error("gender attention lines categories could not be recovered: ", error.message);
     return next(error);
   }
 };
 
 // /**
-//  * Get security category by id
-//  * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+//  * Get gender attention lines category by id
+//  * @return {object} Response contains: statuscode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
 //  */
 // exports.getOneById = async (req, res, next) => {
 //   try {
@@ -190,48 +191,48 @@ exports.getAll = async (req, res, next) => {
 //     if (categInDb === null) {
 //       throw {
 //         status: StatusCodes.NOT_FOUND,
-//         message: "Security category information could not be retrieved",
+//         message: "gender attention lines category information could not be retrieved",
 //       };
 //     }
 
 //     return res.status(StatusCodes.OK).send({ meta: null, data: categInDb });
 //   } catch (error) {
-//     // console.error("Security category could not be recovered: ", error.message);
+//     // console.error("gender attention lines category could not be recovered: ", error.message);
 //     return next(error);
 //   }
 // };
 
 /**
- * Destroy a security category (soft delete)
+ * Destroy a gender attention lines category (soft delete)
  * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id } = await validator.vWebPostDelete(req.body);
     const categInDb = await db.GenderCategory.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (categInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The security category does not exist`,
+        message: `The gender attention lines category does not exist`,
       };
     }
 
