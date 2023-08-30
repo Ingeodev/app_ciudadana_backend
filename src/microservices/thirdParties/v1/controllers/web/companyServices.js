@@ -10,17 +10,17 @@ const validator = require("../../../utils/validators/web/companyServices.js");
  */
 exports.postServices = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found.",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found.",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { services } = await validator.vWebPostServices(req.body);
 
@@ -28,15 +28,16 @@ exports.postServices = async (req, res, next) => {
     const company = await db.ThirdPartyCompany.findOne({
       where: {
         id: services[0].companyId,
-        createdBy: createdBy.id,
+        // createdBy: createdBy.id,
       },
       attributes: ["id"],
     });
 
     if (company == null || company.id == null)
       throw {
-        message: "The company does not belong to you",
-        status: StatusCodes.FORBIDDEN,
+        message: "The company not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.FORBIDDEN,
       };
 
     const result = await db.ThirdPartyService.bulkCreate(services);
@@ -66,17 +67,17 @@ exports.postServices = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found.",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found.",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id, service, companyId } = await validator.vWebPostEdit(req.body);
 
@@ -84,15 +85,16 @@ exports.postEdit = async (req, res, next) => {
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
         id: companyId,
-        createdBy: createdBy.id,
+        // createdBy: createdBy.id,
       },
       attributes: ["id"],
     });
 
     if (companyInDb == null || companyInDb.id == null)
       throw {
-        message: "The company does not belong to you",
-        status: StatusCodes.FORBIDDEN,
+        message: "The company not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.FORBIDDEN,
       };
 
     // Validate that the service belongs to the user
@@ -105,8 +107,9 @@ exports.postEdit = async (req, res, next) => {
 
     if (serviceInDb == null)
       throw {
-        message: "Service editing failure",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "Service not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     // const serviceInDb = await db.ThirdPartyCategory.findByPk(id);
@@ -131,21 +134,22 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Destroy a service company (soft delete)
+ * @param {object} req - Object containing the id, companyId
  * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found.",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found.",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id, companyId } = await validator.vWebPostDelete(req.body);
 
@@ -153,15 +157,16 @@ exports.postDelete = async (req, res, next) => {
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
         id: companyId,
-        createdBy: createdBy.id,
+        // createdBy: createdBy.id,
       },
       attributes: ["id"],
     });
 
     if (companyInDb == null || companyInDb.id == null)
       throw {
-        message: "The company does not belong to you",
-        status: StatusCodes.FORBIDDEN,
+        message: "The company not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.FORBIDDEN,
       };
 
     // Validate that the service belongs to the company
@@ -174,8 +179,9 @@ exports.postDelete = async (req, res, next) => {
 
     if (serviceInDb == null)
       throw {
-        message: "Service deleting failure",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "Service not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     await serviceInDb.destroy();

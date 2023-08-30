@@ -91,17 +91,17 @@ exports.postGeocoding = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const {
       id,
@@ -137,15 +137,16 @@ exports.postEdit = async (req, res, next) => {
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (companyInDb == null)
       throw {
-        message: "Company editing failure",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "Company not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
@@ -177,17 +178,17 @@ exports.postEdit = async (req, res, next) => {
  */
 exports.getProfile = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const { id } = await validator.vWebGetProfile({
       id: parseInt(req.params.id),
@@ -197,15 +198,16 @@ exports.getProfile = async (req, res, next) => {
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (companyInDb == null)
       throw {
         message: "Company could not be retrieved",
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     // Get company services
@@ -241,31 +243,31 @@ exports.getProfile = async (req, res, next) => {
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
 
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
     
     const { id } = await validator.vWebPostDelete(req.body);
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
         id,
-        // ! Pendiente: Validar permisos del usuario
-        createdBy: createdBy.id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
       },
     });
 
     if (companyInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `Company does not exist`,
+        message: `Company does not found`,
       };
     }
 
