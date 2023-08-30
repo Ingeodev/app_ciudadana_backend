@@ -1,3 +1,5 @@
+const path = require('path');
+
 const { StatusCodes } = require('http-status-codes');
 const xlsx = require('node-xlsx');
 
@@ -54,7 +56,38 @@ const postUploadXlsxDependencies = async (req, res, next) => {
     }
 };
 
+const getDownloadXlsxDependencies = async (req, res, next) => {
+    try {
+        const excelData = [['ID Único', 'Nombre Dependencia']];
+        const dependencies = await db.Dependency.findAll();
+        dependencies.forEach(element => {
+            excelData.push([element.id, element.name]);
+        });
+        const fileBuffer = xlsx.build([{ name: 'Lista de dependencias', data: excelData }]);;
+        // Set the response headers to indicate an attachment
+        res.setHeader('Content-Disposition', 'attachment; filename=Dependencias.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        return res.status(StatusCodes.OK)
+            .send(fileBuffer);
+    } catch (error) {
+        return next(error);
+    }
+};
+
+const getDownloadXlsxTemplate = async (req, res, next) => {
+    try {
+        const downloadPath = path.resolve(path.join(".", "static", "Plantilla Dependencias.xlsx"));
+        return res.status(StatusCodes.OK)
+            .sendFile(downloadPath);
+    } catch (error) {
+        console.error(error);
+        return next({ status: StatusCodes.NOT_FOUND, message: 'The excel template has not been loaded.' });
+    }
+};
+
 
 module.exports = {
-    postUploadXlsxDependencies
+    postUploadXlsxDependencies,
+    getDownloadXlsxDependencies,
+    getDownloadXlsxTemplate,
 };

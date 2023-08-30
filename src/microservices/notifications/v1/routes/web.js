@@ -243,6 +243,12 @@ router.post(
 // List All dependencies (WEB).
 // router.get('/dependencies', dependenciesController.getAllDependencies);
 
+// Get dependencies excel template (WEB).
+router.get('/dependencies/template', dependenciesController.getDownloadXlsxTemplate);
+
+// Get dependencies excel list (WEB).
+router.get('/dependencies/excel', dependenciesController.getDownloadXlsxDependencies);
+
 // Upload excel file with dependencies.
 router.post('/dependencies/excel',
   uploadSingleExcel.single('file'),
