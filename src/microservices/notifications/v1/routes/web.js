@@ -13,7 +13,9 @@ const alertController = require('../controllers/webAlert');
 const socialNetworkController = require('../controllers/webSocialNetwork');
 const reportController = require("../controllers/webReports");
 const dependenciesController = require("../controllers/webDependencies");
-const mobileServiceController = require('../controllers/webMobileService');
+const mobileServiceController = require("../controllers/webMobileService");
+const genderCategoryC = require("../controllers/webGenderCategories");
+const genderAttLineC = require("../controllers/webGenderAttentionLines");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -109,6 +111,56 @@ router.get(
   securityCatController.getOneById
 );
 //#endregion
+
+//#region Gender Attention Lines end-points
+router.post(
+  "/gender_line/",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttLineC.postRegister
+);
+
+router.post(
+  "/gender_line/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttLineC.postEdit
+);
+
+router.post(
+  "/gender_line/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttLineC.postDelete
+);
+
+router.get(
+  "/gender_line",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttLineC.getListAll
+);
+
+router.post(
+  "/gender_line_category/",
+  // hasPermissions({ role: "super_master_user" }),
+  genderCategoryC.postRegister
+);
+
+router.post(
+  "/gender_line_category/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  genderCategoryC.postEdit
+);
+
+router.post(
+  "/gender_line_category/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  genderCategoryC.postDelete
+);
+
+router.get(
+  "/gender_line_category",
+  // hasPermissions({ role: "super_master_user" }),
+  genderCategoryC.getAll
+);
+//#endregion - Gender Attention Lines
 
 //#region Reports end-points
 // Retrieve all the reports by user.
