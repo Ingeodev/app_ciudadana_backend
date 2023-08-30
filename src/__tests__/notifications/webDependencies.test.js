@@ -6,7 +6,7 @@ const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifica
 const sleepNow = async (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 describe("WEB Dependencies configuration API points: ", () => {
-    jest.setTimeout(8000);
+    jest.setTimeout(10000);
 
     const requestHeaders = {
         Authorization: "Bearer ",
@@ -77,10 +77,30 @@ describe("WEB Dependencies configuration API points: ", () => {
             expect(response1.body.data[1]).toEqual(expect.objectContaining(xlsContent[1]));
         });
 
+        test("should have deleted objects that are not present in the last create", async () => {
+            const response0 = await request(usedHost).get('/dependencies').set(requestHeaders);
+            expect(response0.statusCode).toBe(200);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual(expect.any(Array));
+            expect(response0.body.data.length).toBe(2);
+            const receiveExpect = xlsContent.map(item => expect.objectContaining(item));
+            expect(response0.body.data).toEqual(expect.arrayContaining(receiveExpect));
+        });
+
         test("should respond with status 201 and the updated objects in data if objects already exist.", async () => {
             const response0 = await request(usedHost).post('/dependencies/excel').set(requestHeaders)
                 .attach('file', updateXlsx);
             expect(response0.statusCode).toBe(201);
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toEqual(expect.any(Array));
+            expect(response0.body.data.length).toBe(3);
+            const updateExpect = updateContent.map(item => expect.objectContaining(item));
+            expect(response0.body.data).toEqual(expect.arrayContaining(updateExpect));
+        });
+
+        test("should have reactivated previously deleted objects that are present in the last create", async () => {
+            const response0 = await request(usedHost).get('/dependencies').set(requestHeaders);
+            expect(response0.statusCode).toBe(200);
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toEqual(expect.any(Array));
             expect(response0.body.data.length).toBe(3);
@@ -162,6 +182,41 @@ describe("WEB Dependencies configuration API points: ", () => {
 
         test("should fail with error 401 and a message if Authorization header is not set.", async () => {
             const response0 = await request(usedHost).post('/dependencies/excel');
+            expect(response0.statusCode).toBe(401);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 401);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
+    });
+
+    describe("GET /notifications/dependencies/excel ", () => {
+        test("should respond with status 200 and an array of objects with: .", async () => {
+            const response0 = await request(usedHost).get('/dependencies/excel').set(requestHeaders);
+            expect(response0.statusCode).toBe(200);
+            expect(response0.headers).toHaveProperty("content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            expect(response0.headers).toHaveProperty("content-disposition", "attachment; filename=Dependencias.xlsx");
+        });
+
+        test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+            const response0 = await request(usedHost).get('/dependencies/excel');
+            expect(response0.statusCode).toBe(401);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 401);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
+    });
+
+    describe("GET /notifications/dependencies/template ", () => {
+        test("should respond with status 200 and an array of objects with: .", async () => {
+            const response0 = await request(usedHost).get('/dependencies/template').set(requestHeaders);
+            expect(response0.statusCode).toBe(200);
+            expect(response0.headers).toHaveProperty("content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        });
+
+        test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+            const response0 = await request(usedHost).get('/dependencies/template');
             expect(response0.statusCode).toBe(401);
             expect(response0.body).not.toHaveProperty("data");
             expect(response0.body).toHaveProperty("status", 401);
