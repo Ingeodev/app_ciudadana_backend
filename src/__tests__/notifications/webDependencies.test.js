@@ -18,7 +18,7 @@ describe("WEB Dependencies configuration API points: ", () => {
     const creationXls = path.join(filesPath, 'Plantilla Dependencias OLD.xls');
     const updateXlsx = path.join(filesPath, 'Modifica Dependencias.xlsx');
     const validXlsx0 = path.join(filesPath, 'validTest0.xlsx');
-    const validXlsx1 = path.join(filesPath, 'validTest1.xlsx');
+    const initialDependencies = path.join(filesPath, 'DependenciasIniciales.xlsx');
     const badXlsx0 = path.join(filesPath, 'Modifica Dep Mal 0.xlsx');
     const badXlsx1 = path.join(filesPath, 'Modifica Dep Mal 1.xlsx');
     const badXlsx2 = path.join(filesPath, 'Modifica Dep Mal 2.xlsx');
@@ -55,6 +55,12 @@ describe("WEB Dependencies configuration API points: ", () => {
             .send(global.firebaseTestWebUserLogin);
         requestHeaders.Authorization += firebaseAuth.body.idToken;
         // console.log(requestHeaders);
+    });
+
+    afterAll(async () => {
+        // Load the initial dependencies.
+        await request(usedHost).post('/dependencies/excel').set(requestHeaders)
+                .attach('file', initialDependencies);
     });
 
     describe("POST /notifications/dependencies/excel ", () => {
