@@ -9,6 +9,7 @@ const alertController = require("../controllers/mobileAlert");
 const socialNetworkController = require("../controllers/mobileSocialNetwork");
 const reportController = require("../controllers/mobileReports");
 const mobileServiceController = require("../controllers/mobileMobileService");
+const dependenciesController = require("../controllers/mobileDependencies");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -21,12 +22,14 @@ router.get('/publicity/', publicityController.getUncategorized);
 router.get('/publicity/banners', publicityController.getCategorized);
 //#endregion
 
-// Retrieve the attention_lines with a category attached.
+//#region Dependencies end-points
+// Retrieve up to 500 dependencies.
 router.get(
-  "/attention_lines/dependencies",
+  "/attention_lines/dependencies",        // This link style is due to the Swagger (2023-08-31)
   // hasPermissions({ role: "super_master_user" }),
-  attentionController.getDependencies
+  dependenciesController.getDependencies
 );
+//#endregion
 
 // router.post(
 //   "/attention_lines/pqrsdf",
