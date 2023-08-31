@@ -51,6 +51,11 @@ router.post('/advertisementCategory/edit', advertisementCategoryController.postE
 router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
 //#endregion
 
+//#region Reports end-points
+// Retrieve all the reports by user.
+router.get('/security/reports', reportController.getListAllByUser);
+//#endregion
+
 //#region Security end-points
 router.post(
   "/security/",
@@ -161,11 +166,6 @@ router.get(
   genderCategoryC.getAll
 );
 //#endregion - Gender Attention Lines
-
-//#region Reports end-points
-// Retrieve all the reports by user.
-router.get('/security/reports', reportController.getListAllByUser);
-//#endregion
 
 //#region Alerts end-points
 router.post('/alert', alertController.sendAlerts);

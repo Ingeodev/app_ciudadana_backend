@@ -9,7 +9,7 @@ const { Sequelize } = require("sequelize");
  */
 exports.getListAllByUser = async (req, res, next) => {
   try {
-    const objPage = await validator.vWebGetListAllByUser({
+    const objPage = await validator.vMobileGetListAllClosest({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
