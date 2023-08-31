@@ -45,6 +45,14 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_GET_ All Alerts](#get-all-alerts)
         - [_POST_ Send Alert](#post-send-alert)
       - [4.2.7. Reports](#427-reports)
+        - [_GET_ Closest Reports (mobile)](#get-closest-reports-mobile)
+        - [_POST_ Register Report (mobile)](#post-register-report-mobile)
+        - [_GET_ User Reports (web)](#get-user-reports-web)
+      - [4.2.8. Dependencies](#428-dependencies)
+        - [_POST_ upload dependencies excel](#post-upload-dependencies-excel)
+        - [_GET_ list dependencies](#get-list-dependencies)
+        - [_GET_ download dependencies Excel file](#get-download-dependencies-excel-file)
+        - [_GET_ download dependencies template file](#get-download-dependencies-template-file)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
     - [4.4. File Management Microservice](#44-file-management-microservice)
       - [App Runner](#app-runner-2)
@@ -822,18 +830,18 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 	Controller: src\microservices\notifications\v1\controllers\mobileReports.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 
-| Endpoint  | Method | Location in Controller | Description          |
-| :-------- | :----- | :--------------------- | :------------------- |
-| /security/reports         | GET    | getListAllClosest      | Get closest reports  |
-| /security/reports | POST   | postRegister           | Create report        |
+| Endpoint          | Method | Location in Controller | Description         |
+| :---------------- | :----- | :--------------------- | :------------------ |
+| /security/reports | GET    | getListAllClosest      | Get closest reports |
+| /security/reports | POST   | postRegister           | Create report       |
 
 ##### _GET_ Closest Reports (mobile)
 \(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
 
-| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
-|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
-| _lat_    | Float   |      Yes      | Latitude where incident was reported.      |
-| _lon_     | Float   |      Yes      | Longitude where incident was reported.      |
+| **Name** | **Type** | **Required** | **Description**                        |
+| -------- | :------: | :----------: | -------------------------------------- |
+| _lat_    |  Float   |     Yes      | Latitude where incident was reported.  |
+| _lon_    |  Float   |     Yes      | Longitude where incident was reported. |
 
 It returns **200 _OK_** and the list of objects on success.
 
@@ -863,14 +871,14 @@ It returns **200 _OK_** and the list of objects on success.
 ##### _POST_ Register Report (mobile)
 \(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
 
-| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
-|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
-| _title_     | String  |      Yes      | Report title.      |
-| _description_     | String  |      No      | Report description.     |
-| _securityCategoryId_     | Integer  |      Yes      | Security category identifier.      |
-| _imageUri_    | String (URI)  |      Yes      | URL to an image to show in the report.      |
-| _lat_    | Float   |      Yes      | Latitude where incident was reported.      |
-| _lon_     | Float   |      Yes      | Longitude where incident was reported.      |
+| **Name**             |   **Type**   | **Required** | **Description**                        |
+| -------------------- | :----------: | :----------: | -------------------------------------- |
+| _title_              |    String    |     Yes      | Report title.                          |
+| _description_        |    String    |      No      | Report description.                    |
+| _securityCategoryId_ |   Integer    |     Yes      | Security category identifier.          |
+| _imageUri_           | String (URI) |     Yes      | URL to an image to show in the report. |
+| _lat_                |    Float     |     Yes      | Latitude where incident was reported.  |
+| _lon_                |    Float     |     Yes      | Longitude where incident was reported. |
 
 It returns **201 _created_** and the created object on success.
 
@@ -913,17 +921,17 @@ Response:
   Controller: src\microservices\notifications\v1\controllers\webReports.js
   Route: src\microservices\notifications\v1\routes\web.js
 
-| Endpoint  | Method | Location in Controller | Description          |
-| :-------- | :----- | :--------------------- | :------------------- |
-| /security/reports         | GET    | getListAllByUser      | Get reports by user identifier  |
+| Endpoint          | Method | Location in Controller | Description                    |
+| :---------------- | :----- | :--------------------- | :----------------------------- |
+| /security/reports | GET    | getListAllByUser       | Get reports by user identifier |
 
 ##### _GET_ User Reports (web)
 \(\<Your_Host\>/web/v1/notifications/security/reports\) allows web users to list its own reports from the database. It receives the following query parameters:
 
-| **Name**      |   **Type**    | **Required**  | **Description**                                                   |
-|-------------- |:------------: |:------------: |------------------------------------------------------------------ |
-| _page[number]_      | Integer (positive)  |      No       | Page number for pagination.                                 |
-| _page[size]_  |    Integer (positive)     |      No       | Page size for pagination.   |
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |      No      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |      No      | Page size for pagination.   |
 
 If one of the query parameters (`page[number]` or `page[size]`) is present, the other becomes mandatory.
 
@@ -951,6 +959,94 @@ It returns **200 _OK_** and the list of objects on success.
 >     ]
 > }
 > ```
+
+#### 4.2.8. Dependencies 
+
+The Dependencies end-points allow web users to manage the dependencies shown to mobile users when they create a new PQRS.
+
+##### _POST_ upload dependencies excel
+\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to upload an excel (xls or xlsx) file in the specified format (id - name) with the dependencies that should appear in the PQRSs services. It receives the following **form** parameter:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _file_   	| file 	|      Yes     	| Excel (xls or xlsx) file that contains ALL the dependencies.   	|
+
+It returns **201 _created_** and the created dependencies on success.
+
+**Example Response**
+
+> _Status code: **201 Created**_
+> ```JSON
+> {
+>     "data": [
+>         {
+>             "id": 0,
+>             "name": "Primer ejemplo de Dependencia de prueba",
+>             "createdAt": "2023-08-29T19:26:21.098Z",
+>             "updatedAt": "2023-08-30T21:35:19.477Z"
+>         },
+>         {
+>             "id": 1,
+>             "name": "Segunda dependencia de prueba",
+>             "createdAt": "2023-08-01T02:50:00.000Z",
+>             "updatedAt": "2023-08-30T21:35:19.477Z"
+>         }
+>     ]
+> }
+> ```
+
+##### _GET_ list dependencies
+\(\<Your_Host\>/web/v1/notifications/dependencies/\) allows web users to list the existing dependencies in the database. It receives the following query parameters:
+
+| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
+|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
+| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
+| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 30,
+>         "totalRecords": 3,
+>         "totalPages": 1
+>     },
+>     "data": [
+>         {
+>             "id": 0,
+>             "name": "Primero",
+>             "createdAt": "2023-08-29T19:26:21.098Z",
+>             "updatedAt": "2023-08-30T22:11:44.235Z"
+>         },
+>         {
+>             "id": 2,
+>             "name": "Tercero",
+>             "createdAt": "2023-08-01T02:55:00.000Z",
+>             "updatedAt": "2023-08-30T22:11:44.235Z"
+>         },
+>         {
+>             "id": 1,
+>             "name": "Segundo",
+>             "createdAt": "2023-08-01T02:50:00.000Z",
+>             "updatedAt": "2023-08-30T22:11:44.235Z"
+>         }
+>     ]
+> }
+> ```
+
+##### _GET_ download dependencies Excel file
+\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file with all the existing dependencies in the database. It receives no query parameters.
+
+It returns **200 _OK_** and the dependencies XLSX file on success.
+
+##### _GET_ download dependencies template file
+\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
+
+It returns **200 _OK_** and the template XLSX file on success.
 
 ------------
 ### 4.3. Third-Party Microservice
