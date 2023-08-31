@@ -39,12 +39,6 @@ router.post(
 );
 
 router.post(
-  "/company/geocoding",
-  // hasPermissions({ role: "super_master_user" }),
-  companyController.postGeocoding
-);
-
-router.post(
   "/company/edit",
   // hasPermissions({ role: "super_master_user" }),
   companyController.postEdit

@@ -2,7 +2,6 @@ const { StatusCodes } = require("http-status-codes");
 const { Sequelize } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companies.js");
-// const geocoding = require("../../../../../utils/geocoding.js");
 
 /**
  * Create a company
@@ -49,37 +48,6 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("company could not be created: ", error.message);
-    return next(error);
-  }
-};
-
-/**
- * Obtain the coordinates (latitude and longitude) of a street address.
- * @param {object} req - Object containing the address (string)
- * @return {object} Response contains: statuscode (integer), json (object): latitude (lat), longitude (lon), type, and address, if 200OK. Or if there's error, json (object): status, code, detail
- */
-exports.postGeocoding = async (req, res, next) => {
-  try {
-    return res
-      .status(StatusCodes.OK)
-      .json({ meta: null, data: "Endpoint under construction" });
-    const { address } = await validator.vWebPostGeocoding(req.body);
-    // const geocode = await geocoding.getGeocodingGoogle(address);
-    // const geocode = await geocoding.getGeocodingHere(address);
-    // const geocode = await geocoding.getGeocodingMapbox(address);
-
-    if (geocode.status) {
-      throw {
-        status: geocode.status,
-        message: geocode.detail,
-      };
-    }
-
-    return res
-      .status(StatusCodes.OK)
-      .json({ meta: { length: geocode.length }, data: geocode });
-  } catch (error) {
-    // console.error("The address could not be geocoded: ", error.message);
     return next(error);
   }
 };
@@ -174,7 +142,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get the data of company and your services - to profile 
- * @return {object} Response contains: statuscode (integer), json (object): data ThirdParty categories. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (object): company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
   try {

@@ -57,7 +57,6 @@ _meta
 src/account_service_key*
 src/email_service_key.json
 src/account_service_key.json
-src/maps_service_key.json
 
 #
 src/uploads/*

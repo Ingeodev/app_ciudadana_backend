@@ -12,9 +12,7 @@
   "author": "restebance",
   "license": "ISC",
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^3.3.36",
     "@sendgrid/mail": "^7.7.0",
-    "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
