@@ -49,6 +49,7 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_POST_ Register Report (mobile)](#post-register-report-mobile)
         - [_GET_ User Reports (web)](#get-user-reports-web)
       - [4.2.8. Dependencies](#428-dependencies)
+        - [_GET_ list dependencies (MOBILE)](#get-list-dependencies-mobile)
         - [_POST_ upload dependencies excel](#post-upload-dependencies-excel)
         - [_GET_ list dependencies](#get-list-dependencies)
         - [_GET_ download dependencies Excel file](#get-download-dependencies-excel-file)
@@ -630,10 +631,9 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 	Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines
 	Controller: src\microservices\notifications\v1\controllers\mobileAttentionLines.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
-| Endpoint                      | Method | Location in Controller | Description                                 |
-| :---------------------------- | :----- | :--------------------- | :------------------------------------------ |
-| /attention_lines              | GET    | getListAll             | Get all attention lines                     |
-| /attention_lines/dependencies | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
+| Endpoint         | Method | Location in Controller | Description             |
+| :--------------- | :----- | :--------------------- | :---------------------- |
+| /attention_lines | GET    | getListAll             | Get all attention lines |
 
 ##### Web App
 	Path: http:localhost:3000/api/web/v1/notifications/attention_lines
@@ -964,12 +964,69 @@ It returns **200 _OK_** and the list of objects on success.
 
 The Dependencies end-points allow web users to manage the dependencies shown to mobile users when they create a new PQRS.
 
+**Mobile App**
+Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines/dependencies
+Controller: src\microservices\notifications\v1\controllers\mobileDependencies.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller | Description                                 |
+| :------- | :----- | :--------------------- | :------------------------------------------ |
+| /        | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
+
+##### _GET_ list dependencies (MOBILE)
+\(\<Your_Host\>/mobile/v1/notifications/dependencies/\) llows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
+
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |      No      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |      No      | Page size for pagination.   |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "id": 9,
+>         "name": "DEPARTAMENTO ADMINISTRATIVO DE CONTRATACION PUBLICA"
+>     },
+>     {
+>         "id": 4,
+>         "name": "DEPARTAMENTO ADMINISTRATIVO DE CONTROL DISCIPLINARIO INTERNO"
+>     },
+>     {
+>         "id": 3,
+>         "name": "DEPARTAMENTO ADMINISTRATIVO DE CONTROL INTERNO"
+>     },
+>     {
+>         "id": 10,
+>         "name": "DEPARTAMENTO ADMINISTRATIVO DE DESARROLLO E INNOVACION INSTITUCIONAL"
+>     },
+>     {
+>         "id": 7,
+>         "name": "DEPARTAMENTO ADMINISTRATIVO DE GESTION DE MEDIO AMBIENTE"
+>     }
+> ]
+> ```
+
+**Web App**
+Path: http:localhost:3000/api/web/v1/notifications/dependencies
+Controller: src\microservices\notifications\v1\controllers\webDependencies.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint  | Method | Location in Controller      | Description                                   |
+| :-------- | :----- | :-------------------------- | :-------------------------------------------- |
+| /excel    | POST   | postUploadXlsxDependencies  | Upload excel file with dependencies           |
+| /         | GET    | getAllDependencies          | Get paginated dependencies list               |
+| /excel    | GET    | getDownloadXlsxDependencies | Download all dependencies in excel            |
+| /template | GET    | getDownloadXlsxTemplate     | Download template excel file for dependencies |
+
 ##### _POST_ upload dependencies excel
 \(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to upload an excel (xls or xlsx) file in the specified format (id - name) with the dependencies that should appear in the PQRSs services. It receives the following **form** parameter:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _file_   	| file 	|      Yes     	| Excel (xls or xlsx) file that contains ALL the dependencies.   	|
+| **Name** | **Type** | **Required** | **Description**                                              |
+| :------- | :------- | :----------- | :----------------------------------------------------------- |
+| _file_   | file     | Yes          | Excel (xls or xlsx) file that contains ALL the dependencies. |
 
 It returns **201 _created_** and the created dependencies on success.
 
@@ -1044,7 +1101,7 @@ It returns **200 _OK_** and the list of objects on success.
 It returns **200 _OK_** and the dependencies XLSX file on success.
 
 ##### _GET_ download dependencies template file
-\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
+\(\<Your_Host\>/web/v1/notifications/dependencies/template/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
 
 It returns **200 _OK_** and the template XLSX file on success.
 
