@@ -3,6 +3,7 @@ const { Sequelize } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/mobile/companies.js");
 
+
 /**
  * Get all companies with your services
  * @param {object} req.query - Object containing the number and size
@@ -23,16 +24,20 @@ exports.getCompaniesnServices = async (req, res, next) => {
     //   };
 
     const objPage = await validator.vMobileGetCompaniesServices({
+      lat: req.query.lat,
+      lon: req.query.lon,
       number: req.query.page ? parseInt(req.query.page.number) : 1,
       size: req.query.page ? parseInt(req.query.page.size) : 100,
     });
+
+    const refPoint = Sequelize.literal(`ST_GeomFromText('POINT(${objPage.lon} ${objPage.lat})')`);
 
     const companiesInDb = await db.ThirdPartyCompany.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
-      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      order: Sequelize.literal(`ST_Distance(geolocation, ${refPoint.val}) ASC`),
       include: [
         {
           model: db.ThirdPartyCategory,
@@ -41,15 +46,32 @@ exports.getCompaniesnServices = async (req, res, next) => {
         },
         {
           model: db.ThirdPartyService,
-          attributes: ["id", "service", "companyId", "createdAt", "updatedAt"],
+          attributes: ["service"],
           required: false,
         },
       ],
       attributes: {
-        exclude: ["createdBy", "geolocation", "deletedAt"],
-        // include: [
-        //   [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
-        // ],
+        exclude: [
+          "id",
+          "nit",
+          "createdBy",
+          "siteUri",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+          "imageUri",
+        ],
+        include: [
+          "geolocation",
+          "name",
+          "description",
+          "address",
+          "phone",
+          ["imageUri", "image"],
+          // [db.Sequelize.col("imageUri"), "image"],
+          "lat",
+          "lon",
+        ],
       },
     });
 
@@ -65,11 +87,12 @@ exports.getCompaniesnServices = async (req, res, next) => {
       };
     
     const transformedCompanies = companiesInDb.rows.map((company) => {
-      const companyData = company.get({ plain: true }); // Convertir instancia de Sequelize a objeto simple
+      const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
       const categoryName = companyData.ThirdPartyCategory.name;
-      delete companyData.ThirdPartyCategory; // Eliminar el objeto ThirdPartyCategory
-      const services = companyData.ThirdPartyServices;
-      delete companyData.ThirdPartyServices; // Eliminar el objeto ThirdPartyServices
+      delete companyData.ThirdPartyCategory;
+      const services = companyData.ThirdPartyServices.map((obj) => obj.service);
+      delete companyData.ThirdPartyServices;
+      delete companyData.geolocation;
 
       return {
         ...companyData,
