@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require("sequelize");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorGenderAttentionLine.js");
 
@@ -142,10 +143,20 @@ exports.getListAll = async (req, res, next) => {
     const attLinesInDb = await db.GenderAttentionLine.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
-      attributes: ["id", "categoryId", "name", "phone", "address", "imageUri"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      include: [
+        {
+          model: db.GenderCategory,
+          attributes: [],
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ["createdBy", "deletedAt"],
+        include: [[Sequelize.col('"GenderCategory"."name"'), "categoryName"]],
+      },
     });
 
     if (attLinesInDb.count <= 0)
