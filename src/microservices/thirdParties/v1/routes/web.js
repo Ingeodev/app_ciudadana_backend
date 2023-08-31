@@ -50,6 +50,12 @@ router.get(
   companyController.getProfile
 );
 
+router.get(
+  "/company/",
+  // hasPermissions({ role: "super_master_user" }),
+  companyController.getAll
+);
+
 router.post(
   "/company/delete",
   // hasPermissions({ role: "super_master_user" }),

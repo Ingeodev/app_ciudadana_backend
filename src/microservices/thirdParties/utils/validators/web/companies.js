@@ -37,6 +37,11 @@ const getProfile = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
 });
 
+const getListAllSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
+
 const postDeleteSchema = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
 });
@@ -68,6 +73,9 @@ module.exports = {
   },
   vWebGetProfile: async (inputData) => {
     return await use_validator_on_data(getProfile, inputData);
+  },
+  vWebGetListAll: async (inputData) => {
+    return await use_validator_on_data(getListAllSchema, inputData);
   },
   vWebPostDelete: async (inputData) => {
     return await use_validator_on_data(postDeleteSchema, inputData);
