@@ -169,6 +169,19 @@ exports.getProfile = async (req, res, next) => {
         // // ! Pendiente: Validar permisos del usuario
         // createdBy: createdBy.id,
       },
+      include: [
+        {
+          model: db.ThirdPartyCategory,
+          attributes: [],
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ["createdBy", "geolocation", "deletedAt"],
+        include: [
+          [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
+        ],
+      },
     });
 
     if (companyInDb == null)
@@ -180,9 +193,7 @@ exports.getProfile = async (req, res, next) => {
 
     // Get company services
     const servicesInDb = await db.ThirdPartyService.findAndCountAll({
-      where: {
-        companyId: companyInDb.id,
-      },
+      where: { companyId: companyInDb.id },
       attributes: ["id", "service", "companyId", "createdAt", "updatedAt"],
     });
 
