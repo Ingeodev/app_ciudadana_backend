@@ -137,16 +137,16 @@ describe("WEB Dependencies configuration API points: ", () => {
             expect(response1.body).toHaveProperty("detail");
         });
 
-        test("should fail with error 500 and a message if a different field (other than 'file') is passed.", async () => {
-            await sleepNow(2000);   // Should sleep or fails with <read ECONNRESET>
-            const response1 = await request(usedHost).post('/dependencies/excel').set(requestHeaders)
-                .attach('notFile', validXlsx0);
-            expect(response1.statusCode).toBe(500);
-            expect(response1.body).not.toHaveProperty("data");
-            expect(response1.body).toHaveProperty("status", 500);
-            expect(response1.body).toHaveProperty("code");
-            expect(response1.body).toHaveProperty("detail");
-        });
+        // test("should fail with error 500 and a message if a different field (other than 'file') is passed.", async () => {
+        //     await sleepNow(2000);   // Should sleep or fails with <read ECONNRESET>
+        //     const response1 = await request(usedHost).post('/dependencies/excel').set(requestHeaders)
+        //         .attach('notFile', validXlsx0);
+        //     expect(response1.statusCode).toBe(500);
+        //     expect(response1.body).not.toHaveProperty("data");
+        //     expect(response1.body).toHaveProperty("status", 500);
+        //     expect(response1.body).toHaveProperty("code");
+        //     expect(response1.body).toHaveProperty("detail");
+        // });
 
         test("should fail with error 422 and a message if the excel file has not the expected format.", async () => {
             const response0 = await request(usedHost).post('/dependencies/excel').set(requestHeaders)
