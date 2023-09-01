@@ -174,7 +174,7 @@ exports.postDelete = async (req, res, next) => {
       };
     }
 
-    if (categInDb.Reports != null)
+    if (categInDb.Reports.length != 0)
       throw {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
         message: "The category has related reports",
