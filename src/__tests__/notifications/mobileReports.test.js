@@ -1,6 +1,6 @@
 const request = require("supertest");
 
-const usedHost = `${global.notificationsMicroserviceLocalHost}/mobile/v1/notifications/security/reports`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/mobile/v1/notifications/security/reports`;
 describe("Mobile - Reports management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -11,7 +11,7 @@ describe("Mobile - Reports management API points: ", () => {
   const testReport0 = {
     title: "report title 1", 
     description: "report description 1", 
-    securityCategoryId: 11, 
+    securityCategoryId: 3, 
     userId: 6, 
     imageUri: "http://image/uri_1.jpg", 
     lat: 3.347622, 
@@ -21,8 +21,7 @@ describe("Mobile - Reports management API points: ", () => {
   const testReport1 = {
     title: "Reporte de Siniestro", 
     description: "El siniestro se registró cerca al estadio", 
-    securityCategoryId: 11, 
-    userId: 6, 
+    securityCategoryId: 3, 
     imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
     lat: 3.345678, 
     lon: -76.535812
@@ -30,8 +29,7 @@ describe("Mobile - Reports management API points: ", () => {
 
   const testReport2 = {
     description: "descripción del siniestro", 
-    securityCategoryId: 11, 
-    userId: 6, 
+    securityCategoryId: 3, 
     imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
     lat: 3.345678, 
     lon: -76.535812
@@ -40,7 +38,6 @@ describe("Mobile - Reports management API points: ", () => {
   const testReport3 = {
     title: "Reporte de Siniestro", 
     description: "El siniestro se registró cerca al estadio", 
-    userId: 6, 
     imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
     lat: 3.345678, 
     lon: -76.535812
@@ -49,8 +46,7 @@ describe("Mobile - Reports management API points: ", () => {
   const testReport4 = {
     title: "Reporte de Siniestro", 
     description: "El siniestro se registró cerca al estadio", 
-    securityCategoryId: 11, 
-    userId: 6, 
+    securityCategoryId: 3, 
     lat: 3.345678, 
     lon: -76.535812
   };
@@ -324,7 +320,7 @@ describe("Mobile - Reports management API points: ", () => {
     //   "detail": "insert or update on table violates foreign key constraint",
     //   "code": "Internal Server Error"
     // }
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+    test("should fail with status 404 and an error with a message if securityCategoryId is valid but does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -332,26 +328,12 @@ describe("Mobile - Reports management API points: ", () => {
           ...testReport1,
           securityCategoryId: -999,
         });
-      expect(response0.statusCode).toBe(500);
+      expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("status", 404);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
-
-      const response1 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testReport1,
-          userId: -999,
-        });
-      expect(response1.statusCode).toBe(500);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 500);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
     });
 
     // {
