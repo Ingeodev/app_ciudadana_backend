@@ -178,7 +178,7 @@ exports.postDelete = async (req, res, next) => {
     if (categInDb.ThirdPartyCompanies != 0)
       throw {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
-        message: `Category has related companies.`,
+        message: `Category has related companies`,
       };
 
     await categInDb.destroy();

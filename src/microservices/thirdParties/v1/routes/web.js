@@ -30,6 +30,11 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   categoryController.getOneById
 );
+router.post(
+  "/categories/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  categoryController.postDelete
+);
 //#endregion - Categories
 
 // * ------------------ Company -----------------------------
