@@ -255,7 +255,10 @@ exports.getAll = async (req, res, next) => {
       ],
       attributes: {
         exclude: ["createdBy", "geolocation", "deletedAt"],
-        include: [[Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"]],
+        include: [
+          [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
+          [Sequelize.col('"ThirdPartyCategory"."color"'), "categoryColor"],
+        ],
       },
     });
 
