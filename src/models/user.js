@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      User.hasMany(models.TransportCompany, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
       User.hasMany(models.GenderCategory, {
         foreignKey: {
           name: "createdBy",

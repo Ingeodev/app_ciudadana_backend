@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const categoryController = require("../controllers/web/categories.js");
 const companyController = require("../controllers/web/companies.js");
+const transportCompanyController = require("../controllers/web/transportCompanies.js");
 const companyServicesController = require("../controllers/web/companyServices.js");
 
-// * ------------------ Endpoints - appWeb -----------------------------
+// * ------------------ Categories -----------------------------
 //#region Categories end-points
 router.post(
   "/categories/",
@@ -31,6 +32,7 @@ router.get(
 );
 //#endregion - Categories
 
+// * ------------------ Company -----------------------------
 //#region Company end-points
 router.post(
   "/company/",
@@ -62,6 +64,7 @@ router.post(
   companyController.postDelete
 );
 
+// * ------------------ Company Services -----------------------------
 router.post(
   "/company_service",
   // hasPermissions({ role: "super_master_user" }),
@@ -81,4 +84,28 @@ router.post(
 );
 //#endregion - Company
 
+// * ------------------ Company Services -----------------------------
+router.post(
+  "/transport_company/",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.postRegister
+);
+
+router.post(
+  "/transport_company/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.postEdit
+);
+
+router.get(
+  "/transport_company/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.getProfile
+);
+
+router.post(
+  "/transport_company/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.postDelete
+);
 module.exports = router;
