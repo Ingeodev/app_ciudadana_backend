@@ -16,6 +16,8 @@ exports.postRegister = async (req, res, next) => {
         siteUri: req.body.siteUri ? req.body.siteUri : null,
       });
 
+    // TODO: Gracefully handle the error when name exists, or allow duplicate names.
+
     const dataQuery = {
       name,
       phone,
@@ -25,7 +27,7 @@ exports.postRegister = async (req, res, next) => {
       active: true,
       createdAt: formatDate(new Date()),
     };
-    
+
     const result = await db.Security.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
