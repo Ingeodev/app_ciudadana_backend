@@ -1,6 +1,6 @@
 const request = require("supertest");
 
-const usedHost = `${global.notificationsMicroserviceLocalHost}/mobile/v1/notifications/attention_lines`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/mobile/v1/notifications/attention_lines`;
 describe("Mobile - Attention Lines management API points: ", () => {
   jest.setTimeout(8000);
 
