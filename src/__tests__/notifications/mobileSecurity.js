@@ -3,7 +3,7 @@ const request = require("supertest");
 // Deployed
 // const usedHost = `${global.notificationsMicroserviceOnlineHost}/mobile/v1/notifications/security`;
 // Local
-const usedHost = `${global.notificationsMicroserviceLocalHost}/mobile/v1/notifications/security`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/mobile/v1/notifications/security`;
 describe("Mobile - Security management API points: ", () => {
   jest.setTimeout(8000);
 
