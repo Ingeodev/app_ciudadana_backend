@@ -12,6 +12,7 @@ exports.postRegister = async (req, res, next) => {
     const { name, imageUri, color } = await validator.vWebPostRegister(
       req.body
     );
+    // TODO: Gracefully handle the error when name exists, or allow duplicate names.
 
     const dataQuery = {
       name,
