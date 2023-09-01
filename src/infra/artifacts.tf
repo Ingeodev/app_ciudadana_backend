@@ -1,8 +1,14 @@
+// add to the comput and deploy sa
+// Cloud Run Admin
+// Cloud Run Service Agent
+// Owner
+// Security Admin
+// Service Account User
 terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.51.0"
+      version = "4.80.0"
     }
   }
 }
@@ -46,8 +52,6 @@ resource "google_artifact_registry_repository" "artifactory_repository" {
 resource "google_cloud_run_service" "default" {
   name     = "third-parties"
   location = var.service_region
-
-
   template {
     metadata {
       annotations = {
@@ -61,6 +65,31 @@ resource "google_cloud_run_service" "default" {
         ports {
           container_port = 3000
         }
+        env {
+          name = "BUCKET"
+          value = "cali-mobility-data"
+        }
+        env {
+          name = "FCM_TOPIC_NAME_MOBILE"
+          value = "mobileUsersNotifications"
+        }
+        env {
+          name = "TWILIO_ACCOUNT_SID"
+          value = "ACyourtwilioaccountsid"
+        }
+        env {
+          name = "TWILIO_AUTH_TOKEN"
+          value = "yourtwilioauthenticationtoken"
+        }
+        env {
+          name = "TWILIO_MESSAGE_SERVICE_SID"
+          value = "yourtwilioMessageServiceSID"
+        }
+        liveness_probe {
+          http_get {
+            path = "/health"
+          }
+        }
       }
     }
   }
@@ -69,6 +98,22 @@ resource "google_cloud_run_service" "default" {
     percent = 100
     latest_revision = true
   }
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location    = google_cloud_run_service.default.location
+  project     = google_cloud_run_service.default.project
+  service     = google_cloud_run_service.default.name
+  policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 // cloud run configuration
