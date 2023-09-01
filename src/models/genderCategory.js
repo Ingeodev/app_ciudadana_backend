@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      GenderCategory.hasMany(models.GenderAttentionLine, {
+        foreignKey: {
+          name: "categoryId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   GenderCategory.init(
@@ -55,20 +63,20 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
-      hooks: {
-        async beforeDestroy(genderCategory, options) {
-          const attentionLinesCount = await sequelize.models.GenderAttentionLine.count({
-              where: {
-                categoryId: genderCategory.id,
-                deletedAt: null, // considers only records that are not "soft deleted".
-              },
-            });
+      // hooks: {
+      //   async beforeDestroy(genderCategory, options) {
+      //     const attentionLinesCount = await sequelize.models.GenderAttentionLine.count({
+      //         where: {
+      //           categoryId: genderCategory.id,
+      //           deletedAt: null, // considers only records that are not "soft deleted".
+      //         },
+      //       });
 
-          if (attentionLinesCount > 0) {
-            throw new Error("Category Deleting error");
-          }
-        },
-      },
+      //     if (attentionLinesCount > 0) {
+      //       throw new Error("Category Deleting error");
+      //     }
+      //   },
+      // },
     }
   );
   return GenderCategory;

@@ -221,12 +221,21 @@ exports.postDelete = async (req, res, next) => {
     //   };
 
     const { id } = await validator.vWebPostDelete(req.body);
-    const categInDb = await db.GenderCategory.findOne({
-      where: {
-        id,
-        // // ! Pendiente: Validar permisos del usuario
-        // createdBy: createdBy.id,
-      },
+    const categInDb = await db.GenderCategory.findByPk(id, {
+      // where: {
+      //   id,
+      //   // // ! Pendiente: Validar permisos del usuario
+      //   // createdBy: createdBy.id,
+      // },
+      include: [
+        {
+          model: db.GenderAttentionLine,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
     });
 
     if (categInDb === null) {
@@ -235,6 +244,12 @@ exports.postDelete = async (req, res, next) => {
         message: `The gender attention lines category does not exist`,
       };
     }
+
+    if (categInDb.GenderAttentionLines.length != 0)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: `The category has related gender attention lines`,
+      };
 
     await categInDb.destroy();
 
