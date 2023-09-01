@@ -1,9 +1,10 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require('uuid');
 
 // Deployed
 // const usedHost = `${global.notificationsMicroserviceOnlineHost}/web/v1/notifications/security_category`;
 // Local
-const usedHost = `${global.notificationsMicroserviceLocalHost}/web/v1/notifications/security_category`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/security_category`;
 
 describe("Web - Security Categories management API points: ", () => {
   jest.setTimeout(8000);
@@ -13,13 +14,13 @@ describe("Web - Security Categories management API points: ", () => {
   };
 
   const testCategory0 = {
-    name: "Comida",
+    name: uuidV4(),
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     color: "#E40F81",
   };
 
   const testCategory1 = {
-    name: "Ropa",
+    name: uuidV4(),
     imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     color: "#002955",
   };
@@ -344,7 +345,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          name: "Comida - Modificado",
+          name: testCategory0.name + " - Modificado",
         });
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("meta");
@@ -353,7 +354,7 @@ describe("Web - Security Categories management API points: ", () => {
       expect(response0.body.data).toEqual(
         expect.objectContaining({
           ...testCategory0,
-          name: "Comida - Modificado",
+          name: testCategory0.name + " - Modificado",
         })
       );
       const response1 = await request(usedHost)
@@ -361,7 +362,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory1,
-          name: "Ropa - Modificado",
+          name: testCategory1.name + " - Modificado",
         });
       expect(response1.statusCode).toBe(200);
       expect(response1.body).toHaveProperty("meta");
@@ -370,7 +371,7 @@ describe("Web - Security Categories management API points: ", () => {
       expect(response1.body.data).toEqual(
         expect.objectContaining({
           ...testCategory1,
-          name: "Ropa - Modificado",
+          name: testCategory1.name + " - Modificado",
         })
       );
     });
