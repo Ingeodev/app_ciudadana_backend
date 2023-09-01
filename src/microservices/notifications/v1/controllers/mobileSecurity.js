@@ -40,7 +40,7 @@ exports.getListAll = async (req, res, next) => {
     }
 
     const categInDb = await db.SecurityCategory.findAll({
-      attributes: ["id", "name", "imageUri", "siteUri", "color"],
+      attributes: ["id", "name", "imageUri", "color"],
       // limit: objPage.size,
       // offset: (objPage.number - 1) * objPage.size,
       // Ordered from A-Z
