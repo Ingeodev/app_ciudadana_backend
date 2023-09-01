@@ -155,8 +155,16 @@ exports.getOneById = async (req, res, next) => {
 exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const categInDb = await db.SecurityCategory.findOne({
-      where: { id },
+    const categInDb = await db.SecurityCategory.findByPk(id, {
+      include: [
+        {
+          model: db.Report,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
     });
 
     if (categInDb === null) {
@@ -165,6 +173,12 @@ exports.postDelete = async (req, res, next) => {
         message: `The security category does not exist`,
       };
     }
+
+    if (categInDb.Reports != null)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "The category has related reports",
+      };
 
     await categInDb.destroy();
     

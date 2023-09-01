@@ -9,6 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      SecurityCategory.hasMany(models.Report, {
+        foreignKey: {
+          name: "securityCategoryId",
+          allowNull: true,
+          unique: false,
+        },
+      });
     }
   }
   SecurityCategory.init(
