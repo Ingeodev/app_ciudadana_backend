@@ -156,8 +156,16 @@ exports.getOneById = async (req, res, next) => {
 exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const categInDb = await db.ThirdPartyCategory.findOne({
-      where: { id },
+    const categInDb = await db.ThirdPartyCategory.findByPk(id, {
+      include: [
+        {
+          model: db.ThirdPartyCompany,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
     });
 
     if (categInDb === null) {
@@ -167,7 +175,11 @@ exports.postDelete = async (req, res, next) => {
       };
     }
 
-    // ! Pendiente: Verificar que la categoria no este siendo usada en otras tablas
+    if (categInDb.ThirdPartyCompanies != 0)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: `Category has related companies.`,
+      };
 
     await categInDb.destroy();
 
