@@ -6,7 +6,6 @@ mkdir -p $MNT_DIR
 echo "Mounting GCS Fuse."
 gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR
 echo "Mounting completed."
-touch $MNT_DIR/test.txt
 # Start the application
 node index.js &
 
