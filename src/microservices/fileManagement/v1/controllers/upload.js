@@ -1,5 +1,5 @@
 const path = require('path');
-// const fs = require('fs/promises');
+const fsp = require('fs/promises');
  const fs = require('fs');
 
 const { v4: uuidV4 } = require('uuid');
@@ -18,6 +18,18 @@ const postSingleFile = async (req, res, next) => {
         const folderPath = path.join(uploadsFolder, folder);
         await checkIfExists(folderPath, true);
         const uploadPath = path.join(folderPath, filename);
+        // TEST Write a test file to the provided path.
+        const date = new Date();
+        const formattedDate = date.toString().split(' ').slice(0, 5).join('-');
+        const testFilename = `${formattedDate}.txt`;
+        const contents = `This test file was created on ${formattedDate}.\n`;
+        try {
+            const newFile = fsp.writeFile(`${folderPath}/${testFilename}`, contents);
+            await newFile;
+        } catch (error) {
+            console.error(error);
+        }
+        // END TEST
         // await fs.writeFile(uploadPath, imageFile.buffer);
         fs.writeFileSync(uploadPath, imageFile.buffer);
         const host = req.get('host');
