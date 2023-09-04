@@ -24,8 +24,9 @@ const postSingleFile = async (req, res, next) => {
         const testFilename = `${formattedDate}.txt`;
         const contents = `This test file was created on ${formattedDate}.\n`;
         try {
-            const newFile = fsp.writeFile(`${folderPath}/${testFilename}`, contents);
-            await newFile;
+            const writer = fs.createWriteStream(`${folderPath}/${testFilename}`);
+            writer.write('hello world');
+            console.log('done')
         } catch (error) {
             console.error(error);
         }
