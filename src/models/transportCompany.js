@@ -37,26 +37,26 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      // nit: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   unique: true,
-      // },
+      nit: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
       description: {
         type: DataTypes.TEXT,
         allowNull: true,
         unique: false,
       },
-      // phone: {
-      //   type: DataTypes.STRING,
-      //   allowNull: true,
-      //   unique: false,
-      // },
-      // siteUri: {
-      //   type: DataTypes.STRING,
-      //   allowNull: true,
-      //   unique: false,
-      // },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false,
+      },
+      siteUri: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false,
+      },
       address: {
         type: DataTypes.STRING,
         allowNull: false,

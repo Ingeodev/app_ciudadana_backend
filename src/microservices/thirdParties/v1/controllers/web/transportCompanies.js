@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/transportCompanies.js")
 
 /**
  * Create a transport company
- * @param {object} req - Object containing the name, description, address, imageUri, lat, lon
+ * @param {object} req - Object containing the name, nit, phone, siteUri, description, address, imageUri, lat, lon
  * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -22,7 +22,7 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { name, description, address, imageUri, lat, lon } =
+    const { name, description, address, imageUri, lat, lon, nit, phone, siteUri } =
       await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
@@ -34,6 +34,9 @@ exports.postRegister = async (req, res, next) => {
       lat,
       lon,
       geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      nit,
+      phone,
+      siteUri,
     };
 
     const result = await db.TransportCompany.create(dataQuery);
@@ -50,7 +53,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update a transport company
- * @param {object} req - Object containing the id, name, description, address, imageUri, lat, lon
+ * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, address, imageUri, lat, lon
  * @return {object} Response contains: statuscode (integer), json (transport company object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -75,6 +78,9 @@ exports.postEdit = async (req, res, next) => {
       imageUri,
       lat,
       lon,
+      nit,
+      phone,
+      siteUri,
     } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
@@ -87,6 +93,9 @@ exports.postEdit = async (req, res, next) => {
       lon,
       // ! Decirle al front que siempre envie el par alt, lon
       geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      nit,
+      phone,
+      siteUri,
     };
 
     // Validate that the company belongs to the user

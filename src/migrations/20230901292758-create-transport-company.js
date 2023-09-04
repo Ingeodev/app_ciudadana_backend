@@ -22,26 +22,26 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
-        // nit: {
-        //   type: Sequelize.STRING,
-        //   allowNull: false,
-        //   unique: true,
-        // },
+        nit: {
+          type: Sequelize.STRING,
+          allowNull: false,
+          unique: true,
+        },
         description: {
           type: Sequelize.TEXT,
           allowNull: true,
           unique: false,
         },
-        // phone: {
-        //   type: Sequelize.STRING(50),
-        //   allowNull: true,
-        //   unique: false,
-        // },
-        // siteUri: {
-        //   type: Sequelize.STRING,
-        //   allowNull: true,
-        //   unique: false,
-        // },
+        phone: {
+          type: Sequelize.STRING(50),
+          allowNull: true,
+          unique: false,
+        },
+        siteUri: {
+          type: Sequelize.STRING,
+          allowNull: true,
+          unique: false,
+        },
         address: {
           type: Sequelize.STRING,
           allowNull: false,

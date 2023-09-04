@@ -4,12 +4,12 @@ const joi = require("joi");
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  // nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
-  //     'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
-  //   }),
+  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
+      'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
+    }),
   description: joi.string().trim().empty("").invalid(" "),
-  // phone: joi.string().trim().empty("").invalid(" "),
-  // siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).required(),
@@ -19,12 +19,12 @@ const registerSchema = joi.object({
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").max(50),
-  // nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
-  //     'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
-  //   }),
+  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
+      'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
+    }),
   description: joi.string().trim().empty("").invalid(" "),
-  // phone: joi.string().trim().empty("").invalid(" "),
-  // siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90),
