@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      MobileService.hasMany(models.Advertisement, {
+        foreignKey: {
+          name: "categoryId",
+          allowNull: true,
+        },
+      });
     }
   }
   MobileService.init(
@@ -60,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "MobileService",
-      tableName: "MobileService",
+      tableName: "MobileServices",
       schema: "public",
       paranoid: true,
       timestamps: true,

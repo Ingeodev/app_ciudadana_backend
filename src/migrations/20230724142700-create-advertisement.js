@@ -2,40 +2,53 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Advertisements', {
+    await queryInterface.createTable("Advertisements", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       imageUri: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       siteUri: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       categoryId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       active: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       deletedAt: {
         allowNull: true,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
+    });
+    return await queryInterface.addConstraint("Advertisements", {
+      name: "fk_Advertisements_MobileServices",
+      fields: ["categoryId"],
+      type: "foreign key",
+      references: {
+        table: "MobileServices",
+        field: "id",
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "cascade",
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Advertisements');
+    await queryInterface.removeConstraint("Advertisements", "fk_Advertisements_MobileServices");
+    await queryInterface.dropTable("Advertisements");
   }
 };

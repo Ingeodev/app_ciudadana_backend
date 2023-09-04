@@ -5,7 +5,7 @@ const authorization = require("../../../../middleware/authMiddleware");
 const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 
 const advertisingController = require('../controllers/webAdvertisement');
-const advertisementCategoryController = require('../controllers/webAdvertisementCategory');
+// const advertisementCategoryController = require('../controllers/webAdvertisementCategory');
 const securityController = require("../controllers/webSecurity");
 const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
@@ -37,19 +37,19 @@ router.post('/advertising/status', advertisingController.postAdvertisementStatus
 router.post('/advertising/delete', advertisingController.postAdvertisementDelete);
 //#endregion
 
-//#region Advertisement Categories end-points
-// Retrieve all the advertisement Categories.
-router.get('/advertisementCategory', advertisementCategoryController.getAllCategories);
+// //#region Advertisement Categories end-points
+// // Retrieve all the advertisement Categories.
+// router.get('/advertisementCategory', advertisementCategoryController.getAllCategories);
 
-// Create a new advertisement Category.
-router.post('/advertisementCategory', advertisementCategoryController.postCategory);
+// // Create a new advertisement Category.
+// router.post('/advertisementCategory', advertisementCategoryController.postCategory);
 
-// Edit an existing advertisement Category.
-router.post('/advertisementCategory/edit', advertisementCategoryController.postEditCategory);
+// // Edit an existing advertisement Category.
+// router.post('/advertisementCategory/edit', advertisementCategoryController.postEditCategory);
 
-// Delete an advertisement Category.
-router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
-//#endregion
+// // Delete an advertisement Category.
+// router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
+// //#endregion
 
 //#region Reports end-points
 // Retrieve all the reports by user.

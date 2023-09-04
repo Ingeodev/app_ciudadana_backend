@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "MobileService",
+      "MobileServices",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -66,13 +66,13 @@ module.exports = {
         },
       },
       {
-        tableName: "MobileService",
+        tableName: "MobileServices",
         schema: "public",
       }
     );
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("MobileService");
+    await queryInterface.dropTable("MobileServices");
   }
 };
