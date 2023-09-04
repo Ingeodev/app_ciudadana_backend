@@ -1,5 +1,6 @@
 const path = require('path');
-const fs = require('fs/promises');
+// const fs = require('fs/promises');
+ const fs = require('fs');
 
 const { v4: uuidV4 } = require('uuid');
 const { StatusCodes } = require('http-status-codes');
@@ -17,7 +18,8 @@ const postSingleFile = async (req, res, next) => {
         const folderPath = path.join(uploadsFolder, folder);
         await checkIfExists(folderPath, true);
         const uploadPath = path.join(folderPath, filename);
-        await fs.writeFile(uploadPath, imageFile.buffer);
+        // await fs.writeFile(uploadPath, imageFile.buffer);
+        fs.writeFileSync(uploadPath, imageFile.buffer);
         const host = req.get('host');
         const downloadUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
         return res.status(StatusCodes.CREATED)
