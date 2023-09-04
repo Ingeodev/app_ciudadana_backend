@@ -53,10 +53,10 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args: ['run', 'deploy', 'notifications', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-notifications/notifications:latest', '--region', 'us-central1']
-# third parties
-# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#   entrypoint: 'gcloud'
-#   args: ['run', 'deploy', 'third-parties', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest', '--region', 'us-central1']
+  # third parties
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args: ['run', 'deploy', 'third-parties', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest', '--region', 'us-central1']
 availableSecrets:
   secretManager:
     - versionName: projects/85094745134/secrets/service_key/versions/2
