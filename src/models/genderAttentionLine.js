@@ -9,14 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      GenderAttentionLine.belongsTo(models.GenderCategory, {
-        foreignKey: {
-          name: "categoryId",
-          allowNull: false,
-          unique: false,
-        },
-      });
-
       GenderAttentionLine.belongsTo(models.User, {
         foreignKey: {
           name: "createdBy",
@@ -36,11 +28,6 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false,
-      },
-      categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,

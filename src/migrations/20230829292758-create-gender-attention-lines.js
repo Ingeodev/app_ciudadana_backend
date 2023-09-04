@@ -17,11 +17,6 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        categoryId: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          unique: false,
-        },
         name: {
           type: Sequelize.STRING(128),
           allowNull: false,
@@ -60,7 +55,7 @@ module.exports = {
         schema: "public",
       }
     );
-    await queryInterface.addConstraint("GenderAttentionLines", {
+    return await queryInterface.addConstraint("GenderAttentionLines", {
       name: "fk_GenderAttentionLines_CreatedBy",
       fields: ["createdBy"],
       type: "foreign key",
@@ -71,20 +66,8 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
-    return await queryInterface.addConstraint("GenderAttentionLines", {
-      name: "fk_GenderAttentionLines_CategoryId",
-      fields: ["categoryId"],
-      type: "foreign key",
-      references: {
-        table: "GenderCategories",
-        field: "id",
-      },
-      onDelete: "RESTRICT",
-      onUpdate: "cascade",
-    });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint("GenderAttentionLines", "fk_GenderAttentionLines_CategoryId");
     await queryInterface.removeConstraint("GenderAttentionLines", "fk_GenderAttentionLines_CreatedBy");
     await queryInterface.dropTable("GenderAttentionLines");
   },

@@ -5,7 +5,7 @@ const validator = require("../../utils/validatorGenderAttentionLine.js");
 
 /**
  * Create an attention line of gender equity 
- * @param {object} req - Object containing the categoryId, name, phone, address, imageUri
+ * @param {object} req - Object containing the name, phone, address, imageUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -22,13 +22,11 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
     
-    // ! Por el momento categoryId, voy a suponer que la crea el admin, ie, las categorias son accesibles para todos los webUsuarios normales
-    const { categoryId, name, phone, address, imageUri } = await validator.vWebPostRegister(
+    const { name, phone, address, imageUri } = await validator.vWebPostRegister(
       req.body
     );
 
     const dataQuery = {
-      categoryId,
       createdBy: createdBy.id,
       name,
       phone,
@@ -48,7 +46,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update an attention line of gender equity
- * @param {object} req - Object containing the id, categoryId, name, phone, address, imageUri
+ * @param {object} req - Object containing the id, name, phone, address, imageUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -65,12 +63,11 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, categoryId, name, phone, address, imageUri } =
+    const { id, name, phone, address, imageUri } =
       await validator.vWebPostUpdate(req.body);
 
     const dataQuery = {
       id,
-      categoryId,
       name,
       phone,
       imageUri,
@@ -146,16 +143,8 @@ exports.getListAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
-      include: [
-        {
-          model: db.GenderCategory,
-          attributes: [],
-          required: false,
-        },
-      ],
       attributes: {
         exclude: ["createdBy", "deletedAt"],
-        include: [[Sequelize.col('"GenderCategory"."name"'), "categoryName"]],
       },
     });
 
