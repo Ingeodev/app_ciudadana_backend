@@ -10,7 +10,7 @@ const { Sequelize } = require('sequelize');
  */
 const checkCategoryExists = async (categoryId) => {
     if (categoryId != null) {
-        const categoryExists = await db.AdvertisementCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
+        const categoryExists = await db.MobileService.findByPk(categoryId, { attributes: ['id'], paranoid: true });
         if (categoryExists == null)
             return false;
     }
@@ -29,15 +29,14 @@ const getAllAdvertisements = async (req, res, next) => {
             offset,
             limit: pagination.size,
             include: [{
-                model: db.AdvertisementCategory,
-                attributes: ['name', 'color'],
+                model: db.MobileService,
+                attributes: [],
                 required: false,
             }],
             attributes: {
-                exclude: ["deletedAt", "AdvertisementCategory"],
+                exclude: ["deletedAt"],
                 include: [
-                    [Sequelize.col('"AdvertisementCategory"."name"'), 'categoryName'],
-                    [Sequelize.col('"AdvertisementCategory"."color"'), 'categoryColor']
+                    [Sequelize.col('"MobileService"."name"'), 'categoryName'],
                 ],
             },
         });
@@ -52,7 +51,7 @@ const getAllAdvertisements = async (req, res, next) => {
                 message: '"page[number]" is too large for the number of possible pages.',
             };
         const data = pageAdvertisements.rows.map(row => {
-            return { ...row.dataValues, AdvertisementCategory: undefined };
+            return row.dataValues;
         });
         return res.status(StatusCodes.OK).json({
             meta: {
