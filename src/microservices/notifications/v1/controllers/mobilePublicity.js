@@ -34,8 +34,8 @@ const getCategorized = async (req, res, next) => {
                 categoryId: { [ne]: null },
             },
             include: [{
-                model: db.AdvertisementCategory,
-                as: 'AdvertisementCategory',
+                model: db.MobileService,
+                as: 'MobileService',
                 attributes: ['name'],
                 required: true,
             }],
@@ -45,8 +45,8 @@ const getCategorized = async (req, res, next) => {
             }
         });
         const banners = categorizedAdvertisements.map(advertisement => {
-            advertisement.dataValues.category = advertisement.dataValues.AdvertisementCategory.name;
-            delete advertisement.dataValues.AdvertisementCategory;
+            advertisement.dataValues.category = advertisement.dataValues.MobileService.name;
+            delete advertisement.dataValues.MobileService;
             return advertisement.dataValues;
         });
         return res.status(StatusCodes.OK)
