@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/mobile/v1/notifications/attention_lines/dependencies`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/attention_lines/dependencies`;
 
 describe("Dependencies consumption API points: ", () => {
     jest.setTimeout(8000);

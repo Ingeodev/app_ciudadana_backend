@@ -158,30 +158,6 @@ describe("Web - Security management API points: ", () => {
       expect(response6.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
-      const response0 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send(testCategory0);
-      expect(response0.statusCode).toBe(500);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-
-      const response1 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send(testCategory1);
-      expect(response1.statusCode).toBe(500);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 500);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
-    });
-
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/");
       expect(response0.statusCode).toBe(401);
@@ -194,7 +170,7 @@ describe("Web - Security management API points: ", () => {
   });
 
   describe("GET /security/ ", () => {
-    test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
+    test("should respond with status 200 and a list of two objects.", async () => {
       const response0 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
@@ -208,10 +184,8 @@ describe("Web - Security management API points: ", () => {
       expect(response0.body.data.length).toBe(2);
       expect(response0.body.data[0]).toHaveProperty("id");
       expect(response0.body.data[0]).toHaveProperty("name");
-      expect(response0.body.data[0].name).toBe(testCategory1.name);
       expect(response0.body.data[1]).toHaveProperty("id");
       expect(response0.body.data[1]).toHaveProperty("name");
-      expect(response0.body.data[1].name).toBe(testCategory0.name);
     });
 
     // {

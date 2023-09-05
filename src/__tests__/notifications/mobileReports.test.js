@@ -1,6 +1,6 @@
 const request = require("supertest");
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/mobile/v1/notifications/security/reports`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/security/reports`;
 describe("Mobile - Reports management API points: ", () => {
   jest.setTimeout(8000);
 

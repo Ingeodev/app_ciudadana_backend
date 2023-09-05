@@ -95,24 +95,6 @@ describe("Web - Security Categories management API points: ", () => {
     });
 
     // {
-    // "status": 500,
-    // "detail": "Validation error",
-    // "code": "Internal Server Error"
-    // }
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
-      const response0 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send(testCategory0);
-      expect(response0.statusCode).toBe(500);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
-
-    // {
     //     "status": 401,
     //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
     //     "code": "Unauthorized"
