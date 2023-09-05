@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require("uuid");
 
 // Deployed
 // const usedHost = `${global.notificationsMicroserviceOnlineHost}/api/web/v1/notifications/gender_category`;
@@ -12,28 +13,28 @@ describe("Web - Gender Attention Lines management API points: ", () => {
   };
 
   const testGenderLine0 = {
-    title: "Category 90 Test",
+    title: uuidV4(),
     description: "Description test",
     imageUri: "http://image.com",
     siteUri: "http://site.com",
   };
 
   const testGenderLine1 = {
-    title: "Category 91 Test",
+    title: uuidV4(),
     description: "Description test",
     imageUri: "http://image.com",
     siteUri: "http://site.com",
   };
 
   const editGender0 = {
-    title: "Category 90 Test Edit",
+    title: uuidV4(),
     description: "Description test edit",
     imageUri: "http://image.com/edit",
     siteUri: "http://site.com/edit",
   };
 
   const editGender1 = {
-    title: "Category 91 Test Edit",
+    title: uuidV4(),
     description: "Description test edit",
     imageUri: "http://image.com/edit",
     siteUri: "http://site.com/edit",
