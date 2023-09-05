@@ -113,4 +113,10 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   transportCompanyController.postDelete
 );
+
+router.get(
+  "/transport_company/",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.getAll
+);
 module.exports = router;
