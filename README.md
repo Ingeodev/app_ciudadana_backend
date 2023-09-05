@@ -1035,6 +1035,12 @@ It returns **201 _created_** and the created dependencies on success.
 > _Status code: **201 Created**_
 > ```JSON
 > {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 2,
+>         "totalRecords": 2,
+>         "totalPages": 1
+>     },
 >     "data": [
 >         {
 >             "id": 0,
