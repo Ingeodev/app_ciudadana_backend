@@ -24,10 +24,11 @@ const postSingleFile = async (req, res, next) => {
         const testFilename = `testfile.txt`;
         const testFileContents = `This test file was created on ${formattedDate}.\n`;
         try {
-            // const writer = fs.createWriteStream(`${folderPath}/${testFilename}`);
-            // writer.write('hello world');
             await fsp.writeFile(testFilename, testFileContents);
-            await fsp.copyFile(testFilename, `${folderPath}/${testFilename}`);
+            const writer = fs.createWriteStream(`${folderPath}/${testFilename}`);
+            // writer.write('hello world');
+            const reader = fs.createReadStream(testFilename).pipe(writer);
+            // await fsp.copyFile(testFilename, `${folderPath}/${testFilename}`);
             await fsp.unlink(testFilename);
             console.log('done')
         } catch (error) {
