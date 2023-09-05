@@ -8,6 +8,8 @@ const validator = require("../../../utils/validators/mobile/users.js");
 const { checkIfExists } = require("../../../utils/accessCheck.js");
 // const Op = db.Sequelize.Op;
 
+const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
+
 /**
  * Create (loginPhase="notRegistered") or update (loginPhase="baseLogin") user's base information. All login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
  * @param {object} req - Object containing the name, lastName, phone, email
@@ -95,18 +97,18 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       };
     }
 
-    const imageFile = await validator.vfileFullLogin(req.file);
+    const pdfFile = await validator.vfileFullLogin(req.file);
     // const folder = "uploads/users/mobile/public_service_receipt";
-    const folder = "uploads";
+    // const folder = "uploads";
     const endpoint = "mobileUsersPublicServiceReceipt";
-    const filename = uuidV4() + path.extname(imageFile.originalname);
+    const uploadDir = path.join(uploadsFolder, endpoint);
+    const filename = uuidV4() + path.extname(pdfFile.originalname);
     const host = req.get("host");
-    const imageUri = `${req.protocol}://${host}/api/v1/file_management/download/${endpoint}/${filename}`;
+    const imageUri = `${req.protocol}://${host}/api/web/v1/users/file_download/${endpoint}/${filename}`;
 
-    const uploadDir = path.resolve(`./${folder}/${endpoint}/`);
     const filepath = path.join(uploadDir, filename);
     await checkIfExists(uploadDir, true);
-    fs.writeFile(filepath, imageFile.buffer);
+    await fs.writeFile(filepath, pdfFile.buffer);
 
     const resultUpdate = await userInDb.update(
       {
