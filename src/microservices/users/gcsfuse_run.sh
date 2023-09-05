@@ -4,7 +4,10 @@ set -e pipefail
 mkdir -p $MNT_DIR
 
 echo "Mounting GCS Fuse."
-gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR
+gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR/
+echo $BUCKET
+echo $MNT_DIR
+echo "I am \"Finding\" difficult to write this to file" > $MNT_DIR/users.txt
 echo "Mounting completed."
 # Start the application
 node index.js &
