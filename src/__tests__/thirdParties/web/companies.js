@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require("uuid");
 
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/third_parties/company`;
@@ -12,10 +13,12 @@ describe("Web - Third Party Companies management API points: ", () => {
   };
 
   const testCategoryId = 22;
+  const min = 100000;
+  const max = 900000;
 
   const testCompany0 = {
-    name: "test company 1",
-    nit: "123456789-1",
+    name: uuidV4(),
+    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
     categoryId: testCategoryId,
     description: "test description",
     phone: "3122334455",
@@ -27,8 +30,8 @@ describe("Web - Third Party Companies management API points: ", () => {
   };
 
   const testCompany1 = {
-    name: "test company 2",
-    nit: "123456789-2",
+    name: uuidV4(),
+    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-2`,
     categoryId: testCategoryId,
     description: "test description",
     phone: "3122334455",
@@ -40,8 +43,8 @@ describe("Web - Third Party Companies management API points: ", () => {
   };
 
   const editCompany0 = {
-    name: "test company 1 edit",
-    nit: "123456789-3",
+    name: uuidV4(),
+    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-3`,
     categoryId: testCategoryId,
     description: "test description 1 edit",
     phone: "3122334455",
@@ -53,8 +56,8 @@ describe("Web - Third Party Companies management API points: ", () => {
   };
 
   const editCompany1 = {
-    name: "test company 2 edit",
-    nit: "123456789-4",
+    name: uuidV4(),
+    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-4`,
     categoryId: testCategoryId,
     description: "test description 2 edit",
     phone: "3122334455",

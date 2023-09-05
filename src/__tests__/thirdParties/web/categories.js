@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require("uuid");
 
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/categories`;
@@ -12,28 +13,28 @@ describe("Web - Third Party Categories management API points: ", () => {
   };
 
   const testCategory0 = {
-    name: "Category 90 test",
+    name: uuidV4(),
     icon: "http://localhost:3000/icon.png",
     iconMap: "http://localhost:3000/iconMap.png",
     color: "#DB85D6",
   };
 
   const testCategory1 = {
-    name: "Category 91 test",
+    name: uuidV4(),
     icon: "http://localhost:3000/iconUniversity.png",
     iconMap: "http://localhost:3000/iconMapUniversity.png",
     color: "#E40F81",
   };
 
   const editCategory0 = {
-    name: "Category 90 test edit",
+    name: uuidV4(),
     icon: "http://localhost:3000/icon-modified.png",
     iconMap: "http://localhost:3000/iconMap-modified.png",
     color: "#805cf7",
   };
 
   const editCategory1 = {
-    name: "Category 91 test edit",
+    name: uuidV4(),
     icon: "http://localhost:3000/iconUniversity-modified.png",
     iconMap: "http://localhost:3000/iconMapUniversity-modified.png",
     color: "#E40F81",

@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require("uuid");
 
 // Deployed
 // const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/company_service`;
@@ -17,22 +18,22 @@ describe("Web - Third Party Services management API points: ", () => {
   const testService0 = {
     services: [
       {
-        service: "service 1",
+        service: uuidV4(),
         companyId: testCompanyId,
       },
       {
-        service: "service 2",
+        service: uuidV4(),
         companyId: testCompanyId,
       },
       {
-        service: "service 3",
+        service: uuidV4(),
         companyId: testCompanyId,
       },
     ],
   };
 
   const editService0 = {
-    service: "service 1 edit",
+    service: uuidV4(),
     companyId: testCompanyId,
   };
 
