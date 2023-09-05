@@ -143,25 +143,25 @@ router.get(
 );
 
 router.post(
-  "/gender_line_category/",
+  "/gender_category/",
   // hasPermissions({ role: "super_master_user" }),
   genderCategoryC.postRegister
 );
 
 router.post(
-  "/gender_line_category/edit",
+  "/gender_category/edit",
   // hasPermissions({ role: "super_master_user" }),
   genderCategoryC.postEdit
 );
 
 router.post(
-  "/gender_line_category/delete",
+  "/gender_category/delete",
   // hasPermissions({ role: "super_master_user" }),
   genderCategoryC.postDelete
 );
 
 router.get(
-  "/gender_line_category",
+  "/gender_category",
   // hasPermissions({ role: "super_master_user" }),
   genderCategoryC.getAll
 );
