@@ -4,7 +4,7 @@ const validator = require("../../utils/validatorGenderCategory.js");
 
 /**
  * Create a gender attention lines category
- * @param {object} req - Object containing the name, imageUri, color
+ * @param {object} req - Object containing the title, description, imageUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -21,15 +21,15 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
     
-    const { name, imageUri, color } = await validator.vWebPostRegister(
-      req.body
-    );
+    const { title, description, imageUri, siteUri } =
+      await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
       createdBy: createdBy.id,
-      name,
+      title,
+      description,
       imageUri,
-      color,
+      siteUri,
     };
 
     const result = await db.GenderCategory.create(dataQuery);
@@ -45,7 +45,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update gender attention lines category
- * @param {object} req - Object containing the id, name, imageUri, color
+ * @param {object} req - Object containing the id, title, description, imageUri, siteUri
  * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -62,15 +62,15 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, name, imageUri, color } = await validator.vWebPostEdit(
-      req.body
-    );
+    const { id, title, description, imageUri, siteUri } =
+      await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
-      name,
+      title,
+      description,
       imageUri,
-      color,
+      siteUri,
     };
 
     // Validate that the gender attention linesCategory belongs to the user
@@ -139,10 +139,10 @@ exports.getAll = async (req, res, next) => {
     const categInDb = await db.GenderCategory.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
-      attributes: ["id", "name", "imageUri", "color"],
+      attributes: ["id", "title", "description", "imageUri", "siteUri"],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
-      order: [["name", "ASC"]], // Sort by date of creation in descending order
+      order: [["title", "ASC"]], // Sort by date of creation in descending order
     });
 
     if (categInDb.count <= 0) {

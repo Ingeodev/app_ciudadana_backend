@@ -17,18 +17,23 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        name: {
+        title: {
           type: Sequelize.STRING(50),
           allowNull: false,
           unique: true,
+        },
+        description: {
+          type: Sequelize.STRING(200),
+          allowNull: true,
+          unique: false,
         },
         imageUri: {
           type: Sequelize.STRING,
           allowNull: true,
           unique: false,
         },
-        color: {
-          type: Sequelize.STRING(10),
+        siteUri: {
+          type: Sequelize.STRING,
           allowNull: true,
           unique: false,
         },

@@ -32,17 +32,22 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      name: {
+      title: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false,
       },
       imageUri: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
-      color: {
+      siteUri: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
