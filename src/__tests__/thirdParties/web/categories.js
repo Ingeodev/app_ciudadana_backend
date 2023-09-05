@@ -12,28 +12,28 @@ describe("Web - Third Party Categories management API points: ", () => {
   };
 
   const testCategory0 = {
-    name: "mobility",
+    name: "Category 90 test",
     icon: "http://localhost:3000/icon.png",
     iconMap: "http://localhost:3000/iconMap.png",
     color: "#DB85D6",
   };
 
   const testCategory1 = {
-    name: "university",
+    name: "Category 91 test",
     icon: "http://localhost:3000/iconUniversity.png",
     iconMap: "http://localhost:3000/iconMapUniversity.png",
     color: "#E40F81",
   };
 
   const editCategory0 = {
-    name: "mobility modified",
+    name: "Category 90 test edit",
     icon: "http://localhost:3000/icon-modified.png",
     iconMap: "http://localhost:3000/iconMap-modified.png",
     color: "#805cf7",
   };
 
   const editCategory1 = {
-    name: "university modified",
+    name: "Category 91 test edit",
     icon: "http://localhost:3000/iconUniversity-modified.png",
     iconMap: "http://localhost:3000/iconMapUniversity-modified.png",
     color: "#E40F81",
@@ -531,6 +531,123 @@ describe("Web - Third Party Categories management API points: ", () => {
     // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/edit");
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("POST /categories/delete ", () => {
+    // {
+    //     "meta": null,
+    //     "data": {
+    //         "id": 1,
+    //         "active": false
+    //     }
+    // }
+    test("should respond with status 200 and the edited object (data)", async () => {
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testCategory0.id,
+        });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta).toBe(null);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toEqual(
+        expect.objectContaining({
+          id: testCategory0.id,
+        })
+      );
+      const response1 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testCategory1.id,
+        });
+      expect(response1.statusCode).toBe(200);
+      expect(response1.body).toHaveProperty("meta");
+      expect(response1.body.meta).toBe(null);
+      expect(response1.body).toHaveProperty("data");
+      expect(response1.body.data).toEqual(
+        expect.objectContaining({
+          id: testCategory1.id,
+        })
+      );
+    });
+
+    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+      // {
+      //     "status": 400,
+      //     "detail": "\"id\" is required",
+      //     "code": "Bad Request"
+      // }
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: "",
+        });
+      expect(response0.statusCode).toBe(400);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 400);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+
+      // {
+      //     "status": 400,
+      //     "detail": "\"id\" must be greater than 0",
+      //     "code": "Bad Request"
+      // }
+      const response3 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: -5,
+        });
+      expect(response3.statusCode).toBe(400);
+      expect(response3.body).not.toHaveProperty("meta");
+      expect(response3.body).not.toHaveProperty("data");
+      expect(response3.body).toHaveProperty("status", 400);
+      expect(response3.body).toHaveProperty("code");
+      expect(response3.body).toHaveProperty("detail");
+    });
+
+    // {
+    //     "status": 404,
+    //     "detail": "The document type with id=999 does not exist",
+    //     "code": "Not Found"
+    // }
+    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: 999,
+        });
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    // {
+    //     "status": 401,
+    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
+    //     "code": "Unauthorized"
+    // }
+    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).post("/delete").send({
+        id: 999,
+      });
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
