@@ -197,7 +197,7 @@ This microservice handles the [**Advertising**](#advertising), [**Publicity**](#
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
 
 ##### _POST_ save new advertisement
-\(\<Your_Host\>/web/v1/notifications/advertising/\) allows web users to save a new advertisement into the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/\) allows web users to save a new advertisement into the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -263,7 +263,7 @@ It returns **201 _created_** and the created object on success.
       > ```
 
 ##### _GET_ list advertisements
-\(\<Your_Host\>/web/v1/notifications/advertising/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
 
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
@@ -344,7 +344,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _POST_ update advertisement
-\(\<Your_Host\>/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -387,7 +387,7 @@ Response:
   > ```
 
 ##### _POST_ change advertisement status
-\(\<Your_Host\>/web/v1/notifications/advertising/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -423,7 +423,7 @@ Response:
   > ```
 
 ##### _POST_ delete advertisement
-\(\<Your_Host\>/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -456,7 +456,7 @@ Response:
 The Advertisement Categories end-points allow the web user to manage the advertisement categories that can classify the [**advertisements**](#421-advertising).
 
 ##### _POST_ save new advertisement category
-\(\<Your_Host\>/web/v1/notifications/advertisementCategory/\) allows web users to save a new advertisement category into the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to save a new advertisement category into the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -489,7 +489,7 @@ Response:
   > ```
 
 ##### _GET_ list advertisement categories
-\(\<Your_Host\>/web/v1/notifications/advertisementCategory/\) allows web users to list a set of the advertisement categories from the database. It receives the following query parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to list a set of the advertisement categories from the database. It receives the following query parameters:
 
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
@@ -524,7 +524,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _POST_ edit advertisement category
-\(\<Your_Host\>/web/v1/notifications/advertisementCategory/edit\) allows web users to edit an existing advertisement category in the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/edit\) allows web users to edit an existing advertisement category in the database. It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -562,7 +562,7 @@ Response:
   > ```
 
 ##### _POST_ delete advertisement category
-\(\<Your_Host\>/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
+\(\<Your_Host\>/api/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -599,7 +599,7 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 
 ##### _GET_ Categorized advertisements (Banners)
 
-\(\<Your_Host\>/mobile/v1/notifications/publicity/banners/\) allows mobile users to retrieve all the active banners (i.e. categorized advertisements). It receives no parameters. It returns a list of objects with whe image locator `image`, the provider URL `url`, and the category `category`.
+\(\<Your_Host\>/api/mobile/v1/notifications/publicity/banners/\) allows mobile users to retrieve all the active banners (i.e. categorized advertisements). It receives no parameters. It returns a list of objects with whe image locator `image`, the provider URL `url`, and the category `category`.
 
 **Example Response**
 
@@ -670,11 +670,11 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 | /register | POST   | registerPush           | Send alerts to users |
 
 ##### _GET_ Active Alerts (mobile)
-\(\<Your_Host\>/web/v1/notifications/\)
+\(\<Your_Host\>/api/web/v1/notifications/\)
 
 
 ##### _POST_ Register Device Token (mobile)
-\(\<Your_Host\>/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
+\(\<Your_Host\>/api/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -714,7 +714,7 @@ Response:
 ##### _GET_ All Alerts
 
 ##### _POST_ Send Alert
-\(\<Your_Host\>/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -836,7 +836,7 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 | /security/reports | POST   | postRegister           | Create report       |
 
 ##### _GET_ Closest Reports (mobile)
-\(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
+\(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
 
 | **Name** | **Type** | **Required** | **Description**                        |
 | -------- | :------: | :----------: | -------------------------------------- |
@@ -869,7 +869,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _POST_ Register Report (mobile)
-\(\<Your_Host\>/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
+\(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
 
 | **Name**             |   **Type**   | **Required** | **Description**                        |
 | -------------------- | :----------: | :----------: | -------------------------------------- |
@@ -926,7 +926,7 @@ Response:
 | /security/reports | GET    | getListAllByUser       | Get reports by user identifier |
 
 ##### _GET_ User Reports (web)
-\(\<Your_Host\>/web/v1/notifications/security/reports\) allows web users to list its own reports from the database. It receives the following query parameters:
+\(\<Your_Host\>/api/web/v1/notifications/security/reports\) allows web users to list its own reports from the database. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
 | -------------- | :----------------: | :----------: | --------------------------- |
@@ -973,7 +973,7 @@ Route: src\microservices\notifications\v1\routes\mobile.js
 | /        | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
 
 ##### _GET_ list dependencies (MOBILE)
-\(\<Your_Host\>/mobile/v1/notifications/dependencies/\) llows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
+\(\<Your_Host\>/api/mobile/v1/notifications/dependencies/\) llows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
 | -------------- | :----------------: | :----------: | --------------------------- |
@@ -1022,7 +1022,7 @@ Route: src\microservices\notifications\v1\routes\web.js
 | /template | GET    | getDownloadXlsxTemplate     | Download template excel file for dependencies |
 
 ##### _POST_ upload dependencies excel
-\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to upload an excel (xls or xlsx) file in the specified format (id - name) with the dependencies that should appear in the PQRSs services. It receives the following **form** parameter:
+\(\<Your_Host\>/api/web/v1/notifications/dependencies/excel/\) allows web users to upload an excel (xls or xlsx) file in the specified format (id - name) with the dependencies that should appear in the PQRSs services. It receives the following **form** parameter:
 
 | **Name** | **Type** | **Required** | **Description**                                              |
 | :------- | :------- | :----------- | :----------------------------------------------------------- |
@@ -1053,7 +1053,7 @@ It returns **201 _created_** and the created dependencies on success.
 > ```
 
 ##### _GET_ list dependencies
-\(\<Your_Host\>/web/v1/notifications/dependencies/\) allows web users to list the existing dependencies in the database. It receives the following query parameters:
+\(\<Your_Host\>/api/web/v1/notifications/dependencies/\) allows web users to list the existing dependencies in the database. It receives the following query parameters:
 
 | **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
 |--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
@@ -1096,12 +1096,12 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _GET_ download dependencies Excel file
-\(\<Your_Host\>/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file with all the existing dependencies in the database. It receives no query parameters.
+\(\<Your_Host\>/api/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file with all the existing dependencies in the database. It receives no query parameters.
 
 It returns **200 _OK_** and the dependencies XLSX file on success.
 
 ##### _GET_ download dependencies template file
-\(\<Your_Host\>/web/v1/notifications/dependencies/template/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
+\(\<Your_Host\>/api/web/v1/notifications/dependencies/template/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
 
 It returns **200 _OK_** and the template XLSX file on success.
 
