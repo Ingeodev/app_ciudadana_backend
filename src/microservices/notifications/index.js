@@ -18,11 +18,11 @@ app.get("/health", function (req, res) {
 });
 
 //#region Web-oriented end-points
-app.use('/web/v1/notifications', webRouter);
+app.use('/api/web/v1/notifications', webRouter);
 //#endregion
 
 //#region Mobile-oriented end-points
-app.use("/mobile/v1/notifications", mobileRouter);
+app.use("/api/mobile/v1/notifications", mobileRouter);
 //#endregion
 
 //#region Error handling

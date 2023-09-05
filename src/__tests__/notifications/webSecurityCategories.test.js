@@ -2,9 +2,9 @@ const request = require("supertest");
 const { v4: uuidV4 } = require('uuid');
 
 // Deployed
-// const usedHost = `${global.notificationsMicroserviceOnlineHost}/web/v1/notifications/security_category`;
+// const usedHost = `${global.notificationsMicroserviceOnlineHost}/api/web/v1/notifications/security_category`;
 // Local
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/security_category`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/security_category`;
 
 describe("Web - Security Categories management API points: ", () => {
   jest.setTimeout(8000);

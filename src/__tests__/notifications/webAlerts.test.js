@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/`;
 
 describe("WEB Alert configuration API points: ", () => {
     jest.setTimeout(8000);

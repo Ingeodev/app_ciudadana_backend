@@ -1,7 +1,7 @@
 const request = require('supertest');
 const path = require('path');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/`;
 
 const sleepNow = async (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 

@@ -1,7 +1,7 @@
 const request = require("supertest");
 const { v4: uuidV4 } = require('uuid');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/security`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/security`;
 describe("Web - Security management API points: ", () => {
   jest.setTimeout(8000);
 

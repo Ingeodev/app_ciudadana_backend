@@ -1,9 +1,9 @@
 const request = require("supertest");
 
 // Deployed
-// const usedHost = `${global.notificationsMicroserviceOnlineHost}/web/v1/notifications/gender_category`;
+// const usedHost = `${global.notificationsMicroserviceOnlineHost}/api/web/v1/notifications/gender_category`;
 // Local
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/web/v1/notifications/gender_category`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/gender_category`;
 describe("Web - Gender Attention Lines management API points: ", () => {
   jest.setTimeout(8000);
 
