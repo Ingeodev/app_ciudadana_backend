@@ -29,7 +29,7 @@ const postSingleFile = async (req, res, next) => {
             // writer.write('hello world');
             const reader = fs.createReadStream(testFilename).pipe(writer);
             // await fsp.copyFile(testFilename, `${folderPath}/${testFilename}`);
-            await fsp.unlink(testFilename);
+            // await fsp.unlink(testFilename);
             console.log('done')
         } catch (error) {
             console.error(error);
