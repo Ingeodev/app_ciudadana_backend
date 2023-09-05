@@ -5,7 +5,7 @@ const joi = require('joi');
 const not_path_string = joi.string().trim().regex(/([\\/#?!%*:|"'`<>{}=&$+@])+|(\.\.)+/, { invert: true, name: 'Path-like string' });
 
 const saveFolderSchema = joi.object({
-    folder: not_path_string.required(),
+    folder: not_path_string.disallow('private').required(),
 });
 
 const multerMemorySingleItemSchema = joi.object({
@@ -18,7 +18,7 @@ const multerMemorySingleItemSchema = joi.object({
 }).required().error(new Error('A valid file is required.'));
 
 const downloadSchema = joi.object({
-    folder: not_path_string.required(),
+    folder: not_path_string.disallow('private').required(),
     fileName: not_path_string.required(),
 });
 
