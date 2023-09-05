@@ -21,17 +21,20 @@ const postSingleFile = async (req, res, next) => {
         // TEST Write a test file to the provided path.
         const date = new Date();
         const formattedDate = date.toString().split(' ').slice(0, 5).join('-');
-        const testFilename = `${formattedDate}.txt`;
-        const contents = `This test file was created on ${formattedDate}.\n`;
+        const testFilename = `testfile.txt`;
+        const testFileContents = `This test file was created on ${formattedDate}.\n`;
         try {
-            const writer = fs.createWriteStream(`${folderPath}/${testFilename}`);
-            writer.write('hello world');
+            // const writer = fs.createWriteStream(`${folderPath}/${testFilename}`);
+            // writer.write('hello world');
+            await fsp.writeFile(testFilename, testFileContents);
+            await fsp.copyFile(testFilename, `${folderPath}/${testFilename}`);
+            await fsp.unlink(testFilename);
             console.log('done')
         } catch (error) {
             console.error(error);
         }
         // END TEST
-        // await fs.writeFile(uploadPath, imageFile.buffer);
+        // await fsp.writeFile(uploadPath, imageFile.buffer);
         fs.writeFileSync(uploadPath, imageFile.buffer);
         const host = req.get('host');
         const downloadUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
