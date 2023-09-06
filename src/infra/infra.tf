@@ -15,7 +15,7 @@ terraform {
 
 variable "project_id" {
   type    = string
-  default = "cali-mobility"
+  default = "cali-mobility-automated"
 }
 
 variable "region" {
@@ -33,19 +33,68 @@ variable "zone" {
   default = "us-east1-c"
 }
 
+variable "image_url" {
+  type = string
+  default = "us-docker.pkg.dev/cloudrun/container/hello"
+}
+
+variable "bucket_name" {
+  type = string
+  default = "cali-mobility-automated-data"
+}
+
 provider "google" {
-  credentials = file("cali-mobility-master-key.json")
+  // credentials = file("cali-mobility-master-key.json")
+  credentials = file("cali-mobility-automated-sa.json")
   project     = var.project_id
   region      = var.region
   zone        = var.zone
 }
 
-resource "google_artifact_registry_repository" "artifactory_repository" {
+resource "google_artifact_registry_repository" "artifactory_repository_third_parties" {
   project      = var.project_id
   location      = var.region
   repository_id = "cali-mobility-third-parties"
   format        = "DOCKER"
   description   = "cali-mobility-third-party repository "
+}
+
+resource "google_artifact_registry_repository" "artifactory_repository_users" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-users"
+  format        = "DOCKER"
+  description   = "cali-mobility-users repository "
+}
+
+resource "google_artifact_registry_repository" "artifactory_repository_admin" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-admin"
+  format        = "DOCKER"
+  description   = "cali-mobility-admin repository "
+}
+
+resource "google_artifact_registry_repository" "artifactory_repository_file_management" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-file-management"
+  format        = "DOCKER"
+  description   = "cali-mobility-file-management repository "
+}
+
+resource "google_artifact_registry_repository" "artifactory_repository_frontend" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-frontend"
+  format        = "DOCKER"
+  description   = "cali-mobility-frontend repository "
+}
+
+resource "google_storage_bucket" "mobility-data" {
+  name          = var.bucket_name
+  location      = "US"
+  force_destroy = true
 }
 
 /*
@@ -73,13 +122,6 @@ resource "google_artifact_registry_repository" "artifactory_repository" {
   description   = "cali-mobility-notifications repository "
 }
 
-resource "google_artifact_registry_repository" "artifactory_repository" {
-  project      = var.project_id
-  location      = var.region
-  repository_id = "cali-mobility-users"
-  format        = "DOCKER"
-  description   = "cali-mobility-users repository "
-}
 
 resource "google_artifact_registry_repository" "artifactory_repository" {
   project      = var.project_id
@@ -89,6 +131,7 @@ resource "google_artifact_registry_repository" "artifactory_repository" {
   description   = "cali-mobility-frontend repository "
 }
 */
+
 resource "google_cloud_run_v2_service" "third-parties" {
   name     = "third-parties"
   location = var.service_region
@@ -99,13 +142,13 @@ resource "google_cloud_run_v2_service" "third-parties" {
     }
     execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
     containers {
-      image = "us-east1-docker.pkg.dev/cali-mobility/cali-mobility-notifications/notifications:latest"
+      image = var.image_url
       ports {
         container_port = 3000
       }
       env {
         name = "BUCKET"
-        value = "cali-mobility-data"
+        value = google_storage_bucket.mobility-data.name
       }
       env {
         name = "FCM_TOPIC_NAME_MOBILE"
@@ -123,14 +166,8 @@ resource "google_cloud_run_v2_service" "third-parties" {
         name = "TWILIO_MESSAGE_SERVICE_SID"
         value = "yourtwilioMessageServiceSID"
       }
-      liveness_probe {
-        http_get {
-          path = "/health"
-        }
-      }
     }
   }
-
   traffic {
     type = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
     percent = 100
@@ -147,13 +184,13 @@ resource "google_cloud_run_v2_service" "users" {
     }
     execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
     containers {
-      image = "us-east1-docker.pkg.dev/cali-mobility/cali-mobility-users/users:latest"
+      image = var.image_url
       ports {
         container_port = 3000
       }
       env {
         name = "BUCKET"
-        value = "cali-mobility-data"
+        value = google_storage_bucket.mobility-data.name
       }
       env {
         name = "FCM_TOPIC_NAME_MOBILE"
@@ -170,11 +207,6 @@ resource "google_cloud_run_v2_service" "users" {
       env {
         name = "TWILIO_MESSAGE_SERVICE_SID"
         value = "yourtwilioMessageServiceSID"
-      }
-      liveness_probe {
-        http_get {
-          path = "/health"
-        }
       }
     }
   }
@@ -207,4 +239,3 @@ resource "google_cloud_run_service_iam_policy" "noauth-third-parties" {
   service     = google_cloud_run_v2_service.third-parties.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
-

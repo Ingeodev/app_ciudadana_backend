@@ -60,6 +60,7 @@ src/account_service_key.json
 
 src/maps_service_key.json
 src/infra/cali-mobility-sa.json
+src/infra/cali-mobility-automated-sa.json
 #
 src/uploads/*
 
