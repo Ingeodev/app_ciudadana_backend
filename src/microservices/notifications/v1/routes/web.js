@@ -53,7 +53,7 @@ router.post('/advertising/delete', advertisingController.postAdvertisementDelete
 
 //#region Reports end-points
 // Retrieve all the reports by user.
-router.get('/security/reports', reportController.getListAllByUser);
+router.get('/security/reports', reportController.getListAll);
 //#endregion
 
 //#region Security end-points

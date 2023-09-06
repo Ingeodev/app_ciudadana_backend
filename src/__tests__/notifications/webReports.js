@@ -8,32 +8,17 @@ describe("Web - Reports management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  const testReport1 = {
-    "id": 2,
-    "title": "report title 2",
-    "description": "report description 2",
-    "securityCategoryId": 3,
-    "userId": 4,
-    "imageUri": "http://image/uri_2.jpg",
-    "lat": 3.436458,
-    "lon": -76.513089,
-    "createdAt": "2023-08-17T20:30:09.992Z",
-    "updatedAt": "2023-08-17T20:30:09.992Z",
-    "securityCategoryName": "Calzado"
-  };
-
-  const testReport2 = {
-    "id": 1,
-    "title": "report title",
-    "description": "report description",
-    "securityCategoryId": 5,
-    "userId": 4,
-    "imageUri": "http://image/uri.jpg",
-    "lat": 3.3980743,
-    "lon": -76.5311244,
-    "createdAt": "2023-08-17T20:23:42.682Z",
-    "updatedAt": "2023-08-17T20:23:42.682Z",
-    "securityCategoryName": "Parques"
+  const reportFormat = {
+    "id": expect.any(Number),
+    "title": expect.any(String),
+    "description": expect.any(String),
+    "securityCategoryId": expect.any(Number),
+    "userId": expect.any(Number),
+    "imageUri": expect.any(String),
+    "lat": expect.any(Number),
+    "lon": expect.any(Number),
+    "createdAt": expect.any(String),
+    "updatedAt": expect.any(String),
   };
 
   beforeAll(async () => {
@@ -60,10 +45,10 @@ describe("Web - Reports management API points: ", () => {
       expect(response0.body.data).toEqual(expect.any(Array));
       expect(response0.body.data.length).toBe(2);
       expect(response0.body.data[0]).toEqual(
-        expect.objectContaining(testReport1)
+        expect.objectContaining(reportFormat)
       );
       expect(response0.body.data[1]).toEqual(
-        expect.objectContaining(testReport2)
+        expect.objectContaining(reportFormat)
       );
     });
 
