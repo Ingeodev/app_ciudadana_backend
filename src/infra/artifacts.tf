@@ -40,7 +40,6 @@ provider "google" {
   zone        = var.zone
 }
 
-/*
 resource "google_artifact_registry_repository" "artifactory_repository" {
   project      = var.project_id
   location      = var.region
@@ -49,6 +48,7 @@ resource "google_artifact_registry_repository" "artifactory_repository" {
   description   = "cali-mobility-third-party repository "
 }
 
+/*
 resource "google_artifact_registry_repository" "artifactory_repository" {
   project      = var.project_id
   location      = var.region
