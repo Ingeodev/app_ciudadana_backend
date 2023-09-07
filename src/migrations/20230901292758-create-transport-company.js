@@ -52,21 +52,6 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        lat: {
-          type: Sequelize.FLOAT,
-          allowNull: false,
-          unique: false,
-        },
-        lon: {
-          type: Sequelize.FLOAT,
-          allowNull: false,
-          unique: false,
-        },
-        geolocation: {
-          type: Sequelize.GEOMETRY,
-          allowNull: false,
-          unique: false,
-        },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,

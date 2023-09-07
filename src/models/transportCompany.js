@@ -67,21 +67,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: false,
       },
-      lat: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        unique: false,
-      },
-      lon: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        unique: false,
-      },
-      geolocation: {
-        type: DataTypes.GEOMETRY,
-        allowNull: false,
-        unique: false,
-      },
     },
     {
       sequelize,

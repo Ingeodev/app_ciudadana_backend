@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/transportCompanies.js")
 
 /**
  * Create a transport company
- * @param {object} req - Object containing the name, nit, phone, siteUri, description, address, imageUri, lat, lon
+ * @param {object} req - Object containing the name, nit, phone, siteUri, description, address, imageUri
  * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -22,7 +22,7 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { name, description, address, imageUri, lat, lon, nit, phone, siteUri } =
+    const { name, description, address, imageUri, nit, phone, siteUri } =
       await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
@@ -31,9 +31,6 @@ exports.postRegister = async (req, res, next) => {
       description,
       address,
       imageUri,
-      lat,
-      lon,
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
       nit,
       phone,
       siteUri,
@@ -41,8 +38,6 @@ exports.postRegister = async (req, res, next) => {
 
     const result = await db.TransportCompany.create(dataQuery);
     delete result.dataValues.createdBy;
-    // ! Front necesita la variable de geolocation?? 
-    delete result.dataValues.geolocation;
     delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
@@ -53,7 +48,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update a transport company
- * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, address, imageUri, lat, lon
+ * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, address, imageUri
  * @return {object} Response contains: statuscode (integer), json (transport company object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -76,8 +71,6 @@ exports.postEdit = async (req, res, next) => {
       description,
       address,
       imageUri,
-      lat,
-      lon,
       nit,
       phone,
       siteUri,
@@ -89,10 +82,6 @@ exports.postEdit = async (req, res, next) => {
       description,
       address,
       imageUri,
-      lat,
-      lon,
-      // ! Decirle al front que siempre envie el par alt, lon
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
       nit,
       phone,
       siteUri,
@@ -118,8 +107,6 @@ exports.postEdit = async (req, res, next) => {
 
     const resultUpdate = await companyInDb.update(dataQuery);
     delete resultUpdate.dataValues.createdBy;
-    // ! Front necesita la variable de geolocation??
-    delete resultUpdate.dataValues.geolocation;
     delete resultUpdate.dataValues.deletedAt;
 
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
@@ -167,7 +154,7 @@ exports.getProfile = async (req, res, next) => {
         // createdBy: createdBy.id,
       },
       attributes: {
-        exclude: ["createdBy", "geolocation", "deletedAt"],
+        exclude: ["createdBy", "deletedAt"],
       },
     });
 
@@ -182,8 +169,6 @@ exports.getProfile = async (req, res, next) => {
 
     // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
     delete companyInDb.dataValues.createdBy;
-    // ! Front necesita la variable de geolocation??
-    delete companyInDb.dataValues.geolocation;
     delete companyInDb.dataValues.deletedAt;
 
     return res.status(StatusCodes.OK).send({
@@ -273,7 +258,7 @@ exports.getAll = async (req, res, next) => {
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
       attributes: {
-        exclude: ["createdBy", "geolocation", "deletedAt"],
+        exclude: ["createdBy","deletedAt"],
       },
     });
 

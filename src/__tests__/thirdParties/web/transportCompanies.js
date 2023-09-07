@@ -12,8 +12,8 @@ describe("Web - Transport Companies management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  const min = 100000;
-  const max = 900000;
+  const min = 1000000;
+  const max = 9000000;
 
   const testCompany0 = {
     name: uuidV4(),
@@ -22,9 +22,7 @@ describe("Web - Transport Companies management API points: ", () => {
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    lat: 2.482661,
-    lon: -76.562636,
+    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
   };
 
   const testCompany1 = {
@@ -34,9 +32,7 @@ describe("Web - Transport Companies management API points: ", () => {
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    lat: 2.482661,
-    lon: -76.562636,
+    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
   };
 
   const editCompany0 = {
@@ -46,9 +42,7 @@ describe("Web - Transport Companies management API points: ", () => {
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    lat: 2.482661,
-    lon: -76.562636,
+    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
   };
 
   const editCompany1 = {
@@ -58,9 +52,7 @@ describe("Web - Transport Companies management API points: ", () => {
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
     address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    lat: 2.482661,
-    lon: -76.562636,
+    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
   };
 
   beforeAll(async () => {
@@ -204,36 +196,6 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response4.body).toHaveProperty("status", 400);
       expect(response4.body).toHaveProperty("code");
       expect(response4.body).toHaveProperty("detail");
-
-      // 9. ----------------------------------------------
-      const response10 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCompany0,
-          lat: "must be a float number",
-        });
-      expect(response10.statusCode).toBe(400);
-      expect(response10.body).not.toHaveProperty("meta");
-      expect(response10.body).not.toHaveProperty("data");
-      expect(response10.body).toHaveProperty("status", 400);
-      expect(response10.body).toHaveProperty("code");
-      expect(response10.body).toHaveProperty("detail");
-
-      // 10. ----------------------------------------------
-      const response11 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCompany0,
-          lon: "must be a float number",
-        });
-      expect(response11.statusCode).toBe(400);
-      expect(response11.body).not.toHaveProperty("meta");
-      expect(response11.body).not.toHaveProperty("data");
-      expect(response11.body).toHaveProperty("status", 400);
-      expect(response11.body).toHaveProperty("code");
-      expect(response11.body).toHaveProperty("detail");
     });
 
     test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
@@ -565,6 +527,50 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response6.body).toHaveProperty("code");
       expect(response6.body).toHaveProperty("detail");
 
+      // 6. -------------------------------------
+      const response7 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editCompany0,
+          siteUri: "is.not.uri",
+        });
+      expect(response7.statusCode).toBe(400);
+      expect(response7.body).not.toHaveProperty("meta");
+      expect(response7.body).not.toHaveProperty("data");
+      expect(response7.body).toHaveProperty("status", 400);
+      expect(response7.body).toHaveProperty("code");
+      expect(response7.body).toHaveProperty("detail");
+
+      // 7. -------------------------------------
+      const response8 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editCompany0,
+          imageUri: "is.not.uri",
+        });
+      expect(response8.statusCode).toBe(400);
+      expect(response8.body).not.toHaveProperty("meta");
+      expect(response8.body).not.toHaveProperty("data");
+      expect(response8.body).toHaveProperty("status", 400);
+      expect(response8.body).toHaveProperty("code");
+      expect(response8.body).toHaveProperty("detail");
+
+      // 8. -------------------------------------
+      const response9 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editCompany0,
+          address: -5,
+        });
+      expect(response9.statusCode).toBe(400);
+      expect(response9.body).not.toHaveProperty("meta");
+      expect(response9.body).not.toHaveProperty("data");
+      expect(response9.body).toHaveProperty("status", 400);
+      expect(response9.body).toHaveProperty("code");
+      expect(response9.body).toHaveProperty("detail");
     });
 
     

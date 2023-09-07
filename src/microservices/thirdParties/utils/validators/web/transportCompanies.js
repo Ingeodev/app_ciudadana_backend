@@ -11,9 +11,7 @@ const registerSchema = joi.object({
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" ").required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  lat: joi.number().min(-90).max(90).required(),
-  lon: joi.number().min(-180).max(180).required(),
+  imageUri: joi.string().uri().trim().empty("").invalid(" ")
 });
 
 const editSchema = joi.object({
@@ -26,9 +24,7 @@ const editSchema = joi.object({
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  lat: joi.number().min(-90).max(90),
-  lon: joi.number().min(-180).max(180),
+  imageUri: joi.string().uri().trim().empty("").invalid(" ")
 });
 
 const getProfile = joi.object({
