@@ -5,7 +5,6 @@ const authorization = require("../../../../middleware/authMiddleware");
 const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 
 const advertisingController = require('../controllers/webAdvertisement');
-// const advertisementCategoryController = require('../controllers/webAdvertisementCategory');
 const securityController = require("../controllers/webSecurity");
 const securityCatController = require("../controllers/webSecurityCategories");
 const attentionLinesController = require("../controllers/webAttentionLines");
@@ -16,6 +15,7 @@ const dependenciesController = require("../controllers/webDependencies");
 const mobileServiceController = require("../controllers/webMobileService");
 const genderCategoryC = require("../controllers/webGenderCategories");
 const genderAttLineC = require("../controllers/webGenderAttentionLines");
+const securityAttentionPointsController = require("../controllers/webSecurityAttentionPoint");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -37,19 +37,19 @@ router.post('/advertising/status', advertisingController.postAdvertisementStatus
 router.post('/advertising/delete', advertisingController.postAdvertisementDelete);
 //#endregion
 
-// //#region Advertisement Categories end-points
-// // Retrieve all the advertisement Categories.
-// router.get('/advertisementCategory', advertisementCategoryController.getAllCategories);
+//#region Security Attention Point end-points
+// Retrieve all the Security Attention Points.
+router.get('/security/attentionPoint', securityAttentionPointsController.getAllSecurityAttentionPoints);
 
-// // Create a new advertisement Category.
-// router.post('/advertisementCategory', advertisementCategoryController.postCategory);
+// Create a new Security Attention Point.
+router.post('/security/attentionPoint', securityAttentionPointsController.postCreateSecurityAttentionPoint);
 
-// // Edit an existing advertisement Category.
-// router.post('/advertisementCategory/edit', advertisementCategoryController.postEditCategory);
+// Edit an existing Security Attention Point.
+router.post('/security/attentionPoint/edit', securityAttentionPointsController.postEditSecurityAttentionPoint);
 
-// // Delete an advertisement Category.
-// router.post('/advertisementCategory/delete', advertisementCategoryController.postCategoryDelete);
-// //#endregion
+// Delete a Security Attention Point.
+router.post('/security/attentionPoint/delete', securityAttentionPointsController.postDeleteSecurityAttentionPoint);
+//#endregion
 
 //#region Reports end-points
 // Retrieve all the reports by user.

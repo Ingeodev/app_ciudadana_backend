@@ -11,6 +11,7 @@ const reportController = require("../controllers/mobileReports");
 const mobileServiceController = require("../controllers/mobileMobileService");
 const dependenciesController = require("../controllers/mobileDependencies");
 const genderController = require("../controllers/mobileGender");
+const securityAttentionPointsController = require("../controllers/mobileSecurityAttentionPoint");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -59,6 +60,13 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   reportController.getListAllClosest
 );
+//#endregion
+
+//#region Security Attention Point end-points
+// Retrieve all the Security Attention Points.
+router.get('/security/attention_points',
+  // hasPermissions({ role: "super_master_user" }),
+  securityAttentionPointsController.getSecurityAttentionPoints);
 //#endregion
 
 //#region AttentionLines end-points
