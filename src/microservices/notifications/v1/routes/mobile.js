@@ -10,6 +10,7 @@ const socialNetworkController = require("../controllers/mobileSocialNetwork");
 const reportController = require("../controllers/mobileReports");
 const mobileServiceController = require("../controllers/mobileMobileService");
 const dependenciesController = require("../controllers/mobileDependencies");
+const genderController = require("../controllers/mobileGender");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -79,6 +80,15 @@ router.get(
   socialNetworkController.getSocialNetworks
 );
 //#endregion
+
+//#region gender end-points
+router.get(
+  "/gender",
+  // hasPermissions({ role: "super_master_user" }),
+  genderController.getCategoriesnAttentionLines
+);
+//#endregion
+
 
 router.get('/services/', mobileServiceController.getMobileServices);
 
