@@ -59,8 +59,9 @@ src/email_service_key.json
 src/account_service_key.json
 
 src/maps_service_key.json
-src/infra/cali-mobility-sa.json
-src/infra/cali-mobility-automated-sa.json
+src/infra/nonprod_sa.json
+src/infra/dev_sa.json
+src/infra/prod_sa.json
 #
 src/uploads/*
 
