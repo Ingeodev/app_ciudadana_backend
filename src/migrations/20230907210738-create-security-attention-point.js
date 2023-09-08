@@ -18,7 +18,7 @@ module.exports = {
         allowNull: false,
       },
       phone: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(15),
         allowNull: false,
       },
       color: {
