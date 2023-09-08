@@ -70,6 +70,12 @@ router.post(
 );
 
 // * ------------------ Company Services -----------------------------
+router.get(
+  "/company_service/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  companyServicesController.getServices
+);
+
 router.post(
   "/company_service",
   // hasPermissions({ role: "super_master_user" }),

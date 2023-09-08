@@ -1,7 +1,53 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companyServices.js");
+const validatorCompany = require("../../../utils/validators/web/companies.js");
 
+exports.getServices = async (req, res, next) => {
+  try {
+    const objPage = await validatorCompany.vWebGetListAll({
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+    });
+
+    const companiesInDb = await db.ThirdPartyService.findAndCountAll({
+      where: { companyId: parseInt(req.params.id) },
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["createdBy", "deletedAt"],
+      },
+    });
+
+    if (companiesInDb.count <= 0)
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "There are not services companies registered",
+      };
+    if (companiesInDb.rows.length <= 0)
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    const totalPages = Math.ceil(companiesInDb.count / objPage.size);
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: companiesInDb.count,
+        totalPages: totalPages,
+      },
+      data: companiesInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    // console.error("companies could not be recovered: ", error.message);
+    return next(error);
+  }
+};
 
 /**
  * Creates and updates company services
