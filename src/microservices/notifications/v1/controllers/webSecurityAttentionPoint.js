@@ -32,9 +32,31 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
 // Edit an security attention point.
 const postEditSecurityAttentionPoint = async (req, res, next) => {
     try {
-        return res.status(StatusCodes.CREATED)
+        const update = await validator.validateSecurityAttentionPointUpdateSchema(req.body);
+        const existingPoint = await db.SecurityAttentionPoint.findByPk(update.id);
+        if (existingPoint == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Security Attention Point with id ${update.id} does not exist.`
+            };
+        delete update.id;
+        if (update.lat != null) {
+            update.geolocation = {
+                type: 'Point',
+                coordinates: [update.lon, update.lat],
+            }
+            delete update.lat;
+            delete update.lon;
+        }
+        const updatedPoint = await existingPoint.update(update);
+        const data = {
+            ...updatedPoint.dataValues, deletedAt: undefined, geolocation: undefined,
+            lat: updatedPoint.dataValues.geolocation.coordinates[1],
+            lon: updatedPoint.dataValues.geolocation.coordinates[0],
+        };
+        return res.status(StatusCodes.OK)
             .json({
-                data: { msg: 'TODO - Edit a security attention point.' },
+                data,
             });
     } catch (error) {
         return next(error);
