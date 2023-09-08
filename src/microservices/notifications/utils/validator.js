@@ -5,7 +5,8 @@ const uri_string = joi.string().uri();
 const integer_number = joi.number().integer();
 const positive_integer = integer_number.positive();
 const non_negative_integer = integer_number.min(0);
-const hex_color_string = joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
+const hex_color_string = joi.string().trim().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
+const numberic_string = joi.string().trim().regex(/^[0-9]*$/, 'Numeric String');
 const latitude_number = joi.number().min(-90).max(90);
 const longitude_number = joi.number().min(-180).max(180);
 
@@ -93,21 +94,29 @@ const multerMemorySingleItemSchema = joi.object({
   buffer: joi.binary().required(),
 }).required().error(new Error('A valid file is required.'));
 
-const registerSchema = joi.object({
+const securityAttentionPointCreationSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
-      'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
-    }),
-  categoryId: joi.number().integer().greater(0).invalid(0).required(),
-  description: joi.string().trim().empty("").invalid(" "),
-  phone: joi.string().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  description: joi.string().trim().empty("").invalid(" ").max(200).required(),
+  phone: numberic_string.min(10).max(15).required(),
+  color: hex_color_string.required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  lat: joi.number().min(-90).max(90).required(),
-  lon: joi.number().min(-180).max(180).required(),
+  imageUri: uri_string.required(),
+  lat: latitude_number.required(),
+  lon: longitude_number.required(),
 });
 
+const securityAttentionPointUpdateSchema = joi.object({
+  id: non_negative_integer.required(),
+  name: joi.string().trim().empty("").invalid(" ").max(50),
+  description: joi.string().trim().empty("").invalid(" ").max(200),
+  phone: numberic_string.min(10).max(15),
+  color: hex_color_string,
+  address: joi.string().trim().empty("").invalid(" "),
+  imageUri: uri_string,
+  lat: latitude_number,
+  lon: longitude_number,
+}).or('name', 'description', 'phone', 'color', 'address', 'imageUri', 'lat', 'lon')
+  .and('lat', 'lon');
 
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
@@ -173,5 +182,11 @@ module.exports = {
   },
   validateMulterMemorySingleItemSchema: async inputData => {
     return await use_validator_on_data(multerMemorySingleItemSchema, inputData);
+  },
+  validateSecurityAttentionPointCreationSchema: async inputData => {
+    return await use_validator_on_data(securityAttentionPointCreationSchema, inputData);
+  },
+  validateSecurityAttentionPointUpdateSchema: async inputData => {
+    return await use_validator_on_data(securityAttentionPointUpdateSchema, inputData);
   },
 };

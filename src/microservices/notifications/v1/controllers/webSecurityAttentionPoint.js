@@ -6,9 +6,23 @@ const validator = require('../../utils/validator');
 // Create an security attention point.
 const postCreateSecurityAttentionPoint = async (req, res, next) => {
     try {
+        const { name, description, phone, color, address, imageUri, lat, lon } =
+            await validator.validateSecurityAttentionPointCreationSchema(req.body);
+        const geolocation = {
+            type: 'Point',
+            coordinates: [lon, lat],
+        };
+        const createdSAP = await db.SecurityAttentionPoint.create({
+            name, description, phone, color, address, imageUri, geolocation
+        });
+        const data = {
+            ...createdSAP.dataValues, deletedAt: undefined, geolocation: undefined,
+            lat: createdSAP.dataValues.geolocation.coordinates[1],
+            lon: createdSAP.dataValues.geolocation.coordinates[0],
+        };
         return res.status(StatusCodes.CREATED)
             .json({
-                data: { msg: 'TODO - Create a security attention point.' },
+                data,
             });
     } catch (error) {
         return next(error);
