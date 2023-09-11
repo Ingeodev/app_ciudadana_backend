@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
+const { Sequelize } = require("sequelize");
 
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
@@ -6,10 +7,17 @@ const validator = require('../../utils/validator');
 // Retrieve the available security attention points.
 const getSecurityAttentionPoints = async (req, res, next) => {
     try {
-        const { latitude, longitude } = await validator.validateSimpleLocationSchema(req.query);
-        let order = [["createdAt", "DESC"]]
-        if (latitude != null && longitude != null)
-            order = undefined;  // TODO: use geographic point order
+        const { lat, lon } = await validator.validateOptionalLocationSchema(req.query);
+        let order = [["name", "ASC"]]
+        if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
+            const pointObj = {
+                type: 'Point',
+                coordinates: [lon, lat],
+            };
+            const geoPoint = Sequelize.fn('ST_GeomFromGeoJSON', JSON.stringify(pointObj));
+            const distance = Sequelize.fn('ST_Distance', Sequelize.col('geolocation'), geoPoint);
+            order = [[distance, "ASC"]]
+        }
         const allPoints = await db.SecurityAttentionPoint.findAll({
             unique: true,
             paranoid: true,
@@ -23,7 +31,21 @@ const getSecurityAttentionPoints = async (req, res, next) => {
                 status: StatusCodes.NOT_FOUND,
                 message: 'There are no Security Attention Points registered in the database.',
             };
-        const data = allPoints.map(row => row.dataValues);
+        const data = allPoints.map(row => {
+            const mappedObject = {
+                id: row.dataValues.id,
+                name: row.dataValues.name,
+                color: row.dataValues.color,
+                iconMap: row.dataValues.imageUri,
+                description: row.dataValues.description,
+                address: row.dataValues.address,
+                phone: row.dataValues.phone,
+                image: row.dataValues.imageUri,
+                lat: row.dataValues.geolocation.coordinates[1],
+                lon: row.dataValues.geolocation.coordinates[0],
+            };
+            return mappedObject;
+        });
         return res.status(StatusCodes.OK).json(data);
     } catch (error) {
         return next(error);

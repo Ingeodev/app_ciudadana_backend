@@ -122,6 +122,11 @@ const securityAttentionPointUpdateSchema = joi.object({
 }).or('name', 'description', 'phone', 'color', 'address', 'imageUri', 'lat', 'lon')
   .and('lat', 'lon');
 
+const optionalLocationSchema = joi.object({
+  lat: latitude_number,
+  lon: longitude_number,
+}).and('lat', 'lon');
+
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
  * @param {joi.ObjectSchema} validator_schema Validation schema to use.
@@ -195,5 +200,8 @@ module.exports = {
   },
   validateSecurityAttentionPointUpdateSchema: async inputData => {
     return await use_validator_on_data(securityAttentionPointUpdateSchema, inputData);
+  },
+  validateOptionalLocationSchema: async inputData => {
+    return await use_validator_on_data(optionalLocationSchema, inputData);
   },
 };
