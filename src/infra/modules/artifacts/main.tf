@@ -37,3 +37,11 @@ resource "google_artifact_registry_repository" "artifactory_repository_frontend"
   format        = "DOCKER"
   description   = "cali-mobility-frontend repository "
 }
+
+resource "google_artifact_registry_repository" "artifactory_repository_notifications" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-notifications"
+  format        = "DOCKER"
+  description   = "cali-mobility-notifications repository "
+}
