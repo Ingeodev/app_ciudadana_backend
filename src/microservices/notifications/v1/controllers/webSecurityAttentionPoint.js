@@ -66,9 +66,17 @@ const postEditSecurityAttentionPoint = async (req, res, next) => {
 // Delete an security attention point.
 const postDeleteSecurityAttentionPoint = async (req, res, next) => {
     try {
-        return res.status(StatusCodes.CREATED)
+        const { id } = await validator.validateSimpleDeleteByIdSchema(req.body);
+        const existingPoint = await db.SecurityAttentionPoint.findByPk(id);
+        if (existingPoint == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Security Attention Point with id ${id} has already been deleted.`
+            };
+        await existingPoint.destroy();
+        return res.status(StatusCodes.OK)
             .json({
-                data: { msg: 'TODO - Delete a security attention point.' },
+                data: { id },
             });
     } catch (error) {
         return next(error);
