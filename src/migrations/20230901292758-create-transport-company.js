@@ -42,11 +42,6 @@ module.exports = {
           allowNull: true,
           unique: false,
         },
-        address: {
-          type: Sequelize.STRING,
-          allowNull: false,
-          unique: false,
-        },
         imageUri: {
           type: Sequelize.STRING,
           allowNull: true,

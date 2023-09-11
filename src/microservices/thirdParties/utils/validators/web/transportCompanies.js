@@ -10,7 +10,6 @@ const registerSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: joi.string().uri().trim().empty("").invalid(" ")
 });
 
@@ -23,7 +22,6 @@ const editSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri().trim().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri().trim().empty("").invalid(" ")
 });
 

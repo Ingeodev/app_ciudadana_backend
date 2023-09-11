@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+      TransportCompany.hasMany(models.TransportRoute, {
+        foreignKey: {
+          name: "companyId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   TransportCompany.init(
@@ -55,11 +62,6 @@ module.exports = (sequelize, DataTypes) => {
       siteUri: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: false,
-      },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
         unique: false,
       },
       imageUri: {

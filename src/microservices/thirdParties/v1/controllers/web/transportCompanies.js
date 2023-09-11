@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/transportCompanies.js")
 
 /**
  * Create a transport company
- * @param {object} req - Object containing the name, nit, phone, siteUri, description, address, imageUri
+ * @param {object} req - Object containing the name, nit, phone, siteUri, description, imageUri
  * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -22,14 +22,12 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { name, description, address, imageUri, nit, phone, siteUri } =
-      await validator.vWebPostRegister(req.body);
+    const { name, description, imageUri, nit, phone, siteUri } = await validator.vWebPostRegister(req.body);
 
     const dataQuery = {
       createdBy: createdBy.id,
       name,
       description,
-      address,
       imageUri,
       nit,
       phone,
@@ -48,7 +46,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update a transport company
- * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, address, imageUri
+ * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, imageUri
  * @return {object} Response contains: statuscode (integer), json (transport company object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -69,7 +67,6 @@ exports.postEdit = async (req, res, next) => {
       id,
       name,
       description,
-      address,
       imageUri,
       nit,
       phone,
@@ -80,7 +77,6 @@ exports.postEdit = async (req, res, next) => {
       id,
       name,
       description,
-      address,
       imageUri,
       nit,
       phone,
