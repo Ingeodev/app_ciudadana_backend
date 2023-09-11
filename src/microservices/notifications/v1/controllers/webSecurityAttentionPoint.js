@@ -17,6 +17,7 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
         });
         const data = {
             ...createdSAP.dataValues, deletedAt: undefined, geolocation: undefined,
+            createdBy: undefined,
             lat: createdSAP.dataValues.geolocation.coordinates[1],
             lon: createdSAP.dataValues.geolocation.coordinates[0],
         };
@@ -51,6 +52,7 @@ const postEditSecurityAttentionPoint = async (req, res, next) => {
         const updatedPoint = await existingPoint.update(update);
         const data = {
             ...updatedPoint.dataValues, deletedAt: undefined, geolocation: undefined,
+            createdBy: undefined,
             lat: updatedPoint.dataValues.geolocation.coordinates[1],
             lon: updatedPoint.dataValues.geolocation.coordinates[0],
         };
@@ -83,6 +85,31 @@ const postDeleteSecurityAttentionPoint = async (req, res, next) => {
     }
 };
 
+// Retrieve only one security attention point by ID
+const getOneSecurityAttentionPoint = async (req, res, next) => {
+    try {
+        const { id } = await validator.validateSimpleDeleteByIdSchema(req.params);
+        const existingPoint = await db.SecurityAttentionPoint.findByPk(id);
+        if (existingPoint == null)
+            throw {
+                status: StatusCodes.NOT_FOUND,
+                message: `The requested Security Attention Point with id ${id} does not exist.`
+            };
+        const data = {
+            ...existingPoint.dataValues, deletedAt: undefined, geolocation: undefined,
+            createdBy: undefined,
+            lat: existingPoint.dataValues.geolocation.coordinates[1],
+            lon: existingPoint.dataValues.geolocation.coordinates[0],
+        };
+        return res.status(StatusCodes.OK)
+            .json({
+                data,
+            });
+    } catch (error) {
+        return next(error);
+    }
+};
+
 // Retrieve all the available security attention points.
 const getAllSecurityAttentionPoints = async (req, res, next) => {
     try {
@@ -108,7 +135,16 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
                 status: StatusCodes.BAD_REQUEST,
                 message: '"page[number]" is too large for the number of possible pages.',
             };
-        const data = pagePoints.rows.map(row => row.dataValues);
+        const data = pagePoints.rows.map(row => {
+            return {
+                ...row.dataValues,
+                deletedAt: undefined,
+                geolocation: undefined,
+                createdBy: undefined,
+                lat: row.dataValues.geolocation.coordinates[1],
+                lon: row.dataValues.geolocation.coordinates[0],
+            };
+        });
         return res.status(StatusCodes.OK).json({
             meta: {
                 page: pagination.number,
@@ -128,4 +164,5 @@ module.exports = {
     postEditSecurityAttentionPoint,
     postDeleteSecurityAttentionPoint,
     getAllSecurityAttentionPoints,
+    getOneSecurityAttentionPoint,
 };

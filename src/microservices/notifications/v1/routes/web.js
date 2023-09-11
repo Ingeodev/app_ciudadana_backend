@@ -41,6 +41,9 @@ router.post('/advertising/delete', advertisingController.postAdvertisementDelete
 // Retrieve all the Security Attention Points.
 router.get('/security/attentionPoint', securityAttentionPointsController.getAllSecurityAttentionPoints);
 
+// Retrieve one the Security Attention Point by ID.
+router.get('/security/attentionPoint/:id', securityAttentionPointsController.getOneSecurityAttentionPoint);
+
 // Create a new Security Attention Point.
 router.post('/security/attentionPoint', securityAttentionPointsController.postCreateSecurityAttentionPoint);
 

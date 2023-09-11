@@ -38,6 +38,10 @@ const simpleDeleteByIdSchema = joi.object({
   id: non_negative_integer.required()
 });
 
+const simpleIdSchema = joi.object({
+  id: non_negative_integer.required()
+});
+
 const advertisementCategorySchema = joi.object({
   name: joi.string().trim().min(3).required(),
   color: hex_color_string.required(),
@@ -155,6 +159,9 @@ module.exports = {
   },
   validateSimpleDeleteByIdSchema: async (inputData) => {
     return await use_validator_on_data(simpleDeleteByIdSchema, inputData);
+  },
+  validateSimpleIdSchema: async (inputData) => {
+    return await use_validator_on_data(simpleIdSchema, inputData);
   },
   validateAdvertisementCategorySchema: async (inputData) => {
     return await use_validator_on_data(advertisementCategorySchema, inputData);
