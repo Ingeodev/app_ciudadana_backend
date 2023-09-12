@@ -54,6 +54,13 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_GET_ list dependencies](#get-list-dependencies)
         - [_GET_ download dependencies Excel file](#get-download-dependencies-excel-file)
         - [_GET_ download dependencies template file](#get-download-dependencies-template-file)
+      - [4.2.9. Security Attention Points](#429-security-attention-points)
+        - [_GET_ list security attention points (MOBILE)](#get-list-security-attention-points-mobile)
+        - [_POST_ create Security Attention Point](#post-create-security-attention-point)
+        - [_POST_ update Security Attention Point](#post-update-security-attention-point)
+        - [_POST_ delete Security Attention Point](#post-delete-security-attention-point)
+        - [_GET_ list Security Attention Points](#get-list-security-attention-points)
+        - [_GET_ single Security Attention Point](#get-single-security-attention-point)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
     - [4.4. File Management Microservice](#44-file-management-microservice)
       - [App Runner](#app-runner-2)
@@ -973,7 +980,7 @@ Route: src\microservices\notifications\v1\routes\mobile.js
 | /        | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
 
 ##### _GET_ list dependencies (MOBILE)
-\(\<Your_Host\>/api/mobile/v1/notifications/dependencies/\) llows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
+\(\<Your_Host\>/api/mobile/v1/notifications/dependencies/\) Allows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
 | -------------- | :----------------: | :----------: | --------------------------- |
@@ -1110,6 +1117,211 @@ It returns **200 _OK_** and the dependencies XLSX file on success.
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/template/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
 
 It returns **200 _OK_** and the template XLSX file on success.
+
+#### 4.2.9. Security Attention Points 
+
+The Security Attention Points end-points allow web users to manage the Security Attention Points shown to mobile users when they need assistance.
+
+**Mobile App**
+Path: http:localhost:3000/api/mobile/v1/notifications/security/attention_points
+Controller: src\microservices\notifications\v1\controllers\mobileSecurityAttentionPoint.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getSecurityAttentionPoints | Get all the security attention points that may be sorted by name or by shortest distance. |
+
+##### _GET_ list security attention points (MOBILE)
+\(\<Your_Host\>/api/mobile/v1/notifications/security/attention_points\) Allows mobile users to list all the Security Attention Points for assistance. This requests accepts location (``lon`` and ``lat``), although it is optional. The located request returns all the security attention points sorted by the shortest distance; the unlocated requests sorts the points by name. It accepts the following query parameters:
+
+| **Name** | **Type** | **Required** | **Description**            |
+| -------- | :------: | :----------: | -------------------------- |
+| _lon_    |  Double  |      No      | Longitude of the location. |
+| _lat_    |  Double  |      No      | Latitude of the location.  |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "id": 2,
+>         "name": "Edited Sample Point",
+>         "color": "#AAFFBB",
+>         "iconMap": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>         "description": "Example security attention Point",
+>         "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
+>         "phone": "3001234567",
+>         "image": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>         "lat": -76.5341,
+>         "lon": 3.423993
+>     },
+>     {
+>         "id": 4,
+>         "name": "Sample Point",
+>         "color": "#AAFFBB",
+>         "iconMap": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>         "description": "Example security attention Point",
+>         "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
+>         "phone": "3001234567",
+>         "image": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>         "lat": -76.5341,
+>         "lon": 3.423993
+>     },
+>     {
+>         "id": 3,
+>         "name": "Punto de seguridad 1",
+>         "color": "#de2138",
+>         "iconMap": "http://localhost:3001/api/v1/file_management/download/transport/0ae92c36-7111-4b89-8594-11afb96117f1.png",
+>         "description": "Es un campo nuevo por ser probado",
+>         "address": "Parque E, Medellín, Antioquia 050010, Colombia",
+>         "phone": "3105927851",
+>         "image": "http://localhost:3001/api/v1/file_management/download/transport/0ae92c36-7111-4b89-8594-11afb96117f1.png",
+>         "lat": -75.568484,
+>         "lon": 6.263376
+>     }
+> ]
+> ```
+
+**Web App**
+Path: http:localhost:3000/api/web/v1/notifications/security/attentionPoint
+Controller: src\microservices\notifications\v1\controllers\webSecurityAttentionPoint.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postCreateSecurityAttentionPoint | Create new Security Attention Point      |
+| /edit    | POST   | postEditSecurityAttentionPoint   | Update existing Security Attention Point |
+| /delete  | POST   | postDeleteSecurityAttentionPoint | Delete existing Security Attention Point |
+| /        | GET    | getAllSecurityAttentionPoints    | List all Security Attention Points       |
+| /:id     | GET    | getOneSecurityAttentionPoint     | Get only one Security Attention Point    |
+
+##### _POST_ create Security Attention Point
+\(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to create a new Security Attention Point. It receives the following body parameters:
+
+| **Name**      | **Type**       | **Required** | **Description**                               |
+| :------------ | :------------- | :----------- | :-------------------------------------------- |
+| _name_        | String         | Yes          | Name of the Security Attention Point.         |
+| _description_ | String         | Yes          | Description of the Security Attention Point.  |
+| _phone_       | Numeric        | Yes          | Phone number of the Security Attention Point. |
+| _color_       | String (Color) | Yes          | Color to show the Security Attention Point.   |
+| _address_     | String         | Yes          | Address of the Security Attention Point.      |
+| _imageUri_    | String (URI)   | Yes          | Icon of the Security Attention Point.         |
+| _lat_         | Double         | Yes          | Latitude of the Security Attention Point.     |
+| _lon_         | Double         | Yes          | Longitude of the Security Attention Point.    |
+
+It returns **201 _created_** and the created Security Attention Point on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >   "name": "Sample Point",
+  >   "description": "Example security attention Point",
+  >   "phone": "3001234567",
+  >   "color": "#AAFFBB",
+  >   "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
+  >   "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+  >   "lat": -76.534100,
+  >   "lon": 3.423993
+  > }
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 5,
+  >         "name": "Sample Point",
+  >         "description": "Example security attention Point",
+  >         "phone": "3001234567",
+  >         "color": "#AAFFBB",
+  >         "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
+  >         "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+  >         "updatedAt": "2023-09-12T14:53:18.212Z",
+  >         "createdAt": "2023-09-12T14:53:18.212Z",
+  >         "lat": -76.5341,
+  >         "lon": 3.423993
+  >     }
+  > }
+  > ```
+
+##### _POST_ update Security Attention Point
+
+
+##### _POST_ delete Security Attention Point
+
+
+##### _GET_ list Security Attention Points
+\(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to list the existing Security Attention Points in the database. It receives the following query parameters:
+
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |     Yes      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |     Yes      | Page size for pagination.   |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 10,
+>         "totalRecords": 3,
+>         "totalPages": 1
+>     },
+>     "data": [
+>         {
+>             "id": 3,
+>             "name": "Punto de seguridad 1",
+>             "description": "Es un campo nuevo por ser probado",
+>             "phone": "3105927851",
+>             "color": "#de2138",
+>             "address": "Parque E, Medellín, Antioquia 050010, Colombia",
+>             "imageUri": "http://localhost:3001/api/v1/file_management/download/transport/0ae92c36-7111-4b89-8594-11afb96117f1.png",
+>             "createdAt": "2023-09-11T18:59:29.398Z",
+>             "updatedAt": "2023-09-11T18:59:29.398Z",
+>             "lat": -75.568484,
+>             "lon": 6.263376
+>         },
+>         {
+>             "id": 2,
+>             "name": "Edited Sample Point",
+>             "description": "Example security attention Point",
+>             "phone": "3001234567",
+>             "color": "#AAFFBB",
+>             "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
+>             "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>             "createdAt": "2023-09-08T22:40:29.659Z",
+>             "updatedAt": "2023-09-08T22:40:29.659Z",
+>             "lat": -76.5341,
+>             "lon": 3.423993
+>         },
+>         {
+>             "id": 1,
+>             "name": "Sample Point",
+>             "description": "Example security attention Point",
+>             "phone": "3001234567",
+>             "color": "#AAFFBB",
+>             "address": "Cl. 10 #35-2, Olimpico, Cali, Valle del Cauca",
+>             "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>             "createdAt": "2023-09-08T22:14:27.949Z",
+>             "updatedAt": "2023-09-08T23:01:18.337Z",
+>             "lat": -76.534399,
+>             "lon": 3.4237
+>         }
+>     ]
+> }
+> ```
+
+##### _GET_ single Security Attention Point
+
+
+------------
 
 ------------
 ### 4.3. Third-Party Microservice
