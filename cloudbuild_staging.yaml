@@ -64,5 +64,5 @@ availableSecrets:
       env: EMAIL_KEY
     - versionName: projects/617124420908/secrets/db_secrets/versions/1
       env: DB_SECRETS
-# options:
-#   logging: CLOUD_LOGGING_ONLY
+options:
+  logging: CLOUD_LOGGING_ONLY
