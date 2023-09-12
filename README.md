@@ -206,11 +206,11 @@ The Advertising end-points allow the web user to manage the advertisements shown
 ##### _POST_ save new advertisement
 \(\<Your_Host\>/api/web/v1/notifications/advertising/\) allows web users to save a new advertisement into the database. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _imageUri_   	| String (URI) 	|      Yes     	| URL to the image that will be displayed in the advertisement.    	|
-| _siteUri_    	| String (URI) 	|      Yes     	| URL to the web site of the vendor.                               	|
-| _categoryId_ 	|    Integer   	|      No      	| ID that references the Category of the advertisement (optional). 	|
+| **Name**     |   **Type**   | **Required** | **Description**                                                  |
+| ------------ | :----------: | :----------: | ---------------------------------------------------------------- |
+| _imageUri_   | String (URI) |     Yes      | URL to the image that will be displayed in the advertisement.    |
+| _siteUri_    | String (URI) |     Yes      | URL to the web site of the vendor.                               |
+| _categoryId_ |   Integer    |      No      | ID that references the Category of the advertisement (optional). |
 
 It returns **201 _created_** and the created object on success.
 
@@ -273,10 +273,10 @@ It returns **201 _created_** and the created object on success.
 \(\<Your_Host\>/api/web/v1/notifications/advertising/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
 
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
-| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |     Yes      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |     Yes      | Page size for pagination.   |
 
 It returns **200 _OK_** and the list of objects on success.
 
@@ -353,13 +353,13 @@ It returns **200 _OK_** and the list of objects on success.
 ##### _POST_ update advertisement
 \(\<Your_Host\>/api/web/v1/notifications/advertising/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
-| _imageUri_   	| String (URI) 	|      No     	| URL to the image that will be displayed in the advertisement.    	|
-| _siteUri_    	| String (URI) 	|      No     	| URL to the web site of the vendor.                               	|
-| _categoryId_ 	|    Integer   	|      No      	| ID that references the Category of the advertisement (optional). 	|
-| _active_ 	|    Boolean   	|      No      	| Whether the Advertisement is active or not (but not deleted). 	|
+| **Name**     |   **Type**   | **Required** | **Description**                                                  |
+| ------------ | :----------: | :----------: | ---------------------------------------------------------------- |
+| _id_         |   Integer    |     Yes      | ID of the advertisement to edit.                                 |
+| _imageUri_   | String (URI) |      No      | URL to the image that will be displayed in the advertisement.    |
+| _siteUri_    | String (URI) |      No      | URL to the web site of the vendor.                               |
+| _categoryId_ |   Integer    |      No      | ID that references the Category of the advertisement (optional). |
+| _active_     |   Boolean    |      No      | Whether the Advertisement is active or not (but not deleted).    |
 
 At least one of the optional (_imageUri_, _siteUri_, _categoryId_, _active_) parameters must be passed.
 
@@ -396,10 +396,10 @@ Response:
 ##### _POST_ change advertisement status
 \(\<Your_Host\>/api/web/v1/notifications/advertising/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement to edit.    	|
-| _active_ 	|    Boolean   	|      Yes      	| Whether the Advertisement is active or not (but not deleted). 	|
+| **Name** | **Type** | **Required** | **Description**                                               |
+| -------- | :------: | :----------: | ------------------------------------------------------------- |
+| _id_     | Integer  |     Yes      | ID of the advertisement to edit.                              |
+| _active_ | Boolean  |     Yes      | Whether the Advertisement is active or not (but not deleted). |
 
 It returns **200 _OK_** and the updated object on success.
 
@@ -432,9 +432,9 @@ Response:
 ##### _POST_ delete advertisement
 \(\<Your_Host\>/api/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement to delete.    	|
+| **Name** | **Type** | **Required** | **Description**                    |
+| -------- | :------: | :----------: | ---------------------------------- |
+| _id_     | Integer  |     Yes      | ID of the advertisement to delete. |
 
 It returns **200 _OK_** and the updated object on success.
 
@@ -465,10 +465,10 @@ The Advertisement Categories end-points allow the web user to manage the adverti
 ##### _POST_ save new advertisement category
 \(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to save a new advertisement category into the database. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _name_   	| String 	|      Yes     	| Category name.    	|
-| _color_    	| String (Hex Color) 	|      Yes     	| Color of the category.                               	|
+| **Name** |      **Type**      | **Required** | **Description**        |
+| -------- | :----------------: | :----------: | ---------------------- |
+| _name_   |       String       |     Yes      | Category name.         |
+| _color_  | String (Hex Color) |     Yes      | Color of the category. |
 
 It returns **201 _created_** and the created object on success.
 
@@ -499,10 +499,10 @@ Response:
 \(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to list a set of the advertisement categories from the database. It receives the following query parameters:
 
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _page[number]_    	| Integer (positive) 	|      No     	| Page number for pagination.                               	|
-| _page[size]_ 	|    Integer (positive)   	|      No      	| Page size for pagination. 	|
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |      No      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |      No      | Page size for pagination.   |
 
 If one of the query parameters (`page[number]` or `page[size]`) is present, the other becomes mandatory.
 
@@ -533,11 +533,11 @@ It returns **200 _OK_** and the list of objects on success.
 ##### _POST_ edit advertisement category
 \(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/edit\) allows web users to edit an existing advertisement category in the database. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to edit.    	|
-| _name_   	| String 	|      No     	| Category name.    	|
-| _color_    	| String (Hex Color) 	|      No     	| Color of the category.                               	|
+| **Name** |      **Type**      | **Required** | **Description**                           |
+| -------- | :----------------: | :----------: | ----------------------------------------- |
+| _id_     |      Integer       |     Yes      | ID of the advertisement category to edit. |
+| _name_   |       String       |      No      | Category name.                            |
+| _color_  | String (Hex Color) |      No      | Color of the category.                    |
 
 At least one of the optional (_name_, _color_) parameters must be passed.
 
@@ -571,9 +571,9 @@ Response:
 ##### _POST_ delete advertisement category
 \(\<Your_Host\>/api/web/v1/notifications/advertising/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _id_   	| Integer 	|      Yes     	| ID of the advertisement category to delete.    	|
+| **Name** | **Type** | **Required** | **Description**                             |
+| -------- | :------: | :----------: | ------------------------------------------- |
+| _id_     | Integer  |     Yes      | ID of the advertisement category to delete. |
 
 It returns **200 _OK_** and the updated object on success.
 
@@ -683,9 +683,9 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 ##### _POST_ Register Device Token (mobile)
 \(\<Your_Host\>/api/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _deviceToken_   	| String 	|      Yes     	| Token produced by Firebase to identify the device (i.e. smartphone)   	|
+| **Name**      | **Type** | **Required** | **Description**                                                     |
+| ------------- | :------: | :----------: | ------------------------------------------------------------------- |
+| _deviceToken_ |  String  |     Yes      | Token produced by Firebase to identify the device (i.e. smartphone) |
 
 It returns **200 _OK_** and the device token on success.
 
@@ -723,16 +723,16 @@ Response:
 ##### _POST_ Send Alert
 \(\<Your_Host\>/api/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _title_   	| String 	|      Yes     	| Title of the notification.    	|
-| _message_   	| String 	|      Yes     	| Message body of the notification.    	|
-| _siteUri_   	| String (URI) 	|      Yes     	| URL to website linked to the notification.    	|
-| _imageUri_   	| String (URI) 	|      Yes     	| URL to an image to show in the notification.    	|
-| _push_   	| Boolean 	|      Yes     	| Whether the alert service should use PUSH notifications.    	|
-| _sms_   	| Boolean 	|      Yes     	| Whether the alert service should use SMSs.    	|
-| _alertList_   	| Boolean 	|      Yes     	| Whether the alert service should use Alert List notifications.    	|
-| _expiresAt_   	| Date 	|      No     	| Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format.    	|
+| **Name**    |   **Type**   | **Required** | **Description**                                                                             |
+| ----------- | :----------: | :----------: | ------------------------------------------------------------------------------------------- |
+| _title_     |    String    |     Yes      | Title of the notification.                                                                  |
+| _message_   |    String    |     Yes      | Message body of the notification.                                                           |
+| _siteUri_   | String (URI) |     Yes      | URL to website linked to the notification.                                                  |
+| _imageUri_  | String (URI) |     Yes      | URL to an image to show in the notification.                                                |
+| _push_      |   Boolean    |     Yes      | Whether the alert service should use PUSH notifications.                                    |
+| _sms_       |   Boolean    |     Yes      | Whether the alert service should use SMSs.                                                  |
+| _alertList_ |   Boolean    |     Yes      | Whether the alert service should use Alert List notifications.                              |
+| _expiresAt_ |     Date     |      No      | Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format. |
 
 At least one of `push`, `sms`, or `alertList` must be `true`.
 
@@ -1068,10 +1068,10 @@ It returns **201 _created_** and the created dependencies on success.
 ##### _GET_ list dependencies
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/\) allows web users to list the existing dependencies in the database. It receives the following query parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _page[number]_    	| Integer (positive) 	|      Yes     	| Page number for pagination.                               	|
-| _page[size]_ 	|    Integer (positive)   	|      Yes      	| Page size for pagination. 	|
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |     Yes      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |     Yes      | Page size for pagination.   |
 
 It returns **200 _OK_** and the list of objects on success.
 
@@ -1365,10 +1365,10 @@ The upload endpoints allow web users to save images and PDF documents into the f
 ##### _POST_ Upload Image
 \(\<Your_Host\>/api/web/v1/file_management/upload/image\) saves images in the file server. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _image_   	| File 	|      Yes     	| Image File.    	|
-| _folder_   	| String 	|      Yes     	| Name of the folder that should host the file. Path-like names are not allowed.    	|
+| **Name** | **Type** | **Required** | **Description**                                                                |
+| -------- | :------: | :----------: | ------------------------------------------------------------------------------ |
+| _image_  |   File   |     Yes      | Image File.                                                                    |
+| _folder_ |  String  |     Yes      | Name of the folder that should host the file. Path-like names are not allowed. |
 
 It returns **201 _Created_** and the download url of the uploaded image.
 
@@ -1393,10 +1393,10 @@ Response:
 ##### _POST_ Upload PDF
 \(\<Your_Host\>/api/web/v1/file_management/upload/pdf\) saves images in the file server. It receives the following parameters:
 
-| **Name**     	|   **Type**   	| **Required** 	| **Description**                                                  	|
-|--------------	|:------------:	|:------------:	|------------------------------------------------------------------	|
-| _file_   	| File 	|      Yes     	| PDF File.    	|
-| _folder_   	| String 	|      Yes     	| Name of the folder that should host the file. Path-like names are not allowed.    	|
+| **Name** | **Type** | **Required** | **Description**                                                                |
+| -------- | :------: | :----------: | ------------------------------------------------------------------------------ |
+| _file_   |   File   |     Yes      | PDF File.                                                                      |
+| _folder_ |  String  |     Yes      | Name of the folder that should host the file. Path-like names are not allowed. |
 
 It returns **201 _Created_** and the download url of the uploaded document.
 
