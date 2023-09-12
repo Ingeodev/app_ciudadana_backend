@@ -12,8 +12,20 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
             type: 'Point',
             coordinates: [lon, lat],
         };
+
+        const webUser = await db.User.findOne({
+            where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+            attributes: ["id"],
+        });
+        if (webUser == null || webUser.id == null)
+            throw {
+                message: 'Requesting user is not allowed to create Security Attention Points or is not registered in the database yet.',
+                status: StatusCodes.FORBIDDEN,
+            };
+        const createdBy = webUser.id;
+
         const createdSAP = await db.SecurityAttentionPoint.create({
-            name, description, phone, color, address, imageUri, geolocation
+            name, description, phone, color, address, imageUri, geolocation, createdBy,
         });
         const data = {
             ...createdSAP.dataValues, deletedAt: undefined, geolocation: undefined,
