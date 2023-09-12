@@ -1249,7 +1249,55 @@ Response:
   > ```
 
 ##### _POST_ update Security Attention Point
+\(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/edit\) allows web users to update an existing Security Attention Point. It receives the following body parameters:
 
+| **Name**      | **Type**       | **Required** | **Description**                               |
+| :------------ | :------------- | :----------- | :-------------------------------------------- |
+| _id_          | Integer        | Yes          | ID of the Security Attention Point.           |
+| _name_        | String         | No           | Name of the Security Attention Point.         |
+| _description_ | String         | No           | Description of the Security Attention Point.  |
+| _phone_       | Numeric        | No           | Phone number of the Security Attention Point. |
+| _color_       | String (Color) | No           | Color to show the Security Attention Point.   |
+| _address_     | String         | No           | Address of the Security Attention Point.      |
+| _imageUri_    | String (URI)   | No           | Icon of the Security Attention Point.         |
+| _lat_         | Double         | No           | Latitude of the Security Attention Point.     |
+| _lon_         | Double         | No           | Longitude of the Security Attention Point.    |
+
+At least one of the optional (_name_, _description_, _phone_, _color_, _address_, _imageUri_, _lat_, _lon_) parameters must be passed. If any of _lat_ or _lon_ are passed, both must be passed.
+
+It returns **200 _OK_** and the updated Security Attention Point on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >     "id": 1,
+  >     "address": "Cl. 10 #35-2, Olimpico, Cali, Valle del Cauca",
+  >     "lat": -76.534399,
+  >     "lon": 3.423700
+  > }
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 1,
+  >         "name": "Sample Point",
+  >         "description": "Example security attention Point",
+  >         "phone": "3001234567",
+  >         "color": "#AAFFBB",
+  >         "address": "Cl. 10 #35-2, Olimpico, Cali, Valle del Cauca",
+  >         "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+  >         "createdAt": "2023-09-08T22:14:27.949Z",
+  >         "updatedAt": "2023-09-08T23:01:18.337Z",
+  >         "lat": -76.534399,
+  >         "lon": 3.4237
+  >     }
+  > }
+  > ```
 
 ##### _POST_ delete Security Attention Point
 
