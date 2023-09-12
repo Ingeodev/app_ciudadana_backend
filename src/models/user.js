@@ -48,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      User.hasMany(models.SecurityAttentionPoint, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
       // User.belongsTo(models.DocumentType, {
       //   foreignKey: {
       //     name: "documentTypeId",

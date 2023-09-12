@@ -11,12 +11,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      SecurityAttentionPoint.belongsTo(models.User, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   SecurityAttentionPoint.init({
     name: {
       type: DataTypes.STRING(50),
       allowNull: false,
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: false,
     },
     description: {
       type: DataTypes.STRING(200),
