@@ -10,24 +10,24 @@ describe("Advertisement management API points: ", () => {
     };
 
     const testAdvertisement0 = {
-        imageUri: 'gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png',
+        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f1.png',
         siteUri: 'http://test.site.url',
     };
 
     const testAdvertisement1 = {
-        imageUri: 'gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg',
+        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png',
         siteUri: 'https://test.site.url/second',
-        categoryId: 2,
+        categoryId: 1,
     };
 
     const editAdvertisement0 = {
         siteUri: 'http://edited.site.url',
-        categoryId: 2,
+        categoryId: 1,
         active: false,
     };
 
     const editAdvertisement1 = {
-        imageUri: 'gs://documentainotery.appspot.com/myUploads',
+        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f7.png',
         categoryId: null,
     };
 
