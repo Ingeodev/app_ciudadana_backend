@@ -1319,7 +1319,33 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _GET_ single Security Attention Point
+\(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/:id\) allows web users to obtain one existing Security Attention Point from the database. It receives the following URL parameter:
 
+| **Name** |      **Type**      | **Required** | **Description**                              |
+| -------- | :----------------: | :----------: | -------------------------------------------- |
+| _id_     | Integer (positive) |     Yes      | Id of the required Security Attention Point. |
+
+It returns **200 _OK_** and the requested object on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "data": {
+>         "id": 1,
+>         "name": "Sample Point",
+>         "description": "Example security attention Point",
+>         "phone": "3001234567",
+>         "color": "#AAFFBB",
+>         "address": "Cl. 10 #35-2, Olimpico, Cali, Valle del Cauca",
+>         "imageUri": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
+>         "createdAt": "2023-09-08T22:14:27.949Z",
+>         "updatedAt": "2023-09-08T23:01:18.337Z",
+>         "lat": -76.534399,
+>         "lon": 3.4237
+>     }
+> }
+> ```
 
 ------------
 
