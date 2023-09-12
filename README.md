@@ -1300,7 +1300,32 @@ Response:
   > ```
 
 ##### _POST_ delete Security Attention Point
+\(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/delete\) allows web users to delete an existing Security Attention Point. It receives the following body parameter:
 
+| **Name** | **Type** | **Required** | **Description**                     |
+| :------- | :------- | :----------- | :---------------------------------- |
+| _id_     | Integer  | Yes          | ID of the Security Attention Point. |
+
+It returns **200 _OK_** and the ID of the deleted Security Attention Point on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >     "id": 1
+  > }
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 1
+  >     }
+  > }
+  > ```
 
 ##### _GET_ list Security Attention Points
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to list the existing Security Attention Points in the database. It receives the following query parameters:
