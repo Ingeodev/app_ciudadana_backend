@@ -1199,16 +1199,16 @@ Route: src\microservices\notifications\v1\routes\web.js
 ##### _POST_ create Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to create a new Security Attention Point. It receives the following body parameters:
 
-| **Name**      | **Type**       | **Required** | **Description**                               |
-| :------------ | :------------- | :----------- | :-------------------------------------------- |
-| _name_        | String         | Yes          | Name of the Security Attention Point.         |
-| _description_ | String         | Yes          | Description of the Security Attention Point.  |
-| _phone_       | Numeric        | Yes          | Phone number of the Security Attention Point. |
-| _color_       | String (Color) | Yes          | Color to show the Security Attention Point.   |
-| _address_     | String         | Yes          | Address of the Security Attention Point.      |
-| _imageUri_    | String (URI)   | Yes          | Icon of the Security Attention Point.         |
-| _lat_         | Double         | Yes          | Latitude of the Security Attention Point.     |
-| _lon_         | Double         | Yes          | Longitude of the Security Attention Point.    |
+| **Name**      | **Type**        | **Required** | **Description**                               |
+| :------------ | :-------------- | :----------- | :-------------------------------------------- |
+| _name_        | String          | Yes          | Name of the Security Attention Point.         |
+| _description_ | String          | Yes          | Description of the Security Attention Point.  |
+| _phone_       | String (Number) | Yes          | Phone number of the Security Attention Point. |
+| _color_       | String (Color)  | Yes          | Color to show the Security Attention Point.   |
+| _address_     | String          | Yes          | Address of the Security Attention Point.      |
+| _imageUri_    | String (URI)    | Yes          | Icon of the Security Attention Point.         |
+| _lat_         | Double          | Yes          | Latitude of the Security Attention Point.     |
+| _lon_         | Double          | Yes          | Longitude of the Security Attention Point.    |
 
 It returns **201 _created_** and the created Security Attention Point on success.
 
@@ -1251,17 +1251,17 @@ Response:
 ##### _POST_ update Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/edit\) allows web users to update an existing Security Attention Point. It receives the following body parameters:
 
-| **Name**      | **Type**       | **Required** | **Description**                               |
-| :------------ | :------------- | :----------- | :-------------------------------------------- |
-| _id_          | Integer        | Yes          | ID of the Security Attention Point.           |
-| _name_        | String         | No           | Name of the Security Attention Point.         |
-| _description_ | String         | No           | Description of the Security Attention Point.  |
-| _phone_       | Numeric        | No           | Phone number of the Security Attention Point. |
-| _color_       | String (Color) | No           | Color to show the Security Attention Point.   |
-| _address_     | String         | No           | Address of the Security Attention Point.      |
-| _imageUri_    | String (URI)   | No           | Icon of the Security Attention Point.         |
-| _lat_         | Double         | No           | Latitude of the Security Attention Point.     |
-| _lon_         | Double         | No           | Longitude of the Security Attention Point.    |
+| **Name**      | **Type**        | **Required** | **Description**                               |
+| :------------ | :-------------- | :----------- | :-------------------------------------------- |
+| _id_          | Integer         | Yes          | ID of the Security Attention Point.           |
+| _name_        | String          | No           | Name of the Security Attention Point.         |
+| _description_ | String          | No           | Description of the Security Attention Point.  |
+| _phone_       | String (Number) | No           | Phone number of the Security Attention Point. |
+| _color_       | String (Color)  | No           | Color to show the Security Attention Point.   |
+| _address_     | String          | No           | Address of the Security Attention Point.      |
+| _imageUri_    | String (URI)    | No           | Icon of the Security Attention Point.         |
+| _lat_         | Double          | No           | Latitude of the Security Attention Point.     |
+| _lon_         | Double          | No           | Longitude of the Security Attention Point.    |
 
 At least one of the optional (_name_, _description_, _phone_, _color_, _address_, _imageUri_, _lat_, _lon_) parameters must be passed. If any of _lat_ or _lon_ are passed, both must be passed.
 
