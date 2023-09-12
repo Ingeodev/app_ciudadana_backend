@@ -293,6 +293,57 @@ describe("All Security Attention Point API points: ", () => {
             });
         });
 
+        describe("GET /notifications/security/attentionPoint/:id ", () => {
+            test("should respond with status 200 and the requested object.", async () => {
+                const response0 = await request(usedWebHost).get(`/${testPoint0.id}`)
+                    .set(requestHeadersWeb);
+                expect(response0.statusCode).toBe(200);
+                expect(response0.body).toHaveProperty("data");
+                expect(response0.body.data).toEqual(expect.objectContaining(testPoint0));
+
+                const response1 = await request(usedWebHost).get(`/${testPoint1.id}`)
+                    .set(requestHeadersWeb);
+                expect(response1.statusCode).toBe(200);
+                expect(response1.body).toHaveProperty("data");
+                expect(response1.body.data).toEqual(expect.objectContaining(testPoint1));
+            });
+
+            test("should fail with status 400 and an error with a message if id is not well formatted.", async () => {
+                const response0 = await request(usedWebHost).get(`/${null}`)
+                    .set(requestHeadersWeb);
+                expect(response0.statusCode).toBe(400);
+                expect(response0.body).not.toHaveProperty("data");
+                expect(response0.body).toHaveProperty("status", 400);
+                expect(response0.body).toHaveProperty("code");
+                expect(response0.body).toHaveProperty("detail");
+
+                const response1 = await request(usedWebHost).get('/:id')
+                    .set(requestHeadersWeb);
+                expect(response1.statusCode).toBe(400);
+                expect(response1.body).not.toHaveProperty("data");
+                expect(response1.body).toHaveProperty("status", 400);
+                expect(response1.body).toHaveProperty("code");
+                expect(response1.body).toHaveProperty("detail");
+
+                const response2 = await request(usedWebHost).get('/abcd')
+                    .set(requestHeadersWeb);
+                expect(response2.statusCode).toBe(400);
+                expect(response2.body).not.toHaveProperty("data");
+                expect(response2.body).toHaveProperty("status", 400);
+                expect(response2.body).toHaveProperty("code");
+                expect(response2.body).toHaveProperty("detail");
+            });
+
+            test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+                const response0 = await request(usedWebHost).get(`/${testPoint0.id}`);
+                expect(response0.statusCode).toBe(401);
+                expect(response0.body).not.toHaveProperty("data");
+                expect(response0.body).toHaveProperty("status", 401);
+                expect(response0.body).toHaveProperty("code");
+                expect(response0.body).toHaveProperty("detail");
+            });
+        });
+
         describe("POST /notifications/security/attentionPoint/edit ", () => {
             test("should respond with status 200 and the edited object (data)", async () => {
                 const response0 = await request(usedWebHost).post('/edit')
