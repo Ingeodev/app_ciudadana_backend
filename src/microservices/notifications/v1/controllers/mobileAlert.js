@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Op } = require('sequelize');
 
 const { appFirebase } = require("../../../../middleware/authMiddleware")
 const validator = require("../../utils/validator");
@@ -45,12 +46,19 @@ const registerPush = async (req, res, next) => {
  * Get all alerts
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
-// TODO: Review AND Implement
 const getListActive = async (req, res, next) => {
   try {
-    const { page: objPage } = await validator.validateSimplePaginationSchema(req.query);
+    const { page: objPage } = await validator.validateSimplePaginationSchema({
+      page: {
+        size: 500,
+        number: 1,
+      },
+      ...req.query
+    });
 
     const alertsInDb = await db.Alert.findAndCountAll({
+      where: { expiresAt: { [Op.gte]: Date.now() } },
+      unique: true,
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
@@ -59,7 +67,7 @@ const getListActive = async (req, res, next) => {
     if (alertsInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no Alerts registered in the database",
+        message: "There are no active Alerts in the database",
       };
     }
     if (alertsInDb.rows.length <= 0) {
@@ -68,21 +76,20 @@ const getListActive = async (req, res, next) => {
         message: '"page.number" is too large for the number of possible pages',
       };
     }
-    const totalPages = Math.ceil(alertsInDb.count / objPage.size);
 
-    const responseCustom = {
-      meta: {
-        page: objPage.number,
-        pageSize: objPage.size,
-        totalRecords: alertsInDb.count,
-        totalPages: totalPages,
-        //TODO: Review AND Implement
-        message: 'TODO: Review AND Implement',
-      },
-      data: alertsInDb.rows,
-    };
+    const mappedData = alertsInDb.rows.map(row => {
+      const mapRow = {
+        id: row.id,
+        date: row.createdAt,
+        title: row.title,
+        message: row.message,
+        url: row.siteUri,
+        image: row.imageUri,
+      };
+      return mapRow;
+    });
 
-    return res.status(StatusCodes.OK).send(responseCustom);
+    return res.status(StatusCodes.OK).send(mappedData);
   } catch (error) {
     console.error("alerts could not be recovered: ", error.message);
     return next(error);
