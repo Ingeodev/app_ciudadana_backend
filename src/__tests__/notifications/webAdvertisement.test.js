@@ -79,7 +79,7 @@ describe("Advertisement management API points: ", () => {
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement0,
-                    siteUri: 'not.an.URI.str'
+                    siteUri: 'not.an URI.str'
                 });
             expect(response1.statusCode).toBe(400);
             expect(response1.body).not.toHaveProperty("data");
@@ -308,7 +308,7 @@ describe("Advertisement management API points: ", () => {
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement0,
-                    siteUri: 'not.an.URI.str'
+                    siteUri: 'not.an URI.str'
                 });
             expect(response1.statusCode).toBe(400);
             expect(response1.body).not.toHaveProperty("data");

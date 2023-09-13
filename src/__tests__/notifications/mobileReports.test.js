@@ -207,7 +207,7 @@ describe("Mobile - Reports management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testReport1,
-          imageUri: "image/uri_3",
+          imageUri: "image /uri_3",
         });
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");

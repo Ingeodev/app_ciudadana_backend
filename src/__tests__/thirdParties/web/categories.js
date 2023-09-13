@@ -98,7 +98,7 @@ describe("Web - Third Party Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          icon: "is.not.uri",
+          icon: "is.not uri",
         });
       expect(response3.statusCode).toBe(400);
       expect(response3.body).not.toHaveProperty("meta");

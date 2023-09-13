@@ -103,7 +103,7 @@ describe("Web - Security management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          imageUri: "is.not.uri",
+          imageUri: "is.not uri",
         });
       expect(response3.statusCode).toBe(400);
       expect(response3.body).not.toHaveProperty("meta");

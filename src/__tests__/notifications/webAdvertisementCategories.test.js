@@ -79,7 +79,7 @@ describe("Advertisement Category management API points: ", () => {
     //             .set(requestHeaders)
     //             .send({
     //                 ...testCategory0,
-    //                 color: 'not.an.HEXColor.str'
+    //                 color: 'not.an HEXColor.str'
     //             });
     //         expect(response1.statusCode).toBe(400);
     //         expect(response1.body).not.toHaveProperty("data");
@@ -284,7 +284,7 @@ describe("Advertisement Category management API points: ", () => {
     //             .set(requestHeaders)
     //             .send({
     //                 ...testCategory0,
-    //                 color: 'not.an.HEXColor.str'
+    //                 color: 'not.an HEXColor.str'
     //             });
     //         expect(response2.statusCode).toBe(400);
     //         expect(response2.body).not.toHaveProperty("data");

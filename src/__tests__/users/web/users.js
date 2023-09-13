@@ -446,7 +446,7 @@ describe("Web - Users management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editUser0,
-          serviceReceiptUri: "is.not.uri",
+          serviceReceiptUri: "is.not uri",
         });
       expect(response15.statusCode).toBe(400);
       expect(response15.body).not.toHaveProperty("meta");

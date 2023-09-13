@@ -83,7 +83,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          imageUri: "is.not.uri",
+          imageUri: "is.not uri",
         });
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
@@ -464,7 +464,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          imageUri: "is.not.uri",
+          imageUri: "is.not uri",
         });
       expect(response5.statusCode).toBe(400);
       expect(response5.body).not.toHaveProperty("meta");

@@ -395,7 +395,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editGender0,
-          imageUri: "is.not.uri",
+          imageUri: "is.not uri",
         });
       expect(response6.statusCode).toBe(400);
       expect(response6.body).not.toHaveProperty("meta");
@@ -410,7 +410,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editGender0,
-          siteUri: "is.not.uri",
+          siteUri: "is.not uri",
         });
       expect(response7.statusCode).toBe(400);
       expect(response7.body).not.toHaveProperty("meta");
