@@ -1,5 +1,7 @@
 // Save your configuration as jest.config.js
 const config = {
+    // Sequencer:
+    testSequencer: './jest.custom-sequencer.js',
     // Test folder or files to ignore
     testPathIgnorePatterns: ['utils'],  // Add the test-file names or -folder names that you want to ignore.
     // Global jest constants
