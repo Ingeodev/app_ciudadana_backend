@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       City.hasMany(models.TransportRoute, {
+        as: "originName",
         foreignKey: {
           name: "origin",
           allowNull: false,
@@ -17,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
       City.hasMany(models.TransportRoute, {
+        as: "destinationName",
         foreignKey: {
           name: "destination",
           allowNull: false,

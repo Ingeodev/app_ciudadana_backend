@@ -5,19 +5,25 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  city: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  city: joi.string().trim().empty("").invalid(" ").max(100).required(),
   cityCode: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  state: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  state: joi.string().trim().empty("").invalid(" ").max(100).required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  city: joi.string().trim().empty("").invalid(" ").max(50),
+  city: joi.string().trim().empty("").invalid(" ").max(100),
   cityCode: joi.string().trim().empty("").invalid(" ").max(50),
-  state: joi.string().trim().empty("").invalid(" ").max(50),
+  state: joi.string().trim().empty("").invalid(" ").max(100),
 });
 
 const getAllSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
+
+const getAutocSchema = joi.object({
+  q: joi.string().trim().empty("").invalid(" ").max(20).required(),
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
 });
@@ -57,6 +63,9 @@ module.exports = {
   },
   vWebGetAll: async (inputData) => {
     return await use_validator_on_data(getAllSchema, inputData);
+  },
+  vWebGetAutocomplete: async (inputData) => {
+    return await use_validator_on_data(getAutocSchema, inputData);
   },
   vWebGetOneById: async (inputData) => {
     return await use_validator_on_data(getOneSchema, inputData);

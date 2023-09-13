@@ -13,7 +13,7 @@ module.exports = {
           unique: true,
         },
         city: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(100),
           allowNull: false,
           unique: false,
         },
@@ -23,7 +23,7 @@ module.exports = {
           unique: false,
         },
         state: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(100),
           allowNull: true,
           unique: false,
         },
@@ -45,6 +45,10 @@ module.exports = {
         schema: "public",
       }
     );
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX idx_cityCode
+      ON "Cities"("cityCode");
+    `);
     return await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX idx_unique_city_state
       ON "Cities"("city", "state")
@@ -54,6 +58,9 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
       DROP INDEX IF EXISTS idx_unique_city_state;
+    `);
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS idx_cityCode;
     `);
     await queryInterface.dropTable("Cities");
   },

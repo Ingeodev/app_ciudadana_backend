@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/web/cities.js");
+const { Op, Sequelize } = require("sequelize");
 
 /**
  * Create a city
@@ -125,6 +126,61 @@ exports.getAll = async (req, res, next) => {
 };
 
 /**
+ * Get list - autocomplete
+ * @return {object} Response contains: statuscode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getAutocomplete = async (req, res, next) => {
+  try {
+    const objPage = await validator.vWebGetAutocomplete({
+      q: req.query.q ? req.query.q : undefined,
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+    });
+
+    const citiesInDb = await db.City.findAndCountAll({
+      where: Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("city")), {
+        [Op.like]: "%" + objPage.q + "%",
+      }),
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["city", "ASC"]],
+      attributes: {
+        exclude: ["deletedAt"],
+      },
+    });
+
+    if (citiesInDb.count <= 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "Cities not found",
+      };
+    }
+    if (citiesInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    }
+    const totalPages = Math.ceil(citiesInDb.count / objPage.size);
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: citiesInDb.count,
+        totalPages: totalPages,
+      },
+      data: citiesInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    // console.error("Cities could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
  * Destroy a City (soft delete)
  * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
@@ -135,8 +191,13 @@ exports.postDelete = async (req, res, next) => {
       include: [
         {
           model: db.TransportRoute,
-          attributes: ["id"],
-          required: false,
+          as: "originName",
+          attributes: ["origin"],
+        },
+        {
+          model: db.TransportRoute,
+          as: "destinationName",
+          attributes: ["destination"],
         },
       ],
       attributes: ["id"],
@@ -150,7 +211,10 @@ exports.postDelete = async (req, res, next) => {
       };
     }
 
-    if (citiesInDb.TransportRoutes != 0)
+    if (
+      citiesInDb.originName.length != 0 &&
+      citiesInDb.destinationName.length != 0
+    )
       throw {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
         message: `City has related transport routes`,
