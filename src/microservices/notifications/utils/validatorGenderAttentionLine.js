@@ -5,7 +5,7 @@ const joi = require("joi");
 const postRegisterchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
 });
 
@@ -13,7 +13,7 @@ const postUpdatechema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
 });
 

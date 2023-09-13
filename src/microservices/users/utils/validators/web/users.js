@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const joi = require('joi');
 
-// const uri_string = joi.string().uri();
+// const uri_string = joi.string().uri({ allowRelative: true });
 // const integer_number = joi.number().integer();
 
 const postAccountInfoSchema = joi.object({
@@ -17,7 +17,7 @@ const postAccountFullLoginSchema = joi.object({
   documentTypeId: joi.string().trim().empty("").invalid(" ").required(),
   document: joi.string().trim().empty("").invalid(" ").required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
-  serviceReceiptUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  serviceReceiptUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
 });
 
 const postAccountUpdateUserSchema = joi.object({

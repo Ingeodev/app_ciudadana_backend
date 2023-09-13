@@ -10,9 +10,9 @@ const registerSchema = joi.object({
   categoryId: joi.number().integer().greater(0).invalid(0).required(),
   description: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" ").required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 });
@@ -26,9 +26,9 @@ const editSchema = joi.object({
   categoryId: joi.number().integer().greater(0).invalid(0),
   description: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90),
   lon: joi.number().min(-180).max(180),
 });

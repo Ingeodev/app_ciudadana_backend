@@ -1,22 +1,22 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri();
+// const uri_string = joi.string().uri({ allowRelative: true });
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
   title: joi.string().trim().empty("").invalid(" ").max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").max(200).required(),
-  imageUri: joi.string().uri().trim().empty("").invalid(" ").required(),
-  siteUri: joi.string().uri().trim().empty("").invalid(" ").required(),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   title: joi.string().trim().empty("").invalid(" ").max(50),
   description: joi.string().trim().empty("").invalid(" ").max(200),
-  imageUri: joi.string().uri().trim().empty("").invalid(" "),
-  siteUri: joi.string().uri().trim().empty("").invalid(" "),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
 });
 
 const getAllSchema = joi.object({

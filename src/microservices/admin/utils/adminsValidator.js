@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri();
+// const uri_string = joi.string().uri({ allowRelative: true });
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
