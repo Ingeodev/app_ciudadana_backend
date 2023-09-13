@@ -40,13 +40,13 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [Web App](#web-app-1)
       - [4.2.5. Service Lines](#425-service-lines)
       - [4.2.6. Alerts](#426-alerts)
-        - [_GET_ Active Alerts (mobile)](#get-active-alerts-mobile)
-        - [_POST_ Register Device Token (mobile)](#post-register-device-token-mobile)
+        - [_GET_ Active Alerts (MOBILE)](#get-active-alerts-mobile)
+        - [_POST_ Register Device Token (MOBILE)](#post-register-device-token-mobile)
         - [_GET_ All Alerts](#get-all-alerts)
         - [_POST_ Send Alert](#post-send-alert)
       - [4.2.7. Reports](#427-reports)
-        - [_GET_ Closest Reports (mobile)](#get-closest-reports-mobile)
-        - [_POST_ Register Report (mobile)](#post-register-report-mobile)
+        - [_GET_ Closest Reports (MOBILE)](#get-closest-reports-mobile)
+        - [_POST_ Register Report (MOBILE)](#post-register-report-mobile)
         - [_GET_ User Reports (web)](#get-user-reports-web)
       - [4.2.8. Dependencies](#428-dependencies)
         - [_GET_ list dependencies (MOBILE)](#get-list-dependencies-mobile)
@@ -676,11 +676,51 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 | /         | GET    | getListActive          | Get active alerts    |
 | /register | POST   | registerPush           | Send alerts to users |
 
-##### _GET_ Active Alerts (mobile)
-\(\<Your_Host\>/api/web/v1/notifications/\)
+##### _GET_ Active Alerts (MOBILE)
+\(\<Your_Host\>/api/web/v1/notifications/\) allow mobile users to list the valid notifications. This service accepts both paginated and unpaginated requests. The unpaginated request returns up to 500 Notifications ordered from the most recent to the oldest. It receives the following optional parameters:
+
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |      No      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |      No      | Page size for pagination.   |
+
+Note that if any of the optional parameters (_page[number]_ or _page[size]_) is passed, both must be passed.
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "id": 53,
+>         "date": "2023-09-13T14:40:24.215Z",
+>         "title": "test 3",
+>         "message": "test body",
+>         "url": "http://sample.uri/of/site",
+>         "image": "http://sample.image.uri/1234"
+>     },
+>     {
+>         "id": 52,
+>         "date": "2023-09-13T14:40:16.302Z",
+>         "title": "test 2",
+>         "message": "test body",
+>         "url": "http://sample.uri/of/site",
+>         "image": "http://sample.image.uri/1234"
+>     },
+>     {
+>         "id": 51,
+>         "date": "2023-09-13T14:40:10.744Z",
+>         "title": "test",
+>         "message": "test body",
+>         "url": "http://sample.uri/of/site",
+>         "image": "http://sample.image.uri/1234"
+>     }
+> ]
+> ```
 
 
-##### _POST_ Register Device Token (mobile)
+##### _POST_ Register Device Token (MOBILE)
 \(\<Your_Host\>/api/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
 
 | **Name**      | **Type** | **Required** | **Description**                                                     |
@@ -842,7 +882,7 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 | /security/reports | GET    | getListAllClosest      | Get closest reports |
 | /security/reports | POST   | postRegister           | Create report       |
 
-##### _GET_ Closest Reports (mobile)
+##### _GET_ Closest Reports (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
 
 | **Name** | **Type** | **Required** | **Description**                        |
@@ -875,7 +915,7 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
-##### _POST_ Register Report (mobile)
+##### _POST_ Register Report (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
 
 | **Name**             |   **Type**   | **Required** | **Description**                        |
