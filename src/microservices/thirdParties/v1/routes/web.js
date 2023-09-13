@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 const categoryController = require("../controllers/web/categories.js");
 const companyController = require("../controllers/web/companies.js");
 const transportCompanyController = require("../controllers/web/transportCompanies.js");
@@ -135,12 +136,6 @@ router.post(
   transpRoutesController.postRegister
 );
 
-router.get(
-  "/transport_company/route",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.getAll
-);
-
 router.post(
   "/transport_company/route/edit",
   // hasPermissions({ role: "super_master_user" }),
@@ -152,23 +147,29 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   transpRoutesController.postDelete
 );
-  //#endregion - Company
-  
-  router.get(
-    "/transport_company/route/companies",
-    // hasPermissions({ role: "super_master_user" }),
-    transpRoutesController.getCompaniesNRoutes
-);
-  
+
 router.get(
+  "/transport_company/route/companies",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getCompaniesNRoutes
+);
+
+router.post(
   "/transport_company/route/excel",
   // hasPermissions({ role: "super_master_user" }),
+  uploadSingleExcel.single("file"),
   transpRoutesController.postUploadXlsxRoutes
 );
-  // * ------------------ cities -----------------------------
-  router.post(
-    "/city/",
-    // hasPermissions({ role: "super_master_user" }),
+
+router.get(
+  "/transport_company/route/:companyId",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getAll
+);
+// * ------------------ cities -----------------------------
+router.post(
+  "/city/",
+  // hasPermissions({ role: "super_master_user" }),
   citiesController.postRegister
 );
 
@@ -176,6 +177,12 @@ router.get(
   "/city/",
   // hasPermissions({ role: "super_master_user" }),
   citiesController.getAll
+);
+
+router.get(
+  "/city/autocomplete",
+  // hasPermissions({ role: "super_master_user" }),
+  citiesController.getAutocomplete
 );
 
 router.post(
