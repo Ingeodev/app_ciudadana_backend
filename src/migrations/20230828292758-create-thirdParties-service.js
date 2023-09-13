@@ -43,11 +43,11 @@ module.exports = {
         schema: "public",
       }
     );
-    await queryInterface.addConstraint("ThirdPartyServices", {
-      fields: ["companyId", "service"],
-      type: "unique",
-      name: "unique_thirdPartyCompanyId_service",
-    });
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX idx_unique_thirdPartyCompanyId_service
+      ON "ThirdPartyServices"("companyId", "service")
+      WHERE "deletedAt" IS NULL;
+    `);
     return await queryInterface.addConstraint("ThirdPartyServices", {
       name: "fk_ThirdPartyServices_Company",
       fields: ["companyId"],
@@ -62,7 +62,9 @@ module.exports = {
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint("ThirdPartyServices", "fk_ThirdPartyServices_Company");
-    await queryInterface.removeConstraint('ThirdPartyServices', 'unique_thirdPartyCompanyId_service');
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS idx_unique_thirdPartyCompanyId_service;
+    `);
     await queryInterface.dropTable("ThirdPartyServices");
   },
 };
