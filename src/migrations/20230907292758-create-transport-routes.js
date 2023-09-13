@@ -27,7 +27,16 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        
+        duration: {
+          type: Sequelize.TIME,
+          allowNull: false,
+          unique: false,
+        },
+        tariff: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          unique: false,
+        },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
@@ -49,6 +58,11 @@ module.exports = {
         schema: "public",
       }
     );
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX idx_unique_origin_destination_companyId
+      ON "TransportRoutes"("origin", "destination", "companyId")
+      WHERE "deletedAt" IS NULL;
+    `);
     await queryInterface.addConstraint("TransportRoutes", {
       name: "fk_TransportRoutes_Company",
       fields: ["companyId"],
@@ -87,6 +101,9 @@ module.exports = {
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Destination");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Origin");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Company");
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS idx_unique_origin_destination_companyId;
+    `);
     await queryInterface.dropTable("TransportRoutes");
   },
 };

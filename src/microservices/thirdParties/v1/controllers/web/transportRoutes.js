@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/transportRoutes.js");
 
 /**
  * Create an transport route
- * @param {Array} req.body - Object containing the origin, destination, companyId
+ * @param {Array} req.body - Object containing the origin, destination, companyId, duration, tariff
  * @return {object} Response contains: statuscode (integer), json (objects array): id, origin, destination, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
@@ -22,9 +22,8 @@ exports.postRegister = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { origin, destination, companyId } = await validator.vWebPostRegister(
-      req.body
-    );
+    const { origin, destination, companyId, duration, tariff } =
+      await validator.vWebPostRegister(req.body);
 
     // First, validate that the transport company belongs to the user.
     const company = await db.TransportCompany.findOne({
@@ -46,6 +45,8 @@ exports.postRegister = async (req, res, next) => {
       origin,
       destination,
       companyId,
+      duration,
+      tariff,
     };
 
     const result = await db.TransportRoute.create(dataQuery);
@@ -76,9 +77,8 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, origin, destination, companyId } = await validator.vWebPostEdit(
-      req.body
-    );
+    const { id, origin, destination, companyId, duration, tariff } =
+      await validator.vWebPostEdit(req.body);
 
     // First, validate that the transport company belongs to the user.
     const companyInDb = await db.TransportCompany.findOne({
@@ -113,7 +113,7 @@ exports.postEdit = async (req, res, next) => {
 
     // const routeInDb = await db.ThirdPartyCategory.findByPk(id);
 
-    const resultUpdate = await routeInDb.update({ origin, destination });
+    const resultUpdate = await routeInDb.update({ origin, destination, duration, tariff });
     delete resultUpdate.dataValues.deletedAt;
 
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
@@ -158,7 +158,15 @@ exports.postDelete = async (req, res, next) => {
         id: companyId,
         // createdBy: createdBy.id,
       },
+      include: [
+        {
+          model: db.ThirdPartyCompany,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
       attributes: ["id"],
+      paranoid: true,
     });
 
     if (companyInDb == null || companyInDb.id == null)
@@ -174,6 +182,16 @@ exports.postDelete = async (req, res, next) => {
         id,
         companyId: companyInDb.id,
       },
+      // ! Es necesario borrar primero los horarios para borrar las rutas?
+      include: [
+        {
+          model: db.RouteTimetable,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
     });
 
     if (routeInDb == null)
@@ -181,6 +199,12 @@ exports.postDelete = async (req, res, next) => {
         message: "Transport route not found",
         status: StatusCodes.NOT_FOUND,
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    
+    if (categInDb.RouteTimetables != 0)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: `Transport route has related timetables`,
       };
 
     await routeInDb.destroy();
@@ -197,7 +221,7 @@ exports.postDelete = async (req, res, next) => {
 
 /**
  * Get all transport routes of an company
- * @param {object} req.query - Object containing the number and size
+ * @param {object} req.query - Object containing the companyId, number, and size
  * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -215,7 +239,7 @@ exports.getAll = async (req, res, next) => {
     //   };
 
     const objPage = await validator.vWebGetListRoutes({
-      companyId: req.query.companyId,
+      companyId: parseInt(req.params.companyId),
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
@@ -223,7 +247,7 @@ exports.getAll = async (req, res, next) => {
     const companiesInDb = await db.TransportRoute.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       where: {
-        companyId,
+        companyId: objPage.companyId,
       },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
@@ -295,7 +319,7 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
       include: [
         {
           model: db.TransportRoute,
-          attributes: ["id", "origin", "destination"],
+          attributes: ["id", "origin", "destination", "duration", "tariff"],
           required: false,
         },
       ],
@@ -335,11 +359,11 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
-      const routes = companyData.TransportRoutes.map(
-        (obj) => obj.id,
-        obj.origin,
-        obj.destination
-      );
+      const routes = companyData.TransportRoutes.map((obj) => ({
+        id: obj.id,
+        origin: obj.origin,
+        destination: obj.destination,
+      }));
       delete companyData.TransportRoutes;
 
       return {
@@ -371,63 +395,248 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUploadXlsxRoutes = async (req, res, next) => {
+  // TODO: Las rutas que existan en el excel y no existan en la db, serán creadas.
+  // ! Pregunta: Las rutas que no existan en el excel, pero existan en la db. Que pasa con ellas (y sus horarios)?
+  // TODO: Los horarios de cada ruta, si existen, serán borrados temporalmente, de esa manera, se reviven/actualizan todas las horarios (fechas)
+  // TODO: Y las que no se revivan es porque no estan en el excel. Nice job!
+  const transaction = await db.sequelize.transaction();
   try {
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
+
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
 
     const xlsxFile = await validator.vMulterMemorySingleItemSchema(req.file);
     const { companyId } = await validator.vWebPostUploadXlsxRoutes(req.body);
 
-    let routes = [];
-    let item = null;
-    try {
-      const contents = xlsx.parse(xlsxFile.buffer);
-      const excelContents = await validator.vRoutesExcelContentsSchema(contents);
-      for (let i = 1; i < excelContents[0].data.length; i++) {
-        item = excelContents[0].data[i].toString();
-        const route = await validator.vRouteSchema({
-          id: excelContents[0].data[i][0],
-          origin: excelContents[0].data[i][1],
-          destination: excelContents[0].data[i][2],
-          companyId
-        });
-        routes.push(route);
-      }
-    } catch (error) {
-      let message = `The uploaded file is invalid: ${error.message}.`;
-      if (error.status != null && item != null)
-        message += `\n\tErronous item: [${item}].`;
+    // Verify if the transportation company exists
+    const companyInDb = await db.TransportCompany.findByPk(companyId, {
+      // // ! Pendiente: Validar permisos del usuario
+      // where: { createdBy: createdBy.id },
+      attributes: ["id", "name"],
+    });
+
+    if (companyInDb === null) {
       throw {
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
-        message,
+        message: "Transport company not found",
+        status: StatusCodes.NOT_FOUND,
       };
     }
-    const createdRoutes = await db.sequelize.transaction(
-      async (transaction) => {
-        await db.TransportRoute.destroy({
-          where: { deletedAt: null },
-          transaction,
+
+    let item = null;
+    let resJSON = {
+      companyId,
+      companyName: companyInDb.dataValues.name,
+      routes: [],
+    };
+    try {
+      const contents = xlsx.parse(xlsxFile.buffer);
+      const namePages = await validator.vRExcelPagesSchema(contents);
+
+      for (let iPage = 1; iPage < namePages.length; iPage++) {
+        // Validation of the first row of each sheet
+        // await validator.vRExcelHeaderSchema({ header: contents[iPage].data[0] });
+
+        const { origin, destination, duration, tariff, startDate, endDate } =
+          await validator.vRExcelRouteSchema({
+            origin: contents[iPage].data[6][5],
+            destination: contents[iPage].data[7][5],
+            duration: contents[iPage].data[8][5],
+            tariff: contents[iPage].data[9][5],
+            startDate: contents[iPage].data[10][5],
+            endDate: contents[iPage].data[11][5],
+          });
+
+        // [City, Municipality/State, Municipality code]
+        const originParts = origin.split(", ");
+        const destinationParts = destination.split(", ");
+
+        // Search the origin and destination in the db
+        const originInDb = await db.City.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: { cityCode: originParts[2] },
+          attributes: ["id", "city", "state"],
         });
-        const allRoutes = await db.TransportRoute.bulkCreate(routes, {
-          fields: ["id", "origin", "destination", "companyId"],
-          updateOnDuplicate: ["origin", "destination", "companyId", "updatedAt", "deletedAt"],
-          validate: true,
-          transaction,
+        const destinationInDb = await db.City.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: { cityCode: destinationParts[2] },
+          attributes: ["id", "city", "state"],
         });
-        return allRoutes;
+
+        // Check if the route exists
+        let routeInDb = await db.TransportRoute.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: {
+            origin: originInDb.dataValues.id,
+            destination: destinationInDb.dataValues.id,
+            companyId,
+          },
+          attributes: ["id", "duration", "tariff"],
+          // include: [
+          //   {
+          //     model: db.City,
+          //     as: "originName",
+          //     attributes: ["city"],
+          //     where: { id: originInDb.dataValues.id },
+          //   },
+          //   {
+          //     model: db.City,
+          //     as: "destinationName",
+          //     attributes: ["city"],
+          //     where: { id: destinationInDb.dataValues.id },
+          //   },
+          // ],
+        });
+
+        let newRouteInDb = null;
+
+        if (routeInDb === null) {
+          // Create route in db
+          const queryRoute = {
+            origin: originInDb.dataValues.id,
+            destination: destinationInDb.dataValues.id,
+            companyId,
+            duration,
+            tariff,
+          };
+
+          newRouteInDb = await db.TransportRoute.create(queryRoute, {
+            transaction,
+          });
+        } else {
+          // Delete all the schedules in the route
+          await db.RouteTimetable.destroy({
+            where: { routeId: routeInDb.dataValues.id },
+            transaction,
+          });
+
+          const queryRoute = {
+            duration,
+            tariff,
+          };
+
+          newRouteInDb = await routeInDb.update(queryRoute, {
+            transaction,
+          });
+        }
+
+        newRouteInDb.dataValues.originName = originInDb.dataValues.city;
+        newRouteInDb.dataValues.destinationName = destinationInDb.dataValues.city;
+
+        let routesTimetables = [];
+        // Add routetimetables
+        for (let i = 15; i < contents[iPage].data.length; i++) {
+          // Check if it is the last row, i.e., there is no more data
+          if (
+            (contents[iPage].data[i][4] === "" &&
+              contents[iPage].data[i][5] === "") ||
+            (contents[iPage].data[i][4] === null &&
+              contents[iPage].data[i][5] === null) ||
+            (contents[iPage].data[i][4] === undefined &&
+              contents[iPage].data[i][5] === undefined)
+          ) {
+            break;
+          }
+          item = contents[iPage].data[i].slice(4, 6).toString();
+
+          const { date, startTime } = await validator.vRTimetableSchema({
+            date: contents[iPage].data[i][4]
+              ? contents[iPage].data[i][4]
+              : null,
+            startTime: contents[iPage].data[i][5]
+              ? contents[iPage].data[i][5]
+              : null,
+          });
+
+          // Check if the routing schedule exists
+          const timetableInDb = await db.RouteTimetable.findOne({
+            // // ! Pendiente: Validar permisos del usuario
+            where: {
+              date,
+              routeId: newRouteInDb.dataValues.id,
+            },
+            attributes: ["id"],
+            // TODO: This means that the deleted routes will be revived.
+            paranoid: false,
+          });
+
+          const timetable = {
+            id: timetableInDb ? timetableInDb.dataValues.id : null,
+            routeId: newRouteInDb.dataValues.id,
+            date,
+            startTime,
+            deletedAt: null,
+          };
+
+          routesTimetables.push(timetable);
+        } // End for - timetables
+
+        // Create/Add route timetable
+        const routesInDb = await db.RouteTimetable.bulkCreate(
+          routesTimetables,
+          {
+            fields: ["id", "date", "startTime", "routeId"],
+            updateOnDuplicate: ["startTime", "updatedAt", "deletedAt"],
+            validate: true,
+            transaction,
+          }
+        );
+
+        if (!routesInDb.length) {
+          throw {
+            message: `Route timetable ${newRouteInDb.dataValues.originName}-${newRouteInDb.dataValues.destinationName} could not be created/added`,
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+          };
+        }
+
+        const returnRoutes = routesInDb.map((obj) => {
+          return { ...obj.dataValues, deletedAt: undefined };
+        });
+
+        resJSON.routes.push({
+          routeId: newRouteInDb.dataValues.id,
+          originId: originInDb.dataValues.id,
+          originName: newRouteInDb.dataValues.originName,
+          destinationId: destinationInDb.dataValues.id,
+          destinationName: newRouteInDb.dataValues.destinationName,
+          duration: newRouteInDb.dataValues.duration,
+          tariff: newRouteInDb.dataValues.tariff,
+          routesTimetables: returnRoutes,
+        });
+      } // End for - routes
+    } catch (error) {
+      // await transaction.rollback();
+      let message = `The uploaded file is invalid: ${error.message}.`;
+      if (error.status != null && item != null) {
+        message += ` Item: [${item}].`;
+        throw {
+          status: StatusCodes.UNPROCESSABLE_ENTITY,
+          message,
+        };
       }
-    );
-    const returnRoutes = createdRoutes.map((obj) => {
-      return { ...obj.dataValues, deletedAt: undefined };
-    });
+      return next(error);
+    }
+
+    await transaction.commit();
+
     return res.status(StatusCodes.CREATED).json({
       meta: {
         page: 1,
-        pageSize: returnRoutes.length,
-        totalRecords: returnRoutes.length,
+        pageSize: resJSON.routes.length,
+        totalRecords: resJSON.routes.length,
         totalPages: 1,
       },
-      data: returnRoutes,
+      data: resJSON,
     });
   } catch (error) {
+    await transaction.rollback();
     return next(error);
   }
 };

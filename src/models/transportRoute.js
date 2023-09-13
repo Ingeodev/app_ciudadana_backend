@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       TransportRoute.belongsTo(models.City, {
+        as: "originName",
         foreignKey: {
           name: "origin",
           allowNull: false,
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       TransportRoute.belongsTo(models.City, {
+        as: "destinationName",
         foreignKey: {
           name: "destination",
           allowNull: false,
@@ -62,6 +64,16 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       companyId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
+      },
+      duration: {
+        type: DataTypes.TIME,
+        allowNull: false,
+        unique: false,
+      },
+      tariff: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
