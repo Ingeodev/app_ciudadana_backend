@@ -9,15 +9,30 @@ describe("WEB Alert configuration API points: ", () => {
         Authorization: "Bearer ",
     };
 
-    const badAlertItem = {
-        title: "test",
-        message: "test message",
-        siteUri: "http://sample.uri/of/site",
-        imageUri: "http://sample.image.uri/1234",
+    const returnItemFormat = {
+        id: expect.any(Number),
+        title: expect.any(String),
+        message: expect.any(String),
+        siteUri: expect.any(String),
+        imageUri: expect.any(String),
+        sentBy: expect.any(Number),
+        isPUSH: expect.any(Boolean),
+        isSMS: expect.any(Boolean),
+        isAlertList: expect.any(Boolean),
+        expiresAt: expect.any(String),
+        createdAt: expect.any(String),
+    }
+
+    // Should expire in 60 seconds
+    const alertList_AlertItem = {
+        title: "Prueba: Ignorar",
+        message: "Esta es una prueba automática, por favor ignórela.",
+        siteUri: "https://www.cali.gov.co/",
+        imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
         push: false,
         sms: false,
-        alertList: false,
-        expiresAt: "2100-08-15T23:16:41.000Z"
+        alertList: true,
+        expiresAt: new Date(Date.now() + (1000 * 60)).toUTCString(),
     };
 
     beforeAll(async () => {
@@ -30,24 +45,23 @@ describe("WEB Alert configuration API points: ", () => {
     });
 
     describe("POST /notifications/alert ", () => {
-        // TODO: Before testing this feature, we must have a web user.
-        // test("should respond with status 202, a message in meta, and the created object in data.", async () => {
-        //     // NOTE: testing with alertList only since it is still in process (14-08-2023).
-        //     const response0 = await request(usedHost).post('/alert').set(requestHeaders)
-        //         .send({ ...badAlertItem, alertList: true });
-        //     expect(response0.statusCode).toBe(202);
-        //     expect(response0.body).toHaveProperty("meta");
-        //     expect(response0.body.meta).toHaveProperty("message");
-        //     expect(response0.body.meta).toHaveProperty("successfulAlerts");
-        //     expect(response0.body.meta.successfulAlerts).toEqual(expect.any(Object));
-        //     expect(response0.body).toHaveProperty("data");
-        //     expect(response0.body.data).toHaveProperty("id");
-        //     badAlertItem.id = response0.body.data.id;
-        //     expect(response0.body.data).toEqual(expect.objectContaining({ ...badAlertItem }));
-        // });
+        test("should respond with status 202, a message in meta, and the created object in data.", async () => {
+            // NOTE: testing with alertList only since other alerts may bother users.
+            const response0 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({ ...alertList_AlertItem });
+            expect(response0.statusCode).toBe(202);
+            expect(response0.body).toHaveProperty("meta");
+            expect(response0.body.meta).toHaveProperty("message");
+            expect(response0.body.meta).toHaveProperty("successfulAlerts");
+            expect(response0.body.meta.successfulAlerts).toEqual(expect.any(Object));
+            expect(response0.body).toHaveProperty("data");
+            expect(response0.body.data).toHaveProperty("id");
+            alertList_AlertItem.id = response0.body.data.id;
+            expect(response0.body.data).toEqual(returnItemFormat);
+        });
 
         test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-            const response0 = await request(usedHost).post('/alert').send(badAlertItem);
+            const response0 = await request(usedHost).post('/alert').send(alertList_AlertItem);
             expect(response0.statusCode).toBe(401);
             expect(response0.body).not.toHaveProperty("data");
             expect(response0.body).toHaveProperty("status", 401);
@@ -57,18 +71,16 @@ describe("WEB Alert configuration API points: ", () => {
     });
 
     describe("GET /notifications/alert ", () => {
-        // TODO: complete description.
-        test("should respond with status 200 and an array of objects with: .", async () => {
-            // TODO: Complete validation
+        test("should respond with status 200 and an array of alert objects.", async () => {
             const response0 = await request(usedHost).get('/alert').set(requestHeaders)
-                .query({ page: { number: 1, size: 2 } });
+                .query({ page: { number: 1, size: 10 } });
             expect(response0.statusCode).toBe(200);
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toEqual(expect.any(Array));
-            expect(response0.body.data.length).toBeGreaterThanOrEqual(0);
-            // response0.body.forEach(item => {
-            //     expect(item).toMatchSnapshot(alertsItem);
-            // });
+            expect(response0.body.data.length).toBeGreaterThanOrEqual(1);
+            response0.body.data.forEach(item => {
+                expect(item).toEqual(returnItemFormat);
+            });
         });
 
         test("should fail with error 401 and a message if Authorization header is not set.", async () => {

@@ -31,7 +31,7 @@ describe("Publicity consumption API points: ", () => {
             expect(response0.body).toEqual(expect.any(Array));
             expect(response0.body.length).toBeGreaterThanOrEqual(0);
             response0.body.forEach(item => {
-                expect(item).toMatchSnapshot(bannersItem);
+                expect(item).toEqual(bannersItem);
             });
         });
 

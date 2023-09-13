@@ -13,6 +13,20 @@ describe("MOBILE Alert configuration API points: ", () => {
         deviceToken: "14095475-7695-4fd5-b334-4e521d0c3262",
     };
 
+    const mobileAlertItemFormat = {
+        id: expect.any(Number),
+        title: expect.any(String),
+        message: expect.any(String),
+        siteUri: expect.any(String),
+        imageUri: expect.any(String),
+        sentBy: expect.any(Number),
+        isPUSH: expect.any(Boolean),
+        isSMS: expect.any(Boolean),
+        isAlertList: expect.any(Boolean),
+        expiresAt: expect.any(String),
+        createdAt: expect.any(String),
+    }
+
     beforeAll(async () => {
         const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
             .post('/accounts:signInWithPassword')
@@ -80,17 +94,16 @@ describe("MOBILE Alert configuration API points: ", () => {
 
     describe("GET /notifications/ ", () => {
         // TODO: complete description.
-        test("should respond with status 200 and an array of objects with: .", async () => {
-            // TODO: Complete validation
+        test("should respond with status 200 and an array of alert objects.", async () => {
+            // TODO: Test unpaginated also
             const response0 = await request(usedHost).get('/').set(requestHeaders)
-                .query({ page: { number: 1, size: 2 } });
+                .query({ page: { number: 1, size: 10 } });
             expect(response0.statusCode).toBe(200);
-            expect(response0.body).toHaveProperty("data");
-            expect(response0.body.data).toEqual(expect.any(Array));
-            expect(response0.body.data.length).toBeGreaterThanOrEqual(0);
-            // response0.body.forEach(item => {
-            //     expect(item).toMatchSnapshot(alertsItem);
-            // });
+            expect(response0.body).toEqual(expect.any(Array));
+            expect(response0.body.length).toBeGreaterThanOrEqual(0);
+            response0.body.forEach(item => {
+                expect(item).toEqual(mobileAlertItemFormat);
+            });
         });
 
         test("should fail with error 401 and a message if Authorization header is not set.", async () => {

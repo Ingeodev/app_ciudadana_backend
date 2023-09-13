@@ -30,7 +30,7 @@ describe("Dependencies consumption API points: ", () => {
             expect(response0.body).toEqual(expect.any(Array));
             expect(response0.body.length).toBeGreaterThanOrEqual(0);
             response0.body.forEach(item => {
-                expect(item).toMatchSnapshot(dependenciesItem);
+                expect(item).toEqual(dependenciesItem);
             });
         });
 
@@ -41,7 +41,7 @@ describe("Dependencies consumption API points: ", () => {
             expect(response0.body).toEqual(expect.any(Array));
             expect(response0.body.length).toBe(2);
             response0.body.forEach(item => {
-                expect(item).toMatchSnapshot(dependenciesItem);
+                expect(item).toEqual(dependenciesItem);
             });
         });
 

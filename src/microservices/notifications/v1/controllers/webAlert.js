@@ -220,7 +220,7 @@ const sendAlerts = async (req, res, next) => {
           message: "The alerts are being sent by the external services.",
           successfulAlerts
         },
-        data: { ...savedAlert.dataValues, deletedAt: undefined },
+        data: { ...savedAlert.dataValues, deletedAt: undefined, updatedAt: undefined },
       });
   } catch (error) {
     next(error);
@@ -242,6 +242,9 @@ const getlistAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      attributes: {
+        exclude: ["deletedAt", "updatedAt"],
+      },
     });
 
     if (alertsInDb.count <= 0) {
