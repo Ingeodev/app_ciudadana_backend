@@ -53,7 +53,6 @@ describe("Advertisement management API points: ", () => {
         const categoryId = mobileServicesResponse.body.data.id;
         testAdvertisement1.categoryId = categoryId;
         editAdvertisement0.categoryId = categoryId;
-        console.log(categoryId);
     });
 
     afterAll(async () => {

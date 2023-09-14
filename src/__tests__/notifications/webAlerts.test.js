@@ -21,17 +21,16 @@ describe("WEB Alert configuration API points: ", () => {
         isAlertList: expect.any(Boolean),
         expiresAt: expect.any(String),
         createdAt: expect.any(String),
-    }
+    };
 
     // Should expire in 60 seconds
-    const alertList_AlertItem = {
+    const push_AlertItem = {
         title: "Prueba: Ignorar",
         message: "Esta es una prueba automática, por favor ignórela.",
         siteUri: "https://www.cali.gov.co/",
         imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
-        push: false,
+        push: true,
         sms: false,
-        alertList: true,
         expiresAt: new Date(Date.now() + (1000 * 60)).toUTCString(),
     };
 
@@ -46,22 +45,111 @@ describe("WEB Alert configuration API points: ", () => {
 
     describe("POST /notifications/alert ", () => {
         test("should respond with status 202, a message in meta, and the created object in data.", async () => {
-            // NOTE: testing with alertList only since other alerts may bother users.
+            // NOTE: testing with push only since SMS will cost.
             const response0 = await request(usedHost).post('/alert').set(requestHeaders)
-                .send({ ...alertList_AlertItem });
+                .send({ ...push_AlertItem });
             expect(response0.statusCode).toBe(202);
             expect(response0.body).toHaveProperty("meta");
             expect(response0.body.meta).toHaveProperty("message");
-            expect(response0.body.meta).toHaveProperty("successfulAlerts");
-            expect(response0.body.meta.successfulAlerts).toEqual(expect.any(Object));
+            expect(response0.body.meta).toHaveProperty("acceptedAlerts");
+            expect(response0.body.meta.acceptedAlerts).toEqual(expect.any(Object));
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toHaveProperty("id");
-            alertList_AlertItem.id = response0.body.data.id;
+            push_AlertItem.id = response0.body.data.id;
             expect(response0.body.data).toEqual(returnItemFormat);
         });
 
+        test("should fail with error 422 and a message if no alert is defined.", async () => {
+            const response0 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({ ...push_AlertItem, push: false });
+            expect(response0.statusCode).toBe(422);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 422);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+        });
+
+        test("should fail with error 400 and a message if request data is not complete and well-formated.", async () => {
+            const response0 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    push: undefined
+                });
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    sms: undefined
+                });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+
+            const response2 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    imageUri: "not an uri"
+                });
+            expect(response2.statusCode).toBe(400);
+            expect(response2.body).not.toHaveProperty("data");
+            expect(response2.body).toHaveProperty("status", 400);
+            expect(response2.body).toHaveProperty("code");
+            expect(response2.body).toHaveProperty("detail");
+
+            const response3 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    siteUri: null
+                });
+            expect(response3.statusCode).toBe(400);
+            expect(response3.body).not.toHaveProperty("data");
+            expect(response3.body).toHaveProperty("status", 400);
+            expect(response3.body).toHaveProperty("code");
+            expect(response3.body).toHaveProperty("detail");
+
+            const response4 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    message: ["no message"]
+                });
+            expect(response4.statusCode).toBe(400);
+            expect(response4.body).not.toHaveProperty("data");
+            expect(response4.body).toHaveProperty("status", 400);
+            expect(response4.body).toHaveProperty("code");
+            expect(response4.body).toHaveProperty("detail");
+
+            const response5 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    title: 12356
+                });
+            expect(response5.statusCode).toBe(400);
+            expect(response5.body).not.toHaveProperty("data");
+            expect(response5.body).toHaveProperty("status", 400);
+            expect(response5.body).toHaveProperty("code");
+            expect(response5.body).toHaveProperty("detail");
+
+            const response6 = await request(usedHost).post('/alert').set(requestHeaders)
+                .send({
+                    ...push_AlertItem,
+                    expiresAt: "Not a date"
+                });
+            expect(response6.statusCode).toBe(400);
+            expect(response6.body).not.toHaveProperty("data");
+            expect(response6.body).toHaveProperty("status", 400);
+            expect(response6.body).toHaveProperty("code");
+            expect(response6.body).toHaveProperty("detail");
+        });
+
         test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-            const response0 = await request(usedHost).post('/alert').send(alertList_AlertItem);
+            const response0 = await request(usedHost).post('/alert').send(push_AlertItem);
             expect(response0.statusCode).toBe(401);
             expect(response0.body).not.toHaveProperty("data");
             expect(response0.body).toHaveProperty("status", 401);

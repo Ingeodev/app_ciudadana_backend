@@ -120,7 +120,7 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
       return userData;
     });
     const smsCreationObj = {
-      idSmsCategory: 1,   // Assume 1 for Notificaitons 
+      idSmsCategory: 1,   // Assume 1 for Notifications 
       name,
       receiver,           // List of receivers
       dateNow: 1,         // To send now
@@ -130,22 +130,9 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
       api: 1,             // Use API (Should always be 1)
       notification: 0,    // Don't notify us when success
     };
-    console.log('smsCreationObj', smsCreationObj);
     const sigmaResponse = await axios.post(sigmaSmsApiUri, smsCreationObj, {
       headers: requestHeaders,
     })
-    console.log('sigmaResponse: ', sigmaResponse);
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
-const sendAlertListNotifications = async (message, usersAlertListIds) => {
-  try {
-    // TODO: send alert-list notifications.
-    console.log("TODO: send alert-list notifications.");
     return true;
   } catch (error) {
     console.error(error);
@@ -155,9 +142,9 @@ const sendAlertListNotifications = async (message, usersAlertListIds) => {
 
 const sendAlerts = async (req, res, next) => {
   try {
-    const { title, message, siteUri, imageUri, push, sms, alertList, expiresAt } =
+    const { title, message, siteUri, imageUri, push, sms, expiresAt } =
       await validator.validateAlertSchema(req.body);
-    if (!(push || sms || alertList))
+    if (!(push || sms))
       throw {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
         message: "At least one alert option must be true: push, sms, alertList",
@@ -175,29 +162,19 @@ const sendAlerts = async (req, res, next) => {
     const usersCount = await db.User.count({
       where: { disabled: false, userMobile: true },
     });
-    if (usersCount <= 0)
-      throw {
-        message: 'No mobile users registered in the database.',
-        status: StatusCodes.NOT_FOUND,
-      };
     const totalBatches = Math.floor(usersCount / defaultUsersBatchSize);
-    const successfulAlerts = {};
+    const acceptedAlerts = {
+      count: usersCount,
+      push: false,
+      sms: false,
+    };
     if (push)
-      successfulAlerts.push = await sendPushNotifications(title, message, imageUri, siteUri);
-    if (sms || alertList) {
+      acceptedAlerts.push = await sendPushNotifications(title, message, imageUri, siteUri);
+    if (sms && usersCount > 0) {
       for (let i = 0; i <= totalBatches; i++) {
         const usersDataBatch = await getUsersInBatches(db.User, i, defaultUsersBatchSize);
-        if (sms) {
-          const usersPhoneNumbers = usersDataBatch.map((user) => user.phone);
-          successfulAlerts.sms = await sendSmsNotifications(message, usersPhoneNumbers);
-        }
-        if (alertList) {
-          const usersAlertListIds = usersDataBatch.map((user) => user.id); // TODO: Revisar; no sé cómo sería.
-          successfulAlerts.alertList = await sendAlertListNotifications(
-            message,
-            usersAlertListIds
-          );
-        }
+        const usersPhoneNumbers = usersDataBatch.map((user) => user.phone);
+        acceptedAlerts.sms = await sendSmsNotifications(title, message, usersPhoneNumbers);
       }
     }
     let expirationDate;
@@ -209,7 +186,7 @@ const sendAlerts = async (req, res, next) => {
       title, message, siteUri, imageUri, sentBy,
       isPUSH: push,
       isSMS: sms,
-      isAlertList: alertList,
+      isAlertList: false,
       expiresAt: expirationDate,
     });
 
@@ -218,7 +195,7 @@ const sendAlerts = async (req, res, next) => {
       .json({
         meta: {
           message: "The alerts are being sent by the external services.",
-          successfulAlerts
+          acceptedAlerts,
         },
         data: { ...savedAlert.dataValues, deletedAt: undefined, updatedAt: undefined },
       });
