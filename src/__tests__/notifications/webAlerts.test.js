@@ -18,7 +18,6 @@ describe("WEB Alert configuration API points: ", () => {
         sentBy: expect.any(Number),
         isPUSH: expect.any(Boolean),
         isSMS: expect.any(Boolean),
-        isAlertList: expect.any(Boolean),
         expiresAt: expect.any(String),
         createdAt: expect.any(String),
     };

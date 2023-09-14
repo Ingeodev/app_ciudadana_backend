@@ -61,11 +61,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      isAlertList: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        unique: false,
-      },
       expiresAt: {
         type: DataTypes.DATE,
         allowNull: false,

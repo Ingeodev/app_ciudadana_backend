@@ -186,7 +186,6 @@ const sendAlerts = async (req, res, next) => {
       title, message, siteUri, imageUri, sentBy,
       isPUSH: push,
       isSMS: sms,
-      isAlertList: false,
       expiresAt: expirationDate,
     });
 
