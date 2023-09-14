@@ -22,7 +22,6 @@ const routesSchema = joi.object({
   origin: joi.number().integer().greater(0).invalid(0).required(),
   destination: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
-  tariff: joi.number().integer().min(1000).required(),
   duration: joi.string().trim().required()
     .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
     .custom((value, helpers) => {
@@ -35,7 +34,6 @@ const editSchema = joi.object({
   origin: joi.number().integer().greater(0).invalid(0),
   destination: joi.number().integer().greater(0).invalid(0),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
-  tariff: joi.number().integer().min(1000),
   duration: joi.string().trim()
     .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
     .custom((value, helpers) => {
@@ -55,8 +53,9 @@ const getRoutesSchema = joi.object({
 });
 
 const getCompaniesRoutesSchema = joi.object({
-  number: joi.number().integer().greater(0).required(),
-  size: joi.number().integer().greater(0).required(),
+  routeId: joi.number().integer().greater(0).required(),
+  // number: joi.number().integer().greater(0).required(),
+  // size: joi.number().integer().greater(0).required(),
 });
 
 const companySchema = joi.object({
@@ -89,12 +88,6 @@ const excelRouteSchema = joi.object({
     .message(
       'The destination field must be in the format "city, state, city code".'
     ),
-  tariff: joi.number().integer().min(1000).required(),
-  duration: joi.string().trim().required()
-    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
-    .custom((value, helpers) => {
-      return value + ":00";
-    }, "Add Seconds"),
   startDate: joi.number().required().integer()
     .min(convertJSDatetoExcelSerial(new Date()))
     .custom((value, helpers) => {
@@ -250,6 +243,12 @@ const rowTimetableExcelSchema = joi.object({
       }
       return errors;
     }),
+  tariff: joi.number().integer().min(1000).required(),
+  duration: joi.string().trim().required()
+    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
+    .custom((value, helpers) => {
+      return value + ":00";
+    }, "Add Seconds"),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

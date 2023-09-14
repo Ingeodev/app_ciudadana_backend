@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class RouteTimetable extends Model {
+  class RouteTimetableHourTariff extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of DataTypes lifecycle.
@@ -9,14 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      RouteTimetable.belongsTo(models.TransportRoute, {
-        foreignKey: {
-          name: "routeId",
-          allowNull: false,
-          unique: false,
-        },
-      });
-      RouteTimetable.hasMany(models.RouteTimetableHourTariff, {
+      RouteTimetableHourTariff.belongsTo(models.RouteTimetable, {
         foreignKey: {
           name: "timetableId",
           allowNull: false,
@@ -25,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  RouteTimetable.init(
+  RouteTimetableHourTariff.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -34,12 +27,17 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      date: {
-        type: DataTypes.DATEONLY,
+      timetableId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
-      routeId: {
+      hour: {
+        type: DataTypes.TIME,
+        allowNull: false,
+        unique: false,
+      },
+      tariff: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
@@ -47,12 +45,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "RouteTimetable",
-      tableName: "RouteTimetables",
+      modelName: "RouteTimetableHourTariff",
+      tableName: "RouteTimetableHourTariffs",
       schema: "public",
       paranoid: true,
       timestamps: true,
     }
   );
-  return RouteTimetable;
+  return RouteTimetableHourTariff;
 };

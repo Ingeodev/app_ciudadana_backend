@@ -32,11 +32,6 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
-        tariff: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          unique: false,
-        },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,

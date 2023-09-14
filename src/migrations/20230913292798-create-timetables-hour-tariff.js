@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "RouteTimetables",
+      "RouteTimetableHourTariffs",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -12,12 +12,17 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
-        date: {
-          type: Sequelize.DATEONLY,
+        timetableId: {
+          type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
         },
-        routeId: {
+        hour: {
+          type: Sequelize.TIME,
+          allowNull: false,
+          unique: false,
+        },
+        tariff: {
           type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
@@ -39,21 +44,21 @@ module.exports = {
         },
       },
       {
-        tableName: "RouteTimetables",
+        tableName: "RouteTimetableHourTariffs",
         schema: "public",
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_date_routeId
-      ON "RouteTimetables"("date", "routeId")
+      CREATE UNIQUE INDEX idx_unique_hour_timetableId
+      ON "RouteTimetableHourTariffs"("hour", "timetableId")
       WHERE "deletedAt" IS NULL;
     `);
-    return await queryInterface.addConstraint("RouteTimetables", {
-      name: "fk_RouteTimetables_Route",
-      fields: ["routeId"],
+    return await queryInterface.addConstraint("RouteTimetableHourTariffs", {
+      name: "fk_RouteTimetables_timetableId",
+      fields: ["timetableId"],
       type: "foreign key",
       references: {
-        table: "TransportRoutes",
+        table: "RouteTimetables",
         field: "id",
       },
       onDelete: "RESTRICT",
@@ -61,10 +66,10 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint("RouteTimetables", "fk_RouteTimetables_Route");
+    await queryInterface.removeConstraint("RouteTimetableHourTariffs", "fk_RouteTimetables_timetableId");
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_date_routeId;
+      DROP INDEX IF EXISTS idx_unique_hour_timetableId;
     `);
-    await queryInterface.dropTable("RouteTimetables");
+    await queryInterface.dropTable("RouteTimetableHourTariffs");
   },
 };

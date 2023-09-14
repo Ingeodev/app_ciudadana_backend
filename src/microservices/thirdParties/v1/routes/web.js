@@ -7,6 +7,8 @@ const transportCompanyController = require("../controllers/web/transportCompanie
 const companyServicesController = require("../controllers/web/companyServices.js");
 const transpRoutesController = require("../controllers/web/transportRoutes.js");
 const citiesController = require("../controllers/web/cities.js");
+const dateTimetableController = require("../controllers/web/routeTimetables");
+const hourTimetableController = require("../controllers/web/routeTimetablesHourTariff");
 
 // * ------------------ Categories -----------------------------
 //#region Categories end-points
@@ -98,6 +100,100 @@ router.post(
 );
 //#endregion - Company
 
+// * ------------------ Date of Routes Timetables -----------------------------
+router.post(
+  "/transport_company/route/date",
+  // hasPermissions({ role: "super_master_user" }),
+  dateTimetableController.postRegister
+);
+
+router.post(
+  "/transport_company/route/date/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  dateTimetableController.postEdit
+);
+
+router.post(
+  "/transport_company/route/date/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  dateTimetableController.postDelete
+);
+
+router.get(
+  "/transport_company/route/date/",
+  // hasPermissions({ role: "super_master_user" }),
+  dateTimetableController.getAll
+);
+
+// * ------------------ Hour n Tariff of Routes Timetables -----------------------------
+router.post(
+  "/transport_company/route/hour",
+  // hasPermissions({ role: "super_master_user" }),
+  hourTimetableController.postRegister
+);
+
+router.post(
+  "/transport_company/route/hour/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  hourTimetableController.postEdit
+);
+
+router.post(
+  "/transport_company/route/hour/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  hourTimetableController.postDelete
+);
+
+router.get(
+  "/transport_company/route/hour/",
+  // hasPermissions({ role: "super_master_user" }),
+  hourTimetableController.getAll
+);
+
+// * ------------------ Company Routes -----------------------------
+router.get(
+  "/transport_company/route/itinerary",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getItinerary
+);
+
+router.post(
+  "/transport_company/route",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.postRegister
+);
+
+router.post(
+  "/transport_company/route/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.postEdit
+);
+
+router.post(
+  "/transport_company/route/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.postDelete
+);
+
+router.get(
+  "/transport_company/route/companies",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getCompaniesNRoutes
+);
+
+// router.post(
+//   "/transport_company/route/excel",
+//   // hasPermissions({ role: "super_master_user" }),
+//   uploadSingleExcel.single("file"),
+//   transpRoutesController.postUploadXlsxRoutes
+// );
+
+router.get(
+  "/transport_company/route/:companyId",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getAll
+);
+
 // * ------------------ Transport Company -----------------------------
 router.post(
   "/transport_company/",
@@ -129,43 +225,6 @@ router.get(
   transportCompanyController.getAll
 );
 
-// * ------------------ Company Routes -----------------------------
-router.post(
-  "/transport_company/route",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.postRegister
-);
-
-router.post(
-  "/transport_company/route/edit",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.postEdit
-);
-
-router.post(
-  "/transport_company/route/delete",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.postDelete
-);
-
-router.get(
-  "/transport_company/route/companies",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.getCompaniesNRoutes
-);
-
-router.post(
-  "/transport_company/route/excel",
-  // hasPermissions({ role: "super_master_user" }),
-  uploadSingleExcel.single("file"),
-  transpRoutesController.postUploadXlsxRoutes
-);
-
-router.get(
-  "/transport_company/route/:companyId",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.getAll
-);
 // * ------------------ cities -----------------------------
 router.post(
   "/city/",

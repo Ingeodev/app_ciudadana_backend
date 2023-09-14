@@ -73,11 +73,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      tariff: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false,
-      },
     },
     {
       sequelize,
