@@ -22,16 +22,8 @@ resource "google_cloud_run_v2_service" "third-parties" {
         value = "mobileUsersNotifications"
       }
       env {
-        name = "TWILIO_ACCOUNT_SID"
-        value = "ACyourtwilioaccountsid"
-      }
-      env {
-        name = "TWILIO_AUTH_TOKEN"
-        value = "yourtwilioauthenticationtoken"
-      }
-      env {
-        name = "TWILIO_MESSAGE_SERVICE_SID"
-        value = "yourtwilioMessageServiceSID"
+        name = "SIGMA_ACCOUNT_KEY"
+        value = "sigma_account_key"
       }
     }
   }
@@ -64,16 +56,8 @@ resource "google_cloud_run_v2_service" "users" {
         value = "mobileUsersNotifications"
       }
       env {
-        name = "TWILIO_ACCOUNT_SID"
-        value = "ACyourtwilioaccountsid"
-      }
-      env {
-        name = "TWILIO_AUTH_TOKEN"
-        value = "yourtwilioauthenticationtoken"
-      }
-      env {
-        name = "TWILIO_MESSAGE_SERVICE_SID"
-        value = "yourtwilioMessageServiceSID"
+        name = "SIGMA_ACCOUNT_KEY"
+        value = "sigma_account_key"
       }
     }
   }
@@ -108,16 +92,8 @@ resource "google_cloud_run_v2_service" "admin" {
         value = "mobileUsersNotifications"
       }
       env {
-        name = "TWILIO_ACCOUNT_SID"
-        value = "ACyourtwilioaccountsid"
-      }
-      env {
-        name = "TWILIO_AUTH_TOKEN"
-        value = "yourtwilioauthenticationtoken"
-      }
-      env {
-        name = "TWILIO_MESSAGE_SERVICE_SID"
-        value = "yourtwilioMessageServiceSID"
+        name = "SIGMA_ACCOUNT_KEY"
+        value = "sigma_account_key"
       }
     }
   }
@@ -152,16 +128,8 @@ resource "google_cloud_run_v2_service" "file_management" {
         value = "mobileUsersNotifications"
       }
       env {
-        name  = "TWILIO_ACCOUNT_SID"
-        value = "ACyourtwilioaccountsid"
-      }
-      env {
-        name  = "TWILIO_AUTH_TOKEN"
-        value = "yourtwilioauthenticationtoken"
-      }
-      env {
-        name  = "TWILIO_MESSAGE_SERVICE_SID"
-        value = "yourtwilioMessageServiceSID"
+        name = "SIGMA_ACCOUNT_KEY"
+        value = "sigma_account_key"
       }
     }
   }
@@ -191,16 +159,8 @@ resource "google_cloud_run_v2_service" "notifications" {
         value = "mobileUsersNotifications"
       }
       env {
-        name  = "TWILIO_ACCOUNT_SID"
-        value = "ACyourtwilioaccountsid"
-      }
-      env {
-        name  = "TWILIO_AUTH_TOKEN"
-        value = "yourtwilioauthenticationtoken"
-      }
-      env {
-        name  = "TWILIO_MESSAGE_SERVICE_SID"
-        value = "yourtwilioMessageServiceSID"
+        name = "SIGMA_ACCOUNT_KEY"
+        value = "sigma_account_key"
       }
     }
   }

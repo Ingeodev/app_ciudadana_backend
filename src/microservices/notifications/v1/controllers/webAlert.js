@@ -1,16 +1,16 @@
 const { StatusCodes } = require("http-status-codes");
 const { Model } = require("sequelize");
+const axios = require("axios");
 
-const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
-const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
-const twilioClient = require("twilio")(twilioAccountSid, twilioAuthToken);
+const sigmaSMSToken = process.env.SIGMA_ACCOUNT_KEY;
+// const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
 
 const { appFirebase } = require("../../../../middleware/authMiddleware")
 const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
 
 const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
+const defaultUsersBatchSize = 100000;
 
 /**
  * Function that returns a batch of rows from the database, but defaults to users data.
@@ -31,23 +31,7 @@ const getUsersInBatches = async (
   const offset = batchNumber * batchSize;
   const options = {
     where: { disabled: false, userMobile: true },
-    attributes: {
-      exclude: [
-        "name",
-        "lastName",
-        "email",
-        "documentTypeId",
-        "numberDocument",
-        "residenceAddress",
-        "serviceReceiptUri",
-        "siteUri",
-        "loginPhase",
-        "disabled",
-        "userMobile",
-        "createdAt",
-        "updatedAt",
-      ],
-    },
+    attributes: ['id', 'clientId', 'phone', 'pushDeviceToken'],
     paranoid: true,
     order: ["id"],
     ...findAllOptions,
@@ -153,7 +137,6 @@ const sendAlertListNotifications = async (message, usersAlertListIds) => {
 };
 
 const sendAlerts = async (req, res, next) => {
-  const batchSize = 10000;
   try {
     const { title, message, siteUri, imageUri, push, sms, alertList, expiresAt } =
       await validator.validateAlertSchema(req.body);
@@ -180,13 +163,13 @@ const sendAlerts = async (req, res, next) => {
         message: 'No mobile users registered in the database.',
         status: StatusCodes.NOT_FOUND,
       };
-    const totalBatches = Math.floor(usersCount / batchSize);
+    const totalBatches = Math.floor(usersCount / defaultUsersBatchSize);
     const successfulAlerts = {};
     if (push)
       successfulAlerts.push = await sendPushNotifications(title, message, imageUri, siteUri);
     if (sms || alertList) {
       for (let i = 0; i <= totalBatches; i++) {
-        const usersDataBatch = await getUsersInBatches(db.User, i, batchSize);
+        const usersDataBatch = await getUsersInBatches(db.User, i, defaultUsersBatchSize);
         if (sms) {
           const usersPhoneNumbers = usersDataBatch.map((user) => user.phone);
           successfulAlerts.sms = await sendSmsNotifications(message, usersPhoneNumbers);
