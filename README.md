@@ -759,6 +759,89 @@ Response:
 | /alert   | POST   | sendAlerts             | Send alerts to users |
 
 ##### _GET_ All Alerts
+\(\<Your_Host\>/api/web/v1/notifications/alert\) allow web users to list all the valid and expired alerts. It receives the following query parameters:
+
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |      Yes     | Page number for pagination. |
+| _page[size]_   | Integer (positive) |      Yes     | Page size for pagination.   |
+
+It returns **200 _OK_** and the list of objects in data on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 5,
+>         "totalRecords": 31,
+>         "totalPages": 7
+>     },
+>     "data": [
+>         {
+>             "id": 85,
+>             "sentBy": 2,
+>             "title": "Prueba: Ignorar",
+>             "message": "Esta es una prueba automática, por favor ignórela.",
+>             "siteUri": "https://www.cali.gov.co/",
+>             "imageUri": "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+>             "isSMS": false,
+>             "isPUSH": true,
+>             "expiresAt": "2023-09-14T22:25:19.000Z",
+>             "createdAt": "2023-09-14T22:24:21.086Z"
+>         },
+>         {
+>             "id": 84,
+>             "sentBy": 2,
+>             "title": "Prueba: Ignorar",
+>             "message": "Esta es una prueba automática, por favor ignórela.",
+>             "siteUri": "https://www.cali.gov.co/",
+>             "imageUri": "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+>             "isSMS": false,
+>             "isPUSH": true,
+>             "expiresAt": "2023-09-14T22:23:33.000Z",
+>             "createdAt": "2023-09-14T22:22:34.719Z"
+>         },
+>         {
+>             "id": 83,
+>             "sentBy": 2,
+>             "title": "Prueba: Ignorar",
+>             "message": "Esta es una prueba automática, por favor ignórela.",
+>             "siteUri": "https://www.cali.gov.co/",
+>             "imageUri": "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+>             "isSMS": false,
+>             "isPUSH": true,
+>             "expiresAt": "2023-09-14T21:53:28.000Z",
+>             "createdAt": "2023-09-14T21:52:30.084Z"
+>         },
+>         {
+>             "id": 82,
+>             "sentBy": 2,
+>             "title": "Prueba: Ignorar",
+>             "message": "Esta es una prueba automática, por favor ignórela.",
+>             "siteUri": "https://www.cali.gov.co/",
+>             "imageUri": "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+>             "isSMS": false,
+>             "isPUSH": true,
+>             "expiresAt": "2023-09-14T21:38:09.000Z",
+>             "createdAt": "2023-09-14T21:37:11.631Z"
+>         },
+>         {
+>             "id": 81,
+>             "sentBy": 2,
+>             "title": "Prueba: Ignorar",
+>             "message": "Esta es una prueba automática, por favor ignórela.",
+>             "siteUri": "https://www.cali.gov.co/",
+>             "imageUri": "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+>             "isSMS": false,
+>             "isPUSH": true,
+>             "expiresAt": "2023-09-14T21:33:48.000Z",
+>             "createdAt": "2023-09-14T21:32:51.826Z"
+>         }
+>     ]
+> }
+> ```
 
 ##### _POST_ Send Alert
 \(\<Your_Host\>/api/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
@@ -771,10 +854,9 @@ Response:
 | _imageUri_  | String (URI) |     Yes      | URL to an image to show in the notification.                                                |
 | _push_      |   Boolean    |     Yes      | Whether the alert service should use PUSH notifications.                                    |
 | _sms_       |   Boolean    |     Yes      | Whether the alert service should use SMSs.                                                  |
-| _alertList_ |   Boolean    |     Yes      | Whether the alert service should use Alert List notifications.                              |
 | _expiresAt_ |     Date     |      No      | Expiration date for the alert. May be in Unix time (milliseconds) or in Date String format. |
 
-At least one of `push`, `sms`, or `alertList` must be `true`.
+At least one of `push` or `sms` must be `true`.
 
 It returns **202 _Accepted_** and the created alert object on success.
 
@@ -790,19 +872,20 @@ It returns **202 _Accepted_** and the created alert object on success.
       >  "siteUri": "http://sample.uri/of/site",
       >  "imageUri": "http://sample.image.uri/1234",
       >  "push": true,
-      >  "sms": false,
-      >  "alertList": false
+      >  "sms": false
       >}
       >```
 
     Response:
-      > _Status code: **202 Acepted**_
+      > _Status code: **202 Accepted**_
       > ```JSON
       > {
       >   "meta": {
       >       "message": "The alerts are being sent by the external services.",
-      >       "successfulAlerts": {
-      >           "push": true
+      >       "acceptedAlerts": {
+      >           "count": 2,
+      >           "push": true,
+      >           "sms": false,
       >       }
       >   },
       >   "data": {
@@ -814,9 +897,7 @@ It returns **202 _Accepted_** and the created alert object on success.
       >       "sentBy": 38,
       >       "isPUSH": true,
       >       "isSMS": false,
-      >       "isAlertList": false,
       >       "expiresAt": "2023-08-12T15:54:51.000Z",
-      >       "updatedAt": "2023-08-11T15:54:51.214Z",
       >       "createdAt": "2023-08-11T15:54:51.214Z"
       >   }
       > }
@@ -833,7 +914,6 @@ It returns **202 _Accepted_** and the created alert object on success.
       >  "imageUri": "http://sample.image.uri/1234",
       >  "push": true,
       >  "sms": false,
-      >  "alertList": false,
       >  "expiresAt": "2023-08-15T23:16:41.000Z"
       >}
       >```
@@ -844,8 +924,10 @@ It returns **202 _Accepted_** and the created alert object on success.
       > {
       >   "meta": {
       >       "message": "The alerts are being sent by the external services.",
-      >       "successfulAlerts": {
-      >           "push": true
+      >       "acceptedAlerts": {
+      >           "count": 2,
+      >           "push": true,
+      >           "sms": false,
       >       }
       >   },
       >   "data": {
@@ -857,9 +939,7 @@ It returns **202 _Accepted_** and the created alert object on success.
       >       "sentBy": 38,
       >       "isPUSH": true,
       >       "isSMS": false,
-      >       "isAlertList": false,
       >       "expiresAt": "2023-08-15T23:16:41.000Z",
-      >       "updatedAt": "2023-08-11T15:56:46.311Z",
       >       "createdAt": "2023-08-11T15:56:46.311Z"
       >   }
       > }
