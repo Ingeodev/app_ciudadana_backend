@@ -2,15 +2,15 @@ const { StatusCodes } = require("http-status-codes");
 const { Model } = require("sequelize");
 const axios = require("axios");
 
-const sigmaSMSToken = process.env.SIGMA_ACCOUNT_KEY;
-// const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
-
 const { appFirebase } = require("../../../../middleware/authMiddleware")
 const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
 
 const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
+const sigmaSMSToken = process.env.SIGMA_ACCOUNT_KEY;
+const sigmaSmsApiUri = "http://aio2.sigmamovil.com/api/sms";
 const defaultUsersBatchSize = 100000;
+// const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
 
 /**
  * Function that returns a batch of rows from the database, but defaults to users data.
@@ -99,25 +99,42 @@ const sendPushNotifications = async (title, message, imageUri, siteUri) => {
 };
 
 /**
- * Function that sends a bulk of SMS messages using [Twilio Messaging Services](https://www.twilio.com/docs/messaging/services). It requires that appropriate `TWILIO_ACCOUNT_SID` `TWILIO_AUTH_TOKEN` `TWILIO_MESSAGE_SERVICE_SID` are defined in the .env file.
+ * Function that sends a bulk of SMS messages using the SIGMA SMS service. It requires that appropriate `sigmaSMSToken` `sigmaAPIURI` are defined.
+ * @param {string} name The campaign name to send the SMS.
  * @param {string} message The message to send in the SMS.
- * @param {string[]} usersPhoneNumbers List of users' phone numbers (MUST include the zone identifier, e.g. +57).
- * @returns ``true`` if at least 10% of the messages are accepted by Twilio; `false` otherwise.
+ * @param {string[]} usersPhoneNumbers List of users' phone numbers (MUST include the zone identifier, e.g. +57). The zone identifier must only have 2 digits.
+ * @returns ``true`` if SIGMA gives a positive answer; `false` otherwise.
  */
-const sendSmsNotifications = async (message, usersPhoneNumbers) => {
+const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
   try {
-    const smsPromises = usersPhoneNumbers.map(async (number) => {
-      return twilioClient.messages.create({
-        messagingServiceSid: twilioMessageServiceSid,
-        body: message,
-        to: number,
-      });
+    const requestHeaders = {
+      Authorization: `Bearer ${sigmaSMSToken}`,
+      'Content-Type': 'application/json',
+    };
+    const receiver = usersPhoneNumbers.map(phoneNumber => {
+      const userData = {
+        indicative: phoneNumber.substring(1, 3),
+        phone: phoneNumber.substring(3),
+        message,
+      };
+      return userData;
     });
-    const smsResponses = await Promise.allSettled(smsPromises);
-    console.log('smsResponses: ', smsResponses);
-    const fulfilled = smsResponses.filter(resp => (resp.status === 'fulfilled'));
-    if (fulfilled.length < smsResponses.length * 0.1)
-      return false;
+    const smsCreationObj = {
+      idSmsCategory: 1,   // Assume 1 for Notificaitons 
+      name,
+      receiver,           // List of receivers
+      dateNow: 1,         // To send now
+      type: "lote",       // to send multiple SMSs
+      track: 0,           // Don't track
+      sendPush: 0,        // Don't send as push notificaiton
+      api: 1,             // Use API (Should always be 1)
+      notification: 0,    // Don't notify us when success
+    };
+    console.log('smsCreationObj', smsCreationObj);
+    const sigmaResponse = await axios.post(sigmaSmsApiUri, smsCreationObj, {
+      headers: requestHeaders,
+    })
+    console.log('sigmaResponse: ', sigmaResponse);
     return true;
   } catch (error) {
     console.error(error);
