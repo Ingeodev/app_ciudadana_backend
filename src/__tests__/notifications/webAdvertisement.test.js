@@ -38,6 +38,31 @@ describe("Advertisement management API points: ", () => {
             .send(global.firebaseTestWebUserLogin);
         requestHeaders.Authorization += firebaseAuth.body.idToken;
         // console.log(requestHeaders);
+        // Create Mobile Service:
+        const mobileServicesResponse = await request(global.notificationsMicroserviceDefaultHost)
+            .post("/api/web/v1/notifications/mobile_services")
+            .set(requestHeaders)
+            .send({
+                route: "Test Service Adv",
+                name: "Test Service Adv",
+                subtitle: "Test Service Adv",
+                imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+                icon: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+                accessLevel: "Test Service Adv",
+            });
+        const categoryId = mobileServicesResponse.body.data.id;
+        testAdvertisement1.categoryId = categoryId;
+        editAdvertisement0.categoryId = categoryId;
+        console.log(categoryId);
+    });
+
+    afterAll(async () => {
+        await request(global.notificationsMicroserviceDefaultHost)
+            .post("/api/web/v1/notifications/mobile_services/delete")
+            .set(requestHeaders)
+            .send({
+                id: testAdvertisement1.categoryId,
+            });
     });
 
     describe("POST /notifications/advertising/ ", () => {

@@ -15,16 +15,11 @@ describe("MOBILE Alert configuration API points: ", () => {
 
     const mobileAlertItemFormat = {
         id: expect.any(Number),
+        date: expect.any(String),
         title: expect.any(String),
         message: expect.any(String),
-        siteUri: expect.any(String),
-        imageUri: expect.any(String),
-        sentBy: expect.any(Number),
-        isPUSH: expect.any(Boolean),
-        isSMS: expect.any(Boolean),
-        isAlertList: expect.any(Boolean),
-        expiresAt: expect.any(String),
-        createdAt: expect.any(String),
+        url: expect.any(String),
+        image: expect.any(String),
     }
 
     beforeAll(async () => {

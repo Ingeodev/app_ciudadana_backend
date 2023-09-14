@@ -9,49 +9,50 @@ describe("Mobile - Reports management API points: ", () => {
   };
 
   const testReport0 = {
-    title: "report title 1", 
-    description: "report description 1", 
-    securityCategoryId: 3, 
-    userId: 6, 
-    imageUri: "http://image/uri_1.jpg", 
-    lat: 3.347622, 
+    title: "Reporte de prueba 1",
+    description: "Ignorar: reporte de prueba ",
+    securityCategoryId: null,
+    userId: 6,
+    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    lat: 3.347622,
     lon: -76.530775
   };
 
   const testReport1 = {
-    title: "Reporte de Siniestro", 
-    description: "El siniestro se registró cerca al estadio", 
-    securityCategoryId: 3, 
-    imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
-    lat: 3.345678, 
+    title: "Reporte de prueba 2",
+    description: "Ignorar: reporte de prueba 2",
+    securityCategoryId: null,
+    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport2 = {
-    description: "descripción del siniestro", 
-    securityCategoryId: 3, 
-    imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
-    lat: 3.345678, 
+    description: "Ignorar: reporte de prueba 3",
+    securityCategoryId: null,
+    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport3 = {
-    title: "Reporte de Siniestro", 
-    description: "El siniestro se registró cerca al estadio", 
-    imageUri: "http://image/uri_de_la_imagen_del_siniestro.png", 
-    lat: 3.345678, 
+    title: "Reporte de prueba 4",
+    description: "Ignorar: reporte de prueba 4",
+    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport4 = {
-    title: "Reporte de Siniestro", 
-    description: "El siniestro se registró cerca al estadio", 
-    securityCategoryId: 3, 
-    lat: 3.345678, 
+    title: "Reporte de prueba 5",
+    description: "Ignorar: reporte de prueba 5",
+    securityCategoryId: null,
+    lat: 3.345678,
     lon: -76.535812
   };
 
   beforeAll(async () => {
+    // Auth mobile user
     const firebaseAuth = await request(
       "https://identitytoolkit.googleapis.com/v1"
     )
@@ -59,6 +60,29 @@ describe("Mobile - Reports management API points: ", () => {
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
+    // Create security category:
+    const securityCategoryResponse = await request(global.notificationsMicroserviceDefaultHost)
+      .post("/api/web/v1/notifications/security_category")
+      .set(requestHeaders)
+      .send({
+        name: "Reportes de Prueba",
+        imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+        color: "#002955",
+      });
+    const securityCategoryId = securityCategoryResponse.body.data.id;
+    testReport0.securityCategoryId = securityCategoryId;
+    testReport1.securityCategoryId = securityCategoryId;
+    testReport2.securityCategoryId = securityCategoryId;
+    testReport4.securityCategoryId = securityCategoryId;
+  });
+
+  afterAll(async () => {
+    await request(global.notificationsMicroserviceDefaultHost)
+      .post("/api/web/v1/notifications/security_category/delete")
+      .set(requestHeaders)
+      .send({
+        id: testReport0.securityCategoryId,
+      });
   });
 
   describe("POST /security/reports ", () => {
