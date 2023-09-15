@@ -20,7 +20,7 @@ const postRegisterSchema = joi.object({
 const getGetCoordinatesSchema = joi.object({
   lat: joi.number().min(-90).max(90),
   lon: joi.number().min(-180).max(180),
-});
+}).and('lat', 'lon');
 
 const getListAllClosestSchema = joi.object({
   number: joi.number().integer().greater(0).required(),

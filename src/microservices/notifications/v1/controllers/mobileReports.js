@@ -24,19 +24,19 @@ const checkCategoryExists = async (categoryId) => {
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { 
-      title, 
-      description, 
-      securityCategoryId, 
-      imageUri, 
-      lat, 
-      lon 
+    const {
+      title,
+      description,
+      securityCategoryId,
+      imageUri,
+      lat,
+      lon
     } = await validator.vMobilePostRegister(req.body);
 
     if (!await checkCategoryExists(securityCategoryId))
       throw {
-          status: StatusCodes.NOT_FOUND,
-          message: 'The assigned category does not exist.',
+        status: StatusCodes.NOT_FOUND,
+        message: 'The assigned category does not exist.',
       };
 
     const userData = await db.User.findOne({
@@ -61,15 +61,15 @@ exports.postRegister = async (req, res, next) => {
       };
 
     const dataQuery = {
-      title, 
-      description, 
-      securityCategoryId, 
-      userId: userData.id, 
-      imageUri, 
-      lat, 
+      title,
+      description,
+      securityCategoryId,
+      userId: userData.id,
+      imageUri,
+      lat,
       lon
     };
-    
+
     const result = await db.Report.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
@@ -87,69 +87,49 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.getListAllClosest = async (req, res, next) => {
   try {
-    // const objPage = await validator.vMobileGetListAllClosest({
-    //   number: req.query.page ? parseInt(req.query.page.number) : 1,
-    //   size: req.query.page ? parseInt(req.query.page.size) : 100,
-    // });
-    // const offset = (objPage.number - 1) * objPage.size;
-
-    const { lat, lon } = await validator.vMobileGetCoordinates({
-      lat: parseFloat(req.query.lat),
-      lon: parseFloat(req.query.lon),
-    });
+    const { lat, lon } = await validator.vMobileGetCoordinates(req.query);
 
     var date = new Date();
     date.setDate(date.getDate() - 1);
 
+    // let order = [["createdAt", "DESC"]];
+    let order = [["title", "DESC"]];
+    if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
+      order = [[
+        Sequelize.fn("ST_Distance",
+          Sequelize.fn("ST_MakePoint", Sequelize.col('lon'), Sequelize.col('lat')),
+          Sequelize.fn("ST_MakePoint", lon, lat)
+        ),
+        "ASC"]];
+    }
+
     const reportsDb = await db.Report.findAndCountAll({
-      where: { 
+      where: {
         updatedAt: {
           [Sequelize.Op.gt]: date
-        } 
+        }
       },
       unique: true,
       paranoid: true,
-      order: [["createdAt", "DESC"]],
-      // offset,
-      // limit: objPage.size,
+      order,
       include: [{
         model: db.SecurityCategory,
         attributes: ['name'],
         required: false,
       }],
       attributes: {
-        exclude: ["deletedAt", "SecurityCategory"],
+        exclude: ["createdAt", "updatedAt", "deletedAt", "SecurityCategory"],
         include: [
           [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
         ],
       },
     });
 
-    if (reportsDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: 'There are no Reports registered in the database.',
-      };
-    if (reportsDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages.',
-      };
-
     const data = reportsDb.rows.map(row => {
       return { ...row.dataValues, SecurityCategory: undefined };
     });
 
-    return res.status(StatusCodes.OK).json({
-      meta: null,
-      // meta: {
-      //   page: objPage.number,
-      //   pageSize: objPage.size,
-      //   totalRecords: reportsDb.count,
-      //   totalPages: Math.ceil(reportsDb.count / objPage.size),
-      // },
-      data,
-    });
+    return res.status(StatusCodes.OK).json(data);
   } catch (error) {
     return next(error);
   }
