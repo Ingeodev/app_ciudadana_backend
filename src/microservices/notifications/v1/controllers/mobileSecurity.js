@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorSecurity.js");
+const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 
 /**
  * Get all  attention lines of security/emergency
@@ -8,27 +9,9 @@ const validator = require("../../utils/validatorSecurity.js");
  */
 exports.getListAll = async (req, res, next) => {
   try {
-    // const objPage = await validator.vMobileMGetListAll({
-    //   number: req.query.page ? parseInt(req.query.page.number) : 1,
-    //   size: req.query.page ? parseInt(req.query.page.size) : 100,
-    // });
-
-    // const attentionLInDb = await db.Security.findAndCountAll({
-    //   where: { active: true },
-    //   attributes: ["name", "phone", "address"],
-    //   limit: objPage.size,
-    //   offset: (objPage.number - 1) * objPage.size,
-    //   // Ordered from A-Z
-    //   order: [["name", "ASC"]],
-    // });
-
-    // const attentionLInDb = await db.Security.findAndCountAll({
     const attentionLInDb = await db.Security.findAll({
       where: { active: true },
       attributes: ["name", "phone", "address", "imageUri", "siteUri"],
-      // limit: objPage.size,
-      // offset: (objPage.number - 1) * objPage.size,
-      // Ordered from A-Z
       order: [["name", "ASC"]],
     });
 
@@ -41,9 +24,6 @@ exports.getListAll = async (req, res, next) => {
 
     const categInDb = await db.SecurityCategory.findAll({
       attributes: ["id", "name", "imageUri", "color"],
-      // limit: objPage.size,
-      // offset: (objPage.number - 1) * objPage.size,
-      // Ordered from A-Z
       order: [["name", "ASC"]],
     });
 
@@ -54,26 +34,21 @@ exports.getListAll = async (req, res, next) => {
       };
     }
 
-    // if (attentionLInDb.count <= 0)
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "There are no Attention Lines registered in the database",
-    //   };
-    // if (attentionLInDb.rows.length <= 0)
-    //   throw {
-    //     status: StatusCodes.BAD_REQUEST,
-    //     message: '"page.number" is too large for the number of possible pages',
-    //   };
-    // const totalPages = Math.ceil(attentionLInDb.count / objPage.size);
+    const reportCategories = categInDb.map(item => {
+      const mappedItem = {
+        ...item.dataValues,
+        color: formatColorOutputForMobile(item.color),
+      };
+      return mappedItem;
+    });
 
     const responseCustom = {
-      reportCategories: categInDb,
+      reportCategories,
       securityLines: attentionLInDb,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
-    // console.error("attention lines could not be recovered: ", error.message);
     return next(error);
   }
 };

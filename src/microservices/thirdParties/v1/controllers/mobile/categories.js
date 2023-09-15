@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/mobile/categories.js");
+const { formatColorOutputForMobile } = require("../../../../../utils/mobileColorFormatter.js");
 
 
 
@@ -35,7 +36,16 @@ exports.getAll = async (req, res, next) => {
         message: '"page.number" is too large for the number of possible pages',
       };
     }
-    return res.status(StatusCodes.OK).send(categoriesInDb.rows);
+
+    const mappedRows = categoriesInDb.rows.map(row => {
+      const mappedRow = {
+        ...row.dataValues,
+        color: formatColorOutputForMobile(row.dataValues.color),
+      };
+      return mappedRow;
+    });
+
+    return res.status(StatusCodes.OK).send(mappedRows);
   } catch (error) {
     // console.error("Document types could not be recovered: ", error.message);
     return next(error);

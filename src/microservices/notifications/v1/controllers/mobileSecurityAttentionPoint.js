@@ -3,6 +3,7 @@ const { Sequelize } = require("sequelize");
 
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
+const { formatColorOutputForMobile } = require('../../../../utils/mobileColorFormatter');
 
 // Retrieve the available security attention points.
 const getSecurityAttentionPoints = async (req, res, next) => {
@@ -35,7 +36,7 @@ const getSecurityAttentionPoints = async (req, res, next) => {
             const mappedObject = {
                 id: row.dataValues.id,
                 name: row.dataValues.name,
-                color: row.dataValues.color,
+                color: formatColorOutputForMobile(row.dataValues.color),
                 iconMap: row.dataValues.imageUri,
                 description: row.dataValues.description,
                 address: row.dataValues.address,
