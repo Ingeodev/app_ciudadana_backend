@@ -147,7 +147,7 @@ const sendAlerts = async (req, res, next) => {
     if (!(push || sms))
       throw {
         status: StatusCodes.UNPROCESSABLE_ENTITY,
-        message: "At least one alert option must be true: push, sms, alertList",
+        message: "At least one alert option must be true: push, sms",
       };
     const adminUserData = await db.User.findOne({
       where: { disabled: false, userMobile: false, clientId: res.locals.uid },
