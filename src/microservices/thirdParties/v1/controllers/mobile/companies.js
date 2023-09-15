@@ -30,14 +30,22 @@ exports.getCompaniesnServices = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : 100,
     });
 
-    const refPoint = Sequelize.literal(`ST_GeomFromText('POINT(${objPage.lon} ${objPage.lat})')`);
+    let order = [["name", "ASC"]];
+    if (objPage.lat != null && objPage.lon != null && typeof objPage.lat == 'number' && typeof objPage.lon == 'number') {
+      order = [[
+        Sequelize.fn("ST_Distance",
+          Sequelize.col('geolocation'),
+          Sequelize.fn("ST_MakePoint", objPage.lon, objPage.lat)
+        ),
+        "ASC"]];
+    }
 
     const companiesInDb = await db.ThirdPartyCompany.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
-      order: Sequelize.literal(`ST_Distance(geolocation, ${refPoint.val}) ASC`),
+      order,
       include: [
         {
           model: db.ThirdPartyCategory,
@@ -85,7 +93,7 @@ exports.getCompaniesnServices = async (req, res, next) => {
         status: StatusCodes.BAD_REQUEST,
         message: '"page.number" is too large for the number of possible pages',
       };
-    
+
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
       const categoryName = companyData.ThirdPartyCategory.name;

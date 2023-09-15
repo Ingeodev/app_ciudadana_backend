@@ -93,7 +93,7 @@ exports.getListAllClosest = async (req, res, next) => {
     date.setDate(date.getDate() - 1);
 
     // let order = [["createdAt", "DESC"]];
-    let order = [["title", "DESC"]];
+    let order = [["title", "ASC"]];
     if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
       order = [[
         Sequelize.fn("ST_Distance",

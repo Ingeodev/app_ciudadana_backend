@@ -4,9 +4,9 @@ const joi = require("joi");
 const getListAllSchema = joi.object({
   number: joi.number().integer().greater(0),
   size: joi.number().integer().greater(0),
-  lat: joi.number().min(-90).max(90).required(),
-  lon: joi.number().min(-180).max(180).required(),
-});
+  lat: joi.number().min(-90).max(90),
+  lon: joi.number().min(-180).max(180),
+}).and('lon', 'lat');
 
 const use_validator_on_data = async (validator_schema, data) => {
   try {
