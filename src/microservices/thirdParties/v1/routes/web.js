@@ -181,12 +181,12 @@ router.get(
   transpRoutesController.getCompaniesNRoutes
 );
 
-// router.post(
-//   "/transport_company/route/excel",
-//   // hasPermissions({ role: "super_master_user" }),
-//   uploadSingleExcel.single("file"),
-//   transpRoutesController.postUploadXlsxRoutes
-// );
+router.post(
+  "/transport_company/route/excel",
+  // hasPermissions({ role: "super_master_user" }),
+  uploadSingleExcel.single("file"),
+  transpRoutesController.postUploadXlsx
+);
 
 router.get(
   "/transport_company/route/:companyId",
@@ -254,6 +254,13 @@ router.post(
   "/city/delete",
   // hasPermissions({ role: "super_master_user" }),
   citiesController.postDelete
+);
+
+router.post(
+  "/city/excel",
+  // hasPermissions({ role: "super_master_user" }),
+  uploadSingleExcel.single("file"),
+  citiesController.postUploadXlsx
 );
 // #endregion - Company
 module.exports = router;

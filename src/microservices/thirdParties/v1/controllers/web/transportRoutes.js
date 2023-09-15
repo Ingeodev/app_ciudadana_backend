@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const xlsx = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
+const caliCodeDane = 76001;
 
 /**
  * Create an transport route
@@ -24,6 +25,13 @@ exports.postRegister = async (req, res, next) => {
 
     const { origin, destination, companyId, duration } =
       await validator.vWebPostRegister(req.body);
+    
+    if (origin !== caliCodeDane && destination !== caliCodeDane) {
+      throw {
+        message: "Only routes to and from Cali, Valle del Cauca are allowed.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
 
     // First, validate that the transport company belongs to the user.
     const company = await db.TransportCompany.findOne({
@@ -78,6 +86,13 @@ exports.postEdit = async (req, res, next) => {
 
     const { id, origin, destination, companyId, duration } =
       await validator.vWebPostEdit(req.body);
+
+    if (origin !== caliCodeDane && destination !== caliCodeDane) {
+      throw {
+        message: "Only routes to and from Cali, Valle del Cauca are allowed.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
 
     // First, validate that the transport company belongs to the user.
     const companyInDb = await db.TransportCompany.findOne({
@@ -452,16 +467,10 @@ exports.getItinerary = async (req, res, next) => {
 };
 
 /**
- * Upload an excel file that will replace all existing transport routes in the database. This use "Plantilla_Registro_Manual_Rutas_de_Transporte.xlsx"
- * @param {object} req.file - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * Upload an excel file that will create/update transport routes in the database. This use "Plantilla_Registro_Rutas_de_Transporte.xlsx". With: originCode, destinationCode, duration, date, hour, tariff
+ * @return {object} Response contains: statuscode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
  */
-exports.postUploadXlsxRoutesManualTemplate = async (req, res, next) => {
-  // TODO: Las rutas que existan en el excel y no existan en la db, serán creadas.
-  // TODO: Las rutas que no existan en el excel, pero existan en la db. Ellas (y sus horarios) no se eliminarán
-  // TODO: Los horarios de cada ruta, si existen, serán borrados temporalmente, de esa manera, se reviven/actualizan todas las horarios (fechas)
-  // TODO: Y las que no se revivan es porque no estan en el excel.
-  const transaction = await db.sequelize.transaction();
+exports.postUploadXlsx = async (req, res, next) => {
   try {
     // // ! Pendiente: Validar permisos del usuario
     // const createdBy = await db.User.findOne({
@@ -492,221 +501,322 @@ exports.postUploadXlsxRoutesManualTemplate = async (req, res, next) => {
       };
     }
 
-    let item = null;
-    let resJSON = {
-      companyId,
-      companyName: companyInDb.dataValues.name,
-      routes: [],
-    };
-    try {
-      const contents = xlsx.parse(xlsxFile.buffer);
-      const namePages = await validator.vRExcelPagesSchema(contents);
+    const contents = xlsx.parse(xlsxFile.buffer);
+    let success = [];
+    let errors = [];
 
-      for (let iPage = 1; iPage < namePages.length; iPage++) {
-        // Validation of the first row of each sheet
-        // await validator.vRExcelHeaderSchema({ header: contents[iPage].data[0] });
+    // Only one sheet is allowed in the xls
+    const namePages = await validator.vRExcelPagesSchema(contents);
 
-        const { origin, destination, startDate, endDate } =
-          await validator.vRExcelRouteSchema({
-            origin: contents[iPage].data[6][5],
-            tariff: contents[iPage].data[7][5],
-            startDate: contents[iPage].data[8][5],
-            endDate: contents[iPage].data[9][5],
-          });
+    // for (let iPage = 0; iPage < namePages.length; iPage++) {
+    // Validate column names
+    // await validator.vRExcelHeaderSchema({ header: contents[iPage].data[0] });
+    // }
+    const iPage = 0;
+    let endRow = contents[iPage].data.length;
 
-        // [City, Municipality/State, Municipality code]
-        const originParts = origin.split(", ");
-        const destinationParts = destination.split(", ");
+    // Validation of the first row of each sheet - name of the columns
 
-        // Search the origin and destination in the db
+    for (let row = 1; row < contents[iPage].data.length; row++) {
+      let durationUpdated = 1;
+      let msgSuccess = "";
+      let item = contents[iPage].data[row].slice(0, 6).toString();
+      const transaction = await db.sequelize.transaction();
+
+      // Check if there are no more data - check origin, destination, n date
+      try {
+        if (
+          (contents[iPage].data[row][2] === "" &&
+            contents[iPage].data[row][3] === "" &&
+            contents[iPage].data[row][4] === "") ||
+          (contents[iPage].data[row][0] === null &&
+            contents[iPage].data[row][1] === null &&
+            contents[iPage].data[row][3] === null) ||
+          (contents[iPage].data[row][0] === undefined &&
+            contents[iPage].data[row][1] === undefined &&
+            contents[iPage].data[row][3] === undefined)
+        ) {
+          endRow = row;
+          await transaction.rollback();
+          break;
+        }
+
+        let originCode = null,
+          destinationCode = null,
+          duration = null,
+          date = null,
+          tariff = null,
+          hour = null;
+
+        try {
+          ({ originCode, destinationCode, duration, date, hour, tariff } =
+            await validator.vRExcelRouteSchema({
+              originCode: parseInt(contents[iPage].data[row][0]),
+              destinationCode: parseInt(contents[iPage].data[row][1]),
+              duration: contents[iPage].data[row][2],
+              date: contents[iPage].data[row][3],
+              hour: contents[iPage].data[row][4],
+              tariff: parseInt(contents[iPage].data[row][5]),
+            }));
+        } catch (error) {
+          errors.push(
+            `Fila ${row + 1} con campos [${item}]. ${error.message}.`
+          );
+          await transaction.rollback();
+          continue;
+        }
+
+        // TODO: Only routes to and from Cali, Valle del Cauca
+        if (originCode !== caliCodeDane && destinationCode !== caliCodeDane) {
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Solo se permiten rutas desde y hacia Cali, Valle del Cauca.`
+          );
+          await transaction.rollback();
+          continue;
+        }
+
+        // -------------------------- Search the origin and destination in the db
         const originInDb = await db.City.findOne({
           // // ! Pendiente: Validar permisos del usuario
-          where: { cityCode: originParts[2] },
-          attributes: ["id", "city", "state"],
-        });
-        const destinationInDb = await db.City.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: { cityCode: destinationParts[2] },
+          where: { cityCode: originCode },
           attributes: ["id", "city", "state"],
         });
 
-        // Check if the route exists
-        let routeInDb = await db.TransportRoute.findOne({
+        if (originInDb === null) {
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Código de municipio de origen (${originCode}) no encontrado.`
+          );
+          await transaction.rollback();
+          continue;
+        }
+
+        const destinationInDb = await db.City.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: { cityCode: destinationCode },
+          attributes: ["id", "city", "state"],
+        });
+
+        if (destinationInDb === null) {
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Código de municipio de destino (${destinationCode}) no encontrado.`
+          );
+          await transaction.rollback();
+          continue;
+        }
+
+        // -------------------------- Check if the route exists
+        let routeInDb = null;
+        let tempRouteInDb = null;
+        let idRouteInDb = 0;
+        routeInDb = await db.TransportRoute.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: {
             origin: originInDb.dataValues.id,
             destination: destinationInDb.dataValues.id,
             companyId,
           },
-          attributes: ["id"],
-          // include: [
-          //   {
-          //     model: db.City,
-          //     as: "originName",
-          //     attributes: ["city"],
-          //     where: { id: originInDb.dataValues.id },
-          //   },
-          //   {
-          //     model: db.City,
-          //     as: "destinationName",
-          //     attributes: ["city"],
-          //     where: { id: destinationInDb.dataValues.id },
-          //   },
-          // ],
+          attributes: ["id", "duration"],
+          // TODO: This means that the deleted routes will not be revived.
+          paranoid: true,
         });
 
-        let newRouteInDb = null;
+        try {
+          if (routeInDb === null) {
+            // Create route in db
+            const queryRoute = {
+              origin: originInDb.dataValues.id,
+              destination: destinationInDb.dataValues.id,
+              duration,
+              companyId,
+            };
 
-        if (routeInDb === null) {
-          // Create route in db
-          const queryRoute = {
-            origin: originInDb.dataValues.id,
-            destination: destinationInDb.dataValues.id,
-            companyId,
-          };
-
-          newRouteInDb = await db.TransportRoute.create(queryRoute, {
-            transaction,
-          });
-        } else {
-          // Delete all the schedules in the route
-          await db.RouteTimetable.destroy({
-            where: { routeId: routeInDb.dataValues.id },
-            transaction,
-          });
-        }
-
-        newRouteInDb.dataValues.originName = originInDb.dataValues.city;
-        newRouteInDb.dataValues.destinationName =
-          destinationInDb.dataValues.city;
-
-        let routesTimetables = [];
-        // Add routetimetables
-        for (let i = 13; i < contents[iPage].data.length; i++) {
-          // Check if it is the last row, i.e., there is no more data
-          if (
-            (contents[iPage].data[i][4] === "" &&
-              contents[iPage].data[i][5] === "") ||
-            (contents[iPage].data[i][4] === null &&
-              contents[iPage].data[i][5] === null) ||
-            (contents[iPage].data[i][4] === undefined &&
-              contents[iPage].data[i][5] === undefined)
-          ) {
-            break;
-          }
-          item = contents[iPage].data[i].slice(4, 8).toString();
-
-          const { date, startTime, tariff, duration } =
-            await validator.vRTimetableSchema({
-              date: contents[iPage].data[i][4]
-                ? contents[iPage].data[i][4]
-                : null,
-              startTime: contents[iPage].data[i][5]
-                ? contents[iPage].data[i][5]
-                : null,
-              tariff: contents[iPage].data[i][6]
-                ? contents[iPage].data[i][6]
-                : null,
-              duration: contents[iPage].data[i][7]
-                ? contents[iPage].data[i][7]
-                : null,
+            routeInDb = await db.TransportRoute.create(queryRoute, {
+              transaction,
             });
 
-          // Check if the routing schedule exists
-          const timetableInDb = await db.RouteTimetable.findOne({
-            // // ! Pendiente: Validar permisos del usuario
-            where: {
-              date,
-              routeId: newRouteInDb.dataValues.id,
-            },
-            attributes: ["id"],
-            // TODO: This means that the deleted routes will be revived.
-            paranoid: false,
-          });
-
-          const timetable = {
-            id: timetableInDb ? timetableInDb.dataValues.id : null,
-            routeId: newRouteInDb.dataValues.id,
-            date,
-            startTime,
-            tariff,
-            duration,
-            deletedAt: null,
-          };
-
-          routesTimetables.push(timetable);
-        } // End for - timetables
-
-        // Create/Add route timetable
-        const routesInDb = await db.RouteTimetable.bulkCreate(
-          routesTimetables,
-          {
-            fields: [
-              "id",
-              "date",
-              "startTime",
-              "routeId",
-              "tariff",
-              "duration",
-            ],
-            updateOnDuplicate: [
-              "startTime",
-              "tariff",
-              "duration",
-              "updatedAt",
-              "deletedAt",
-            ],
-            validate: true,
-            transaction,
+            idRouteInDb = routeInDb.dataValues.id;
+            msgSuccess += "Ruta creada, ";
+          } else {
+            if (String(routeInDb.dataValues.duration) !== String(duration)) {
+              tempRouteInDb = await routeInDb.update({duration}, {
+                transaction,
+              });
+              idRouteInDb = tempRouteInDb.dataValues.id;
+              msgSuccess += "La duración de la ruta actualizada, ";
+              durationUpdated = 0;
+            } else {
+              idRouteInDb = routeInDb.dataValues.id;
+              msgSuccess += "La duración de la ruta no actualizada, ";
+            }
           }
-        );
-
-        if (!routesInDb.length) {
-          throw {
-            message: `Route timetable ${newRouteInDb.dataValues.originName}-${newRouteInDb.dataValues.destinationName} could not be created/added`,
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
-          };
+        } catch (error) {
+          await transaction.rollback();
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Error relacionado con la ruta - origen (${originCode}-${
+              originInDb.dataValues.city
+            }, ${originInDb.dataValues.state}), destino (${destinationCode}-${
+              destinationInDb.dataValues.city
+            }, ${destinationInDb.dataValues.state}).`
+          );
+          continue;
         }
 
-        const returnRoutes = routesInDb.map((obj) => {
-          return { ...obj.dataValues, deletedAt: undefined };
+        // -------------------------- Check if the route timetable (date n routeId) exists
+        let timetableInDb = null;
+        timetableInDb = await db.RouteTimetable.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: {
+            date,
+            routeId: idRouteInDb,
+          },
+          attributes: ["id"],
+          // TODO: This means that the deleted routes will not be revived.
+          paranoid: true,
         });
 
-        resJSON.routes.push({
-          routeId: newRouteInDb.dataValues.id,
-          originId: originInDb.dataValues.id,
-          originName: newRouteInDb.dataValues.originName,
-          destinationId: destinationInDb.dataValues.id,
-          destinationName: newRouteInDb.dataValues.destinationName,
-          routesTimetables: returnRoutes,
+        try {
+          if (timetableInDb === null) {
+            // Create route in db
+            const queryRoute = {
+              date,
+              routeId: idRouteInDb,
+            };
+
+            timetableInDb = await db.RouteTimetable.create(queryRoute, {
+              transaction,
+            });
+            msgSuccess += "Fecha creada, ";
+          }
+          msgSuccess += "Fecha no creada, ";
+        } catch (error) {
+          await transaction.rollback();
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Error relacionado con la fecha (${date}).`
+          );
+          continue;
+        }
+
+        //--------------------------  Check if the route timetable (hour n tariff) exists
+        let hourInDb = null;
+        hourInDb = await db.RouteTimetableHourTariff.findOne({
+          // // ! Pendiente: Validar permisos del usuario
+          where: {
+            hour,
+            timetableId: timetableInDb.dataValues.id,
+          },
+          attributes: ["id", "tariff"],
+          // TODO: This means that the deleted routes will not be revived.
+          paranoid: true,
         });
-      } // End for - routes
-    } catch (error) {
-      // await transaction.rollback();
-      let message = `The uploaded file is invalid: ${error.message}.`;
-      if (error.status != null && item != null) {
-        message += ` Item: [${item}].`;
-        throw {
-          status: StatusCodes.UNPROCESSABLE_ENTITY,
-          message,
-        };
+
+        try {
+          if (hourInDb === null) {
+            // Create route in db
+            const queryRoute = {
+              hour,
+              tariff,
+              timetableId: timetableInDb.dataValues.id,
+            };
+
+            hourInDb = await db.RouteTimetableHourTariff.create(queryRoute, {
+              transaction,
+            });
+
+            msgSuccess += "Hora y Tarifa creadas";
+          } else {
+            if (String(hourInDb.dataValues.tariff) === String(tariff)) {
+              errors.push(
+                `Fila ${
+                  row + 1
+                } con campos [${item}]. La hora (${hour}) y tarifa (${tariff}) existen.`
+              );
+
+              if (durationUpdated === 0) {
+                await transaction.commit();
+                msgSuccess += "La tarifa de la hora no actualizada";
+                success.push(`Fila ${row + 1} con campos [${item}]. ${msgSuccess}.`);
+                continue;
+              }
+              await transaction.rollback();
+              continue;
+            }
+
+            await hourInDb.update({tariff}, {
+              transaction,
+            });
+            msgSuccess += "La tarifa de la hora actualizada";
+          }
+          await transaction.commit();
+          success.push(`Fila ${row + 1} con campos [${item}]. ${msgSuccess}.`);
+        } catch (error) {
+          await transaction.rollback();
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. Error relacionado con la hora (${hour}) y tarifa (${tariff}).`
+          );
+          continue;
+        }
+        // -------------------------- End Row
+      } catch (error) {
+        await transaction.rollback();
+        errors.push(
+          `Fila ${row + 1} con campos [${item}]. Error en el servidor.`
+        );
+        // console.log("error.message");
+        // console.log(JSON.stringify(error));
+        continue;
       }
-      return next(error);
-    }
+    } // End for - End Excel rows
 
-    await transaction.commit();
+    // Create/Add route timetable
+    // const routesInDb = await db.RouteTimetable.bulkCreate(routesTimetables, {
+    //   fields: ["id", "date", "startTime", "routeId", "tariff", "duration"],
+    //   updateOnDuplicate: [
+    //     "startTime",
+    //     "tariff",
+    //     "duration",
+    //     "updatedAt",
+    //     "deletedAt",
+    //   ],
+    //   validate: true,
+    //   transaction,
+    // });
 
-    return res.status(StatusCodes.CREATED).json({
+    // const returnRoutes = routesInDb.map((obj) => {
+    //   return { ...obj.dataValues, deletedAt: undefined };
+    // });
+
+    let resJSON = {
       meta: {
         page: 1,
-        pageSize: resJSON.routes.length,
-        totalRecords: resJSON.routes.length,
+        // pageSize: resJSON.routes.length,
+        // totalRecords: resJSON.routes.length,
         totalPages: 1,
+        companyId,
+        companyName: companyInDb.dataValues.name,
+        numRows: endRow - 1,
+        numErrors: errors.length,
+        numSuccess: success.length,
+        // lastRowProcessedOfFile: endRow,
       },
-      data: resJSON,
-    });
+      data: {
+        success,
+        errors,
+      },
+    };
+    return res.status(StatusCodes.CREATED).json(resJSON);
   } catch (error) {
-    await transaction.rollback();
     return next(error);
   }
 };
