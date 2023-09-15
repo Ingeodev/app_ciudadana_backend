@@ -85,7 +85,7 @@ const excelPagesSchema = joi
       // data: joi.array().min(2).items(joi.array().length(2).items(
       //   joi.alternatives([non_negative_integer, joi.string().max(200)])
       // )),
-    }).length(numPage),
+    }),
   );
 
 const excelHeaderSchema = joi.object({

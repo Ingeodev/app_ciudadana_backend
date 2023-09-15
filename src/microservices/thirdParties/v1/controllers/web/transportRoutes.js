@@ -23,10 +23,34 @@ exports.postRegister = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { origin, destination, companyId, duration } =
-      await validator.vWebPostRegister(req.body);
-    
-    if (origin !== caliCodeDane && destination !== caliCodeDane) {
+    const { origin, destination, companyId, duration } = await validator.vWebPostRegister(req.body);
+
+    const originInDb = await db.City.findByPk(origin, {
+      attributes: ["id", "cityCode"],
+    });
+
+    if (originInDb === null) {
+      throw {
+        message: "City of origin not found",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    const destinationInDb = await db.City.findByPk(destination, {
+      attributes: ["id", "cityCode"],
+    });
+
+    if (destinationInDb === null) {
+      throw {
+        message: "City of destination not found",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    if (
+      originInDb.dataValues.cityCode !== caliCodeDane &&
+      destinationInDb.dataValues.cityCode !== caliCodeDane
+    ) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -86,8 +110,33 @@ exports.postEdit = async (req, res, next) => {
 
     const { id, origin, destination, companyId, duration } =
       await validator.vWebPostEdit(req.body);
+    
+    const originInDb = await db.City.findByPk(origin, {
+      attributes: ["id", "cityCode"],
+    });
 
-    if (origin !== caliCodeDane && destination !== caliCodeDane) {
+    if (originInDb === null) {
+      throw {
+        message: "City of origin not found",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    const destinationInDb = await db.City.findByPk(destination, {
+      attributes: ["id", "cityCode"],
+    });
+
+    if (destinationInDb === null) {
+      throw {
+        message: "City of destination not found",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    if (
+      originInDb.dataValues.cityCode !== caliCodeDane &&
+      destinationInDb.dataValues.cityCode !== caliCodeDane
+    ) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,

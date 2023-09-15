@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       cityCode: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },

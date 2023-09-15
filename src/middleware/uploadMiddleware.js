@@ -54,6 +54,29 @@ const imagePdfFilter = (req, file, cb) => {
     }
 };
 
+const jsonFilter = (req, file, cb) => {
+  // Only JSON mimetype is allowed.
+  const allowedMimetypes = ["application/json"];
+  try {
+    if (allowedMimetypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  } catch (error) {
+    cb(error);
+  }
+};
+
+const uploadSingleJSON = multer({
+  storage,
+  fileFilter: jsonFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 1, // Only one file is allowed at a time
+  },
+});
+
 const uploadSingleImage = multer({
     storage,
     fileFilter: imageFilter,
@@ -90,8 +113,9 @@ const uploadImagesPdfs = multer({
 });
 
 module.exports = {
-    uploadSingleImage,
-    uploadSinglePdf,
-    uploadSingleExcel,
-    uploadImagesPdfs,
+  uploadSingleImage,
+  uploadSinglePdf,
+  uploadSingleExcel,
+  uploadImagesPdfs,
+  uploadSingleJSON,
 };

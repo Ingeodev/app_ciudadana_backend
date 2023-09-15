@@ -12,11 +12,11 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
-        // roleId: {
-        //   type: Sequelize.INTEGER,
-        //   allowNull: false,
-        //   unique: false,
-        // },
+        roleId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          unique: false,
+        },
         clientId: {
           type: Sequelize.STRING(128),
           allowNull: false,
@@ -108,20 +108,20 @@ module.exports = {
     //   onDelete: "RESTRICT",
     //   onUpdate: "cascade",
     // });
-    // return await queryInterface.addConstraint("Users", {
-    //   name: "fk_Users_Roles",
-    //   fields: ["roleId"],
-    //   type: "foreign key",
-    //   references: {
-    //     table: "Roles",
-    //     field: "id",
-    //   },
-    //   onDelete: "RESTRICT",
-    //   onUpdate: "cascade",
-    // });
+    return await queryInterface.addConstraint("Users", {
+      name: "fk_Users_Roles",
+      fields: ["roleId"],
+      type: "foreign key",
+      references: {
+        table: "Roles",
+        field: "id",
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "cascade",
+    });
   },
   async down(queryInterface, Sequelize) {
-    // await queryInterface.removeConstraint("Users", "fk_Users_Roles");
+    await queryInterface.removeConstraint("Users", "fk_Users_Roles");
     // await queryInterface.removeConstraint("Users", "fk_Users_DocumentTypes");
     await queryInterface.dropTable("Users");
   },

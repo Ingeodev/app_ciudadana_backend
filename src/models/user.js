@@ -63,12 +63,12 @@ module.exports = (sequelize, DataTypes) => {
       //   },
       // });
 
-      // Admin.belongsTo(models.Role, {
-      //   foreignKey: {
-      //     name: "roleId",
-      //     allowNull: false,
-      //   },
-      // });
+      User.belongsTo(models.Role, {
+        foreignKey: {
+          name: "roleId",
+          allowNull: false,
+        },
+      });
     }
   }
   User.init(
@@ -80,11 +80,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      // roleId: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: false,
-      //   unique: false,
-      // },
+      roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
+      },
       clientId: {
         type: DataTypes.STRING,
         allowNull: false,

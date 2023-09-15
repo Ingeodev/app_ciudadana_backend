@@ -18,8 +18,8 @@ module.exports = {
           unique: false,
         },
         cityCode: {
-          type: Sequelize.STRING(50),
-          allowNull: true,
+          type: Sequelize.INTEGER,
+          allowNull: false,
           unique: false,
         },
         state: {
