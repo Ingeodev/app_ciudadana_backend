@@ -299,6 +299,18 @@ exports.getAll = async (req, res, next) => {
       where: {
         companyId: objPage.companyId,
       },
+      include: [
+        {
+          model: db.City,
+          as: "originName",
+          attributes: ["city"],
+        },
+        {
+          model: db.City,
+          as: "destinationName",
+          attributes: ["city"],
+        },
+      ],
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["origin", "ASC"]], // Sort by date of creation in descending order
@@ -319,6 +331,20 @@ exports.getAll = async (req, res, next) => {
       };
     const totalPages = Math.ceil(companiesInDb.count / objPage.size);
 
+    const transformedCompanies = companiesInDb.rows.map((company) => {
+      const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      const tOriginName = companyData.originName.city;
+      delete companyData.originName;
+      const tDestinationName = companyData.destinationName.city;
+      delete companyData.destinationName;
+
+      return {
+        ...companyData,
+        originName: tOriginName,
+        destinationName: tDestinationName,
+      };
+    });
+
     const responseCustom = {
       meta: {
         page: objPage.number,
@@ -326,7 +352,8 @@ exports.getAll = async (req, res, next) => {
         totalRecords: companiesInDb.count,
         totalPages: totalPages,
       },
-      data: companiesInDb.rows,
+      data: transformedCompanies,
+      // data: companiesInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
