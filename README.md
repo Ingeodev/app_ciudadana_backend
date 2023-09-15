@@ -1267,7 +1267,7 @@ It returns **200 _OK_** and the list of objects on success.
 >     {
 >         "id": 2,
 >         "name": "Edited Sample Point",
->         "color": "#AAFFBB",
+>         "color": "AAFFBB",
 >         "iconMap": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
 >         "description": "Example security attention Point",
 >         "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
@@ -1279,7 +1279,7 @@ It returns **200 _OK_** and the list of objects on success.
 >     {
 >         "id": 4,
 >         "name": "Sample Point",
->         "color": "#AAFFBB",
+>         "color": "AAFFBB",
 >         "iconMap": "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png",
 >         "description": "Example security attention Point",
 >         "address": "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
@@ -1291,7 +1291,7 @@ It returns **200 _OK_** and the list of objects on success.
 >     {
 >         "id": 3,
 >         "name": "Punto de seguridad 1",
->         "color": "#de2138",
+>         "color": "de2138",
 >         "iconMap": "http://localhost:3001/api/v1/file_management/download/transport/0ae92c36-7111-4b89-8594-11afb96117f1.png",
 >         "description": "Es un campo nuevo por ser probado",
 >         "address": "Parque E, Medellín, Antioquia 050010, Colombia",
