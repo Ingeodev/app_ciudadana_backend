@@ -21,8 +21,8 @@ app.get("/health", function (req, res) {
 app.use(authMiddleware);
 
 //#region Web-oriented end-points
-app.use("/api/web/v1/admin", webAdminRouter);
 app.use("/api/web/v1/admin/role", webRoleRouter);
+app.use("/api/web/v1/admin", webAdminRouter);
 
 //#region Error handling
 // Not found route!

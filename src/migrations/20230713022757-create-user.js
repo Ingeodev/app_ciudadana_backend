@@ -109,7 +109,7 @@ module.exports = {
     //   onUpdate: "cascade",
     // });
     return await queryInterface.addConstraint("Users", {
-      name: "fk_Users_Roles",
+      name: "fk_users_roles",
       fields: ["roleId"],
       type: "foreign key",
       references: {
@@ -121,7 +121,7 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint("Users", "fk_Users_Roles");
+    await queryInterface.removeConstraint("Users", "fk_users_roles");
     // await queryInterface.removeConstraint("Users", "fk_Users_DocumentTypes");
     await queryInterface.dropTable("Users");
   },

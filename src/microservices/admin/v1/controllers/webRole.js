@@ -135,14 +135,14 @@ exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
     const rolesInDb = await db.Role.findByPk(id, {
+      attributes: ["id"],
       include: [
         {
           model: db.User,
-          attributes: ["roleId"],
+          attributes: ["id"],
           required: false,
         },
       ],
-      attributes: ["id"],
       paranoid: true,
     });
 

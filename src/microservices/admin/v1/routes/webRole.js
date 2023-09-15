@@ -8,7 +8,7 @@ const { ROLE_ACTIONS } = require("../../../../constants/permissionsAndPolicies")
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
 router.post(
-  "/create",
+  "/",
   // authorization.checkActions(ROLE_ACTIONS.create),
   uploadSingleJSON.single("file"),
   webRoleController.postRegister
@@ -33,8 +33,8 @@ router.get(
   webRoleController.getAll
 );
 
-router.get("/", (req, res) => {
-  res.status(200).json("Web API - Admin- Role Microservice");
-});
+// router.get("/", (req, res) => {
+//   res.status(200).json("Web API - Admin- Role Microservice");
+// });
 
 module.exports = router
