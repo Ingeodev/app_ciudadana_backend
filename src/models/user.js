@@ -99,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       emailVerified: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.DATE,
         allowNull: false,
         unique: false,
       },

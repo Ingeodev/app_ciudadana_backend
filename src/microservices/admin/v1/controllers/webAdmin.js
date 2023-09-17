@@ -69,7 +69,7 @@ exports.postRegister = async (req, res, next) => {
       disabled: false,
       userMobile: false,
       loginPhase: null,
-      emailVerified: resCreate.emailVerified,
+      emailVerified: null,
     };
 
     const userInDb = await db.User.create(dataQuery);

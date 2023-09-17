@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn('Users', 'emailVerified', {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.DATE,
       allowNull: false,
       unique: false,
     });

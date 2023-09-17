@@ -5,12 +5,10 @@ const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js"
 exports.createUser = async (data) => {
   try {
     let uid = null;
-    let emailVerified = false;
 
     try {
       const userData = await appFirebase.auth().getUserByEmail(data.email);  
       uid = userData.uid;
-      emailVerified = userData.emailVerified;
     } catch (error) {
       // console.error("User not found, trying create an user in Firebase", error);
     }
@@ -32,7 +30,7 @@ exports.createUser = async (data) => {
         code: "Internal Server Error",
       };
     }
-    return {uid, emailVerified};
+    return { uid };
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,

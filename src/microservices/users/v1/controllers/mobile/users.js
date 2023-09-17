@@ -18,7 +18,6 @@ const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: tran
 exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
-    const emailVerified = res.locals.emailVerified;
     // ! El email se podría obtener directamente desde el token
     const { name, lastName, phone, email } = await validator.vPostAccountInfo(
       req.body
@@ -42,7 +41,7 @@ exports.postAccountInfo = async (req, res, next) => {
       loginPhase: "baseLogin",
       disabled: false,
       userMobile: true,
-      emailVerified: emailVerified,
+      emailVerified: null,
     };
 
     await db.User.create({ ...dataUser, ...extraDataUser });
