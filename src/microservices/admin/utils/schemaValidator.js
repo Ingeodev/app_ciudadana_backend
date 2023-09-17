@@ -2,14 +2,14 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
 const registerSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  description: joi.string().trim().empty("").invalid(" ").max(200).required(),
+  name: joi.string().trim().alphanum().empty("").invalid(" ").max(50).required(),
+  description: joi.string().alphanum().trim().empty("").invalid(" ").max(200).required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" ").max(50),
-  description: joi.string().trim().empty("").invalid(" ").max(200),
+  name: joi.string().alphanum().trim().empty("").invalid(" ").max(50),
+  description: joi.string().alphanum().trim().empty("").invalid(" ").max(200),
 });
 
 const getAllSchema = joi.object({
@@ -23,6 +23,17 @@ const getOneSchema = joi.object({
 
 const postDeleteSchema = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
+});
+
+const roleToUserSchema = joi.object({
+  userId: joi.number().empty("").greater(0).invalid(0).required(),
+  roleId: joi.number().empty("").greater(0).invalid(0).required(),
+});
+
+const getUsersByIdroleSchema = joi.object({
+  roleId: joi.number().valid(null).greater(0).invalid(0),
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
 });
 
 // -------- JSON
@@ -82,5 +93,11 @@ module.exports = {
   // --------- JSON
   vMulterMemorySingleItemSchema: async (inputData) => {
     return await use_validator_on_data(jsonFileSchema, inputData);
+  },
+  vWebPostAssignRoleToUser: async (inputData) => {
+    return await use_validator_on_data(roleToUserSchema, inputData);
+  },
+  vWebGetUsersByRoleId: async (inputData) => {
+    return await use_validator_on_data(getUsersByIdroleSchema, inputData);
   },
 };
