@@ -166,6 +166,26 @@ resource "google_cloud_run_v2_service" "notifications" {
   }
 }
 
+// Service Frontend
+resource "google_cloud_run_v2_service" "frontend" {
+  name     = "frontend"
+  location = var.service_region
+  template {
+    scaling {
+      max_instance_count = 1
+      min_instance_count = 0
+    }
+    execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
+    containers {
+      image = var.image_url
+      ports {
+        container_port = 3000
+      }
+    }
+  }
+}
+
+
 data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
@@ -207,5 +227,12 @@ resource "google_cloud_run_service_iam_policy" "noauth-third-parties" {
   location    = google_cloud_run_v2_service.third-parties.location
   project     = google_cloud_run_v2_service.third-parties.project
   service     = google_cloud_run_v2_service.third-parties.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+resource "google_cloud_run_service_iam_policy" "frontend" {
+  location    = google_cloud_run_v2_service.frontend.location
+  project     = google_cloud_run_v2_service.frontend.project
+  service     = google_cloud_run_v2_service.frontend.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
