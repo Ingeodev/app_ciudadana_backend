@@ -2,14 +2,32 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
 const registerSchema = joi.object({
-  name: joi.string().trim().alphanum().empty("").invalid(" ").max(50).required(),
-  description: joi.string().alphanum().trim().empty("").invalid(" ").max(200).required(),
+  name: joi.string().trim().pattern(/^[a-zA-Z0-9 _:-]*$/).empty("").invalid(" ").max(50).required(),
+  description: joi.string().trim().empty("").invalid(" ").max(200).required(),
+  permission: joi.string().required().custom((value, helpers) => {
+    try {
+      JSON.parse(value.replace(/'/g, '"'));
+      return value;
+    } catch (e) {
+      return helpers.message('"permission" must be a valid JSON string');
+      // return helpers.error("any.invalid"); // Then you should handle the error with .error()
+    }
+  })
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  name: joi.string().alphanum().trim().empty("").invalid(" ").max(50),
-  description: joi.string().alphanum().trim().empty("").invalid(" ").max(200),
+  name: joi.string().pattern(/^[a-zA-Z0-9 _:-]*$/).trim().empty("").invalid(" ").max(50),
+  description: joi.string().trim().empty("").invalid(" ").max(200),
+  permission: joi.string().custom((value, helpers) => {
+    try {
+      JSON.parse(value.replace(/'/g, '"'));
+      return value;
+    } catch (e) {
+      return helpers.message('"permission" must be a valid JSON string');
+      // return helpers.error("any.invalid"); // Then you should handle the error with .error()
+    }
+  })
 });
 
 const getAllSchema = joi.object({

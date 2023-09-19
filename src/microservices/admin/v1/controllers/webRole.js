@@ -10,13 +10,14 @@ const { Op } = require('sequelize');
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, description } = await validator.vWebPostRegister(req.body);
-    const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
+    const { name, description, permission } = await validator.vWebPostRegister(req.body);
+    // const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
 
     const dataQuery = {
       name,
       description,
-      permission: jsonFile.buffer.toString('utf-8')
+      permission,
+      // permission: jsonFile.buffer.toString('utf-8')
     };
 
     const result = await db.Role.create(dataQuery);
@@ -35,16 +36,17 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, description } = await validator.vWebPostEdit(
+    const { id, name, description, permission } = await validator.vWebPostEdit(
       req.body
     );
-    const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
+    // const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
 
     const dataQuery = {
       id,
       name,
       description,
-      permission: jsonFile.buffer.toString("utf-8"),
+      // permission: jsonFile.buffer.toString("utf-8"),
+      permission,
     };
 
     const roleInDb = await db.Role.findByPk(id);

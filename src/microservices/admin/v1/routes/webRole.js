@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { uploadSingleJSON } = require("../../../../middleware/uploadMiddleware");
+// const { uploadSingleJSON } = require("../../../../middleware/uploadMiddleware");
 const authorization = require("../../../../middleware/authMiddleware.js");
 const webRoleController = require("../controllers/webRole")
 const { ROLE_ACTIONS } = require("../../../../constants/permissionsAndPolicies")
@@ -11,7 +11,7 @@ router.use(authorization.authMiddleware);
 router.post(
   "/edit",
   // authorization.checkActions(ROLE_ACTIONS.create),
-  uploadSingleJSON.single("file"),
+  // uploadSingleJSON.single("file"),
   webRoleController.postEdit
 );
 
@@ -31,7 +31,7 @@ router.post(
 router.post(
   "/",
   // authorization.checkActions(ROLE_ACTIONS.create),
-  uploadSingleJSON.single("file"),
+  // uploadSingleJSON.single("file"),
   webRoleController.postRegister
 );
 

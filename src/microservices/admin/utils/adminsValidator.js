@@ -5,8 +5,8 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().alphanum().empty("").invalid(" ").required(),
-  lastName: joi.string().trim().alphanum().empty("").invalid(" ").required(),
+  name: joi.string().trim().pattern(/^[a-zA-Z0-9 ]*$/).empty("").invalid(" ").required(),
+  lastName: joi.string().trim().pattern(/^[a-zA-Z0-9 ]*$/).empty("").invalid(" ").required(),
   email: joi.string().trim().email().empty("").invalid(" ").required(),
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().alphanum().empty("").invalid(" ").required(),
@@ -23,8 +23,8 @@ const resetPassSchema = joi.object({
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  name: joi.string().trim().alphanum().empty("").invalid(" "),
-  lastName: joi.string().trim().alphanum().empty("").invalid(" "),
+  name: joi.string().trim().pattern(/^[a-zA-Z0-9 ]*$/).empty("").invalid(" "),
+  lastName: joi.string().trim().pattern(/^[a-zA-Z0-9 ]*$/).empty("").invalid(" "),
   documentTypeId: joi.number().integer().greater(0),
   document: joi.string().trim().alphanum().empty("").invalid(" "),
 });
