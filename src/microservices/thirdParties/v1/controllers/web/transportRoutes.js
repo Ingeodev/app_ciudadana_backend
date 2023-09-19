@@ -16,7 +16,7 @@ exports.postRegister = async (req, res, next) => {
     const createdBy = await db.User.findOne({
       where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ["id"],
-    });f
+    });
 
     if (createdBy == null || createdBy.id == null)
       throw {
@@ -67,7 +67,6 @@ exports.postRegister = async (req, res, next) => {
     const company = await db.TransportCompany.findOne({
       where: {
         id: companyId,
-        createdBy: createdBy.id,
       },
       attributes: ["id"],
     });
@@ -84,12 +83,13 @@ exports.postRegister = async (req, res, next) => {
       destination: destinationInDb.dataValues.cityCode,
       companyId,
       duration: formathhmm.hhmmToSeconds(duration),
+      createdBy: createdBy.id,
     };
 
     let result = await db.TransportRoute.create(dataQuery);
     delete result.dataValues.deletedAt;
     delete result.dataValues.createdBy;
-    result.dataValues.duration = formathhmm.secondsToHhmm(duration);
+    result.dataValues.duration = formathhmm.secondsToHhmm(result.dataValues.duration);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The transport route could not be created: ", error.message);
