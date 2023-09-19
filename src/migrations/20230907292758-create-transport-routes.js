@@ -58,17 +58,6 @@ module.exports = {
         schema: "public",
       }
     );
-    await queryInterface.addConstraint("TransportRoutes", {
-      name: "fk_TransportRoute_CreatedBy",
-      fields: ["createdBy"],
-      type: "foreign key",
-      references: {
-        table: "Users",
-        field: "id",
-      },
-      onDelete: "RESTRICT",
-      onUpdate: "cascade",
-    });
     await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX idx_unique_origin_destination_companyId
       ON "TransportRoutes"("origin", "destination", "companyId")
@@ -97,7 +86,7 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
-    return await queryInterface.addConstraint("TransportRoutes", {
+    await queryInterface.addConstraint("TransportRoutes", {
       name: "fk_TransportRoutes_Destination",
       fields: ["destination"],
       type: "foreign key",
@@ -109,12 +98,23 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
+    return await queryInterface.addConstraint("TransportRoutes", {
+      name: "fk_TransportRoute_CreatedBy",
+      fields: ["createdBy"],
+      type: "foreign key",
+      references: {
+        table: "Users",
+        field: "id",
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "cascade",
+    });
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoute_CreatedBy");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Destination");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Origin");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Company");
-    await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoute_CreatedBy");
     await queryInterface.sequelize.query(`
       DROP INDEX IF EXISTS idx_unique_origin_destination_companyId;
     `);
