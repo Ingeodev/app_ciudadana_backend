@@ -12,17 +12,17 @@ const caliCodeDane = 76001;
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });f
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
+    });f
 
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found.",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found.",
+        status: StatusCodes.NOT_FOUND,
+      };
 
     const { originId, destinationId, companyId, duration } = await validator.vWebPostRegister(req.body);
 
@@ -67,7 +67,7 @@ exports.postRegister = async (req, res, next) => {
     const company = await db.TransportCompany.findOne({
       where: {
         id: companyId,
-        // createdBy: createdBy.id,
+        createdBy: createdBy.id,
       },
       attributes: ["id"],
     });
@@ -88,6 +88,7 @@ exports.postRegister = async (req, res, next) => {
 
     let result = await db.TransportRoute.create(dataQuery);
     delete result.dataValues.deletedAt;
+    delete result.dataValues.createdBy;
     result.dataValues.duration = formathhmm.secondsToHhmm(duration);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
@@ -194,6 +195,7 @@ exports.postEdit = async (req, res, next) => {
       duration: formathhmm.hhmmToSeconds(duration),
     });
     delete resultUpdate.dataValues.deletedAt;
+    delete resultUpdate.dataValues.createdBy;
     resultUpdate.dataValues.duration = formathhmm.secondsToHhmm(resultUpdate.dataValues.duration);
 
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
@@ -332,7 +334,7 @@ exports.getAll = async (req, res, next) => {
       offset: (objPage.number - 1) * objPage.size,
       order: [["origin", "ASC"]], // Sort by date of creation in descending order
       attributes: {
-        exclude: ["deletedAt"],
+        exclude: ["deletedAt", "createdBy"],
       },
     });
 
@@ -527,7 +529,7 @@ exports.getItinerary = async (req, res, next) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt"],
+        exclude: ["createdAt", "updatedAt", "deletedAt", "createdBy"],
         include: [
           "id",
           "origin",

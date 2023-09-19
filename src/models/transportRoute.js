@@ -44,6 +44,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      TransportRoute.belongsTo(models.User, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   TransportRoute.init(
@@ -54,6 +62,11 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
         unique: true,
+      },
+      createdBy: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: false,
       },
       origin: {
         type: DataTypes.INTEGER,

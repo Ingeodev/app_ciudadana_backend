@@ -191,9 +191,6 @@ exports.getAll = async (req, res, next) => {
     }
     const totalPages = Math.ceil(timetablesInDb.count / objPage.size);
 
-    console.log("timetablesInDb.rows");
-    console.log(timetablesInDb.rows);
-
     const transformedTimetables = timetablesInDb.rows.map((timetable) => {
       const timetableData = timetable.get({ plain: true }); // Convert Sequelize instance to simple object
       timetableData.hour = timetableData.hour.substring(0, 5);

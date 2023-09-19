@@ -69,6 +69,14 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
         },
       });
+
+      User.hasMany(models.TransportRoute, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   User.init(
