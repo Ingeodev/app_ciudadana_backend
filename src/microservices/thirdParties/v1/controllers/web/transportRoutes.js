@@ -47,12 +47,17 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    if (
-      originInDb.dataValues.cityCode !== caliCodeDane &&
-      destinationInDb.dataValues.cityCode !== caliCodeDane
-    ) {
+    if (originInDb.dataValues.cityCode !== caliCodeDane &&
+      destinationInDb.dataValues.cityCode !== caliCodeDane) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    if (originInDb.dataValues.cityCode === destinationInDb.dataValues.cityCode) {
+      throw {
+        message: "Origin and destination are the same.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
     }
@@ -133,12 +138,17 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    if (
-      originInDb.dataValues.cityCode !== caliCodeDane &&
-      destinationInDb.dataValues.cityCode !== caliCodeDane
-    ) {
+    if (originInDb.dataValues.cityCode !== caliCodeDane &&
+      destinationInDb.dataValues.cityCode !== caliCodeDane) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    if (originInDb.dataValues.cityCode === destinationInDb.dataValues.cityCode) {
+      throw {
+        message: "Origin and destination are the same.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
     }
@@ -648,6 +658,15 @@ exports.postUploadXlsx = async (req, res, next) => {
             `Fila ${
               row + 1
             } con campos [${item}]. Solo se permiten rutas desde y hacia Cali, Valle del Cauca.`
+          );
+          await transaction.rollback();
+          continue;
+        }
+        if (originCode === destinationCode) {
+          errors.push(
+            `Fila ${
+              row + 1
+            } con campos [${item}]. El origen y el destino son los mismos.`
           );
           await transaction.rollback();
           continue;
