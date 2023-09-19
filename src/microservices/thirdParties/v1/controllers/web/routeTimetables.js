@@ -10,27 +10,30 @@ const { Op, Sequelize } = require("sequelize");
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { date, routeId, companyId } =
-      await validator.vWebPostRegister({
-        date: req.body.date,
-        routeId: req.body.routeId,
-        companyId: req.body.companyId,
-      });
-
-    // Verify whether the route belongs to the companyId
-    const companyInDb = await db.TransportRoute.findOne({
-      where: {
-        id: routeId,
-        companyId,
-      },
-      attributes: ["id"],
+    const { date, routeId, companyId } = await validator.vWebPostRegister({
+      date: req.body.date,
+      routeId: req.body.routeId,
+      companyId: req.body.companyId,
     });
 
-    if (companyInDb == null || companyInDb.id == null)
+    // Verify whether the route belongs to the companyId
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          attributes: ["id"],
+        },
+      ],
+    });
+
+    if (!companyInDb || companyInDb.TransportRoutes.length === 0) {
       throw {
-        message: "Transport company not found.",
-        status: StatusCodes.NOT_FOUND,
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    }
 
     const dataQuery = {
       date,
@@ -62,26 +65,34 @@ exports.postEdit = async (req, res, next) => {
     });
 
     // Verify whether the route belongs to the companyId
-    // ! hacer una sola busqueda
-    const companyInDb = await db.TransportRoute.findOne({
-      where: {
-        id: routeId,
-        companyId,
-      },
-      attributes: ["id"],
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          attributes: ["id"],
+        },
+      ],
     });
 
-    if (companyInDb == null || companyInDb.id == null)
+    if ( !companyInDb || companyInDb.TransportRoutes.length === 0 ) {
       throw {
-        message: "Transport company not found.",
-        status: StatusCodes.NOT_FOUND,
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    }
 
     const dataQuery = {
       date,
     };
 
-    const timetableInDb = await db.RouteTimetable.findByPk(id);
+    const timetableInDb = await db.RouteTimetable.findOne({
+      where: {
+        id,
+        routeId
+      }
+    });
 
     if (timetableInDb === null) {
       throw {
@@ -196,7 +207,27 @@ exports.getAll = async (req, res, next) => {
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    const { id, routeId } = await validator.vWebPostDelete(req.body);
+    const { id, routeId, companyId } = await validator.vWebPostDelete(req.body);
+
+    // Verify whether the route belongs to the companyId
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          attributes: ["id"],
+        },
+      ],
+    });
+
+    if (!companyInDb || companyInDb.TransportRoutes.length === 0) {
+      throw {
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
     const timetablesInDb = await db.RouteTimetable.findOne({
       where: {
         id,

@@ -28,7 +28,7 @@ module.exports = {
           unique: false,
         },
         duration: {
-          type: Sequelize.TIME,
+          type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
         },

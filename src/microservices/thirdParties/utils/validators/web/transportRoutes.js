@@ -19,26 +19,26 @@ const joi = require("joi");
 
 // ------------ Validators
 const routesSchema = joi.object({
-  origin: joi.number().integer().greater(0).invalid(0).required(),
-  destination: joi.number().integer().greater(0).invalid(0).required(),
+  originId: joi.number().integer().greater(0).invalid(0).required(),
+  destinationId: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
   duration: joi.string().trim().required()
-    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
-    .custom((value, helpers) => {
-      return value + ":00";
-    }, "Add Seconds"),
+    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/),
+    // .custom((value, helpers) => {
+    //   return value + ":00";
+    // }, "Add Seconds"),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  origin: joi.number().integer().greater(0).invalid(0),
-  destination: joi.number().integer().greater(0).invalid(0),
+  originId: joi.number().integer().greater(0).invalid(0).required(),
+  destinationId: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
   duration: joi.string().trim()
-    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
-    .custom((value, helpers) => {
-      return value + ":00";
-    }, "Add Seconds"),
+    .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/),
+    // .custom((value, helpers) => {
+    //   return value + ":00";
+    // }, "Add Seconds"),
 });
 
 const postDeleteSchema = joi.object({
@@ -53,9 +53,12 @@ const getRoutesSchema = joi.object({
 });
 
 const getCompaniesRoutesSchema = joi.object({
-  routeId: joi.number().integer().greater(0).required(),
-  // number: joi.number().integer().greater(0).required(),
-  // size: joi.number().integer().greater(0).required(),
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
+
+const getItinerarySchema = joi.object({
+  routeId: joi.number().integer().greater(0).required()
 });
 
 // ---------- Excel - Start -----------------------
@@ -155,9 +158,9 @@ const excelRouteSchema = joi.object({
     .trim()
     .required()
     .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/)
-    .custom((value, helpers) => {
-      return value + ":00";
-    }, "Add Seconds")
+    // .custom((value, helpers) => {
+    //   return value + ":00";
+    // }, "Add Seconds")
     .error((errors) => {
       errors.forEach((err) => {
         switch (err.code) {
@@ -368,6 +371,9 @@ module.exports = {
   },
   vWebGetListCompaniesNRoutes: async (inputData) => {
     return await use_validator_on_data(getCompaniesRoutesSchema, inputData);
+  },
+  vWebGetItinerary: async (inputData) => {
+    return await use_validator_on_data(getItinerarySchema, inputData);
   },
   // Start - XLS - Upload
   vWebPostUploadXlsxRoutes: async (inputData) => {

@@ -9,21 +9,30 @@ const validator = require("../../../utils/validators/web/routeTimetablesHourTari
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { hour, tariff, timetableId } = await validator.vWebPostRegister(req.body);
+    const { hour, tariff, timetableId, companyId, routeId } = await validator.vWebPostRegister(req.body);
 
-    // Verify whether the hour n tariff belongs to the timetableId
-    const rTimetableInDb = await db.RouteTimetable.findOne({
-      where: {
-        id: timetableId,
-      },
-      attributes: ["id"],
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          include: [
+            {
+              model: db.RouteTimetable,
+              where: { id: timetableId },
+            },
+          ],
+        },
+      ],
     });
 
-    if (rTimetableInDb == null || rTimetableInDb.id == null)
+    if (!companyInDb || companyInDb.TransportRoutes.length === 0 || companyInDb.TransportRoutes[0].RouteTimetables.length === 0) {
       throw {
-        message: "Route timetable not found.",
-        status: StatusCodes.NOT_FOUND,
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    }
 
     const dataQuery = {
       hour,
@@ -33,6 +42,7 @@ exports.postRegister = async (req, res, next) => {
 
     const result = await db.RouteTimetableHourTariff.create(dataQuery);
     delete result.dataValues.deletedAt;
+    result.dataValues.hour =result.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("Route timetable could not be created: ", error.message);
@@ -47,22 +57,36 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, hour, tariff, timetableId } = await validator.vWebPostEdit(req.body);
+    // ! Por seguridad se deberia de pedir, companyId y routeId
+    const { id, hour, tariff, timetableId, companyId, routeId } = await validator.vWebPostEdit(req.body);
 
     // Verify whether the hour n tariff belongs to the timetableId
-    // ! hacer una sola busqueda
-    const rTimetableInDb = await db.RouteTimetable.findOne({
-      where: {
-        id: timetableId,
-      },
-      attributes: ["id"],
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          include: [
+            {
+              model: db.RouteTimetable,
+              where: { id: timetableId },
+            },
+          ],
+        },
+      ],
     });
 
-    if (rTimetableInDb == null || rTimetableInDb.id == null)
+    if (
+      !companyInDb ||
+      companyInDb.TransportRoutes.length === 0 ||
+      companyInDb.TransportRoutes[0].RouteTimetables.length === 0
+    ) {
       throw {
-        message: "Route timetable not found.",
-        status: StatusCodes.NOT_FOUND,
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    }
 
     const dataQuery = {
       hour,
@@ -80,6 +104,7 @@ exports.postEdit = async (req, res, next) => {
 
     const resultUpdate = await timetableInDb.update(dataQuery);
     delete resultUpdate.dataValues.deletedAt;
+    resultUpdate.dataValues.hour = resultUpdate.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: resultUpdate,
@@ -105,10 +130,40 @@ exports.postEdit = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
   try {
     const objPage = await validator.vWebGetAll({
+      companyId: req.query.companyId ? parseInt(req.query.companyId) : null,
+      routeId: req.query.routeId ? parseInt(req.query.routeId) : null,
       timetableId: req.query.timetableId ? parseInt(req.query.timetableId) : null,
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
+
+    // Verify whether the hour n tariff belongs to the timetableId
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: objPage.companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: objPage.routeId },
+          include: [
+            {
+              model: db.RouteTimetable,
+              where: { id: objPage.timetableId },
+            },
+          ],
+        },
+      ],
+    });
+
+    if (
+      !companyInDb ||
+      companyInDb.TransportRoutes.length === 0 ||
+      companyInDb.TransportRoutes[0].RouteTimetables.length === 0
+    ) {
+      throw {
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
 
     // ! Verify whether the hour n tariff belongs to the companyId
     const timetablesInDb = await db.RouteTimetableHourTariff.findAndCountAll({
@@ -136,6 +191,15 @@ exports.getAll = async (req, res, next) => {
     }
     const totalPages = Math.ceil(timetablesInDb.count / objPage.size);
 
+    console.log("timetablesInDb.rows");
+    console.log(timetablesInDb.rows);
+
+    const transformedTimetables = timetablesInDb.rows.map((timetable) => {
+      const timetableData = timetable.get({ plain: true }); // Convert Sequelize instance to simple object
+      timetableData.hour = timetableData.hour.substring(0, 5);
+      return timetableData;
+    });
+
     const responseCustom = {
       meta: {
         page: objPage.number,
@@ -143,7 +207,7 @@ exports.getAll = async (req, res, next) => {
         totalRecords: timetablesInDb.count,
         totalPages: totalPages,
       },
-      data: timetablesInDb.rows,
+      data: transformedTimetables,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
@@ -159,7 +223,32 @@ exports.getAll = async (req, res, next) => {
  */
 exports.postDelete = async (req, res, next) => {
   try {
-    const { id, timetableId } = await validator.vWebPostDelete(req.body);
+    const { id, timetableId, companyId, routeId } = await validator.vWebPostDelete(req.body);
+
+    // Verify whether the hour n tariff belongs to the timetableId
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          include: [
+            {
+              model: db.RouteTimetable,
+              where: { id: timetableId },
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!companyInDb || companyInDb.TransportRoutes.length === 0 || companyInDb.TransportRoutes[0].RouteTimetables.length === 0) {
+      throw {
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
     const timetablesInDb = await db.RouteTimetableHourTariff.findOne({
       where: {
         id,

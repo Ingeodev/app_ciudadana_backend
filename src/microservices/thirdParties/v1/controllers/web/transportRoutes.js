@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const xlsx = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
+const formathhmm = require("../../../utils/formatHH_MM.js")
 const caliCodeDane = 76001;
 
 /**
@@ -23,9 +24,9 @@ exports.postRegister = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { origin, destination, companyId, duration } = await validator.vWebPostRegister(req.body);
+    const { originId, destinationId, companyId, duration } = await validator.vWebPostRegister(req.body);
 
-    const originInDb = await db.City.findByPk(origin, {
+    const originInDb = await db.City.findByPk(originId, {
       attributes: ["id", "cityCode"],
     });
 
@@ -36,7 +37,7 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    const destinationInDb = await db.City.findByPk(destination, {
+    const destinationInDb = await db.City.findByPk(destinationId, {
       attributes: ["id", "cityCode"],
     });
 
@@ -79,14 +80,15 @@ exports.postRegister = async (req, res, next) => {
       };
 
     const dataQuery = {
-      origin,
-      destination,
+      origin: originInDb.dataValues.cityCode,
+      destination: destinationInDb.dataValues.cityCode,
       companyId,
-      duration,
+      duration: formathhmm.hhmmToSeconds(duration),
     };
 
-    const result = await db.TransportRoute.create(dataQuery);
+    let result = await db.TransportRoute.create(dataQuery);
     delete result.dataValues.deletedAt;
+    result.dataValues.duration = formathhmm.secondsToHhmm(duration);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The transport route could not be created: ", error.message);
@@ -113,10 +115,10 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, origin, destination, companyId, duration } =
+    const { id, originId, destinationId, companyId, duration } =
       await validator.vWebPostEdit(req.body);
     
-    const originInDb = await db.City.findByPk(origin, {
+    const originInDb = await db.City.findByPk(originId, {
       attributes: ["id", "cityCode"],
     });
 
@@ -127,7 +129,7 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const destinationInDb = await db.City.findByPk(destination, {
+    const destinationInDb = await db.City.findByPk(destinationId, {
       attributes: ["id", "cityCode"],
     });
 
@@ -186,8 +188,13 @@ exports.postEdit = async (req, res, next) => {
 
     // const routeInDb = await db.ThirdPartyCategory.findByPk(id);
 
-    const resultUpdate = await routeInDb.update({ origin, destination, duration });
+    let resultUpdate = await routeInDb.update({
+      origin: originInDb.dataValues.cityCode,
+      destination: destinationInDb.dataValues.cityCode,
+      duration: formathhmm.hhmmToSeconds(duration),
+    });
     delete resultUpdate.dataValues.deletedAt;
+    resultUpdate.dataValues.duration = formathhmm.secondsToHhmm(resultUpdate.dataValues.duration);
 
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
@@ -347,6 +354,7 @@ exports.getAll = async (req, res, next) => {
       delete companyData.originName;
       const tDestinationName = companyData.destinationName.city;
       delete companyData.destinationName;
+      companyData.duration = formathhmm.secondsToHhmm(companyData.duration);
 
       return {
         ...companyData,
@@ -363,7 +371,6 @@ exports.getAll = async (req, res, next) => {
         totalPages: totalPages,
       },
       data: transformedCompanies,
-      // data: companiesInDb.rows,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);
@@ -450,7 +457,7 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
         id: obj.id,
         origin: obj.origin,
         destination: obj.destination,
-        duration: obj.duration,
+        duration: formathhmm.secondsToHhmm(obj.duration),
       }));
       delete companyData.TransportRoutes;
 
@@ -496,13 +503,13 @@ exports.getItinerary = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const objPage = await validator.vWebGetListCompaniesNRoutes({
+    const objPage = await validator.vWebGetItinerary({
       routeId: req.query.routeId ? parseInt(req.query.routeId) : null,
       // number: req.query.page ? parseInt(req.query.page.number) : null,
       // size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
-    const routeInDb = await db.TransportRoute.findByPk(objPage.routeId, {
+    let routeInDb = await db.TransportRoute.findByPk(objPage.routeId, {
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
       include: [
@@ -539,6 +546,17 @@ exports.getItinerary = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    
+    routeInDb.duration = formathhmm.secondsToHhmm(routeInDb.duration);
+    routeInDb.RouteTimetables.forEach((timetable) => {
+      if (timetable.RouteTimetableHourTariffs) {
+        timetable.RouteTimetableHourTariffs.forEach((hourTariff) => {
+          if (hourTariff.hour) {
+            hourTariff.hour = hourTariff.hour.substring(0, 5);
+          }
+        });
+      }
+    });
 
     const responseCustom = {
       meta: null,
@@ -644,6 +662,7 @@ exports.postUploadXlsx = async (req, res, next) => {
               hour: contents[iPage].data[row][4],
               tariff: parseInt(contents[iPage].data[row][5]),
             }));
+          duration = formathhmm.hhmmToSeconds(duration);
         } catch (error) {
           errors.push(
             `Fila ${row + 1} con campos [${item}]. ${error.message}.`
@@ -676,7 +695,7 @@ exports.postUploadXlsx = async (req, res, next) => {
         const originInDb = await db.City.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: { cityCode: originCode },
-          attributes: ["id", "city", "state"],
+          attributes: ["id", "city", "state", "cityCode"],
         });
 
         if (originInDb === null) {
@@ -692,7 +711,7 @@ exports.postUploadXlsx = async (req, res, next) => {
         const destinationInDb = await db.City.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: { cityCode: destinationCode },
-          attributes: ["id", "city", "state"],
+          attributes: ["id", "city", "state", "cityCode"],
         });
 
         if (destinationInDb === null) {
@@ -712,8 +731,8 @@ exports.postUploadXlsx = async (req, res, next) => {
         routeInDb = await db.TransportRoute.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: {
-            origin: originInDb.dataValues.id,
-            destination: destinationInDb.dataValues.id,
+            origin: originInDb.dataValues.cityCode,
+            destination: destinationInDb.dataValues.cityCode,
             companyId,
           },
           attributes: ["id", "duration"],
@@ -725,8 +744,8 @@ exports.postUploadXlsx = async (req, res, next) => {
           if (routeInDb === null) {
             // Create route in db
             const queryRoute = {
-              origin: originInDb.dataValues.id,
-              destination: destinationInDb.dataValues.id,
+              origin: originInDb.dataValues.cityCode,
+              destination: destinationInDb.dataValues.cityCode,
               duration,
               companyId,
             };
@@ -738,7 +757,7 @@ exports.postUploadXlsx = async (req, res, next) => {
             idRouteInDb = routeInDb.dataValues.id;
             msgSuccess += "Ruta creada, ";
           } else {
-            if (String(routeInDb.dataValues.duration) !== String(duration)) {
+            if (routeInDb.dataValues.duration !== duration) {
               tempRouteInDb = await routeInDb.update({duration}, {
                 transaction,
               });

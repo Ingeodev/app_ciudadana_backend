@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           unique: false,
         },
+        targetKey: "cityCode",
       });
       City.hasMany(models.TransportRoute, {
         as: "destinationName",
@@ -24,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           unique: false,
         },
+        targetKey: "cityCode",
       });
     }
   }
