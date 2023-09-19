@@ -42,6 +42,12 @@ const postDeleteSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
 });
 
+const passwdSchema = joi.object({
+  clientId: joi.string().trim().empty("").invalid(" ").required(),
+  token: joi.string().trim().empty("").invalid(" ").required(),
+  passwd: joi.string().trim().empty("").invalid(" ").required(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -81,5 +87,8 @@ module.exports = {
   },
   vWebPostDelete: async (inputData) => {
     return await use_validator_on_data(postDeleteSchema, inputData);
+  },
+  vWebPostPasswd: async (inputData) => {
+    return await use_validator_on_data(passwdSchema, inputData);
   },
 };

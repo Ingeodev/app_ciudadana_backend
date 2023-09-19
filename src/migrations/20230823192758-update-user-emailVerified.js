@@ -3,14 +3,20 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn('Users', 'emailVerified', {
+    await queryInterface.addColumn("Users", "emailVerified", {
       type: Sequelize.DATE,
-      allowNull: false,
+      allowNull: true,
       unique: false,
+    });
+    await queryInterface.addColumn("Users", "tokenEmailVerified", {
+      type: Sequelize.STRING,
+      allowNull: true,
+      unique: true,
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn('Users', 'emailVerified');
+    await queryInterface.removeColumn("Users", "tokenEmailVerified");
+    await queryInterface.removeColumn("Users", "emailVerified");
   }
 };

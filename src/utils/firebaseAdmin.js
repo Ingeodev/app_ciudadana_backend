@@ -1,19 +1,23 @@
 const { StatusCodes } = require("http-status-codes");
 const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js");
-//const emailService = require("../microservices/admin/utils/sendEmail.js");
+const mailService = require("../microservices/admin/utils/sendMail.js");
 
 exports.createUser = async (data) => {
   try {
     let uid = null;
 
     try {
-      const userData = await appFirebase.auth().getUserByEmail(data.email);  
+      const userData = await appFirebase.auth().getUserByEmail(data.email);
       uid = userData.uid;
     } catch (error) {
-      // console.error("User not found, trying create an user in Firebase", error);
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error creating user: ${error.message}`,
+        code: "Internal Server Error",
+      };
     }
 
-    if (uid===null) {
+    if (uid === null) {
       const userCreatedData = await appFirebase.auth().createUser({
         displayName: data.displayName,
         password: data.password,
@@ -21,12 +25,29 @@ exports.createUser = async (data) => {
         emailVerified: false,
       });
       uid = userCreatedData.uid;
+    } else {
+      // Update passwd
+      const resUpdate = await appFirebase.auth().updateUser(uid, {
+        displayName: data.displayName,
+        password: data.password,
+        email: data.email,
+        emailVerified: false,
+        disabled: false,
+      });
+
+      if (resUpdate === null || resUpdate === undefined) {
+        return {
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          detail: `Error updating user`,
+          code: "Internal Server Error",
+        };
+      }
     }
 
     if (uid === null) {
       return {
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        detail: `Error creating admin user`,
+        detail: `Error creating user`,
         code: "Internal Server Error",
       };
     }
@@ -34,7 +55,30 @@ exports.createUser = async (data) => {
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
-      detail: `Error creating admin user: ${error.message}`,
+      detail: `Error creating user: ${error.message}`,
+      code: "Internal Server Error",
+    };
+  }
+};
+
+exports.setPasswd = async (uid, passwd) => {
+  try {
+    const resultUpdate = await appFirebase.auth().updateUser(uid, {
+      password: passwd,
+    });
+
+    if (resultUpdate === null || resultUpdate === undefined) {
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error updating password`,
+        code: "Internal Server Error",
+      };
+    }
+    return true;
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error updating password: ${error.message}`,
       code: "Internal Server Error",
     };
   }
@@ -80,49 +124,66 @@ exports.passwordReset = async (userEmail) => {
     } else {
       return {
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        detail: `Error generating password reset link - admin: ${error.message}`,
+        detail: `Error generating password reset link: ${error.message}`,
         code: "Internal Server Error",
       };
     }
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
-      detail: `Error password reset - admin: ${error.message}`,
+      detail: `Error password reset: ${error.message}`,
       code: "Internal Server Error",
     };
   }
 };
 
-exports.emailVerification = async (userEmail) => {
-  try {
+exports.mailInvitationVerification = async (dataUser, urlFront) => {
+  try {    
     const actionCodeSettings = {
-      url: "http://localhost:3000",
+      url: urlFront,
       // This must be true for email link sign-in.
       handleCodeInApp: true,
       // dynamicLinkDomain: "",
     };
-    const link = await appFirebase.auth().generateEmailVerificationLink(userEmail, actionCodeSettings);
+    const linkVerification = await appFirebase.auth().generateEmailVerificationLink(dataUser.email, actionCodeSettings);
 
-    if (link) {
+    if (linkVerification) {
       const data = {
-        to: userEmail,
-        subject: "AppMoviliad Cali - Verificación de correo",
-        html: `<strong> ${link} </strong>`,
+        to: dataUser.email,
+        subject: "Invitación AppMoviliad Cali",
+        html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
+                <h2 style="color: #007BFF;">¡Bienvenido a AppMovilidad Cali!</h2>
+                <p>Hola ${dataUser.displayName},</p>
+                <p>Te invitamos a unirte a la plataforma de movilidad de la Ciudad de Cali, Colombia. Para comenzar, es importante que verifiques tu correo electrónico. Haz clic en el siguiente enlace para hacerlo:</p>
+                <a href="${linkVerification}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Verificar Correo</a>
+                <p>Una vez verificado, podrás acceder a todos los módulos de la aplicación.</p>
+                <h3>Tus credenciales son:</h3>
+                <ul>
+                    <li><strong>Usuario:</strong> ${dataUser.email}</li>
+                    <li><strong>Contraseña:</strong> ${dataUser.password}</li>
+                </ul>
+                <p>Puedes ingresar a la aplicación haciendo clic en el siguiente enlace:</p>
+                <a href="${urlFront}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Ingresar a AppMovilidad Cali</a>
+                <p>¡Esperamos que disfrutes de la plataforma!</p>
+                <p>Saludos,<br>Equipo de AppMovilidad Cali</p>
+            </div>
+       `,
       };
-      //const resSend = await emailService.sendEmail(data);
-      const resSend = true;
+      const resSend = await mailService.sendMail(data);
+      // const resSend = true;
       return resSend;
     } else {
       return {
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        detail: `Error generating email verification link - admin: ${error.message}`,
+        detail: `Error generating mail verification link: ${error.message}`,
         code: "Internal Server Error",
       };
     }
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
-      detail: `Error email verification - admin: ${error.message}`,
+      detail: `Error email verification: ${error.message}`,
       code: "Internal Server Error",
     };
   }

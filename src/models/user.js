@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       roleId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       clientId: {
@@ -100,8 +100,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       emailVerified: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
         unique: false,
+      },
+      tokenEmailVerified: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       documentTypeId: {
         // type: DataTypes.INTEGER,

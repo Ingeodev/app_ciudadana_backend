@@ -40,8 +40,17 @@ exports.postAccountInfo = async (req, res, next) => {
       emailVerified: null,
     };
 
-    const result = await db.User.create(dataUser);
-
+    const result = await db.User.create(dataUser); 
+    delete result.dataValues.clientId;
+    delete result.dataValues.emailVerified;
+    delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.address;
+    delete result.dataValues.serviceReceiptUri;
+    delete result.dataValues.pushDeviceToken;
+    delete result.dataValues.roleId;
+    delete result.dataValues.disabled;
+    delete result.dataValues.loginPhase;
+    delete result.dataValues.userMobile;
     return res.status(StatusCodes.CREATED).json({
       meta: null,
       data: result,
@@ -109,6 +118,14 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     };
     await db.AdminNotification.create(dataNotif);
     await transaction.commit();
+    delete resultUpdate.dataValues.clientId;
+    delete resultUpdate.dataValues.emailVerified;
+    delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.pushDeviceToken;
+    delete resultUpdate.dataValues.roleId;
+    delete resultUpdate.dataValues.loginPhase;
+    delete resultUpdate.dataValues.disabled;
+    delete resultUpdate.dataValues.userMobile;
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: resultUpdate,
@@ -165,6 +182,16 @@ exports.getAccountInfo = async (req, res, next) => {
       };
     }
 
+    delete userInDb.dataValues.clientId;
+    delete userInDb.dataValues.emailVerified;
+    delete userInDb.dataValues.tokenEmailVerified;
+    delete userInDb.dataValues.address;
+    delete userInDb.dataValues.serviceReceiptUri;
+    delete userInDb.dataValues.pushDeviceToken;
+    delete userInDb.dataValues.roleId;
+    delete userInDb.dataValues.disabled;
+    delete userInDb.dataValues.loginPhase;
+    delete userInDb.dataValues.userMobile;
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: userInDb,
@@ -270,6 +297,16 @@ exports.postAccountFullLogin = async (req, res, next) => {
     }
 
     const resultUpdate = await userInDb.update(dataUser);
+    delete resultUpdate.dataValues.clientId;
+    delete resultUpdate.dataValues.emailVerified;
+    delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.address;
+    delete resultUpdate.dataValues.serviceReceiptUri;
+    delete resultUpdate.dataValues.pushDeviceToken;
+    delete resultUpdate.dataValues.roleId;
+    delete resultUpdate.dataValues.disabled;
+    delete resultUpdate.dataValues.loginPhase;
+    delete resultUpdate.dataValues.userMobile;
 
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -319,6 +356,14 @@ exports.getUsersListAll = async (req, res, next) => {
       //   // exclude: ["deletedAt", "DocumentType"],
       //   include: [[Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"]],
       // },
+      attributes: {
+        exclude: [
+          "tokenEmailVerified",
+          "serviceReceiptUri",
+          "pushDeviceToken",
+          "deletedAt",
+        ],
+      },
     });
 
     if (usersInDb.count <= 0) {
@@ -409,6 +454,15 @@ exports.postUsersStatus = async (req, res, next) => {
     }
 
     const result = await userInDb.update({ disabled });
+    delete result.dataValues.emailVerified;
+    delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.address;
+    delete result.dataValues.phone;
+    delete result.dataValues.serviceReceiptUri;
+    delete result.dataValues.pushDeviceToken;
+    delete result.dataValues.roleId;
+    delete result.dataValues.loginPhase;
+    delete result.dataValues.userMobile;
 
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -446,6 +500,14 @@ exports.postUsersFullLogin = async (req, res, next) => {
     }
 
     const result = await userInDb.update(dataUser);
+    delete result.dataValues.emailVerified;
+    delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.address;
+    delete result.dataValues.serviceReceiptUri;
+    delete result.dataValues.pushDeviceToken;
+    delete result.dataValues.roleId;
+    delete result.dataValues.userMobile;
+    delete result.dataValues.disabled;
 
     return res.status(StatusCodes.OK).json({
       meta: null,

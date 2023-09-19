@@ -1,8 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
+const crypto = require("crypto");
+// const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
 const firebase = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
-// const firebaseAppWeb = require("../../../utils/firebaseAppWeb.js");
+const mailService = require("../../utils/sendMail.js");
+const { formatDate } = require("../../../../middleware/formatDate.js");
+// const urlFront = process.env.URL_FRONT;
+const urlFront = "https://frontend-cmiesjcqoq-uc.a.run.app";
 
 /**
  * Generates a (random) string of length n.
@@ -11,26 +16,92 @@ const validator = require("../../utils/adminsValidator.js");
  */
 function generateSecureRandomString(length) {
   try {
-    if (!Number.isInteger(length) || length <= 0) {
-      throw new Error("Length must be a positive integer");
+    try {
+      if (!Number.isInteger(length) || length <= 0) {
+        return {
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          detail: `Error sending mail: Length must be a positive integer`,
+          code: "Internal Server Error",
+        };
+      }
+    } catch (error) {
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error sending mail: ${error.message}`,
+        code: "Internal Server Error",
+      };
+    }
+    let result = "";
+    // const validChars =
+    //   "!#%*,-./0123456789:=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_abcdefghijklmnopqrstuvwxyz";
+    const validChars = ".0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+    const charactersLength = validChars.length;
+    // const bytes = crypto.randomBytes(length);
+    for (let i = 0; i < length; i += 1) {
+  
+      // result += validChars.charAt(Math.floor(Math.random() * charactersLength));
+      // result += validChars.charAt(bytes[i] % charactersLength);
+      result += validChars.charAt(crypto.randomInt(0, charactersLength));
+    }
+    return result;
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error sending mail: ${error.message}`,
+      code: "Internal Server Error",
+    };
+  }
+}
+
+/**
+ * Send the invitation email along with the credentials
+ * @param {object} req - Object containing name, lastName, email, documentTypeId, document
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+async function mailInvitationVerification(dataUser, tokenEmailVerified) {
+  try {
+    const linkVerification = `${urlFront}/confirmation?token=${tokenEmailVerified}`;
+    const linkLogin = `${urlFront}/login`;
+
+    if (linkVerification) {
+      const data = {
+        to: dataUser.email,
+        subject: "Invitación AppMoviliad Cali",
+        html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
+                <h2 style="color: #007BFF;">¡Bienvenido a AppMovilidad Cali!</h2>
+                <p>Hola ${dataUser.displayName},</p>
+                <p>Te invitamos a unirte a la plataforma de movilidad de la Ciudad de Cali, Colombia. Para comenzar, es importante que verifiques tu correo electrónico. Haz clic en el siguiente enlace para hacerlo:</p>
+                <a href="${linkVerification}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Verificar Correo</a>
+                <p>Una vez verificado, podrás acceder a todos los módulos de la aplicación.</p>
+                <h3>Tus credenciales son:</h3>
+                <ul>
+                    <li><strong>Usuario:</strong> ${dataUser.email}</li>
+                    <li><strong>Contraseña:</strong> ${dataUser.password}</li>
+                </ul>
+                <p>Puedes ingresar a la aplicación haciendo clic en el siguiente enlace:</p>
+                <a href="${linkLogin}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Ingresar a AppMovilidad Cali</a>
+                <p>¡Esperamos que disfrutes de la plataforma!</p>
+                <p>Saludos,<br>Equipo de AppMovilidad Cali</p>
+            </div>
+       `,
+      };
+      const resSend = await mailService.sendMail(data);
+      return resSend;
+    } else {
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error sending mail: ${error.message}`,
+        code: "Internal Server Error",
+      };
     }
   } catch (error) {
-    console.error("Error capturado:", error.message);
-    return null;
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error sending mail: ${error.message}`,
+      code: "Internal Server Error",
+    };
   }
-  let result = "";
-  // const validChars =
-  //   "!#%*,-./0123456789:=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_abcdefghijklmnopqrstuvwxyz";
-  const validChars =
-    ".0123456789:=@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
-  const charactersLength = validChars.length;
-  // const bytes = crypto.randomBytes(length);
-  for (let i = 0; i < length; i = 1) {
-    // result = validChars.charAt(Math.floor(Math.random() * charactersLength));
-    // result = validChars.charAt(bytes[i] % charactersLength);
-    result = validChars.charAt(crypto.randomInt(0, charactersLength));
-  }
-  return result;
 }
 
 /**
@@ -39,23 +110,40 @@ function generateSecureRandomString(length) {
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { name, lastName, email, documentTypeId, document } =
       await validator.vWebPostRegister(req.body);
 
+    const tokenEmailVerified = generateSecureRandomString(100);
+    if (tokenEmailVerified.status) {
+      throw {
+        status: tokenEmailVerified.status,
+        message: tokenEmailVerified.detail,
+      };
+    }
+    // const passwd = generateSecureRandomString(16);
+    const passwd = "123456";
+    if (passwd.status) {
+      throw {
+        status: passwd.status,
+        message: passwd.detail,
+      };
+    }
+
     // Create the user in firebase and return clientId
     const dataUser = {
       displayName: `${name} ${lastName}`,
-      password: "123456",
-      // password: generateSecureRandomString(16),
+      password: passwd,
       email,
     };
+
     const resCreate = await firebase.createUser(dataUser);
 
-    if (resCreate.uid.status) {
+    if (resCreate.status) {
       throw {
-        status: resCreate.uid.status,
-        message: resCreate.uid.detail,
+        status: resCreate.status,
+        message: resCreate.detail,
       };
     }
 
@@ -70,11 +158,13 @@ exports.postRegister = async (req, res, next) => {
       userMobile: false,
       loginPhase: null,
       emailVerified: null,
+      tokenEmailVerified,
     };
 
-    const userInDb = await db.User.create(dataQuery);
-    // const sendEmail = await firebase.passwordReset(dataUser.email);
-    const sendEmail = await firebase.emailVerification(dataUser.email);
+    const userInDb = await db.User.create(dataQuery, { transaction });
+    // const sendEmail = await firebase.passwordReset(dataUser);
+    // const sendEmail = await firebase.mailInvitationVerification(dataUser, urlFront);
+    const sendEmail = await mailInvitationVerification(dataUser, tokenEmailVerified);
 
     if (sendEmail.status) {
       throw {
@@ -82,8 +172,73 @@ exports.postRegister = async (req, res, next) => {
         message: sendEmail.detail,
       };
     }
+    await transaction.commit();
+    delete userInDb.dataValues.tokenEmailVerified;
+    delete userInDb.dataValues.phone;
+    delete userInDb.dataValues.address;
+    delete userInDb.dataValues.serviceReceiptUri;
+    delete userInDb.dataValues.loginPhase;
+    delete userInDb.dataValues.pushDeviceToken;
+    delete userInDb.dataValues.roleId;
+    delete userInDb.dataValues.userMobile;
+    delete userInDb.dataValues.disabled;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: userInDb });
   } catch (error) {
+    await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
+ * Enter a new passwd
+ * @param {object} req - Object containing passwd
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postSetPasswd = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const { clientId, passwd, token } = await validator.vWebPostPasswd(req.body);
+
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        tokenEmailVerified: token,
+        emailVerified: null,
+        // emailVerified: {
+        //   [Op.ne]: null,
+        // },
+      },
+      attributes: ["clientId"],
+    });
+
+    if (userInDb == null || userInDb.clientId == null)
+      throw {
+        message: "The user not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.FORBIDDEN,
+      };
+    
+    await userInDb.update({ emailVerified: formatDate(new Date()) }, { transaction });
+
+    const resUpdate = await firebase.setPasswd(clientId, passwd);
+    if (resUpdate.status) {
+      throw {
+        status: resCreate.status,
+        message: resCreate.detail,
+      };
+    }
+    await transaction.commit();
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: { clientId } });
+  } catch (error) {
+    await transaction.rollback();
+    if (
+      error &&
+      error.errors &&
+      error.errors.length > 0 &&
+      error.errors[0].message
+    ) {
+      error.message = error.errors[0].message;
+    }    
     return next(error);
   }
 };
@@ -134,12 +289,22 @@ exports.postEdit = async (req, res, next) => {
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The admin does not exist`,
+        message: `The user does not exist`,
       };
     }
 
     const resultUpdate = await adminInDb.update(dataQuery);
-
+    delete resultUpdate.dataValues.clientId;
+    delete resultUpdate.dataValues.emailVerified;
+    delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.phone;
+    delete resultUpdate.dataValues.address;
+    delete resultUpdate.dataValues.serviceReceiptUri;
+    delete resultUpdate.dataValues.loginPhase;
+    delete resultUpdate.dataValues.pushDeviceToken;
+    delete resultUpdate.dataValues.roleId;
+    delete resultUpdate.dataValues.userMobile;
+    delete resultUpdate.dataValues.disabled;
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: resultUpdate,
@@ -174,12 +339,22 @@ exports.getAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      attributes: {
+        exclude: [
+          "tokenEmailVerified",
+          "serviceReceiptUri",
+          "loginPhase",
+          "pushDeviceToken",
+          "userMobile",
+          "deletedAt",
+        ],
+      },
     });
 
     if (adminsInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no admins registered in the database",
+        message: "There are no users registered in the database",
       };
     }
     if (adminsInDb.rows.length <= 0) {
@@ -217,12 +392,23 @@ exports.getOneById = async (req, res, next) => {
       id: parseInt(req.params.id),
     });
 
-    const adminInDb = await db.User.findByPk(id);
+    const adminInDb = await db.User.findByPk(id, {
+      attributes: {
+        exclude: [
+          "tokenEmailVerified",
+          "serviceReceiptUri",
+          "loginPhase",
+          "pushDeviceToken",
+          "userMobile",
+          "deletedAt",
+        ],
+      },
+    });
 
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "Admin information could not be retrieved",
+        message: "User information could not be retrieved",
       };
     }
 
@@ -245,7 +431,7 @@ exports.postDelete = async (req, res, next) => {
     if (adminInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The admin does not exist`,
+        message: `The user does not exist`,
       };
     }
 
@@ -274,7 +460,7 @@ exports.postSendMailResetPasswd = async (req, res, next) => {
     if (adminInDb == null)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The requested admin with id ${update.id} does not exist.`,
+        message: `The requested user with id ${update.id} does not exist.`,
       };
 
     // const resultSend = await firebaseAppWeb.passwordResetEmail(adminInDb.email);

@@ -8,7 +8,7 @@ sgMail.setApiKey(sgKey.api_key);
  * @param {object} data Object containing to, subject, and html of the mail
  * @return {boolean} true, if the email was sent successfully
  */
-exports.sendEmail = async (data) => {
+exports.sendMail = async (data) => {
   try {
     const msg = {
       to: data.to,
