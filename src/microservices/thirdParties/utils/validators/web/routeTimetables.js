@@ -70,6 +70,49 @@ const registerSchema = joi.object({
   //   }, "Add Seconds"),
 });
 
+const registerWithHourSchema = joi.object({
+  date: joi
+    .string()
+    .required()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .error((errors) => {
+      errors.forEach((err) => {
+        // const label = err.local?.label || "value";
+        switch (err.code) {
+          case "string.pattern.base":
+            err.message = `"date" format must be aaaa-mm-dd.`;
+            break;
+          case "any.required":
+            err.message = `"date" is required.`;
+            break;
+          default:
+            err.message = `"date" item has an invalid value.`;
+            break;
+        }
+      });
+      return errors;
+    }),
+  routeId: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  companyId: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  hoursTariffs: joi.array().min(1).items(
+      joi.object({
+        hour: joi.string().trim().required().pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/),
+        tariff: joi.number().integer().min(1000).required(),
+      }).unknown(false) // This is to ensure that there are no additional fields in the object.
+  )
+    .required()
+    .custom((value, helpers) => {
+      const hours = value.map(item => item.hour);
+      const uniqueHours = [...new Set(hours)];
+
+      if (hours.length !== uniqueHours.length) {
+        return helpers.error('array.unique', { message: 'Every hour must be unique' });
+      }
+
+      return value; // If everything is fine, return the value as is
+    }, 'Every hour is unique')
+});
+
 // .greater(new Date().toISOString().split("T")[0])
 const editSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
@@ -170,6 +213,9 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
   vWebPostRegister: async (inputData) => {
     return await use_validator_on_data(registerSchema, inputData);
+  },
+  vWebPostRegisterWithHour: async (inputData) => {
+    return await use_validator_on_data(registerWithHourSchema, inputData);
   },
   vWebPostEdit: async (inputData) => {
     return await use_validator_on_data(editSchema, inputData);

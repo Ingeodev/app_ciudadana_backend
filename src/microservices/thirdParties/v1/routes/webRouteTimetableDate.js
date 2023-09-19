@@ -11,6 +11,12 @@ router.post(
 );
 
 router.post(
+  "/hours",
+  // hasPermissions({ role: "super_master_user" }),
+  dateTimetableController.postRegisterWithHour
+);
+
+router.post(
   "/edit",
   // hasPermissions({ role: "super_master_user" }),
   dateTimetableController.postEdit

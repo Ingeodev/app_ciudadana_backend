@@ -51,6 +51,71 @@ exports.postRegister = async (req, res, next) => {
 };
 
 /**
+ * Create a route timetable with your hours
+ * @param {object} req - Object containing the date, routeId, companyId, hours (array)
+ * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postRegisterWithHour = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const { date, routeId, companyId, hoursTariffs } = await validator.vWebPostRegisterWithHour(req.body);
+
+    // Verify whether the route belongs to the companyId
+    const companyInDb = await db.TransportCompany.findOne({
+      where: { id: companyId },
+      include: [
+        {
+          model: db.TransportRoute,
+          where: { id: routeId },
+          attributes: ["id"],
+        },
+      ],
+    });
+
+    if (!companyInDb || companyInDb.TransportRoutes.length === 0) {
+      throw {
+        message: "The company does not have a date on the route indicated.",
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+    }
+
+    const dataQuery = {
+      date,
+      routeId,
+    };
+
+    let result = await db.RouteTimetable.create(dataQuery, { transaction });
+    delete result.dataValues.deletedAt;
+    result.dataValues.day = new Date(date).getDay();
+
+    // Record hours and tariffs
+    const updatedHoursTariffs = hoursTariffs.map((item) => ({
+      ...item,
+      timetableId: result.dataValues.id,
+    }));
+    const resultHours = await db.RouteTimetableHourTariff.bulkCreate(updatedHoursTariffs, { transaction });
+    
+    const updatedHourTariffs = resultHours.map((item) => ({
+      id: item.dataValues.id,
+      hour: item.dataValues.hour.substring(0, 5), // We take only the first 5 characters of the string "hh:mm:ss".
+      tariff: item.dataValues.tariff,
+      timetableId: item.dataValues.timetableId,
+      createdAt: item.dataValues.createdAt,
+      updatedAt: item.dataValues.updatedAt,
+      deletedAt: undefined,
+    }));
+
+    result.dataValues.hourTariffs = updatedHourTariffs;
+    await transaction.commit();    
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
+  } catch (error) {
+    // console.error("Route timetable could not be created: ", error.message);
+    await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
  * Update a route timetable
  * @param {object} req - Object containing the id, date, routeId, companyId
  * @return {object} Response contains: statuscode (integer), json (route timetable object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
