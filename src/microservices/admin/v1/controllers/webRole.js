@@ -291,3 +291,56 @@ exports.getUsersByRoleId = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * Get the data of a role
+ * @param {integer} req.params.id - roleId
+ * @return {object} Response contains: statuscode (integer), json (object): role data. Or if there's error, json (object): status, code, detail
+ */
+exports.getRole = async (req, res, next) => {
+  try {
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
+
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
+
+    const { id } = await validator.vWebGetOneById({
+      id: parseInt(req.params.id),
+    });
+
+    // Validate that the company belongs to the user
+    const roleInDb = await db.Role.findOne({
+      where: {
+        id,
+        // // ! Pendiente: Validar permisos del usuario
+        // createdBy: createdBy.id,
+      },
+      attributes: {
+        exclude: ["deletedAt"],
+      },
+    });
+
+    if (roleInDb == null)
+      throw {
+        message: "Role could not be retrieved",
+        status: StatusCodes.NOT_FOUND,
+      };
+
+    delete roleInDb.dataValues.deletedAt;
+
+    return res.status(StatusCodes.OK).send({
+      meta: null,
+      data: roleInDb,
+    });
+  } catch (error) {
+    // console.error("Role could not be recovered: ", error.message);
+    return next(error);
+  }
+};

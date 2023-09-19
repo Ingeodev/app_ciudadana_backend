@@ -50,6 +50,12 @@ router.get(
   webRoleController.getAll
 );
 
+router.get(
+  "/:id",
+  // authorization.checkActions(ROLE_ACTIONS.create),
+  webRoleController.getRole
+);
+
 // router.get("/", (req, res) => {
 //   res.status(200).json("Web API - Admin- Role Microservice");
 // });
