@@ -16,7 +16,14 @@ const webRouterUser = require("./microservices/users/v1/routes/web.js");
 const mobileRouterUser = require("./microservices/users/v1/routes/mobile.js");
 
 // Third parties
-const webRouterThird = require("./microservices/thirdParties/v1/routes/web.js");
+const webCategories = require("./microservices/thirdParties/v1/routes/webCategories.js");
+const webCompanies = require("./microservices/thirdParties/v1/routes/webCompanies.js");
+const webCompServices = require("./microservices/thirdParties/v1/routes/webCompanyServices.js");
+const webRouteDate = require("./microservices/thirdParties/v1/routes/webRouteTimetableDate.js");
+const webRouteHourTariff= require("./microservices/thirdParties/v1/routes/webRouteTimetableHour.js");
+const webTranspRoutes = require("./microservices/thirdParties/v1/routes/webTransportRoutes.js");
+const webTranspCompanies = require("./microservices/thirdParties/v1/routes/webTransportCompanies.js");
+const webCities = require("./microservices/thirdParties/v1/routes/webCities.js");
 const mobileRouterThird = require("./microservices/thirdParties/v1/routes/mobile.js");
 
 // File Management
@@ -42,11 +49,11 @@ app.use("/api/v1/file_management/download", downloadRouter);
 
 app.use(authMiddleware);
 //#region Web-oriented end-points
-app.use('/web/v1/notifications', webRouterNotification);
+app.use('/api/web/v1/notifications', webRouterNotification);
 //#endregion
 
 //#region Mobile-oriented end-points
-app.use("/mobile/v1/notifications", mobileRouterNotification);
+app.use("/api/mobile/v1/notifications", mobileRouterNotification);
 //#endregion
 
 //#region Web-oriented end-points
@@ -58,7 +65,14 @@ app.use("/api/mobile/v1/users", mobileRouterUser);
 //#endregion
 
 //#region Web-oriented end-points
-app.use("/api/web/v1/third_parties", webRouterThird);
+app.use("/api/web/v1/third_parties/city", webCities);
+app.use("/api/web/v1/third_parties/categories", webCategories);
+app.use("/api/web/v1/third_parties/company", webCompanies);
+app.use("/api/web/v1/third_parties/company_service", webCompServices);
+app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
+app.use("/api/web/v1/third_parties/transport_company/route/hour", webRouteHourTariff);
+app.use("/api/web/v1/third_parties/transport_company/route", webTranspRoutes);
+app.use("/api/web/v1/third_parties/transport_company", webTranspCompanies);
 //#endregion
 
 //#region Mobile-oriented end-points
