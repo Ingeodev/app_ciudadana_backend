@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const db = require("../../../../models/index.js");
 const firebase = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
-const mailService = require("../../utils/sendMail.js");
+const mailService = require("../../../../utils/sendMail.js");
 const { formatDate } = require("../../../../middleware/formatDate.js");
 // const urlFront = process.env.URL_FRONT;
 const urlFront = "https://frontend-cmiesjcqoq-uc.a.run.app";
@@ -162,9 +162,12 @@ exports.postRegister = async (req, res, next) => {
     };
 
     const userInDb = await db.User.create(dataQuery, { transaction });
-    // const sendEmail = await firebase.passwordReset(dataUser);
-    // const sendEmail = await firebase.mailInvitationVerification(dataUser, urlFront);
-    const sendEmail = await mailInvitationVerification(dataUser, tokenEmailVerified);
+
+    // The following two options do not send the mail, the link is received (this link redirects the user to a Firebase interface), and must be sent
+    // const link = await firebase.generateLinkPasswordReset(email, urlFront);
+    // const link = await firebase.generateLinkEmailVerification(email, urlFront);
+
+    const sendEmail = await mailInvitationVerification( dataUser, tokenEmailVerified );
 
     if (sendEmail.status) {
       throw {
@@ -208,7 +211,7 @@ exports.postSetPasswd = async (req, res, next) => {
         //   [Op.ne]: null,
         // },
       },
-      attributes: ["clientId"],
+      attributes: ["id", "clientId"],
     });
 
     if (userInDb == null || userInDb.clientId == null)
@@ -463,11 +466,8 @@ exports.postSendMailResetPasswd = async (req, res, next) => {
         message: `The requested user with id ${update.id} does not exist.`,
       };
 
-    // const resultSend = await firebaseAppWeb.passwordResetEmail(adminInDb.email);
-    const resultSend = await firebase.passwordReset(adminInDb.email);
-    return res
-      .status(StatusCodes.CREATED)
-      .json({ meta: null, data: resultSend });
+    const link = await firebase.generateLinkPasswordReset(adminInDb.email);
+    return res.status(StatusCodes.CREATED).json({ meta: null, data: link });
     // .json({ meta: null, data: {email: adminInDb.email} });
   } catch (error) {
     if (

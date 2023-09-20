@@ -1,6 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
 const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js");
-const mailService = require("../microservices/admin/utils/sendMail.js");
 
 exports.createUser = async (data) => {
   try {
@@ -101,10 +100,10 @@ exports.addCustomClaim = async (uid, role) => {
   }
 };
 
-exports.passwordReset = async (userEmail) => {
+exports.generateLinkPasswordReset = async (userEmail, urlFront) => {
   try {
     const actionCodeSettings = {
-      url: "http://localhost:3000",
+      url: urlFront,
       // This must be true for email link sign-in.
       handleCodeInApp: true,
       // dynamicLinkDomain: "",
@@ -114,13 +113,8 @@ exports.passwordReset = async (userEmail) => {
     const link = await appFirebase.auth().generatePasswordResetLink(userEmail, actionCodeSettings);
 
     if (link) {
-      const data = {
-        to: userEmail,
-        subject: "AppMoviliad Cali - Restablecimiento de Contraseña",
-        html: `<strong> ${link} </strong>`,
-      };
-      const resSend = await emailService.sendEmail(data);
-      return resSend;
+      // returns the link to be sent by mail with sendgrid
+      return link;
     } else {
       return {
         status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -131,13 +125,13 @@ exports.passwordReset = async (userEmail) => {
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
-      detail: `Error password reset: ${error.message}`,
+      detail: `Error generating password reset link: ${error.message}`,
       code: "Internal Server Error",
     };
   }
 };
 
-exports.mailInvitationVerification = async (dataUser, urlFront) => {
+exports.generateLinkEmailVerification = async (userEmail, urlFront) => {
   try {    
     const actionCodeSettings = {
       url: urlFront,
@@ -145,34 +139,10 @@ exports.mailInvitationVerification = async (dataUser, urlFront) => {
       handleCodeInApp: true,
       // dynamicLinkDomain: "",
     };
-    const linkVerification = await appFirebase.auth().generateEmailVerificationLink(dataUser.email, actionCodeSettings);
+    const linkVerification = await appFirebase.auth().generateEmailVerificationLink(userEmail, actionCodeSettings);
 
     if (linkVerification) {
-      const data = {
-        to: dataUser.email,
-        subject: "Invitación AppMoviliad Cali",
-        html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
-                <h2 style="color: #007BFF;">¡Bienvenido a AppMovilidad Cali!</h2>
-                <p>Hola ${dataUser.displayName},</p>
-                <p>Te invitamos a unirte a la plataforma de movilidad de la Ciudad de Cali, Colombia. Para comenzar, es importante que verifiques tu correo electrónico. Haz clic en el siguiente enlace para hacerlo:</p>
-                <a href="${linkVerification}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Verificar Correo</a>
-                <p>Una vez verificado, podrás acceder a todos los módulos de la aplicación.</p>
-                <h3>Tus credenciales son:</h3>
-                <ul>
-                    <li><strong>Usuario:</strong> ${dataUser.email}</li>
-                    <li><strong>Contraseña:</strong> ${dataUser.password}</li>
-                </ul>
-                <p>Puedes ingresar a la aplicación haciendo clic en el siguiente enlace:</p>
-                <a href="${urlFront}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Ingresar a AppMovilidad Cali</a>
-                <p>¡Esperamos que disfrutes de la plataforma!</p>
-                <p>Saludos,<br>Equipo de AppMovilidad Cali</p>
-            </div>
-       `,
-      };
-      const resSend = await mailService.sendMail(data);
-      // const resSend = true;
-      return resSend;
+      return linkVerification;
     } else {
       return {
         status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -183,7 +153,7 @@ exports.mailInvitationVerification = async (dataUser, urlFront) => {
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
-      detail: `Error email verification: ${error.message}`,
+      detail: `Error generating mail verification link: ${error.message}`,
       code: "Internal Server Error",
     };
   }
