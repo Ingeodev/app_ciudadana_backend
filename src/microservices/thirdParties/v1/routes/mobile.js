@@ -3,8 +3,16 @@ const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const categoryController = require("../controllers/mobile/categories.js");
 const companiesController = require("../controllers/mobile/companies.js");
+const transportController = require("../controllers/mobile/transportRoutes.js");
 
-// TODO: -- Start - categories Endpoints
+// --------------------- Intercity_transport ----------------------------
+router.get(
+  "/intercity_transport",
+  // hasPermissions({ role: "super_master_user" }),
+  transportController.getTransportRoutes
+);
+
+// --------------------- Categories ----------------------------
 //#region categories end-points
 router.get(
   "/categories",
@@ -12,9 +20,8 @@ router.get(
   categoryController.getAll
 );
 //#endregion - categories
-// TODO: -- End - categories Endpoints
 
-// TODO: -- Start - companies Endpoints
+// --------------------- Companies ----------------------------
 //#region companies end-points
 router.get(
   "/",
@@ -22,6 +29,5 @@ router.get(
   companiesController.getCompaniesnServices
 );
 //#endregion - companies
-// TODO: -- End - companies Endpoints 
 
 module.exports = router;
