@@ -413,7 +413,10 @@ exports.postUsersDelete = async (req, res, next) => {
   try {
     const { clientId } = await validator.vPostUsersDeleted(req.body);
     const userInDb = await db.User.findOne({
-      where: { clientId },
+      where: {
+        clientId,
+        userMobile: false
+      },
     });
 
     if (userInDb === null) {
@@ -436,14 +439,17 @@ exports.postUsersDelete = async (req, res, next) => {
 };
 
 /**
- * Changes the boolean value of User.disabled
+ * Changes the boolean value of User.disabled. Only web Users
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.postUsersStatus = async (req, res, next) => {
   try {
     const { clientId, disabled } = await validator.vPostUsersStatus(req.body);
     const userInDb = await db.User.findOne({
-      where: { clientId },
+      where: {
+        clientId,
+        userMobile: false
+      },
     });
 
     if (userInDb === null) {
