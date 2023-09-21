@@ -329,7 +329,142 @@ exports.postAccountFullLogin = async (req, res, next) => {
 // TODO: -------------------------- End - Endpoints copied from mobileController
 
 /**
+ * Get web users or app users
+ * @param {object} req.query - Object containing the number and size
+ * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getUsersListByDevice = async (req, res, next) => {
+  try {
+    const objPage = await validator.vGetUsersListByDevice({
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+      webUser: req.query.webUser ? req.query.webUser : null,
+      mobileUser: req.query.mobileUser ? req.query.mobileUser : null,
+    });
+
+    let attributes = {};
+    let include = [];
+    let isMobileUser = false;
+
+    if (objPage.webUser) {
+      include = [
+        // {
+        //   model: db.DocumentType,
+        //   attributes: [],
+        //   required: false,
+        // },
+        {
+          model: db.Role,
+          attributes: [],
+          required: false,
+        },
+      ],
+        (attributes.exclude = [
+          "phone",
+          "address",
+          "serviceReceiptUri",
+          "loginPhase",
+          "userMobile",
+          "updatedAt",
+          "deletedAt",
+          "pushDeviceToken",
+          "tokenEmailVerified",
+        ]);
+      attributes.include = [
+        "id",
+        "clientId",
+        "name",
+        "lastName",
+        "email",
+        "documentTypeId",
+        "document",
+        // [Sequelize.col('"DocumentType"."name"'), "DocumentTypeName"],
+        "disabled",
+        "createdAt",
+        "roleId",
+        [Sequelize.col('"Role"."name"'), "roleName"],
+        "emailVerified",
+      ];
+    } else {
+      isMobileUser = true;
+      attributes.exclude = [
+        "document",
+        "documentTypeId",
+        "disabled",
+        "userMobile",
+        "updatedAt",
+        "deletedAt",
+        "roleId",
+        "tokenEmailVerified",
+        "emailVerified"
+      ];
+      attributes.include = [
+        "id",
+        "clientId",
+        "name",
+        "lastName",
+        "email",
+        "phone",
+        "address",
+        "serviceReceiptUri",
+        "loginPhase",
+        "pushDeviceToken",
+      ];
+    }
+
+    const usersInDb = await db.User.findAndCountAll({
+      limit: objPage.size,
+      offset: (objPage.number - 1) * objPage.size,
+      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      where: {
+        userMobile: isMobileUser,
+      },
+      include,
+      attributes,
+    });
+
+    if (usersInDb.count <= 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "There are no Users registered",
+      };
+    }
+    if (usersInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    }
+    const totalPages = Math.ceil(usersInDb.count / objPage.size);
+
+    // Additional processing to remove the object from documentType
+    // const adjustedUsers = usersInDb.rows.map((user) => {
+    //   const userData = user.toJSON(); // Convierte el modelo Sequelize a un objeto regular
+    //   delete userData.DocumentType; // Elimina la propiedad DocumentType
+    //   return userData;
+    // });
+
+    const responseCustom = {
+      meta: {
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: usersInDb.count,
+        totalPages: totalPages,
+      },
+      // data: adjustedUsers,
+      data: usersInDb.rows,
+    };
+
+    return res.status(StatusCodes.OK).send(responseCustom);
+  } catch (error) {
+    // console.error("users could not be recovered: ", error.message);
+    return next(error);
+  }
+};
+
+/**
  * Get all users (web + app)
+ * @param {object} req.query - Object containing the number and size
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.getUsersListAll = async (req, res, next) => {
@@ -369,7 +504,7 @@ exports.getUsersListAll = async (req, res, next) => {
     if (usersInDb.count <= 0) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are no Users registered in the database",
+        message: "There are no Users registered",
       };
     }
     if (usersInDb.rows.length <= 0) {

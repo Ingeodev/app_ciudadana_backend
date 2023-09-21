@@ -73,6 +73,12 @@ router.get(
 // TODO: -- End - DocumentTypes Endpoints 
 
 router.get(
+  "/list_by_device",
+  // hasPermissions({ role: "super_master_user" }),
+  usersWeb.getUsersListByDevice
+);
+
+router.get(
   "/",
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.getUsersListAll

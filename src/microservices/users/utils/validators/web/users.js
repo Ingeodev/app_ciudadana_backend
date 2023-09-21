@@ -38,6 +38,18 @@ const getUsersListAllSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
+const getUsersListByDeviceSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+  webUser: joi.boolean().required(),
+  mobileUser: joi.boolean().required(),
+}).custom((obj, helpers) => {
+  if ((obj.webUser && obj.mobileUser) || (!obj.webUser && !obj.mobileUser)) {
+    return helpers.message({ custom: 'webUser and mobileUser cannot be both true or both false simultaneously.' });
+  }
+  return obj;
+});
+
 const postUsersDeletedSchema = joi.object({
   clientId: joi.string().trim().empty("").required(),
 });
@@ -83,6 +95,9 @@ module.exports = {
   // * ------------- App Web --------------------------------
   vGetUsersListAll: async (inputData) => {
     return await use_validator_on_data(getUsersListAllSchema, inputData);
+  },
+  vGetUsersListByDevice: async (inputData) => {
+    return await use_validator_on_data(getUsersListByDeviceSchema, inputData);
   },
   vPostUsersDeleted: async (inputData) => {
     return await use_validator_on_data(postUsersDeletedSchema, inputData);
