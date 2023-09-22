@@ -455,6 +455,19 @@ exports.getUsersListByDevice = async (req, res, next) => {
       data: usersInDb.rows,
     };
 
+    if (isMobileUser) {
+      const modifiedUsers = usersInDb.rows.map((user) => {
+        const userJSON = user.toJSON();
+
+        if (userJSON.pushDeviceToken && userJSON.pushDeviceToken.length > 5) {
+          userJSON.pushDeviceToken = userJSON.pushDeviceToken.substring(0, 5) + "*********";
+        }
+
+        return userJSON;
+      });
+      return res.status(StatusCodes.OK).send(modifiedUsers);
+    }
+
     return res.status(StatusCodes.OK).send(responseCustom);
   } catch (error) {
     // console.error("users could not be recovered: ", error.message);
