@@ -161,7 +161,19 @@ exports.getAccountInfo = async (req, res, next) => {
     }
 
     const userInDb = await db.User.findOne({
+      limit: 1,
       where: { clientId },
+      include: [{
+          model: db.Role,
+          attributes: [],
+          required: false,
+      }],
+      attributes: {
+          exclude: ["deletedAt"],
+          include: [
+              [Sequelize.col('"Role"."name"'), 'roleName'],
+          ],
+      },
     });
 
     const UserInFirebase = await firebase.getUserByClientId(clientId);
@@ -181,13 +193,12 @@ exports.getAccountInfo = async (req, res, next) => {
         message: UserInFirebase.message,
       };
     }
-
+    
     delete userInDb.dataValues.clientId;
     delete userInDb.dataValues.tokenEmailVerified;
     delete userInDb.dataValues.address;
     delete userInDb.dataValues.serviceReceiptUri;
     delete userInDb.dataValues.pushDeviceToken;
-    delete userInDb.dataValues.roleId;
     delete userInDb.dataValues.disabled;
     delete userInDb.dataValues.loginPhase;
     delete userInDb.dataValues.userMobile;
