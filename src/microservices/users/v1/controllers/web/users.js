@@ -473,6 +473,10 @@ exports.getUsersListByDevice = async (req, res, next) => {
           userJSON.pushDeviceToken = userJSON.pushDeviceToken.substring(0, 5) + "*********";
         }
 
+        if (userJSON.phone && userJSON.phone.length > 7) {
+          userJSON.phone = userJSON.phone.substring(0, 7) + "***";
+        }
+
         return userJSON;
       });
       return res.status(StatusCodes.OK).send(modifiedUsers);
