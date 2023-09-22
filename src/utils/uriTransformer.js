@@ -6,7 +6,8 @@ const filesMsHostUriReplaceKeyword = "|__this host__|";
 /**
  * Default base URI of the FILE MANAGEMENT MICROSERVICE.
  */
-const filesMsHostUri = process.env.FILES_MS_HOST_BASE_URI;
+// const filesMsHostUri = process.env.FILES_MS_HOST_BASE_URI;
+const filesMsHostUri = "https://file-management-cmiesjcqoq-uc.a.run.app";
 
 /**
  * Function that replaces the default FILE MANAGEMENT MICROSERVICE base URI into a default keyword that will later be used to replace.
