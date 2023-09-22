@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { transformReceivedUriToSave, transformSavedUriToSend } = require("../utils/uriTransformer");
 module.exports = (sequelize, DataTypes) => {
   class Security extends Model {
     /**
@@ -58,6 +59,33 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      hooks: {
+        beforeCreate: (obj, options) => {
+          obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+        },
+        beforeUpdate: (obj, options) => {
+          obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+        },
+        afterCreate: (obj, options) => {
+          obj.imageUri = transformSavedUriToSend(obj.imageUri);
+        },
+        afterUpdate: (obj, options) => {
+          obj.imageUri = transformSavedUriToSend(obj.imageUri);
+        },
+        afterFind: (result, options) => {
+          if (Array.isArray(result)) {
+            // If the result is an array (multiple records)
+            result.forEach((obj) => {
+              obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
+            });
+          } else if (result) {
+            // If the result is a single record
+            result.dataValues.imageUri = transformSavedUriToSend(
+              result.imageUri
+            );
+          }
+        },
+      },
     }
   );
   return Security;
