@@ -85,8 +85,8 @@ app.use("/api/web/v1/file_management/upload", uploadRouter);
 //#endregion
 
 //#region Web-oriented end-points
-app.use("/api/web/v1/admin", webAdminRouter);
 app.use("/api/web/v1/admin/role", webRoleRouter);
+app.use("/api/web/v1/admin", webAdminRouter);
 //#endregion
 
 //#region Error handling

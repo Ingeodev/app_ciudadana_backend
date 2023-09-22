@@ -49,7 +49,7 @@ const roleToUserSchema = joi.object({
 });
 
 const getUsersByIdroleSchema = joi.object({
-  roleId: joi.number().valid(null).greater(0).invalid(0),
+  roleId: joi.number().greater(0).invalid(0),
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
 });
