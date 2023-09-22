@@ -52,6 +52,13 @@ function generateSecureRandomString(length) {
     };
   }
 }
+// 6 digits
+function generateRandomNumber() {
+  var minm = 100000;
+  var maxm = 999999;
+  return Math.floor(Math
+  .random() * (maxm - minm + 1)) + minm;
+}
 
 /**
  * Send the invitation email along with the credentials
@@ -115,7 +122,7 @@ exports.postRegister = async (req, res, next) => {
     const { name, lastName, email, documentTypeId, document } =
       await validator.vWebPostRegister(req.body);
 
-    const tokenEmailVerified = generateSecureRandomString(100);
+    const tokenEmailVerified = generateRandomNumber();
     if (tokenEmailVerified.status) {
       throw {
         status: tokenEmailVerified.status,
