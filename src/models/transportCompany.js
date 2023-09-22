@@ -96,12 +96,22 @@ module.exports = (sequelize, DataTypes) => {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
+              if (obj.image || obj.dataValues.image) {
+                obj.dataValues.image = transformSavedUriToSend(
+                  obj.dataValues.image
+                );
+              }
             });
           } else if (result) {
             // If the result is a single record
             result.dataValues.imageUri = transformSavedUriToSend(
               result.imageUri
             );
+            if (result.image || result.dataValues.image) {
+              result.dataValues.image = transformSavedUriToSend(
+                result.dataValues.image
+              );
+            }
           }
         },
       },
