@@ -131,7 +131,10 @@ module.exports = (sequelize, DataTypes) => {
             result.forEach((obj) => {
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
               if (obj.image || obj.dataValues.image) {
-                obj.dataValues.image = transformSavedUriToSend(obj.dataValues.image);
+                obj.dataValues.image = transformSavedUriToSend(
+                  obj.dataValues.image
+                );
+                delete obj.dataValues.imageUri;
               }
             });
           } else if (result) {
@@ -140,7 +143,10 @@ module.exports = (sequelize, DataTypes) => {
               result.imageUri
             );
             if (result.image || result.dataValues.image) {
-              result.dataValues.image = transformSavedUriToSend(result.dataValues.image);
+              result.dataValues.image = transformSavedUriToSend(
+                result.dataValues.image
+              );
+              delete result.dataValues.imageUri;
             }
           }
         },

@@ -73,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
                 obj.dataValues.image = transformSavedUriToSend(
                   obj.dataValues.image
                 );
+                delete obj.dataValues.imageUri;
               }
             });
           } else if (result) {
@@ -84,6 +85,7 @@ module.exports = (sequelize, DataTypes) => {
               result.dataValues.image = transformSavedUriToSend(
                 result.dataValues.image
               );
+              delete result.dataValues.imageUri;
             }
           }
         },
