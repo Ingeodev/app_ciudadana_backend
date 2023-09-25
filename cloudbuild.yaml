@@ -69,7 +69,7 @@ availableSecrets:
       env: EMAIL_KEY
     - versionName: projects/85094745134/secrets/db_secrets/versions/1
       env: DB_SECRETS
-    - versionName: projects/85094745134/secrets/notifications_env/versions/1
+    - versionName: projects/85094745134/secrets/notifications_env/versions/2
       env: NOTIFICATIONS_ENV
 options:
   logging: CLOUD_LOGGING_ONLY
