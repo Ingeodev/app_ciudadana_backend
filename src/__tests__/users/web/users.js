@@ -815,164 +815,164 @@ describe("Web - Users management API points: ", () => {
     });
   });
 
-  describe("GET / ", () => {
-    test("should respond with status 200 and a list of user objects containing.", async () => {
-      const response0 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 1, size: 2 } });
-      expect(response0.statusCode).toBe(200);
-      expect(response0.body).toHaveProperty("meta");
-      expect(response0.body.meta.page).toBe(1);
-      expect(response0.body.meta.pageSize).toBe(2);
-      expect(response0.body).toHaveProperty("data");
-      expect(response0.body.data).toEqual(expect.any(Array));
-      // expect(response0.body.data.length).toBe(2);
-      expect(response0.body.data[0]).toHaveProperty("name");
-      expect(response0.body.data[0].name).toBe("Juan Francisco");
-      expect(response0.body.data[0]).toHaveProperty("lastName");
-      expect(response0.body.data[0].lastName).toBe("Perez");
-      expect(response0.body.data[0]).toHaveProperty("phone");
-      expect(response0.body.data[0].phone).toBe("3123334455");
-      expect(response0.body.data[0]).toHaveProperty("address");
-      expect(response0.body.data[0].address).toBe("direccionActualizada");
-    });
+  // describe("GET / ", () => {
+  //   test("should respond with status 200 and a list of user objects containing.", async () => {
+  //     const response0 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 1, size: 2 } });
+  //     expect(response0.statusCode).toBe(200);
+  //     expect(response0.body).toHaveProperty("meta");
+  //     expect(response0.body.meta.page).toBe(1);
+  //     expect(response0.body.meta.pageSize).toBe(2);
+  //     expect(response0.body).toHaveProperty("data");
+  //     expect(response0.body.data).toEqual(expect.any(Array));
+  //     // expect(response0.body.data.length).toBe(2);
+  //     expect(response0.body.data[0]).toHaveProperty("name");
+  //     expect(response0.body.data[0].name).toBe("Juan Francisco");
+  //     expect(response0.body.data[0]).toHaveProperty("lastName");
+  //     expect(response0.body.data[0].lastName).toBe("Perez");
+  //     expect(response0.body.data[0]).toHaveProperty("phone");
+  //     expect(response0.body.data[0].phone).toBe("3123334455");
+  //     expect(response0.body.data[0]).toHaveProperty("address");
+  //     expect(response0.body.data[0].address).toBe("direccionActualizada");
+  //   });
 
-    test("should fail with status 400 and an error with a message if pagination is not provided.", async () => {
-      // 1. ------------------------------------------------
-      const response0 = await request(usedHost).get("/").set(requestHeaders);
-      expect(response0.statusCode).toBe(400);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 400);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
+  //   test("should fail with status 400 and an error with a message if pagination is not provided.", async () => {
+  //     // 1. ------------------------------------------------
+  //     const response0 = await request(usedHost).get("/").set(requestHeaders);
+  //     expect(response0.statusCode).toBe(400);
+  //     expect(response0.body).not.toHaveProperty("meta");
+  //     expect(response0.body).not.toHaveProperty("data");
+  //     expect(response0.body).toHaveProperty("status", 400);
+  //     expect(response0.body).toHaveProperty("code");
+  //     expect(response0.body).toHaveProperty("detail");
 
-      // 2. ------------------------------------------------
-      const response1 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: {} });
-      expect(response1.statusCode).toBe(400);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
+  //     // 2. ------------------------------------------------
+  //     const response1 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: {} });
+  //     expect(response1.statusCode).toBe(400);
+  //     expect(response1.body).not.toHaveProperty("meta");
+  //     expect(response1.body).not.toHaveProperty("data");
+  //     expect(response1.body).toHaveProperty("status", 400);
+  //     expect(response1.body).toHaveProperty("code");
+  //     expect(response1.body).toHaveProperty("detail");
 
-      // 3. ------------------------------------------------
-      const response2 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 1 } });
-      expect(response2.statusCode).toBe(400);
-      expect(response2.body).not.toHaveProperty("data");
-      expect(response2.body).toHaveProperty("status", 400);
-      expect(response2.body).toHaveProperty("code");
-      expect(response2.body).toHaveProperty("detail");
+  //     // 3. ------------------------------------------------
+  //     const response2 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 1 } });
+  //     expect(response2.statusCode).toBe(400);
+  //     expect(response2.body).not.toHaveProperty("data");
+  //     expect(response2.body).toHaveProperty("status", 400);
+  //     expect(response2.body).toHaveProperty("code");
+  //     expect(response2.body).toHaveProperty("detail");
 
-      // 4. ------------------------------------------------
-      const response3 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { size: 1 } });
-      expect(response3.statusCode).toBe(400);
-      expect(response3.body).not.toHaveProperty("meta");
-      expect(response3.body).not.toHaveProperty("data");
-      expect(response3.body).toHaveProperty("status", 400);
-      expect(response3.body).toHaveProperty("code");
-      expect(response3.body).toHaveProperty("detail");
+  //     // 4. ------------------------------------------------
+  //     const response3 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { size: 1 } });
+  //     expect(response3.statusCode).toBe(400);
+  //     expect(response3.body).not.toHaveProperty("meta");
+  //     expect(response3.body).not.toHaveProperty("data");
+  //     expect(response3.body).toHaveProperty("status", 400);
+  //     expect(response3.body).toHaveProperty("code");
+  //     expect(response3.body).toHaveProperty("detail");
 
-      // 5. ------------------------------------------------
-      const response4 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 0, size: 1 } });
-      expect(response4.statusCode).toBe(400);
-      expect(response4.body).not.toHaveProperty("meta");
-      expect(response4.body).not.toHaveProperty("data");
-      expect(response4.body).toHaveProperty("status", 400);
-      expect(response4.body).toHaveProperty("code");
-      expect(response4.body).toHaveProperty("detail");
+  //     // 5. ------------------------------------------------
+  //     const response4 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 0, size: 1 } });
+  //     expect(response4.statusCode).toBe(400);
+  //     expect(response4.body).not.toHaveProperty("meta");
+  //     expect(response4.body).not.toHaveProperty("data");
+  //     expect(response4.body).toHaveProperty("status", 400);
+  //     expect(response4.body).toHaveProperty("code");
+  //     expect(response4.body).toHaveProperty("detail");
 
-      // 6. ------------------------------------------------
-      const response5 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 1, size: 0 } });
-      expect(response5.statusCode).toBe(400);
-      expect(response5.body).not.toHaveProperty("meta");
-      expect(response5.body).not.toHaveProperty("data");
-      expect(response5.body).toHaveProperty("status", 400);
-      expect(response5.body).toHaveProperty("code");
-      expect(response5.body).toHaveProperty("detail");
+  //     // 6. ------------------------------------------------
+  //     const response5 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 1, size: 0 } });
+  //     expect(response5.statusCode).toBe(400);
+  //     expect(response5.body).not.toHaveProperty("meta");
+  //     expect(response5.body).not.toHaveProperty("data");
+  //     expect(response5.body).toHaveProperty("status", 400);
+  //     expect(response5.body).toHaveProperty("code");
+  //     expect(response5.body).toHaveProperty("detail");
 
-      // 7. ------------------------------------------------
-      const response6 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: "A", size: 2 } });
-      expect(response6.statusCode).toBe(400);
-      expect(response6.body).not.toHaveProperty("meta");
-      expect(response6.body).not.toHaveProperty("data");
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
+  //     // 7. ------------------------------------------------
+  //     const response6 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: "A", size: 2 } });
+  //     expect(response6.statusCode).toBe(400);
+  //     expect(response6.body).not.toHaveProperty("meta");
+  //     expect(response6.body).not.toHaveProperty("data");
+  //     expect(response6.body).toHaveProperty("status", 400);
+  //     expect(response6.body).toHaveProperty("code");
+  //     expect(response6.body).toHaveProperty("detail");
 
-      // 8. ------------------------------------------------
-      const response7 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 2, size: "B" } });
-      expect(response7.statusCode).toBe(400);
-      expect(response7.body).not.toHaveProperty("meta");
-      expect(response7.body).not.toHaveProperty("data");
-      expect(response7.body).toHaveProperty("status", 400);
-      expect(response7.body).toHaveProperty("code");
-      expect(response7.body).toHaveProperty("detail");
+  //     // 8. ------------------------------------------------
+  //     const response7 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 2, size: "B" } });
+  //     expect(response7.statusCode).toBe(400);
+  //     expect(response7.body).not.toHaveProperty("meta");
+  //     expect(response7.body).not.toHaveProperty("data");
+  //     expect(response7.body).toHaveProperty("status", 400);
+  //     expect(response7.body).toHaveProperty("code");
+  //     expect(response7.body).toHaveProperty("detail");
 
-      // 9. ------------------------------------------------
-      const response8 = await request(usedHost)
-        .get("/")
-        .set(requestHeaders)
-        .query({ page: { number: 10, size: 99 } });
-      expect(response8.statusCode).toBe(400);
-      expect(response8.body).not.toHaveProperty("meta");
-      expect(response8.body).not.toHaveProperty("data");
-      expect(response8.body).toHaveProperty("status", 400);
-      expect(response8.body).toHaveProperty("code");
-      expect(response8.body).toHaveProperty("detail");
-    });
+  //     // 9. ------------------------------------------------
+  //     const response8 = await request(usedHost)
+  //       .get("/")
+  //       .set(requestHeaders)
+  //       .query({ page: { number: 10, size: 99 } });
+  //     expect(response8.statusCode).toBe(400);
+  //     expect(response8.body).not.toHaveProperty("meta");
+  //     expect(response8.body).not.toHaveProperty("data");
+  //     expect(response8.body).toHaveProperty("status", 400);
+  //     expect(response8.body).toHaveProperty("code");
+  //     expect(response8.body).toHaveProperty("detail");
+  //   });
 
-    test("DISABLED - Users table must not have any records. should fail with status 404 and an error with a message of users not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 } });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-    });
+  //   test("DISABLED - Users table must not have any records. should fail with status 404 and an error with a message of users not found.", async () => {
+  //     // 1. ------------------------------------------------
+  //     // const response0 = await request(usedHost)
+  //     //   .get("/")
+  //     //   .set(requestHeaders)
+  //     //   .query({ page: { number: 1, size: 2 } });
+  //     // expect(response0.statusCode).toBe(404);
+  //     // expect(response0.body).not.toHaveProperty("meta");
+  //     // expect(response0.body).not.toHaveProperty("data");
+  //     // expect(response0.body).toHaveProperty("status", 404);
+  //     // expect(response0.body).toHaveProperty("code");
+  //     // expect(response0.body).toHaveProperty("detail");
+  //   });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).get("/");
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
-  });
+  //   // {
+  //   //     "status": 401,
+  //   //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
+  //   //     "code": "Unauthorized"
+  //   // }
+  //   test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+  //     const response0 = await request(usedHost).get("/");
+  //     expect(response0.statusCode).toBe(401);
+  //     expect(response0.body).not.toHaveProperty("meta");
+  //     expect(response0.body).not.toHaveProperty("data");
+  //     expect(response0.body).toHaveProperty("status", 401);
+  //     expect(response0.body).toHaveProperty("code");
+  //     expect(response0.body).toHaveProperty("detail");
+  //   });
+  // });
 
   describe("POST /status ", () => {
     test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {

@@ -78,12 +78,6 @@ router.get(
   usersWeb.getUsersListByDevice
 );
 
-router.get(
-  "/",
-  // hasPermissions({ role: "super_master_user" }),
-  usersWeb.getUsersListAll
-);
-
 router.post(
   "/status",
   // hasPermissions({ role: "super_master_user" }),
