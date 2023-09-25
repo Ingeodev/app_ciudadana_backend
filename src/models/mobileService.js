@@ -74,20 +74,25 @@ module.exports = (sequelize, DataTypes) => {
       hooks: {
         beforeCreate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.icon = transformReceivedUriToSave(obj.icon);
         },
         beforeUpdate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.icon = transformReceivedUriToSave(obj.icon);
         },
         afterCreate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.icon = transformSavedUriToSend(obj.icon);
         },
         afterUpdate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.icon = transformSavedUriToSend(obj.icon);
         },
         afterFind: (result, options) => {
           if (Array.isArray(result)) {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
+              obj.dataValues.icon = transformSavedUriToSend(obj.icon);
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
               if (obj.image || obj.dataValues.image) {
                 obj.dataValues.image = transformSavedUriToSend(
@@ -98,6 +103,7 @@ module.exports = (sequelize, DataTypes) => {
             });
           } else if (result) {
             // If the result is a single record
+            result.dataValues.icon = transformSavedUriToSend(result.icon);
             result.dataValues.imageUri = transformSavedUriToSend(
               result.imageUri
             );

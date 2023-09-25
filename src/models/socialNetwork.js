@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { transformReceivedUriToSave, transformSavedUriToSend } = require("../utils/uriTransformer");
 module.exports = (sequelize, DataTypes) => {
   class SocialNetwork extends Model {
     /**
@@ -43,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       active: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
       },
     },
     {
@@ -53,6 +54,31 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      hooks: {
+        beforeCreate: (obj, options) => {
+          obj.icon = transformReceivedUriToSave(obj.icon);
+        },
+        beforeUpdate: (obj, options) => {
+          obj.icon = transformReceivedUriToSave(obj.icon);
+        },
+        afterCreate: (obj, options) => {
+          obj.icon = transformSavedUriToSend(obj.icon);
+        },
+        afterUpdate: (obj, options) => {
+          obj.icon = transformSavedUriToSend(obj.icon);
+        },
+        afterFind: (result, options) => {
+          if (Array.isArray(result)) {
+            // If the result is an array (multiple records)
+            result.forEach((obj) => {
+              obj.dataValues.icon = transformSavedUriToSend(obj.icon);
+            });
+          } else if (result) {
+            // If the result is a single record
+            result.dataValues.icon = transformSavedUriToSend(result.icon);
+          }
+        },
+      },
     }
   );
   return SocialNetwork;

@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { transformReceivedUriToSave, transformSavedUriToSend } = require("../utils/uriTransformer");
 module.exports = (sequelize, DataTypes) => {
   class ThirdPartyCategory extends Model {
     /**
@@ -55,20 +56,37 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
-      // hooks: {
-      //   async beforeDestroy(category, options) {
-      //     const companies = await sequelize.models.ThirdPartyCompany.count({
-      //       where: {
-      //         categoryId: category.id,
-      //         deletedAt: null, // considers only records that are not "soft deleted".
-      //       },
-      //     });
-
-      //     if (companies > 0) {
-      //       throw new Error("Category Deleting error");
-      //     }
-      //   },
-      // },
+      hooks: {
+        beforeCreate: (obj, options) => {
+          obj.icon = transformReceivedUriToSave(obj.icon);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
+        },
+        beforeUpdate: (obj, options) => {
+          obj.icon = transformReceivedUriToSave(obj.icon);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
+        },
+        afterCreate: (obj, options) => {
+          obj.icon = transformSavedUriToSend(obj.icon);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
+        },
+        afterUpdate: (obj, options) => {
+          obj.icon = transformSavedUriToSend(obj.icon);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
+        },
+        afterFind: (result, options) => {
+          if (Array.isArray(result)) {
+            // If the result is an array (multiple records)
+            result.forEach((obj) => {
+              obj.dataValues.icon = transformSavedUriToSend(obj.icon);
+              obj.dataValues.iconMap = transformSavedUriToSend(obj.iconMap);
+            });
+          } else if (result) {
+            // If the result is a single record
+            result.dataValues.icon = transformSavedUriToSend(result.icon);
+            result.dataValues.iconMap = transformSavedUriToSend(result.iconMap);
+          }
+        },
+      },
     }
   );
   return ThirdPartyCategory;
