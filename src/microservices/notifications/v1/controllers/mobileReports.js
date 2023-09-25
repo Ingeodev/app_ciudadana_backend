@@ -120,6 +120,7 @@ exports.getListAllClosest = async (req, res, next) => {
       attributes: {
         exclude: ["createdAt", "updatedAt", "deletedAt", "SecurityCategory"],
         include: [
+          [Sequelize.col('"Report"."imageUri"'), 'image'],
           [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
         ],
       },
