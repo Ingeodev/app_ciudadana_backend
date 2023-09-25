@@ -4,6 +4,20 @@ const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companies.js");
 
 /**
+ * Checks whether an ThirdPartyCategory ID exists and refers to an existing category.
+ * @param {number} categoryId The ID of an ThirdPartyCategory, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the ThirdPartyCategory table. ``false`` otherwise.
+ */
+const checkCategoryExists = async (categoryId) => {
+  if (categoryId != null) {
+    const categoryExists = await db.ThirdPartyCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
+    if (categoryExists == null)
+      return false;
+  }
+  return true;
+};
+
+/**
  * Create a company
  * @param {object} req - Object containing the name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon
  * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
@@ -24,6 +38,12 @@ exports.postRegister = async (req, res, next) => {
 
     const { name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon } =
       await validator.vWebPostRegister(req.body);
+
+    if (!await checkCategoryExists(categoryId))
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: 'The assigned category does not exist.',
+      };
 
     const dataQuery = {
       createdBy: createdBy.id,
@@ -84,6 +104,12 @@ exports.postEdit = async (req, res, next) => {
       lat,
       lon,
     } = await validator.vWebPostEdit(req.body);
+
+    if (!await checkCategoryExists(categoryId))
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: 'The assigned category does not exist.',
+      };
 
     const dataQuery = {
       id,
@@ -308,7 +334,7 @@ exports.postDelete = async (req, res, next) => {
     //     message: "User not found",
     //     status: StatusCodes.NOT_FOUND,
     //   };
-    
+
     const { id } = await validator.vWebPostDelete(req.body);
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
