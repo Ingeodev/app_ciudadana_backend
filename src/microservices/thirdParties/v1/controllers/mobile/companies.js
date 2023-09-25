@@ -76,7 +76,7 @@ exports.getCompaniesnServices = async (req, res, next) => {
           "address",
           "phone",
           ["imageUri", "image"],
-          // [db.Sequelize.col("imageUri"), "image"],
+          // [Sequelize.col("imageUri"), "image"],
           "lat",
           "lon",
         ],

@@ -436,7 +436,7 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
           "siteUri",
           "imageUri",
           // ["imageUri", "image"],
-          // [db.Sequelize.col("imageUri"), "image"],
+          // [Sequelize.col("imageUri"), "image"],
         ],
       },
     });
@@ -537,7 +537,7 @@ exports.getItinerary = async (req, res, next) => {
           "companyId",
           "duration",
           // ["imageUri", "image"],
-          // [db.Sequelize.col("imageUri"), "image"],
+          // [Sequelize.col("imageUri"), "image"],
         ],
       },
     });
