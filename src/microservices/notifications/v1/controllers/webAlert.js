@@ -8,7 +8,7 @@ const db = require("../../../../models/index");
 
 const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
 const sigmaSMSToken = process.env.SIGMA_ACCOUNT_KEY;
-const sigmaSmsApiUri = "http://aio2.sigmamovil.com/api/sms";
+const sigmaSmsApiUri = "https://aio2.sigmamovil.com/api/sms";
 const defaultUsersBatchSize = 100000;
 // const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
 
@@ -134,7 +134,7 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
     const sigmaResponse = await axios.post(sigmaSmsApiUri, smsCreationObj, {
       headers: requestHeaders,
     })
-    console.log(sigmaResponse);
+    console.log(sigmaResponse.data);
     return true;
   } catch (error) {
     console.error(error);
