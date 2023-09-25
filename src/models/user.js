@@ -1,4 +1,7 @@
 "use strict";
+
+const { transformReceivedUriToSave, transformSavedUriToSend } = require("../utils/uriTransformer");
+
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -171,6 +174,33 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      hooks: {
+        beforeCreate: (obj, options) => {
+          obj.serviceReceiptUri = transformReceivedUriToSave(obj.serviceReceiptUri);
+        },
+        beforeUpdate: (obj, options) => {
+          obj.serviceReceiptUri = transformReceivedUriToSave(obj.serviceReceiptUri);
+        },
+        afterCreate: (obj, options) => {
+          obj.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+        },
+        afterUpdate: (obj, options) => {
+          obj.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+        },
+        afterFind: (result, options) => {
+          if (Array.isArray(result)) {
+            // If the result is an array (multiple records)
+            result.forEach((obj) => {
+              obj.dataValues.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+            });
+          } else if (result) {
+            // If the result is a single record
+            result.dataValues.serviceReceiptUri = transformSavedUriToSend(
+              result.serviceReceiptUri
+            );
+          }
+        },
+      },
     }
   );
   return User;

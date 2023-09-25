@@ -6,6 +6,7 @@ const db = require("../../../../../models/index.js");
 const firebase = require("../../../../../utils/firebaseAdmin.js");
 const validator = require("../../../utils/validators/mobile/users.js");
 const { checkIfExists } = require("../../../utils/accessCheck.js");
+const { filesMsHostUri } = require("../../../../../utils/uriTransformer.js");
 // const Op = db.Sequelize.Op;
 
 const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
@@ -102,8 +103,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     const endpoint = "mobileUsersPublicServiceReceipt";
     const uploadDir = path.join(uploadsFolder, endpoint);
     const filename = uuidV4() + path.extname(pdfFile.originalname);
-    const host = req.get("host");
-    const imageUri = `${req.protocol}://${host}/api/web/v1/users/file_download/${endpoint}/${filename}`;
+    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
 
     const filepath = path.join(uploadDir, filename);
     await checkIfExists(uploadDir, true);

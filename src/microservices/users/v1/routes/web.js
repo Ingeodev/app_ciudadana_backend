@@ -3,7 +3,6 @@ const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const usersWeb = require("../controllers/web/users.js");
 const documentTypes = require("../controllers/web/documentTypes.js");
-const download = require('../controllers/web/download.js');
 
 // * ------------------ Endpoints - appWeb -----------------------------
 // TODO: -- Start - Endpoints copied from mobileController
@@ -89,9 +88,5 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   usersWeb.postUsersFullLogin
 );
-
-router.get(
-  "/file_download/:folder/:fileName",
-  download.downloadFile);
 
 module.exports = router;
