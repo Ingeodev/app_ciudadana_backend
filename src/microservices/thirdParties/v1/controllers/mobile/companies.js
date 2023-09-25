@@ -96,8 +96,10 @@ exports.getCompaniesnServices = async (req, res, next) => {
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      if (companyData.ThirdPartyCategory == null) companyData.ThirdPartyCategory = { name: null };
       const categoryName = companyData.ThirdPartyCategory.name;
       delete companyData.ThirdPartyCategory;
+      if (companyData.ThirdPartyServices == null) companyData.ThirdPartyServices = [];
       const services = companyData.ThirdPartyServices.map((obj) => obj.service);
       delete companyData.ThirdPartyServices;
       delete companyData.geolocation;
