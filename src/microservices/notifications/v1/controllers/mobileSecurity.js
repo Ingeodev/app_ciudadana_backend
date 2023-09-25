@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require("sequelize");
 const db = require("../../../../models/index.js");
-const validator = require("../../utils/validatorSecurity.js");
+// const validator = require("../../utils/validatorSecurity.js");
 const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 
 /**
@@ -11,7 +12,7 @@ exports.getListAll = async (req, res, next) => {
   try {
     const attentionLInDb = await db.Security.findAll({
       where: { active: true },
-      attributes: ["name", "phone", "address", "imageUri", "siteUri"],
+      attributes: ["name", "phone", "address", [Sequelize.col("imageUri"), 'image'], "siteUri"],
       order: [["name", "ASC"]],
     });
 
@@ -23,7 +24,7 @@ exports.getListAll = async (req, res, next) => {
     }
 
     const categInDb = await db.SecurityCategory.findAll({
-      attributes: ["id", "name", "imageUri", "color"],
+      attributes: ["id", "name", [Sequelize.col("imageUri"), "image"], "color"],
       order: [["name", "ASC"]],
     });
 
