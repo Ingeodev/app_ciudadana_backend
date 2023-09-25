@@ -479,7 +479,10 @@ exports.getUsersListByDevice = async (req, res, next) => {
 
         return userJSON;
       });
-      return res.status(StatusCodes.OK).send(modifiedUsers);
+      return res.status(StatusCodes.OK).send({
+        ...responseCustom,
+        data: modifiedUsers
+      });
     }
 
     return res.status(StatusCodes.OK).send(responseCustom);

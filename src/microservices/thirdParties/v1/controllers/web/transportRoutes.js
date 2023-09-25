@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require("sequelize");
 const xlsx = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
@@ -517,6 +518,7 @@ exports.getItinerary = async (req, res, next) => {
       include: [
         {
           model: db.RouteTimetable,
+          where: { date: { [Sequelize.Op.gte]: new Date() } },
           include: [
             {
               model: db.RouteTimetableHourTariff,
@@ -540,6 +542,10 @@ exports.getItinerary = async (req, res, next) => {
           // [Sequelize.col("imageUri"), "image"],
         ],
       },
+      order: [
+        [db.RouteTimetable, "date", "ASC"],
+        [db.RouteTimetable, db.RouteTimetableHourTariff, "hour", "ASC"],
+      ],
     });
 
     if (routeInDb == null)
