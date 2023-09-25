@@ -568,39 +568,6 @@ exports.getUsersListAll = async (req, res, next) => {
 };
 
 /**
- * Destroy the user (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
- */
-exports.postUsersDelete = async (req, res, next) => {
-  try {
-    const { clientId } = await validator.vPostUsersDeleted(req.body);
-    const userInDb = await db.User.findOne({
-      where: {
-        clientId,
-        userMobile: false
-      },
-    });
-
-    if (userInDb === null) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: `The user does not exist`,
-      };
-    }
-
-    await userInDb.destroy();
-    
-    return res.status(StatusCodes.OK).json({
-      meta: null,
-      data: { clientId }
-    });
-  } catch (error) {
-    // console.error("users could not be deleted: ", error.message);
-    return next(error);
-  }
-};
-
-/**
  * Changes the boolean value of User.disabled. Only web Users
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
