@@ -120,7 +120,8 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
       return userData;
     });
     const smsCreationObj = {
-      idSmsCategory: 1,   // Assume 1 for Notifications 
+      idSmsCategory: 1,   // Assume 1 for Notifications (Noticias)
+      idGroup: 58,        // Group obtained from web
       name,
       receiver,           // List of receivers
       dateNow: 1,         // To send now
@@ -133,6 +134,7 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
     const sigmaResponse = await axios.post(sigmaSmsApiUri, smsCreationObj, {
       headers: requestHeaders,
     })
+    console.log(sigmaResponse);
     return true;
   } catch (error) {
     console.error(error);
@@ -173,7 +175,8 @@ const sendAlerts = async (req, res, next) => {
     if (sms && usersCount > 0) {
       for (let i = 0; i <= totalBatches; i++) {
         const usersDataBatch = await getUsersInBatches(db.User, i, defaultUsersBatchSize);
-        const usersPhoneNumbers = usersDataBatch.map((user) => user.phone);
+        const usersPhoneNumbers = usersDataBatch.map((user) => user.phone).filter((phone) => (phone != null));
+        console.log('usersPhoneNumbers', usersPhoneNumbers);
         acceptedAlerts.sms = await sendSmsNotifications(title, message, usersPhoneNumbers);
       }
     }
