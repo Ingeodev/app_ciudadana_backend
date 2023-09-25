@@ -15,6 +15,8 @@ const filesMsHostUri = "https://file-management-cmiesjcqoq-uc.a.run.app";
  * @returns The `imageUri` or `fileUri` that should be saved in the DB if the image is saved in the File Management Microservice
  */
 const transformReceivedUriToSave = (uri) => {
+    if (typeof uri != 'string')
+        return uri;
     const transformedURI = String(uri).replace(filesMsHostUri, filesMsHostUriReplaceKeyword);
     return transformedURI;
 };
@@ -25,6 +27,8 @@ const transformReceivedUriToSave = (uri) => {
  * @returns The `imageUri` or `fileUri` that allows downloading and should be returned to users.
  */
 const transformSavedUriToSend = (uri) => {
+    if (typeof uri != 'string')
+        return uri;
     const transformedURI = String(uri).replace(filesMsHostUriReplaceKeyword, filesMsHostUri);
     return transformedURI;
 };
