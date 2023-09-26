@@ -3,12 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { StatusCodes } = require("http-status-codes");
-const { authMiddleware }= require('../../middleware/authMiddleware.js');
+const { authMiddleware } = require('../../middleware/authMiddleware.js');
 const webCategories = require("./v1/routes/webCategories.js");
+const webTourismCategories = require("./v1/routes/webTourismCategories.js");
 const webCompanies = require("./v1/routes/webCompanies.js");
 const webCompServices = require("./v1/routes/webCompanyServices.js");
 const webRouteDate = require("./v1/routes/webRouteTimetableDate.js");
-const webRouteHourTariff= require("./v1/routes/webRouteTimetableHour.js");
+const webRouteHourTariff = require("./v1/routes/webRouteTimetableHour.js");
 const webTranspRoutes = require("./v1/routes/webTransportRoutes.js");
 const webTranspCompanies = require("./v1/routes/webTransportCompanies.js");
 const webCities = require("./v1/routes/webCities.js");
@@ -29,6 +30,7 @@ app.use(authMiddleware);
 //#region Web-oriented end-points
 app.use("/api/web/v1/third_parties/city", webCities);
 app.use("/api/web/v1/third_parties/categories", webCategories);
+app.use("/api/web/v1/third_parties/tourism_categories", webTourismCategories);
 app.use("/api/web/v1/third_parties/company", webCompanies);
 app.use("/api/web/v1/third_parties/company_service", webCompServices);
 app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
@@ -48,7 +50,7 @@ app.use((req, res, next) => {
   return next(error);
 });
 
-app.use(errorHandler); 
+app.use(errorHandler);
 
 app.listen(3000, function () {
   console.log("running with port 3000");

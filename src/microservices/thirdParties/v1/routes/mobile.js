@@ -4,6 +4,7 @@ const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const categoryController = require("../controllers/mobile/categories.js");
 const companiesController = require("../controllers/mobile/companies.js");
 const transportController = require("../controllers/mobile/transportRoutes.js");
+const tourismCategoryController = require("../controllers/mobile/tourismCategories.js");
 
 // --------------------- Intercity_transport ----------------------------
 router.get(
@@ -20,6 +21,15 @@ router.get(
   categoryController.getAll
 );
 //#endregion - categories
+
+// --------------------- Tourism Categories ----------------------------
+//#region Tourism categories end-points
+router.get(
+  "/tourism/categories",
+  // hasPermissions({ role: "super_master_user" }),
+  tourismCategoryController.getAll
+);
+//#endregion - Tourism categories
 
 // --------------------- Companies ----------------------------
 //#region companies end-points
