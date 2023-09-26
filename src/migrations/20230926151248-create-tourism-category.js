@@ -20,10 +20,10 @@ module.exports = {
         onUpdate: 'CASCADE',
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(60)
       },
       color: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(15)
       },
       icon: {
         type: Sequelize.STRING

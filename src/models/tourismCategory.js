@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    name: DataTypes.STRING,
-    color: DataTypes.STRING,
+    name: DataTypes.STRING(60),
+    color: DataTypes.STRING(15),
     icon: DataTypes.STRING,
     iconMap: DataTypes.STRING
   }, {
