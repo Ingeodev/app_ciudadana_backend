@@ -7,8 +7,6 @@ const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
 const secrets = require('../../secrets.json');
 
-console.log(secrets);
-
 const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
 const sigmaSMSToken = secrets.SIGMA_ACCOUNT_KEY;
 const sigmaSmsApiUri = "https://aio2.sigmamovil.com/api/sms";
