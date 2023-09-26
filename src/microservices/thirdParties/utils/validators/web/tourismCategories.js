@@ -5,6 +5,7 @@ const name_str = joi.string().trim().regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ
 const hex_color_string = joi.string().trim().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
 const uri_string = joi.string().uri({ allowRelative: true });
 const integer_number = joi.number().integer();
+const non_negative_integer = integer_number.min(0);
 const positive_integer = integer_number.positive();
 
 const page_object = joi.object({
@@ -14,6 +15,25 @@ const page_object = joi.object({
 
 const simplePaginationSchema = joi.object({
     page: page_object.required(),
+});
+
+const createTourCatSchema = joi.object({
+    name: name_str.required(),
+    color: hex_color_string.required(),
+    icon: uri_string.required(),
+    iconMap: uri_string.required(),
+});
+
+const editTourCatSchema = joi.object({
+    id: non_negative_integer.required(),
+    name: name_str,
+    color: hex_color_string,
+    icon: uri_string,
+    iconMap: uri_string,
+}).or('name', 'color', 'icon', 'iconMap');
+
+const simpleDeleteByIdSchema = joi.object({
+    id: non_negative_integer.required()
 });
 
 /**
@@ -44,5 +64,14 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
     validateSimplePaginationSchema: async (inputData) => {
         return await use_validator_on_data(simplePaginationSchema, inputData);
+    },
+    validateCreateTourCatSchema: async (inputData) => {
+        return await use_validator_on_data(createTourCatSchema, inputData);
+    },
+    validateEditTourCatSchema: async (inputData) => {
+        return await use_validator_on_data(editTourCatSchema, inputData);
+    },
+    validateSimpleDeleteByIdSchema: async (inputData) => {
+        return await use_validator_on_data(simpleDeleteByIdSchema, inputData);
     },
 };
