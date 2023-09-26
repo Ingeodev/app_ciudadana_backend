@@ -50,6 +50,7 @@ node_modules
 #SERVERLESS STUFF
 admin.env
 .env
+secrets.json
 _meta
 .serverless
 

@@ -13,8 +13,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-console.log('ENV:', process.env);
-
 app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });

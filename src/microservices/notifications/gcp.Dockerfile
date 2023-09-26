@@ -42,7 +42,7 @@ COPY src/config /src/config/
 COPY src/constants /src/constants/
 COPY src/utils /src/utils/
 COPY workspace/secrets/account_service_key.json /src
-COPY workspace/secrets/.env /src/microservices/notifications
+COPY workspace/secrets/notification_secrets.json /src/microservices/notifications/secrets.json
 COPY workspace/config/config.json /src/config
 
 RUN npm install --production

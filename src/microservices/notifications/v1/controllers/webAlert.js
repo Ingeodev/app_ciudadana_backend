@@ -5,9 +5,12 @@ const axios = require("axios");
 const { appFirebase } = require("../../../../middleware/authMiddleware")
 const validator = require("../../utils/validator");
 const db = require("../../../../models/index");
+const secrets = require('../../secrets.json');
+
+console.log(secrets);
 
 const firebaseCMTopicName = process.env.FCM_TOPIC_NAME_MOBILE;
-const sigmaSMSToken = process.env.SIGMA_ACCOUNT_KEY;
+const sigmaSMSToken = secrets.SIGMA_ACCOUNT_KEY;
 const sigmaSmsApiUri = "https://aio2.sigmamovil.com/api/sms";
 const defaultUsersBatchSize = 100000;
 // const twilioMessageServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;

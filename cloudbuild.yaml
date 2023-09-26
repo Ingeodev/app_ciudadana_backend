@@ -13,8 +13,8 @@ steps:
   secretEnv: [ "DB_SECRETS" ]
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: "bash"
-  args: [ "-c", "mkdir -p workspace/secrets && echo $$NOTIFICATIONS_ENV > workspace/secrets/.env" ]
-  secretEnv: [ "NOTIFICATIONS_ENV" ]
+  args: [ "-c", "mkdir -p workspace/secrets && echo $$NOTIFICATIONS_SECRETS > workspace/secrets/notification_secrets.json" ]
+  secretEnv: [ "NOTIFICATIONS_SECRETS" ]
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: "bash"
   args: [ "-c", "cd workspace && ls" ]
@@ -69,7 +69,7 @@ availableSecrets:
       env: EMAIL_KEY
     - versionName: projects/85094745134/secrets/db_secrets/versions/1
       env: DB_SECRETS
-    - versionName: projects/85094745134/secrets/notifications_env/versions/2
-      env: NOTIFICATIONS_ENV
+    - versionName:  projects/85094745134/secrets/notifications_secrets/versions/1
+      env: NOTIFICATIONS_SECRETS
 options:
   logging: CLOUD_LOGGING_ONLY
