@@ -27,7 +27,35 @@ const postCreate = async (req, res, next) => {
 /** List all tourism categories */
 const getAll = async (req, res, next) => {
   try {
-    return res.status(StatusCodes.OK).send({ meta: { msg: 'TODO: Implement' } });
+    const { page: pagination } = await validator.validateSimplePaginationSchema(req.query);
+    const offset = (pagination.number - 1) * pagination.size;
+    const pageTourCats = await db.TourismCategory.findAndCountAll({
+      paranoid: true,
+      order: [["createdAt", "DESC"]],
+      offset,
+      limit: pagination.size,
+      attributes: {
+        exclude: ["deletedAt"],
+      },
+    });
+    let message = undefined;
+    if (pageTourCats.count <= 0)
+      message = 'There are no Tourism Categories registered in the database.';
+    if (pageTourCats.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
+    const data = pageTourCats.rows.map(row => {
+      return row.dataValues;
+    });
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: pagination.number,
+        pageSize: pagination.size,
+        totalRecords: pageTourCats.count,
+        totalPages: Math.ceil(pageTourCats.count / pagination.size),
+      },
+      data,
+    });
   } catch (error) {
     return next(error);
   }
