@@ -30,6 +30,10 @@ const registerPush = async (req, res, next) => {
       let status = StatusCodes.INTERNAL_SERVER_ERROR;
       if (codes.includes('messaging/invalid-registration-token'))
         status = StatusCodes.UNPROCESSABLE_ENTITY;
+      else if (codes.includes('messaging/registration-token-not-registered'))
+        status = StatusCodes.NOT_FOUND;
+      else
+        console.error('Unmapped error codes from Firebase:', codes);
       throw { status, message };
     }
     await userData.update({ pushDeviceToken: deviceToken });

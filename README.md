@@ -673,7 +673,7 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 
 **_List of endpoints_**
 **Mobile App**
-	Path: http:localhost:3000/api/web/v1/notifications/
+	Path: http:localhost:3000/api/mobile/v1/notifications/notifications/
 	Controller: src\microservices\notifications\v1\controllers\mobileAlert.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 
@@ -683,7 +683,7 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 | /register | POST   | registerPush           | Send alerts to users |
 
 ##### _GET_ Active Alerts (MOBILE)
-\(\<Your_Host\>/api/web/v1/notifications/\) allow mobile users to list the valid notifications. This service accepts both paginated and unpaginated requests. The unpaginated request returns up to 500 Notifications ordered from the most recent to the oldest. It receives the following optional parameters:
+\(\<Your_Host\>/api/mobile/v1/notifications/notifications/\) allow mobile users to list the valid notifications. This service accepts both paginated and unpaginated requests. The unpaginated request returns up to 500 Notifications ordered from the most recent to the oldest. It receives the following optional parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
 | -------------- | :----------------: | :----------: | --------------------------- |
@@ -727,7 +727,7 @@ It returns **200 _OK_** and the list of objects on success.
 
 
 ##### _POST_ Register Device Token (MOBILE)
-\(\<Your_Host\>/api/web/v1/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
+\(\<Your_Host\>/api/mobile/v1/notifications/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
 
 | **Name**      | **Type** | **Required** | **Description**                                                     |
 | ------------- | :------: | :----------: | ------------------------------------------------------------------- |
@@ -740,7 +740,7 @@ It returns **200 _OK_** and the device token on success.
 Request body:
   >```JSON
   >{
-  >    "deviceToken": "14095475-7695-4fd5-b334-4e521d0c3262"
+  >    "deviceToken": "fe7FvKerRu2a6I29sjeWm_:APA91bFyTkoAsfID7YYUUznxKhE2vDNP4eWy_9Pm9V4EjDBmdqnqZKAQRicrM4yF3euJdvauvun9VLTM6B_oKR1Prmsjhcw1sJxxgfREsbMhgzWXTau_PO7TU6OyL-7XDZl_Piqz-6cX"
   >}
   >```
 
@@ -749,7 +749,7 @@ Response:
   > ```JSON
   > {
   >    "data": {
-  >        "deviceToken": "14095475-7695-4fd5-b334-4e521d0c3262"
+  >        "deviceToken": "fe7FvKerRu2a6I29sjeWm_:APA91bFyTkoAsfID7YYUUznxKhE2vDNP4eWy_9Pm9V4EjDBmdqnqZKAQRicrM4yF3euJdvauvun9VLTM6B_oKR1Prmsjhcw1sJxxgfREsbMhgzWXTau_PO7TU6OyL-7XDZl_Piqz-6cX"
   >    }
   > }
   > ```

@@ -80,8 +80,8 @@ router.get(
 //#endregion
 
 //#region Alerts (Notifications in swagger) end-points
-router.post('/register', alertController.registerPush);
-router.get('/', alertController.getListActive);
+router.post('/notifications/register', alertController.registerPush);
+router.get('/notifications/', alertController.getListActive);
 //#endregion
 
 //#region AttentionLines end-points
