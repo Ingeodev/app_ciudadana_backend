@@ -64,7 +64,17 @@ const getAll = async (req, res, next) => {
 /** Update one tourism category */
 const postUpdate = async (req, res, next) => {
   try {
-    return res.status(StatusCodes.OK).send({ meta: { msg: 'TODO: Implement' } });
+    // ! Pendiente: Validar permisos del usuario
+    const update = await validator.validateEditTourCatSchema(req.body);
+    const originalTourCat = await db.TourismCategory.findByPk(update.id);
+    if (originalTourCat == null)
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The requested Tourism Category with id ${update.id} does not exist.`
+      };
+    delete update.id;
+    const updatedTourCat = await originalTourCat.update(update);
+    return res.status(StatusCodes.OK).send({ ...updatedTourCat.dataValues, deletedAt: undefined });
   } catch (error) {
     return next(error);
   }
