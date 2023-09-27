@@ -18,7 +18,6 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
       // where: { createdBy: createdBy.id },
       attributes: {
         exclude: [
-          "id",
           "createdBy",
           "siteUri",
           "imageUri",
@@ -27,6 +26,7 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
           "deletedAt",
         ],
         include: [
+          "id",
           "title",
           "description",
           ["imageUri", "image"],
