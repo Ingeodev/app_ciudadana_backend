@@ -83,7 +83,16 @@ const postUpdate = async (req, res, next) => {
 /** Delete one tourism category */
 const postDelete = async (req, res, next) => {
   try {
-    return res.status(StatusCodes.OK).send({ meta: { msg: 'TODO: Implement' } });
+    // ! Pendiente: Validar permisos del usuario
+    const { id } = await validator.validateSimpleDeleteByIdSchema(req.body);
+    const originalTourCat = await db.TourismCategory.findByPk(id);
+    if (originalTourCat == null)
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The requested Tourism Category with id ${id} has already been deleted.`
+      };
+    await originalTourCat.destroy();
+    return res.status(StatusCodes.OK).send({ data: { id } });
   } catch (error) {
     return next(error);
   }
