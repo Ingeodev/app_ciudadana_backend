@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-const name_str = joi.string().trim().regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/).max(50);
+const name_str = joi.string().trim().regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Spanish Name String').max(50);
 const hex_color_string = joi.string().trim().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
 const uri_string = joi.string().uri({ allowRelative: true });
 const integer_number = joi.number().integer();

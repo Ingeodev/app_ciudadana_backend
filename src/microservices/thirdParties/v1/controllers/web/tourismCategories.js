@@ -6,7 +6,19 @@ const validator = require("../../../utils/validators/web/tourismCategories");
 /** Create one tourism category */
 const postCreate = async (req, res, next) => {
   try {
-    return res.status(StatusCodes.OK).send({ meta: { msg: 'TODO: Implement' } });
+    // ! Pendiente: Validar permisos del usuario
+    const adminUser = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
+    });
+    if (adminUser == null || adminUser.id == null)
+      throw {
+        message: "Requesting user is not allowed to create tourism categories or is not registered in the database yet.",
+        status: StatusCodes.FORBIDDEN,
+      };
+    const { name, color, icon, iconMap } = await validator.validateCreateTourCatSchema(req.body);
+    const createdTourCat = await db.TourismCategory.create({ name, color, icon, iconMap, createdBy: adminUser.id });
+    return res.status(StatusCodes.OK).send({ ...createdTourCat.dataValues, deletedAt: undefined });
   } catch (error) {
     return next(error);
   }
