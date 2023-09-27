@@ -62,6 +62,12 @@ This backend has been generated from scratch to support the Cali Mobility Applic
         - [_GET_ list Security Attention Points](#get-list-security-attention-points)
         - [_GET_ single Security Attention Point](#get-single-security-attention-point)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
+      - [4.3.1. Tourism Categories](#431-tourism-categories)
+        - [_GET_ list tourism categories (MOBILE)](#get-list-tourism-categories-mobile)
+        - [_POST_ create Tourism Category](#post-create-tourism-category)
+        - [_POST_ update Tourism Category](#post-update-tourism-category)
+        - [_POST_ delete Tourism Category](#post-delete-tourism-category)
+        - [_GET_ list Tourism Categories](#get-list-tourism-categories)
     - [4.4. File Management Microservice](#44-file-management-microservice)
       - [App Runner](#app-runner-2)
       - [How to run in local](#how-to-run-in-local-1)
@@ -763,8 +769,8 @@ Response:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
 | -------------- | :----------------: | :----------: | --------------------------- |
-| _page[number]_ | Integer (positive) |      Yes     | Page number for pagination. |
-| _page[size]_   | Integer (positive) |      Yes     | Page size for pagination.   |
+| _page[number]_ | Integer (positive) |     Yes      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |     Yes      | Page size for pagination.   |
 
 It returns **200 _OK_** and the list of objects in data on success.
 
@@ -1545,6 +1551,217 @@ It returns **200 _OK_** and the requested object on success.
 ------------
 ### 4.3. Third-Party Microservice
 This microservice handles third-party APIs.
+
+#### 4.3.1. Tourism Categories 
+
+The Tourism Categories end-points allow web users to manage the Tourism Categories shown to mobile users when they consume touristic content.
+
+**Mobile App**
+Path: http://localhost:3000/api/mobile/v1/third_parties/tourism/categories
+Controller: src\microservices\thirdParties\v1\controllers\mobile\tourismCategories.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller | Description                                           |
+| :------- | :----- | :--------------------- | :---------------------------------------------------- |
+| /        | GET    | getAll                 | List all the tourism categories in the mobile format. |
+
+##### _GET_ list tourism categories (MOBILE)
+\(\<Your_Host\>/api/mobile/v1/third_parties/tourism/categories\) Allows mobile users to list all the tourism categories. This requests accepts pagination (``page[number]`` and ``page[size]``), although it is optional. The default unpaginated request returns up to 500 Tourism Categories. It accepts the following query parameters:
+
+| **Name**       | **Type** | **Required** | **Description**      |
+| -------------- | :------: | :----------: | -------------------- |
+| _page[number]_ | Integer  |      No      | Page number (min 1). |
+| _page[size]_   | Integer  |      No      | Page size (min 1).   |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "id": 2,
+>         "name": "test ü0",
+>         "color": "456789",
+>         "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>         "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg"
+>     },
+>     {
+>         "id": 1,
+>         "name": "test ü0",
+>         "color": "456789",
+>         "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>         "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg"
+>     }
+> ]
+> ```
+
+**Web App**
+Path: http://localhost:3000/api/web/v1/third_parties/tourism_categories/
+Controller: src\microservices\thirdParties\v1\controllers\web\tourismCategories.js
+Route: src\microservices\thirdParties\v1\routes\webTourismCategories.js
+
+| Endpoint | Method | Location in Controller | Description                       |
+| :------- | :----- | :--------------------- | :-------------------------------- |
+| /        | POST   | postCreate             | Create new Tourism Category.      |
+| /edit    | POST   | postUpdate             | Update existing Tourism Category. |
+| /delete  | POST   | postDelete             | Delete existing Tourism Category. |
+| /        | GET    | getAll                 | List all Tourism Categories.      |
+
+##### _POST_ create Tourism Category
+\(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/\) allows web users to create a new Tourism Category. It receives the following body parameters:
+
+| **Name**  | **Type**       | **Required** | **Description**                           |
+| :-------- | :------------- | :----------- | :---------------------------------------- |
+| _name_    | String         | Yes          | Name of the Tourism Category.             |
+| _color_   | String (Color) | Yes          | Color to show the Tourism Category.       |
+| _icon_    | String (URI)   | Yes          | Icon of the Tourism Category.             |
+| _iconMap_ | String (URI)   | Yes          | Icon for the map of the Tourism Category. |
+
+It returns **201 _created_** and the created Tourism Category on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >     "name": "test ü0",
+  >     "color": "#456789",
+  >     "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+  >     "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg"
+  > }
+  >```
+
+Response:
+  > _Status code: **201 Created**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 3,
+  >         "name": "test ü0",
+  >         "color": "#456789",
+  >         "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+  >         "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+  >         "createdBy": 2,
+  >         "updatedAt": "2023-09-27T15:28:31.346Z",
+  >         "createdAt": "2023-09-27T15:28:31.346Z"
+  >     }
+  > }
+  > ```
+
+##### _POST_ update Tourism Category
+\(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/edit\) allows web users to update an existing Tourism Category. It receives the following body parameters:
+
+| **Name**  | **Type**       | **Required** | **Description**                           |
+| :-------- | :------------- | :----------- | :---------------------------------------- |
+| _id_      | Integer        | Yes          | ID of the Tourism Category.               |
+| _name_    | String         | No           | Name of the Tourism Category.             |
+| _color_   | String (Color) | No           | Color to show the Tourism Category.       |
+| _icon_    | String (URI)   | No           | Icon of the Tourism Category.             |
+| _iconMap_ | String (URI)   | No           | Icon for the map of the Tourism Category. |
+
+At least one of the optional (_name_, _color_, _icon_, _iconMap_) parameters must be passed.
+
+It returns **200 _OK_** and the updated Tourism Category on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >     "id": 1,
+  >     "name": "second Name"
+  > }
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 1,
+  >         "createdBy": 2,
+  >         "name": "second Name",
+  >         "color": "#AFAF00",
+  >         "icon": "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+  >         "iconMap": "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+  >         "createdAt": "2023-09-27T13:59:00.983Z",
+  >         "updatedAt": "2023-09-27T15:29:43.727Z"
+  >     }
+  > }
+  > ```
+
+##### _POST_ delete Tourism Category
+\(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/delete\) allows web users to delete an existing Tourism Category. It receives the following body parameter:
+
+| **Name** | **Type** | **Required** | **Description**             |
+| :------- | :------- | :----------- | :-------------------------- |
+| _id_     | Integer  | Yes          | ID of the Tourism Category. |
+
+It returns **200 _OK_** and the ID of the deleted Tourism Category on success.
+
+**Example**
+
+Request body:
+  >```JSON
+  > {
+  >     "id": 3
+  > }
+  >```
+
+Response:
+  > _Status code: **200 OK**_
+  > ```JSON
+  > {
+  >     "data": {
+  >         "id": 3
+  >     }
+  > }
+  > ```
+
+##### _GET_ list Tourism Categories
+\(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/\) allows web users to list the existing Tourism Categories in the database. It receives the following query parameters:
+
+| **Name**       |      **Type**      | **Required** | **Description**             |
+| -------------- | :----------------: | :----------: | --------------------------- |
+| _page[number]_ | Integer (positive) |     Yes      | Page number for pagination. |
+| _page[size]_   | Integer (positive) |     Yes      | Page size for pagination.   |
+
+It returns **200 _OK_** and the list of objects on success.
+
+**Example Response**
+> _Status Code: **200 OK**_
+> ```JSON
+> {
+>     "meta": {
+>         "page": 1,
+>         "pageSize": 5,
+>         "totalRecords": 2,
+>         "totalPages": 1
+>     },
+>     "data": [
+>         {
+>             "id": 2,
+>             "createdBy": 2,
+>             "name": "test ü0",
+>             "color": "#456789",
+>             "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>             "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>             "createdAt": "2023-09-27T14:00:08.355Z",
+>             "updatedAt": "2023-09-27T14:00:08.355Z"
+>         },
+>         {
+>             "id": 1,
+>             "createdBy": 2,
+>             "name": "test ü0",
+>             "color": "#456789",
+>             "icon": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>             "iconMap": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg",
+>             "createdAt": "2023-09-27T13:59:00.983Z",
+>             "updatedAt": "2023-09-27T13:59:00.983Z"
+>         }
+>     ]
+> }
+> ```
 
 
 ------------
