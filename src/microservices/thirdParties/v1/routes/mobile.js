@@ -21,7 +21,7 @@ router.get(
 // --------------------- Categories ----------------------------
 //#region categories end-points
 router.get(
-  "/categories",
+  "/third_parties/categories",
   // hasPermissions({ role: "super_master_user" }),
   categoryController.getAll
 );
@@ -39,7 +39,7 @@ router.get(
 // --------------------- Companies ----------------------------
 //#region companies end-points
 router.get(
-  "/",
+  "/third_parties/",
   // hasPermissions({ role: "super_master_user" }),
   companiesController.getCompaniesnServices
 );
