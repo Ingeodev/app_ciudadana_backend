@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/notifications`;
 
 describe("MOBILE Alert configuration API points: ", () => {
     jest.setTimeout(8000);
