@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
+const polygonCali = require("../../../utils/polygonCali.js");
 
 // * ------------------ Web - Reports -----------------
 // const getListAllByUserSchema = joi.object({
@@ -12,8 +13,13 @@ const postRegisterSchema = joi.object({
   title: joi.string().trim().required().empty("").invalid(" "),
   description: joi.string().trim().max(200).empty("").invalid(" "),
   categoryId: joi.number().empty("").invalid(0).required(),
-  lat: joi.number().min(-90).max(90),
-  lon: joi.number().min(-180).max(180),
+  lat: joi.number().min(-90).max(90).required(),
+  lon: joi.number().min(-180).max(180).required(),
+}).custom((value, helpers) => {
+    if (!polygonCali.isLocationInCali(value.lat, value.lon)) {
+      return helpers.message("lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");
+    }
+    return value;
 });
 
 const vFileSchema = joi.object({

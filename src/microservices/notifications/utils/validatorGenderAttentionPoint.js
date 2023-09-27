@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-const poligonCali = require("../../../utils/poligonCali.js");
+const polygonCali = require("../../../utils/polygonCali.js");
 
 
 // * ------------------ Web - Attention Lines -----------------
@@ -15,7 +15,7 @@ const postRegisterchema = joi.object({
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {
-    if (!poligonCali.isLocationInCali(value.lat, value.lon)) {
+    if (!polygonCali.isLocationInCali(value.lat, value.lon)) {
       return helpers.message("lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");
     }
     return value;
@@ -40,7 +40,7 @@ const postUpdatechema = joi.object({
   })
 }).and('lat', 'lon').with('lat', 'address').with('lon', 'address').custom((data, helpers) => {
   if (!isNaN(parseFloat(data.lat)) && !isNaN(parseFloat(data.lon))) {
-    if (!poligonCali.isLocationInCali(data.lat, data.lon)) {
+    if (!polygonCali.isLocationInCali(data.lat, data.lon)) {
       return helpers.error("any.invalid", {
         message: "lat and lon must be within the municipality of Cali",
       });

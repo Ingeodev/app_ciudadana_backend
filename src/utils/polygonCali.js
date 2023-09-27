@@ -1,6 +1,4 @@
 const turf = require("@turf/turf");
-const { StatusCodes } = require('http-status-codes');
-
 
 const caliPolygon = turf.polygon([
     [
