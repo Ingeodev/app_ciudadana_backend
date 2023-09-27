@@ -1,7 +1,14 @@
 const { StatusCodes } = require("http-status-codes");
+const { Sequelize } = require("sequelize");
+const fs = require("fs/promises");
+const path = require("path");
+const { v4: uuidV4 } = require("uuid");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorReports.js");
-const { Sequelize } = require("sequelize");
+const { checkIfExists } = require("../../utils/accessCheck.js");
+const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
+
+const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
 
 /**
  * Checks whether an SecurityCategory ID exists and refers to an existing category.
@@ -19,24 +26,18 @@ const checkCategoryExists = async (categoryId) => {
 
 /**
  * Create report
- * @param {object} req - Object containing the title, description, securityCategoryId, userId, imageUri, lat, lon
+ * @param {object} req - Object containing the title, description, categoryId, userId, lat, lon
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const {
-      title,
-      description,
-      securityCategoryId,
-      imageUri,
-      lat,
-      lon
-    } = await validator.vMobilePostRegister(req.body);
+    const { title, description, categoryId, lat, lon } =
+      await validator.vMobilePostRegister(JSON.parse(req.body.report));
 
-    if (!await checkCategoryExists(securityCategoryId))
+    if (!(await checkCategoryExists(categoryId)))
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: 'The assigned category does not exist.',
+        message: "The assigned category does not exist.",
       };
 
     const userData = await db.User.findOne({
@@ -49,34 +50,33 @@ exports.postRegister = async (req, res, next) => {
         message: 'Requesting user is not allowed to create reports or is not registered in the database yet.',
         status: StatusCodes.FORBIDDEN,
       };
+    
+    const pdfFile = await validator.vfileReports(req.file);
+    const endpoint = "mobileReports";
+    const uploadDir = path.join(uploadsFolder, endpoint);
+    const filename = uuidV4() + path.extname(pdfFile.originalname);
+    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
 
-    const usersCount = await db.User.count({
-      where: { disabled: false, userMobile: true },
-    });
-
-    if (usersCount <= 0)
-      throw {
-        message: 'No mobile users registered in the database.',
-        status: StatusCodes.NOT_FOUND,
-      };
+    const filepath = path.join(uploadDir, filename);
+    await checkIfExists(uploadDir, true);
+    await fs.writeFile(filepath, pdfFile.buffer);
 
     const dataQuery = {
       title,
       description,
-      securityCategoryId,
+      securityCategoryId: categoryId,
       userId: userData.id,
       imageUri,
       lat,
-      lon
+      lon,
     };
 
     const result = await db.Report.create(dataQuery);
-    return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
+    return res.status(StatusCodes.CREATED).json({
+      meta: null,
+      data: { title, description, categoryId, lat, lon, image: result.dataValues.imageUri },
+    });
   } catch (error) {
-    console.error(
-      "report could not be created: ",
-      error.message
-    );
     return next(error);
   }
 };
