@@ -93,6 +93,11 @@ router.get(
 
 //#region gender end-points
 router.get(
+  "/gender/attention_points",
+  // hasPermissions({ role: "super_master_user" }),
+  genderController.getAttentionPoins
+);
+router.get(
   "/gender",
   // hasPermissions({ role: "super_master_user" }),
   genderController.getCategoriesnAttentionLines
