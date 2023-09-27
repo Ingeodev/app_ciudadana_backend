@@ -16,6 +16,7 @@ const mobileServiceController = require("../controllers/webMobileService");
 const genderCategoryC = require("../controllers/webGenderCategories");
 const genderAttLineC = require("../controllers/webGenderAttentionLines");
 const securityAttentionPointsController = require("../controllers/webSecurityAttentionPoint");
+const genderAttPointC = require("../controllers/webGenderAttentionPoint");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
@@ -169,6 +170,32 @@ router.get(
   genderCategoryC.getAll
 );
 //#endregion - Gender Attention Lines
+
+//#region Gender Attention Points end-points
+router.post(
+  "/gender_point/",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttPointC.postRegister
+);
+
+router.post(
+  "/gender_point/edit",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttPointC.postEdit
+);
+
+router.post(
+  "/gender_point/delete",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttPointC.postDelete
+);
+
+router.get(
+  "/gender_point",
+  // hasPermissions({ role: "super_master_user" }),
+  genderAttPointC.getListAll
+);
+//#endregion - Gender Attention Points
 
 //#region Alerts end-points
 router.post('/alert', alertController.sendAlerts);
