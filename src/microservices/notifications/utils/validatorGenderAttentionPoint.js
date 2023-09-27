@@ -5,10 +5,10 @@ const polygonCali = require("../../../utils/polygonCali.js");
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").required(),
-  description: joi.string().trim().empty("").invalid(" ").required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  phone: joi.string().trim().empty("").invalid(" ").required(),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
@@ -23,10 +23,10 @@ const postRegisterchema = joi.object({
 
 const postUpdatechema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" "),
-  description: joi.string().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  phone: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
   address: joi.string().trim().empty("").invalid(" "),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
@@ -42,7 +42,7 @@ const postUpdatechema = joi.object({
   if (!isNaN(parseFloat(data.lat)) && !isNaN(parseFloat(data.lon))) {
     if (!polygonCali.isLocationInCali(data.lat, data.lon)) {
       return helpers.error("any.invalid", {
-        message: "lat and lon must be within the municipality of Cali",
+        message: "lat and lon must be within the municipality of Cali, Valle del Cauca, Colombia",
       });
     }
     return data;
@@ -67,12 +67,10 @@ const postDeleteSchema = joi.object({
 const mGetListAllSchema = joi.object({
   number: joi.number().integer().greater(0),
   size: joi.number().integer().greater(0),
-});
+  lat: joi.number().min(-90).max(90),
+  lon: joi.number().min(-180).max(180),
+}).and('lat', 'lon');
 
-const mGetDependenciesSchema = joi.object({
-  number: joi.number().integer().greater(0),
-  size: joi.number().integer().greater(0),
-});
 // * ------------------ END - Mobile - Attention Lines -----------------
 
 
@@ -115,9 +113,6 @@ module.exports = {
   // * ------------------ Mobile - Attention Lines -----------------
   vMobileMGetListAll: async (inputData) => {
     return await use_validator_on_data(mGetListAllSchema, inputData);
-  },
-  vMobileMGetDependencies: async (inputData) => {
-    return await use_validator_on_data(mGetDependenciesSchema, inputData);
-  },
+  }
   // * ------------------ END - Mobile - Attention Lines -----------------
 };

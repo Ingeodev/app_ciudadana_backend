@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
+const { Sequelize } = require("sequelize");
 const db = require('../../../../models');
 const validator = require('../../utils/validatorGenderAttentionPoint');
 
@@ -11,11 +12,6 @@ const postRegister = async (req, res, next) => {
   try {
     const { name, description, imageUri, phone, color, address, iconMap, lat, lon } =
       await validator.vWebPostRegister(req.body);
-    const geolocation = {
-      type: "Point",
-      coordinates: [lon, lat],
-    };
-
     const webUser = await db.User.findOne({
         where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ["id"],
@@ -34,7 +30,7 @@ const postRegister = async (req, res, next) => {
       color,
       address,
       iconMap,
-      geolocation,
+      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
       createdBy: webUser.id,
     });
     const data = {
@@ -60,6 +56,8 @@ const postEdit = async (req, res, next) => {
   try {
     const update = await validator.vWebPostUpdate(req.body);
     const existingPoint = await db.GenderAttentionPoint.findByPk(update.id);
+    let lat = undefined;
+    let lon = undefined;
     if (existingPoint == null)
       throw {
         status: StatusCodes.NOT_FOUND,
@@ -67,21 +65,21 @@ const postEdit = async (req, res, next) => {
       };
     delete update.id;
     if (update.lat != null) {
-      update.geolocation = {
-        type: "Point",
-        coordinates: [update.lon, update.lat],
-      };
+      update.geolocation = Sequelize.literal(`ST_GeomFromText('POINT(${update.lon} ${update.lat})')`);
+      lat = update.lat;
+      lon = update.lon;
       delete update.lat;
       delete update.lon;
     }
     const updatedPoint = await existingPoint.update(update);
+
     const data = {
       ...updatedPoint.dataValues,
       deletedAt: undefined,
       geolocation: undefined,
       createdBy: undefined,
-      lat: updatedPoint.dataValues.geolocation.coordinates[1],
-      lon: updatedPoint.dataValues.geolocation.coordinates[0],
+      lat,
+      lon,
     };
     return res.status(StatusCodes.OK).json({
       data,
