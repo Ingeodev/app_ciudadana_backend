@@ -34,13 +34,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      title: {
+      description: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
-      },
-      description: {
-        type: DataTypes.STRING,
       },
       securityCategoryId: {
         type: DataTypes.INTEGER,

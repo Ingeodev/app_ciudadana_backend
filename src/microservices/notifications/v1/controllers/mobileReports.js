@@ -26,12 +26,12 @@ const checkCategoryExists = async (categoryId) => {
 
 /**
  * Create report
- * @param {object} req - Object containing the title, description, categoryId, userId, lat, lon
+ * @param {object} req - Object containing the description, categoryId, userId, lat, lon
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { title, description, categoryId, lat, lon } =
+    const { description, categoryId, lat, lon } =
       await validator.vMobilePostRegister(JSON.parse(req.body.report));
 
     if (!(await checkCategoryExists(categoryId)))
@@ -62,7 +62,6 @@ exports.postRegister = async (req, res, next) => {
     await fs.writeFile(filepath, pdfFile.buffer);
 
     const dataQuery = {
-      title,
       description,
       securityCategoryId: categoryId,
       userId: userData.id,
@@ -74,7 +73,7 @@ exports.postRegister = async (req, res, next) => {
     const result = await db.Report.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({
       meta: null,
-      data: { title, description, categoryId, lat, lon, image: result.dataValues.imageUri },
+      data: { description, categoryId, lat, lon, image: result.dataValues.imageUri },
     });
   } catch (error) {
     return next(error);
@@ -92,8 +91,8 @@ exports.getListAllClosest = async (req, res, next) => {
     var date = new Date();
     date.setDate(date.getDate() - 1);
 
-    // let order = [["createdAt", "DESC"]];
-    let order = [["title", "ASC"]];
+    let order = [["createdAt", "DESC"]];
+    // let order = [["description", "ASC"]];
     if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
       order = [[
         Sequelize.fn("ST_Distance",

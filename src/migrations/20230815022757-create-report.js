@@ -12,13 +12,10 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
-        title: {
-          type: Sequelize.STRING,
-          allowNull: false,
-          unique: false,
-        },
         description: {
           type: Sequelize.STRING(200),
+          allowNull: false,
+          unique: false,
         },
         securityCategoryId: {
           type: Sequelize.INTEGER,
