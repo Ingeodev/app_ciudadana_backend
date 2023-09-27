@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const { Sequelize } = require("sequelize");
 const db = require('../../../../models');
 const validator = require('../../utils/validatorGenderAttentionPoint');
+const { isNumber } = require('@turf/helpers');
 
 /**
  * Create an attention point of gender equity 
@@ -26,7 +27,7 @@ const postRegister = async (req, res, next) => {
       name,
       description,
       imageUri,
-      phone,
+      phone: `+57${phone}`,
       color,
       address,
       iconMap,
@@ -71,6 +72,10 @@ const postEdit = async (req, res, next) => {
       delete update.lat;
       delete update.lon;
     }
+    if (isNumber(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
+
     const updatedPoint = await existingPoint.update(update);
 
     const data = {

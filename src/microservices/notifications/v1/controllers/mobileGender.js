@@ -89,7 +89,7 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
 /**
  * Get all gender attention points
  * @param {object} req.query - Object containing the number, size, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (objeto): gender attention points data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAttentionPoins = async (req, res, next) => {
   try {
@@ -145,7 +145,7 @@ exports.getAttentionPoins = async (req, res, next) => {
     if (pointsInDb.count <= 0)
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: "There are not companies registered",
+        message: "There are not gender attention points registered",
       };
     if (pointsInDb.rows.length <= 0)
       throw {
@@ -153,8 +153,11 @@ exports.getAttentionPoins = async (req, res, next) => {
         message: '"page.number" is too large for the number of possible pages',
       };
 
-    const transformedCompanies = pointsInDb.rows.map((point) => {
+    const transformedPoints = pointsInDb.rows.map((point) => {
       const pointData = point.get({ plain: true }); // Convert Sequelize instance to simple object
+      if (pointData.phone != null) {
+        pointData.phone = String(pointData.phone).replace("+57", "");
+      }
       pointData.color = String(pointData.color).replace("#", "");
       pointData.lat = pointData.geolocation.coordinates[1];
       pointData.lon = pointData.geolocation.coordinates[0];
@@ -163,9 +166,8 @@ exports.getAttentionPoins = async (req, res, next) => {
       return pointData;
     });
 
-    return res.status(StatusCodes.OK).send(transformedCompanies);
+    return res.status(StatusCodes.OK).send(transformedPoints);
   } catch (error) {
-    // console.error("companies could not be recovered: ", error.message);
     return next(error);
   }
 };
