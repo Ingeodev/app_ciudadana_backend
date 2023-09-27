@@ -11,11 +11,19 @@ const joi = require("joi");
 const postRegisterSchema = joi.object({
   title: joi.string().trim().required().empty("").invalid(" "),
   description: joi.string().trim().max(200).empty("").invalid(" "),
-  securityCategoryId: joi.number().empty("").invalid(0).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).required().trim().empty("").invalid(" "),
+  categoryId: joi.number().empty("").invalid(0).required(),
   lat: joi.number().min(-90).max(90),
   lon: joi.number().min(-180).max(180),
 });
+
+const vFileSchema = joi.object({
+  fieldname: joi.string().required(),
+  originalname: joi.string().required(),
+  encoding: joi.string().required(),
+  mimetype: joi.string().required(),
+  size: joi.number().required(),
+  buffer: joi.binary().required(),
+}).required().error(new Error('A valid file is required.'));
 
 const getGetCoordinatesSchema = joi.object({
   lat: joi.number().min(-90).max(90),
@@ -55,6 +63,9 @@ module.exports = {
   // * ------------------ Mobile - Reports -----------------
   vMobilePostRegister: async (inputData) => {
     return await use_validator_on_data(postRegisterSchema, inputData);
+  },
+  vfileReports: async (inputData) => {
+    return await use_validator_on_data(vFileSchema, inputData);
   },
   vMobileGetCoordinates: async (inputData) => {
     return await use_validator_on_data(getGetCoordinatesSchema, inputData);
