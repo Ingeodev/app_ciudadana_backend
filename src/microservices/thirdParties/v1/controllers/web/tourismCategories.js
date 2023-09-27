@@ -18,7 +18,7 @@ const postCreate = async (req, res, next) => {
       };
     const { name, color, icon, iconMap } = await validator.validateCreateTourCatSchema(req.body);
     const createdTourCat = await db.TourismCategory.create({ name, color, icon, iconMap, createdBy: adminUser.id });
-    return res.status(StatusCodes.OK).send({ data: { ...createdTourCat.dataValues, deletedAt: undefined } });
+    return res.status(StatusCodes.CREATED).send({ data: { ...createdTourCat.dataValues, deletedAt: undefined } });
   } catch (error) {
     return next(error);
   }
