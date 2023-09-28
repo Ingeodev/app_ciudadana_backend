@@ -585,17 +585,17 @@ exports.getItinerary = async (req, res, next) => {
  */
 exports.postUploadXlsx = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id"],
+    });
 
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found",
+        status: StatusCodes.NOT_FOUND,
+      };
 
     const xlsxFile = await validator.vMulterMemorySingleItemSchema(req.file);
     const { companyId } = await validator.vWebPostUploadXlsxRoutes(req.body);
@@ -753,6 +753,7 @@ exports.postUploadXlsx = async (req, res, next) => {
           if (routeInDb === null) {
             // Create route in db
             const queryRoute = {
+              createdBy,
               origin: originInDb.dataValues.cityCode,
               destination: destinationInDb.dataValues.cityCode,
               duration,
