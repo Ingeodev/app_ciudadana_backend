@@ -196,20 +196,12 @@ exports.postDelete = async (req, res, next) => {
     //   };
     
     const { id } = await validator.vWebPostDelete(req.body);
-    const companyInDb = await db.TransportCompany.findOne({
-      where: {
-        id,
-        // // ! Pendiente: Validar permisos del usuario
-        // createdBy: createdBy.id,
-      },
-      // ! Es necesario borrar primero las rutas?
-      include: [
-        {
-          model: db.TransportRoute,
-          attributes: ["id"],
-          required: false,
-        },
-      ],
+    const companyInDb = await db.TransportCompany.findByPk(id, {
+      // where: {
+      //   id,
+      //   // // ! Pendiente: Validar permisos del usuario
+      //   // createdBy: createdBy.id,
+      // },
       attributes: ["id"],
       paranoid: true,
     });
@@ -220,12 +212,6 @@ exports.postDelete = async (req, res, next) => {
         message: `Transport company does not found`,
       };
     }
-
-    if (companyInDb.TransportRoutes != 0)
-      throw {
-        status: StatusCodes.UNPROCESSABLE_ENTITY,
-        message: `Transport company has related routes`,
-      };
 
     await companyInDb.destroy();
 

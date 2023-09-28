@@ -259,14 +259,14 @@ exports.postDelete = async (req, res, next) => {
         id,
         companyId: companyInDb.id,
       },
-      // ! Es necesario borrar primero los horarios para borrar las rutas?
-      include: [
-        {
-          model: db.RouteTimetable,
-          attributes: ["id"],
-          required: false,
-        },
-      ],
+      // // ! Es necesario borrar primero los horarios para borrar las rutas?
+      // include: [
+      //   {
+      //     model: db.RouteTimetable,
+      //     attributes: ["id"],
+      //     required: false,
+      //   },
+      // ],
       attributes: ["id"],
       paranoid: true,
     });
