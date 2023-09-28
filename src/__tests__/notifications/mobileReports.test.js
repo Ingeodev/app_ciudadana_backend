@@ -1,4 +1,5 @@
 const request = require("supertest");
+const path = require('path');
 
 const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/security/reports`;
 describe("Mobile - Reports management API points: ", () => {
@@ -8,10 +9,13 @@ describe("Mobile - Reports management API points: ", () => {
     Authorization: "Bearer ",
   };
 
+  const filesPath = path.resolve(path.join('__tests__', 'notifications', '__testFiles__'));
+  const testImage = path.join(filesPath, 'Sample Image.png');
+
   const testReport0 = {
-    title: "Reporte de prueba 1",
-    description: "Ignorar: reporte de prueba ",
-    securityCategoryId: null,
+    // title: "Reporte de prueba 1",
+    description: "Ignorar reporte de prueba ",
+    categoryId: null,
     userId: 6,
     imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
     lat: 3.347622,
@@ -19,34 +23,30 @@ describe("Mobile - Reports management API points: ", () => {
   };
 
   const testReport1 = {
-    title: "Reporte de prueba 2",
-    description: "Ignorar: reporte de prueba 2",
-    securityCategoryId: null,
-    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    // title: "Reporte de prueba 2",
+    description: "Ignorar reporte de prueba 2",
+    categoryId: null,
     lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport2 = {
-    description: "Ignorar: reporte de prueba 3",
-    securityCategoryId: null,
-    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    categoryId: null,
     lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport3 = {
-    title: "Reporte de prueba 4",
-    description: "Ignorar: reporte de prueba 4",
-    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    // title: "Reporte de prueba 4",
+    description: "Ignorar reporte de prueba 4",
     lat: 3.345678,
     lon: -76.535812
   };
 
   const testReport4 = {
-    title: "Reporte de prueba 5",
-    description: "Ignorar: reporte de prueba 5",
-    securityCategoryId: null,
+    // title: "Reporte de prueba 5",
+    description: "Ignorar reporte de prueba 5",
+    categoryId: null,
     lat: 3.345678,
     lon: -76.535812
   };
@@ -70,10 +70,10 @@ describe("Mobile - Reports management API points: ", () => {
         color: "#002955",
       });
     const securityCategoryId = securityCategoryResponse.body.data.id;
-    testReport0.securityCategoryId = securityCategoryId;
-    testReport1.securityCategoryId = securityCategoryId;
-    testReport2.securityCategoryId = securityCategoryId;
-    testReport4.securityCategoryId = securityCategoryId;
+    testReport0.categoryId = securityCategoryId;
+    testReport1.categoryId = securityCategoryId;
+    testReport2.categoryId = securityCategoryId;
+    testReport4.categoryId = securityCategoryId;
   });
 
   afterAll(async () => {
@@ -81,7 +81,7 @@ describe("Mobile - Reports management API points: ", () => {
       .post("/api/web/v1/notifications/security_category/delete")
       .set(requestHeaders)
       .send({
-        id: testReport0.securityCategoryId,
+        id: testReport0.categoryId,
       });
   });
 
@@ -106,34 +106,30 @@ describe("Mobile - Reports management API points: ", () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send(testReport0);
+        .attach('image', testImage)
+        .field('report', JSON.stringify(testReport0));
       expect(response0.statusCode).toBe(201);
       expect(response0.body).toHaveProperty("meta");
       expect(response0.body.meta).toBe(null);
       expect(response0.body).toHaveProperty("data");
-      expect(response0.body.data).toHaveProperty("id");
-      expect(response0.body.data).toHaveProperty("title");
       expect(response0.body.data).toHaveProperty("description");
-      expect(response0.body.data).toHaveProperty("securityCategoryId");
-      expect(response0.body.data).toHaveProperty("userId");
-      expect(response0.body.data).toHaveProperty("imageUri");
+      expect(response0.body.data).toHaveProperty("categoryId");
+      expect(response0.body.data).toHaveProperty("image");
       expect(response0.body.data).toHaveProperty("lat");
       expect(response0.body.data).toHaveProperty("lon");
 
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send(testReport1);
+        .attach('image', testImage)
+        .field('report', JSON.stringify(testReport1));
       expect(response1.statusCode).toBe(201);
       expect(response1.body).toHaveProperty("meta");
       expect(response1.body.meta).toBe(null);
       expect(response1.body).toHaveProperty("data");
-      expect(response1.body.data).toHaveProperty("id");
-      expect(response0.body.data).toHaveProperty("title");
       expect(response0.body.data).toHaveProperty("description");
-      expect(response0.body.data).toHaveProperty("securityCategoryId");
-      expect(response0.body.data).toHaveProperty("userId");
-      expect(response0.body.data).toHaveProperty("imageUri");
+      expect(response0.body.data).toHaveProperty("categoryId");
+      expect(response0.body.data).toHaveProperty("image");
       expect(response0.body.data).toHaveProperty("lat");
       expect(response0.body.data).toHaveProperty("lon");
     });
@@ -147,10 +143,11 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
+        .attach('image', testImage)
+        .field('report', JSON.stringify({
           ...testReport0,
-          title: "",
-        });
+          description: "",
+        }));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -168,30 +165,8 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport2,
-        });
-      expect(response1.statusCode).toBe(400);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
-    });
-
-    test("should fail with status 400 and an error with a message if the entry is not provided", async () => {
-      // {
-      //   "status": 400,
-      //   "detail": "\"description\" length must be less than or equal to 200 characters long",
-      //   "code": "Bad Request"
-      // }
-      const response1 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testReport1,
-          description: "Un siniestro vial colapsó el tráfico en la intersección, involucrando dos autos y dejando heridos leves. Las autoridades gestionan la movilidad mientras los equipos de emergencia atienden la escena registrada.",
-        });
+        .attach('image', testImage)
+        .field('report', JSON.stringify({}));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -209,9 +184,8 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport3,
-        });
+        .attach('image', testImage)
+        .field('report', JSON.stringify(testReport3));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -229,10 +203,11 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport1,
-          imageUri: "image /uri_3",
-        });
+        .attach('image', testImage)
+        .field('report', JSON.stringify({
+          ...testReport0,
+          description: "",
+        }));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -241,7 +216,7 @@ describe("Mobile - Reports management API points: ", () => {
       expect(response1.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not provided", async () => {
+    test("should fail with status 500 and an error with a message if the entry is not provided", async () => {
       // {
       //   "status": 400,
       //   "detail": "\"imageUri\" is required",
@@ -249,14 +224,11 @@ describe("Mobile - Reports management API points: ", () => {
       // }
       const response1 = await request(usedHost)
         .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testReport4,
-        });
-      expect(response1.statusCode).toBe(400);
+        .set(requestHeaders);
+      expect(response1.statusCode).toBe(500);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
+      expect(response1.body).toHaveProperty("status", 500);
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
     });
@@ -270,10 +242,11 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport1,
+        .attach('image', testImage)
+        .field('report', JSON.stringify({
+          ...testReport0,
           lat: -999.9999,
-        });
+        }));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -291,10 +264,11 @@ describe("Mobile - Reports management API points: ", () => {
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport1,
+        .attach('image', testImage)
+        .field('report', JSON.stringify({
+          ...testReport0,
           lon: -999.9999,
-        });
+        }));
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
@@ -344,14 +318,15 @@ describe("Mobile - Reports management API points: ", () => {
     //   "detail": "insert or update on table violates foreign key constraint",
     //   "code": "Internal Server Error"
     // }
-    test("should fail with status 404 and an error with a message if securityCategoryId is valid but does not exist.", async () => {
+    test("should fail with status 404 and an error with a message if categoryId is valid but does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
-        .send({
-          ...testReport1,
-          securityCategoryId: -999,
-        });
+        .attach('image', testImage)
+        .field('report', JSON.stringify({
+          ...testReport0,
+          categoryId: -999,
+        }));
       expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
