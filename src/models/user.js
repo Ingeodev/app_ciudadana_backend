@@ -67,6 +67,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      User.hasMany(models.TourismCompany, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
       // User.belongsTo(models.DocumentType, {
       //   foreignKey: {
       //     name: "documentTypeId",

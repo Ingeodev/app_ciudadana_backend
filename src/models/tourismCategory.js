@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      TourismCategory.hasMany(models.TourismCompany, {
+        foreignKey: {
+          name: "categoryId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   TourismCategory.init({
