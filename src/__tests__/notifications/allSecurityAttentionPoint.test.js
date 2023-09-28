@@ -186,6 +186,32 @@ describe("All Security Attention Point API points: ", () => {
             expect(response6.body).toHaveProperty("detail");
         });
 
+        test("should fail with status 400 and an error with a message if the geo point is outside of Cali", async () => {
+            const response0 = await request(usedWebHost).post('/')
+                .set(requestHeadersWeb)
+                .send({
+                    ...testPoint0,
+                    lat: 0,
+                });
+            expect(response0.statusCode).toBe(400);
+            expect(response0.body).not.toHaveProperty("data");
+            expect(response0.body).toHaveProperty("status", 400);
+            expect(response0.body).toHaveProperty("code");
+            expect(response0.body).toHaveProperty("detail");
+
+            const response1 = await request(usedWebHost).post('/')
+                .set(requestHeadersWeb)
+                .send({
+                    ...testPoint0,
+                    lon: 0,
+                });
+            expect(response1.statusCode).toBe(400);
+            expect(response1.body).not.toHaveProperty("data");
+            expect(response1.body).toHaveProperty("status", 400);
+            expect(response1.body).toHaveProperty("code");
+            expect(response1.body).toHaveProperty("detail");
+        });
+
         test("should fail with status 403 and an error with a message if the request comes from a web user", async () => {
             const response0 = await request(usedWebHost).post('/')
                 .set(requestHeadersMobile)
