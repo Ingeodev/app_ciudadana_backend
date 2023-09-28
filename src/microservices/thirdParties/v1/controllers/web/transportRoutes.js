@@ -753,7 +753,7 @@ exports.postUploadXlsx = async (req, res, next) => {
           if (routeInDb === null) {
             // Create route in db
             const queryRoute = {
-              createdBy,
+              createdBy: createdBy.id,
               origin: originInDb.dataValues.cityCode,
               destination: destinationInDb.dataValues.cityCode,
               duration,
