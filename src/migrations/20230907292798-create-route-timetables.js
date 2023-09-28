@@ -44,7 +44,7 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_date_routeId
+      CREATE UNIQUE INDEX "idx_unique_date_routeId"
       ON "RouteTimetables"("date", "routeId")
       WHERE "deletedAt" IS NULL;
     `);
@@ -63,7 +63,7 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint("RouteTimetables", "fk_RouteTimetables_Route");
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_date_routeId;
+      DROP INDEX IF EXISTS "idx_unique_date_routeId";
     `);
     await queryInterface.dropTable("RouteTimetables");
   },

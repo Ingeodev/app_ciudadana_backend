@@ -49,7 +49,7 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_hour_timetableId
+      CREATE UNIQUE INDEX "idx_unique_hour_timetableId"
       ON "RouteTimetableHourTariffs"("hour", "timetableId")
       WHERE "deletedAt" IS NULL;
     `);
@@ -68,7 +68,7 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint("RouteTimetableHourTariffs", "fk_RouteTimetables_timetableId");
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_hour_timetableId;
+      DROP INDEX IF EXISTS "idx_unique_hour_timetableId";
     `);
     await queryInterface.dropTable("RouteTimetableHourTariffs");
   },

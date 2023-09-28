@@ -59,7 +59,7 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_origin_destination_companyId
+      CREATE UNIQUE INDEX "idx_unique_origin_destination_companyId"
       ON "TransportRoutes"("origin", "destination", "companyId")
       WHERE "deletedAt" IS NULL;
     `);
@@ -116,7 +116,7 @@ module.exports = {
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Origin");
     await queryInterface.removeConstraint("TransportRoutes", "fk_TransportRoutes_Company");
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_origin_destination_companyId;
+      DROP INDEX IF EXISTS "idx_unique_origin_destination_companyId";
     `);
     await queryInterface.dropTable("TransportRoutes");
   },

@@ -46,21 +46,21 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_cityCode
+      CREATE UNIQUE INDEX "idx_cityCode"
       ON "Cities"("cityCode");
     `);
     return await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_city_state
+      CREATE UNIQUE INDEX "idx_unique_city_state"
       ON "Cities"("city", "state")
       WHERE "deletedAt" IS NULL;
     `);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_city_state;
+      DROP INDEX IF EXISTS "idx_unique_city_state";
     `);
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_cityCode;
+      DROP INDEX IF EXISTS "idx_cityCode";
     `);
     await queryInterface.dropTable("Cities");
   },

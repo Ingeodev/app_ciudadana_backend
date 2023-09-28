@@ -44,7 +44,7 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX idx_unique_thirdPartyCompanyId_service
+      CREATE UNIQUE INDEX "idx_unique_thirdPartyCompanyId_service"
       ON "ThirdPartyServices"("companyId", "service")
       WHERE "deletedAt" IS NULL;
     `);
@@ -63,7 +63,7 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint("ThirdPartyServices", "fk_ThirdPartyServices_Company");
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS idx_unique_thirdPartyCompanyId_service;
+      DROP INDEX IF EXISTS "idx_unique_thirdPartyCompanyId_service";
     `);
     await queryInterface.dropTable("ThirdPartyServices");
   },
