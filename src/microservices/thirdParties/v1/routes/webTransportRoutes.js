@@ -5,6 +5,12 @@ const transpRoutesController = require("../controllers/web/transportRoutes.js");
 
 // * ------------------ Company Routes -----------------------------
 router.get(
+  "/template",
+  // hasPermissions({ role: "super_master_user" }),
+  transpRoutesController.getDownloadXlsxTemplate
+);
+
+router.get(
   "/itinerary",
   // hasPermissions({ role: "super_master_user" }),
   transpRoutesController.getItinerary

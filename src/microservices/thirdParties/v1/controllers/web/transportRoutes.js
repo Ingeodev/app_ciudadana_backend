@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { Sequelize } = require("sequelize");
+const path = require("path");
 const xlsx = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
@@ -940,5 +941,24 @@ exports.postUploadXlsx = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json(resJSON);
   } catch (error) {
     return next(error);
+  }
+};
+
+/**
+ * Download the template to create new transport routes.
+ * @return {object} Response contains: statuscode (integer), file. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getDownloadXlsxTemplate = async (req, res, next) => {
+  try {
+    const downloadPath = path.resolve(
+      path.join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
+    );
+    return res.status(StatusCodes.OK).sendFile(downloadPath);
+  } catch (error) {
+    console.error(error);
+    return next({
+      status: StatusCodes.NOT_FOUND,
+      message: "The excel template has not been loaded.",
+    });
   }
 };
