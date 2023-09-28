@@ -10,7 +10,7 @@ describe("Web - Reports management API points: ", () => {
 
   const reportFormat = {
     "id": expect.any(Number),
-    "title": expect.any(String),
+    "securityCategoryName": expect.any(String),
     "description": expect.any(String),
     "securityCategoryId": expect.any(Number),
     "userId": expect.any(Number),
