@@ -198,7 +198,6 @@ exports.getAccountInfo = async (req, res, next) => {
     
     delete userInDb.dataValues.clientId;
     delete userInDb.dataValues.tokenEmailVerified;
-    delete userInDb.dataValues.passwdReset;
     delete userInDb.dataValues.address;
     delete userInDb.dataValues.serviceReceiptUri;
     delete userInDb.dataValues.pushDeviceToken;

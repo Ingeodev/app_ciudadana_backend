@@ -18,6 +18,7 @@ const mobileRouterUser = require("./microservices/users/v1/routes/mobile.js");
 // Third parties
 const webCategories = require("./microservices/thirdParties/v1/routes/webCategories.js");
 const webCompanies = require("./microservices/thirdParties/v1/routes/webCompanies.js");
+const webTourismCategories = require("./microservices/thirdParties/v1/routes/webTourismCategories.js");
 const webCompServices = require("./microservices/thirdParties/v1/routes/webCompanyServices.js");
 const webRouteDate = require("./microservices/thirdParties/v1/routes/webRouteTimetableDate.js");
 const webRouteHourTariff= require("./microservices/thirdParties/v1/routes/webRouteTimetableHour.js");
@@ -33,6 +34,7 @@ const downloadRouter = require("./microservices/fileManagement/v1/routes/downloa
 // Admin
 const webRoleRouter = require("./microservices/admin/v1/routes/webRole");
 const webAdminRouter = require("./microservices/admin/v1/routes/webAdmin");
+const webAdminFreeRouter = require("./microservices/admin/v1/routes/webAdminFree");
 
 const app = express();
 
@@ -42,6 +44,8 @@ app.use(cors());
 app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });
+
+app.use("/api/web/v1/admin/admin", webAdminFreeRouter);
 
 //#region download end-points
 app.use("/api/v1/file_management/download", downloadRouter);
@@ -67,6 +71,7 @@ app.use("/api/mobile/v1/users", mobileRouterUser);
 //#region Web-oriented end-points
 app.use("/api/web/v1/third_parties/city", webCities);
 app.use("/api/web/v1/third_parties/categories", webCategories);
+app.use("/api/web/v1/third_parties/tourism_categories", webTourismCategories);
 app.use("/api/web/v1/third_parties/company", webCompanies);
 app.use("/api/web/v1/third_parties/company_service", webCompServices);
 app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
@@ -79,14 +84,14 @@ app.use("/api/web/v1/third_parties/transport_company", webTranspCompanies);
 app.use("/api/mobile/v1/third_parties", mobileRouterThird);
 //#endregion
 
-
 //#region upload end-points
 app.use("/api/web/v1/file_management/upload", uploadRouter);
 //#endregion
 
 //#region Web-oriented end-points
 app.use("/api/web/v1/admin/role", webRoleRouter);
-app.use("/api/web/v1/admin", webAdminRouter);
+app.use("/api/web/v1/admin/admin", webAdminRouter);
+
 //#endregion
 
 //#region Error handling
