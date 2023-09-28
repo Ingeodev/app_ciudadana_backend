@@ -21,8 +21,8 @@ describe("All Security Attention Point API points: ", () => {
         color: "#AAFFBB",
         address: "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
         imageUri: "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-        lat: -80.54321,
-        lon: 5.12345,
+        lat: 3.4134890206134827,
+        lon: -76.69838145823707,
     };
 
     const testPoint1 = {
@@ -32,8 +32,8 @@ describe("All Security Attention Point API points: ", () => {
         color: "#123456",
         address: "Cl. 11 #36-6, Olimpo, Cali, Valle del Cauca",
         imageUri: "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f4.png",
-        lat: 80.54321,
-        lon: -5.12345,
+        lat: 3.4134890206134825,
+        lon: -76.69838145823705,
     };
 
     const editPoint0 = {
@@ -46,8 +46,8 @@ describe("All Security Attention Point API points: ", () => {
     const editPoint1 = {
         name: "Edited Sample Point 2",
         address: "Cl. 17 #55-15, Olimpo, Cali, Valle del Cauca",
-        lat: 90,
-        lon: -6,
+        lat: 3.358543128181225,
+        lon: -76.7021883209791,
     };
 
     const mobileResponseFormat = {

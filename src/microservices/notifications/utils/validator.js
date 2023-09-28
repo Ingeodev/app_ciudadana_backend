@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
+const { isInCaliCustomJoiValidator } = require("../../../utils/validator");
 
 const uri_string = joi.string().uri({ allowRelative: true });
 const integer_number = joi.number().integer();
@@ -106,7 +107,7 @@ const securityAttentionPointCreationSchema = joi.object({
   imageUri: uri_string.required(),
   lat: latitude_number.required(),
   lon: longitude_number.required(),
-});
+}).custom(isInCaliCustomJoiValidator);
 
 const securityAttentionPointUpdateSchema = joi.object({
   id: non_negative_integer.required(),
@@ -119,7 +120,8 @@ const securityAttentionPointUpdateSchema = joi.object({
   lat: latitude_number,
   lon: longitude_number,
 }).or('name', 'description', 'phone', 'color', 'address', 'imageUri', 'lat', 'lon')
-  .and('lat', 'lon');
+  .and('lat', 'lon')
+  .custom(isInCaliCustomJoiValidator);
 
 const optionalLocationSchema = joi.object({
   lat: latitude_number,
