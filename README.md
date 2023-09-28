@@ -1336,6 +1336,8 @@ Route: src\microservices\notifications\v1\routes\web.js
 | _lat_         | Double          | Yes          | Latitude of the Security Attention Point.     |
 | _lon_         | Double          | Yes          | Longitude of the Security Attention Point.    |
 
+Note that the position (_lat_ and _lon_) must be inside the city of Cali, Valle del Cauca, Colombia.
+
 It returns **201 _created_** and the created Security Attention Point on success.
 
 **Example**
@@ -1389,7 +1391,9 @@ Response:
 | _lat_         | Double          | No           | Latitude of the Security Attention Point.     |
 | _lon_         | Double          | No           | Longitude of the Security Attention Point.    |
 
-At least one of the optional (_name_, _description_, _phone_, _color_, _address_, _imageUri_, _lat_, _lon_) parameters must be passed. If any of _lat_ or _lon_ are passed, both must be passed.
+At least one of the optional (_name_, _description_, _phone_, _color_, _address_, _imageUri_, _lat_, _lon_) parameters must be passed. If any of _lat_ or _lon_ are passed, both must be passed. 
+
+Note that the position (_lat_ and _lon_) must be inside the city of Cali, Valle del Cauca, Colombia.
 
 It returns **200 _OK_** and the updated Security Attention Point on success.
 
