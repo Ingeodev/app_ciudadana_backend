@@ -127,6 +127,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: true,
       },
+      passwdReset: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
       documentTypeId: {
         // type: DataTypes.INTEGER,
         type: DataTypes.STRING,
@@ -184,22 +189,32 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       hooks: {
         beforeCreate: (obj, options) => {
-          obj.serviceReceiptUri = transformReceivedUriToSave(obj.serviceReceiptUri);
+          obj.serviceReceiptUri = transformReceivedUriToSave(
+            obj.serviceReceiptUri
+          );
         },
         beforeUpdate: (obj, options) => {
-          obj.serviceReceiptUri = transformReceivedUriToSave(obj.serviceReceiptUri);
+          obj.serviceReceiptUri = transformReceivedUriToSave(
+            obj.serviceReceiptUri
+          );
         },
         afterCreate: (obj, options) => {
-          obj.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+          obj.serviceReceiptUri = transformSavedUriToSend(
+            obj.serviceReceiptUri
+          );
         },
         afterUpdate: (obj, options) => {
-          obj.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+          obj.serviceReceiptUri = transformSavedUriToSend(
+            obj.serviceReceiptUri
+          );
         },
         afterFind: (result, options) => {
           if (Array.isArray(result)) {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
-              obj.dataValues.serviceReceiptUri = transformSavedUriToSend(obj.serviceReceiptUri);
+              obj.dataValues.serviceReceiptUri = transformSavedUriToSend(
+                obj.serviceReceiptUri
+              );
             });
           } else if (result) {
             // If the result is a single record

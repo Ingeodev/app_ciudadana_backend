@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const crypto = require("crypto");
-// const { Op } = require("sequelize");
+const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
 const firebase = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
@@ -8,6 +8,7 @@ const mailService = require("../../../../utils/sendMail.js");
 const { formatDate } = require("../../../../middleware/formatDate.js");
 // const urlFront = process.env.URL_FRONT;
 const urlFront = "https://frontend-cmiesjcqoq-uc.a.run.app";
+// const urlFront = "http://localhost:3000";
 
 /**
  * Generates a (random) string of length n.
@@ -52,23 +53,16 @@ function generateSecureRandomString(length) {
     };
   }
 }
-// 6 digits
-function generateRandomNumber() {
-  var minm = 100000;
-  var maxm = 999999;
-  return Math.floor(Math
-  .random() * (maxm - minm + 1)) + minm;
-}
 
 /**
  * Send the invitation email along with the credentials
  * @param {object} req - Object containing name, lastName, email, documentTypeId, document
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
-async function mailInvitationVerification(dataUser, tokenEmailVerified) {
+async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId) {
   try {
-    const linkVerification = `${urlFront}/confirmation?token=${tokenEmailVerified}`;
-    const linkLogin = `${urlFront}/login`;
+    const linkVerification = `${urlFront}/confirmation?token=${tokenEmailVerified}&ref=${clientId}`;
+    // const linkLogin = `${urlFront}/login`;
 
     if (linkVerification) {
       const data = {
@@ -80,14 +74,12 @@ async function mailInvitationVerification(dataUser, tokenEmailVerified) {
                 <p>Hola ${dataUser.displayName},</p>
                 <p>Te invitamos a unirte a la plataforma de movilidad de la Ciudad de Cali, Colombia. Para comenzar, es importante que verifiques tu correo electrónico. Haz clic en el siguiente enlace para hacerlo:</p>
                 <a href="${linkVerification}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Verificar Correo</a>
-                <p>Una vez verificado, podrás acceder a todos los módulos de la aplicación.</p>
-                <h3>Tus credenciales son:</h3>
+                <p>Una vez verificado, podrás acceder a la plataforma y podrás cambiar la contraseña que esta a continuación. Luego podrás acceder a todos los módulos de la aplicación.</p>
+                <h3>Tu usuario y contraseña son:</h3>
                 <ul>
                     <li><strong>Usuario:</strong> ${dataUser.email}</li>
                     <li><strong>Contraseña:</strong> ${dataUser.password}</li>
                 </ul>
-                <p>Puedes ingresar a la aplicación haciendo clic en el siguiente enlace:</p>
-                <a href="${linkLogin}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Ingresar a AppMovilidad Cali</a>
                 <p>¡Esperamos que disfrutes de la plataforma!</p>
                 <p>Saludos,<br>Equipo de AppMovilidad Cali</p>
             </div>
@@ -122,15 +114,15 @@ exports.postRegister = async (req, res, next) => {
     const { name, lastName, email, documentTypeId, document } =
       await validator.vWebPostRegister(req.body);
 
-    const tokenEmailVerified = generateRandomNumber();
+    const tokenEmailVerified = generateSecureRandomString(100);
     if (tokenEmailVerified.status) {
       throw {
         status: tokenEmailVerified.status,
         message: tokenEmailVerified.detail,
       };
     }
-    // const passwd = generateSecureRandomString(16);
-    const passwd = "123456";
+    const passwd = generateSecureRandomString(12);
+    // const passwd = "123456";
     if (passwd.status) {
       throw {
         status: passwd.status,
@@ -146,7 +138,6 @@ exports.postRegister = async (req, res, next) => {
     };
 
     const resCreate = await firebase.createUser(dataUser);
-
     if (resCreate.status) {
       throw {
         status: resCreate.status,
@@ -166,6 +157,7 @@ exports.postRegister = async (req, res, next) => {
       loginPhase: null,
       emailVerified: null,
       tokenEmailVerified,
+      passwdReset: true,
     };
 
     const userInDb = await db.User.create(dataQuery, { transaction });
@@ -174,7 +166,15 @@ exports.postRegister = async (req, res, next) => {
     // const link = await firebase.generateLinkPasswordReset(email, urlFront);
     // const link = await firebase.generateLinkEmailVerification(email, urlFront);
 
-    const sendEmail = await mailInvitationVerification( dataUser, tokenEmailVerified );
+    const sendEmail = await mailInvitationVerification(
+      dataUser,
+      tokenEmailVerified,
+      Buffer.from(userInDb.dataValues.clientId)
+        .toString("base64")
+        .replace("+", "-")
+        .replace("/", "_")
+        .replace(/=+$/, "")
+    );
 
     if (sendEmail.status) {
       throw {
@@ -184,6 +184,7 @@ exports.postRegister = async (req, res, next) => {
     }
     await transaction.commit();
     delete userInDb.dataValues.tokenEmailVerified;
+    delete userInDb.dataValues.passwdReset;
     delete userInDb.dataValues.phone;
     delete userInDb.dataValues.address;
     delete userInDb.dataValues.serviceReceiptUri;
@@ -207,16 +208,15 @@ exports.postRegister = async (req, res, next) => {
 exports.postSetPasswd = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
-    const { clientId, passwd, token } = await validator.vWebPostPasswd(req.body);
+    const { clientId, passwd } = await validator.vWebPostPasswd(req.body);
 
     const userInDb = await db.User.findOne({
       where: {
         clientId,
-        tokenEmailVerified: token,
-        emailVerified: null,
-        // emailVerified: {
-        //   [Op.ne]: null,
-        // },
+        passwdReset: true,
+        emailVerified: {
+          [Op.ne]: null,
+        },
       },
       attributes: ["id", "clientId"],
     });
@@ -228,7 +228,7 @@ exports.postSetPasswd = async (req, res, next) => {
         // status: StatusCodes.FORBIDDEN,
       };
     
-    await userInDb.update({ emailVerified: formatDate(new Date()) }, { transaction });
+    await userInDb.update({ passwdReset: false }, { transaction });
 
     const resUpdate = await firebase.setPasswd(clientId, passwd);
     if (resUpdate.status) {
@@ -307,6 +307,7 @@ exports.postEdit = async (req, res, next) => {
     delete resultUpdate.dataValues.clientId;
     delete resultUpdate.dataValues.emailVerified;
     delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.passwdReset;
     delete resultUpdate.dataValues.phone;
     delete resultUpdate.dataValues.address;
     delete resultUpdate.dataValues.serviceReceiptUri;
@@ -352,6 +353,7 @@ exports.getAll = async (req, res, next) => {
       attributes: {
         exclude: [
           "tokenEmailVerified",
+          "passwdReset",
           "serviceReceiptUri",
           "loginPhase",
           "pushDeviceToken",
@@ -406,6 +408,7 @@ exports.getOneById = async (req, res, next) => {
       attributes: {
         exclude: [
           "tokenEmailVerified",
+          "passwdReset",
           "serviceReceiptUri",
           "loginPhase",
           "pushDeviceToken",

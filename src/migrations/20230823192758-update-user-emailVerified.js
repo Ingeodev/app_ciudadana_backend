@@ -13,9 +13,15 @@ module.exports = {
       allowNull: true,
       unique: true,
     });
+    await queryInterface.addColumn("Users", "passwdReset", {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      unique: false,
+    });
   },
 
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeColumn("Users", "passwdReset");
     await queryInterface.removeColumn("Users", "tokenEmailVerified");
     await queryInterface.removeColumn("Users", "emailVerified");
   }

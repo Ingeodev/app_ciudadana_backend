@@ -12,6 +12,11 @@ const registerSchema = joi.object({
   document: joi.string().trim().alphanum().empty("").invalid(" ").required(),
 });
 
+const emailVerification = joi.object({
+  token: joi.string().trim().empty("").invalid(" ").required(),
+  ref: joi.string().trim().empty("").invalid(" ").required(),
+});
+
 const addRoleSchema = joi.object({
   id: joi.number().integer().empty("").greater(0).invalid(0).required(),
   roleId: joi.number().integer().greater(0).required(),
@@ -44,8 +49,7 @@ const postDeleteSchema = joi.object({
 
 const passwdSchema = joi.object({
   clientId: joi.string().trim().empty("").invalid(" ").required(),
-  token: joi.string().trim().empty("").invalid(" ").required(),
-  passwd: joi.string().trim().empty("").invalid(" ").required(),
+  passwd: joi.string().trim().empty("").invalid(" ").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&()_+{}|:;,.?/])[A-Za-z\d!@#%^&()_+{}|:;,.?/].{8,}$/, 'Password does not meet the conditions').required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -69,6 +73,9 @@ const use_validator_on_data = async (validator_schema, data) => {
 module.exports = {
   vWebPostRegister: async (inputData) => {
     return await use_validator_on_data(registerSchema, inputData);
+  },
+  vWebPostEmailVerification: async (inputData) => {
+    return await use_validator_on_data(emailVerification, inputData);
   },
   vWebPostAddRole: async (inputData) => {
     return await use_validator_on_data(addRoleSchema, inputData);

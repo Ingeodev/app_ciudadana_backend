@@ -44,6 +44,7 @@ exports.postAccountInfo = async (req, res, next) => {
     delete result.dataValues.clientId;
     delete result.dataValues.emailVerified;
     delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.passwdReset;
     delete result.dataValues.address;
     delete result.dataValues.serviceReceiptUri;
     delete result.dataValues.pushDeviceToken;
@@ -121,6 +122,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     delete resultUpdate.dataValues.clientId;
     delete resultUpdate.dataValues.emailVerified;
     delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.passwdReset;
     delete resultUpdate.dataValues.pushDeviceToken;
     delete resultUpdate.dataValues.roleId;
     delete resultUpdate.dataValues.loginPhase;
@@ -196,6 +198,7 @@ exports.getAccountInfo = async (req, res, next) => {
     
     delete userInDb.dataValues.clientId;
     delete userInDb.dataValues.tokenEmailVerified;
+    delete userInDb.dataValues.passwdReset;
     delete userInDb.dataValues.address;
     delete userInDb.dataValues.serviceReceiptUri;
     delete userInDb.dataValues.pushDeviceToken;
@@ -310,6 +313,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
     delete resultUpdate.dataValues.clientId;
     delete resultUpdate.dataValues.emailVerified;
     delete resultUpdate.dataValues.tokenEmailVerified;
+    delete resultUpdate.dataValues.passwdReset;
     delete resultUpdate.dataValues.address;
     delete resultUpdate.dataValues.serviceReceiptUri;
     delete resultUpdate.dataValues.pushDeviceToken;
@@ -357,7 +361,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
     let isMobileUser = false;
 
     if (objPage.webUser) {
-      include = [
+      (include = [
         // {
         //   model: db.DocumentType,
         //   attributes: [],
@@ -368,7 +372,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
           attributes: [],
           required: false,
         },
-      ],
+      ]),
         (attributes.exclude = [
           "phone",
           "address",
@@ -379,6 +383,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
           "deletedAt",
           "pushDeviceToken",
           "tokenEmailVerified",
+          "passwdReset",
         ]);
       attributes.include = [
         "id",
@@ -406,7 +411,8 @@ exports.getUsersListByDevice = async (req, res, next) => {
         "deletedAt",
         "roleId",
         "tokenEmailVerified",
-        "emailVerified"
+        "passwdReset",
+        "emailVerified",
       ];
       attributes.include = [
         "id",
@@ -516,6 +522,7 @@ exports.postUsersStatus = async (req, res, next) => {
     const result = await userInDb.update({ disabled });
     delete result.dataValues.emailVerified;
     delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.passwdReset;
     delete result.dataValues.address;
     delete result.dataValues.phone;
     delete result.dataValues.serviceReceiptUri;
@@ -562,6 +569,7 @@ exports.postUsersFullLogin = async (req, res, next) => {
     const result = await userInDb.update(dataUser);
     delete result.dataValues.emailVerified;
     delete result.dataValues.tokenEmailVerified;
+    delete result.dataValues.passwdReset;
     delete result.dataValues.address;
     delete result.dataValues.serviceReceiptUri;
     delete result.dataValues.pushDeviceToken;

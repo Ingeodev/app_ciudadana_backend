@@ -8,6 +8,7 @@ const { authMiddleware } = require("../../middleware/authMiddleware.js");
 const errorHandler = require('../../middleware/errorMiddleware');
 const webRoleRouter = require("./v1/routes/webRole");
 const webAdminRouter = require("./v1/routes/webAdmin");
+const webAdminFree = require("./v1/routes/webAdminFree.js");
 
 const app = express();
 
@@ -18,11 +19,13 @@ app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });
 
+app.use("/api/web/v1/admin/admin", webAdminFree);
+
 app.use(authMiddleware);
 
 //#region Web-oriented end-points
 app.use("/api/web/v1/admin/role", webRoleRouter);
-app.use("/api/web/v1/admin", webAdminRouter);
+app.use("/api/web/v1/admin/admin", webAdminRouter);
 
 //#region Error handling
 // Not found route!
