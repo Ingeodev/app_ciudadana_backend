@@ -40,21 +40,17 @@ const getAllAdvertisements = async (req, res, next) => {
                 ],
             },
         });
+        let message = undefined;
         if (pageAdvertisements.count <= 0)
-            throw {
-                status: StatusCodes.NOT_FOUND,
-                message: 'There are no Advertisements registered in the database.',
-            };
+            message = 'There are no Advertisements registered in the database.';
         if (pageAdvertisements.rows.length <= 0)
-            throw {
-                status: StatusCodes.BAD_REQUEST,
-                message: '"page[number]" is too large for the number of possible pages.',
-            };
+            message = '"page[number]" is too large for the number of possible pages.';
         const data = pageAdvertisements.rows.map(row => {
             return row.dataValues;
         });
         return res.status(StatusCodes.OK).json({
             meta: {
+                message,
                 page: pagination.number,
                 pageSize: pagination.size,
                 totalRecords: pageAdvertisements.count,

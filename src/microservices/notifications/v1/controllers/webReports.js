@@ -55,17 +55,11 @@ exports.getListAllByUser = async (req, res, next) => {
         ],
       },
     });
-
+    let message = undefined;
     if (reportsDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: 'There are no Reports registered in the database.',
-      };
+      message = 'There are no Reports registered in the database.';
     if (reportsDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages.',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const data = reportsDb.rows.map(row => {
       return { ...row.dataValues, SecurityCategory: undefined };
@@ -73,6 +67,7 @@ exports.getListAllByUser = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: reportsDb.count,
@@ -111,17 +106,11 @@ exports.getListAll = async (req, res, next) => {
         ],
       },
     });
-
+    let message = undefined;
     if (reportsDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: 'There are no Reports registered in the database.',
-      };
+      message = 'There are no Reports registered in the database.';
     if (reportsDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages.',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const data = reportsDb.rows.map(row => {
       return { ...row.dataValues, SecurityCategory: undefined };
@@ -129,6 +118,7 @@ exports.getListAll = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: reportsDb.count,

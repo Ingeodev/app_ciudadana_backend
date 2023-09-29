@@ -21,7 +21,7 @@ exports.postRegister = async (req, res, next) => {
         message: "User not found.",
         status: StatusCodes.NOT_FOUND,
       };
-    
+
     const { name, phone, address, imageUri } = await validator.vWebPostRegister(
       req.body
     );
@@ -147,21 +147,17 @@ exports.getListAll = async (req, res, next) => {
         exclude: ["createdBy", "deletedAt"],
       },
     });
-
+    let message = undefined;
     if (attLinesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no an attention lines of gender equity registered in the database",
-      };
+      message = 'There are no attention lines of gender equity registered in the database.';
     if (attLinesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
+
     const totalPages = Math.ceil(attLinesInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: attLinesInDb.count,
@@ -222,7 +218,7 @@ exports.postDelete = async (req, res, next) => {
     //     message: "User not found",
     //     status: StatusCodes.NOT_FOUND,
     //   };
-    
+
     const { id } = await validator.vWebPostDelete(req.body);
     const attLInDb = await db.GenderAttentionLine.findOne({
       where: {

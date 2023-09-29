@@ -20,7 +20,7 @@ exports.postRegister = async (req, res, next) => {
         message: "User not found.",
         status: StatusCodes.NOT_FOUND,
       };
-    
+
     const { title, description, imageUri, siteUri } =
       await validator.vWebPostRegister(req.body);
 
@@ -130,7 +130,7 @@ exports.getAll = async (req, res, next) => {
     //     message: "User not found",
     //     status: StatusCodes.NOT_FOUND,
     //   };
-    
+
     const objPage = await validator.vWebGetAll({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
@@ -144,23 +144,17 @@ exports.getAll = async (req, res, next) => {
       offset: (objPage.number - 1) * objPage.size,
       order: [["title", "ASC"]], // Sort by date of creation in descending order
     });
+    let message = undefined;
+    if (categInDb.count <= 0)
+      message = 'There are no Gender Attention Lines Categories registered in the database.';
+    if (categInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    if (categInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no gender attention lines categories registered in the database",
-      };
-    }
-    if (categInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
     const totalPages = Math.ceil(categInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: categInDb.count,

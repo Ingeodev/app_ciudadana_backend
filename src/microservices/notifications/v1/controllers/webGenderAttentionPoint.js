@@ -13,7 +13,7 @@ const postRegister = async (req, res, next) => {
     const { name, description, imageUri, phone, color, address, iconMap, lat, lon } =
       await validator.vWebPostRegister(req.body);
     const webUser = await db.User.findOne({
-        where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ["id"],
     });
     if (webUser == null || webUser.id == null)
@@ -21,7 +21,7 @@ const postRegister = async (req, res, next) => {
         message: "Requesting user is not allowed to create Gender Attention Points.",
         status: StatusCodes.FORBIDDEN,
       };
-    
+
     const createdSAP = await db.GenderAttentionPoint.create({
       name,
       description,
@@ -122,29 +122,29 @@ const postDelete = async (req, res, next) => {
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
  */
 const getOneGenderAttentionPoint = async (req, res, next) => {
-    try {
-        const { id } = await validator.vWebGetOne(req.params);
-        const existingPoint = await db.GenderAttentionPoint.findByPk(id);
-        if (existingPoint == null)
-            throw {
-                status: StatusCodes.NOT_FOUND,
-                message: `The requested gender Attention Point does not exist.`
-            };
-        const data = {
-          ...existingPoint.dataValues,
-          deletedAt: undefined,
-          geolocation: undefined,
-          createdBy: undefined,
-          lat: existingPoint.dataValues.geolocation.coordinates[1],
-          lon: existingPoint.dataValues.geolocation.coordinates[0],
-        };
-        return res.status(StatusCodes.OK)
-            .json({
-                data,
-            });
-    } catch (error) {
-        return next(error);
-    }
+  try {
+    const { id } = await validator.vWebGetOne(req.params);
+    const existingPoint = await db.GenderAttentionPoint.findByPk(id);
+    if (existingPoint == null)
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The requested gender Attention Point does not exist.`
+      };
+    const data = {
+      ...existingPoint.dataValues,
+      deletedAt: undefined,
+      geolocation: undefined,
+      createdBy: undefined,
+      lat: existingPoint.dataValues.geolocation.coordinates[1],
+      lon: existingPoint.dataValues.geolocation.coordinates[0],
+    };
+    return res.status(StatusCodes.OK)
+      .json({
+        data,
+      });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 /**
@@ -169,16 +169,12 @@ const getListAll = async (req, res, next) => {
         exclude: ["createdBy", "deletedAt"],
       },
     });
+    let message = undefined;
     if (pagePoints.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Gender Attention Points registered in the database.",
-      };
+      message = 'There are no Gender Attention Points registered in the database.';
     if (pagePoints.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page[number]" is too large for the number of possible pages.',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
+
     const data = pagePoints.rows.map((row) => {
       return {
         ...row.dataValues,
@@ -191,6 +187,7 @@ const getListAll = async (req, res, next) => {
     });
     return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: pagination.number,
         pageSize: pagination.size,
         totalRecords: pagePoints.count,

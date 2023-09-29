@@ -111,19 +111,15 @@ const getAllDependencies = async (req, res, next) => {
                 exclude: ["deletedAt"],
             },
         });
+        let message = undefined;
         if (pageDependencies.count <= 0)
-            throw {
-                status: StatusCodes.NOT_FOUND,
-                message: 'There are no Dependencies registered in the database.',
-            };
+            message = 'There are no Dependencies registered in the database.';
         if (pageDependencies.rows.length <= 0)
-            throw {
-                status: StatusCodes.BAD_REQUEST,
-                message: '"page[number]" is too large for the number of possible pages.',
-            };
+            message = '"page[number]" is too large for the number of possible pages.';
         const data = pageDependencies.rows.map(row => row.dataValues);
         return res.status(StatusCodes.OK).json({
             meta: {
+                message,
                 page: pagination.number,
                 pageSize: pagination.size,
                 totalRecords: pageDependencies.count,

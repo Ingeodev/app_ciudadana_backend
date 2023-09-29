@@ -137,16 +137,12 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
                 exclude: ["deletedAt"],
             },
         });
+        let message = undefined;
         if (pagePoints.count <= 0)
-            throw {
-                status: StatusCodes.NOT_FOUND,
-                message: 'There are no Security Attention Points registered in the database.',
-            };
+            message = 'There are no Security Attention Points registered in the database.';
         if (pagePoints.rows.length <= 0)
-            throw {
-                status: StatusCodes.BAD_REQUEST,
-                message: '"page[number]" is too large for the number of possible pages.',
-            };
+            message = '"page[number]" is too large for the number of possible pages.';
+
         const data = pagePoints.rows.map(row => {
             return {
                 ...row.dataValues,
@@ -159,6 +155,7 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
         });
         return res.status(StatusCodes.OK).json({
             meta: {
+                message,
                 page: pagination.number,
                 pageSize: pagination.size,
                 totalRecords: pagePoints.count,

@@ -101,21 +101,17 @@ exports.getListAll = async (req, res, next) => {
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
-
+    let message = undefined;
     if (attLinesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no an attention lines of security/emergency registered in the database",
-      };
+      message = 'There are no Security/emergency Attention Lines registered in the database.';
     if (attLinesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
+
     const totalPages = Math.ceil(attLinesInDb.count / objPage.size);
 
     const responseCustom = {
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: attLinesInDb.count,
