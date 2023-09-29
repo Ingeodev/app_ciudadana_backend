@@ -23,19 +23,19 @@ router.use(authorization.authMiddleware);
 
 //#region Advertisements end-points
 // Retrieve all the advertisements whether they have a category or not.
-router.get('/contenido_publicitario', advertisingController.getAllAdvertisements);
+router.get('/informationmb', advertisingController.getAllAdvertisements);
 
 // Create a new advertisement.
-router.post('/contenido_publicitario', advertisingController.postAdvertisement);
+router.post('/informationmb', advertisingController.postAdvertisement);
 
 // Update an advertisement.
-router.post('/contenido_publicitario/edit', advertisingController.postAdvertisementEdit);
+router.post('/informationmb/edit', advertisingController.postAdvertisementEdit);
 
 // Update the status of an advertisement.
-router.post('/contenido_publicitario/status', advertisingController.postAdvertisementStatus);
+router.post('/informationmb/status', advertisingController.postAdvertisementStatus);
 
 // Delete an advertisement.
-router.post('/contenido_publicitario/delete', advertisingController.postAdvertisementDelete);
+router.post('/informationmb/delete', advertisingController.postAdvertisementDelete);
 //#endregion
 
 //#region Security Attention Point end-points
