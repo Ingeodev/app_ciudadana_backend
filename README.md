@@ -210,7 +210,7 @@ This microservice handles the [**Advertising**](#advertising), [**Publicity**](#
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
 
 ##### _POST_ save new advertisement
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/\) allows web users to save a new advertisement into the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/\) allows web users to save a new advertisement into the database. It receives the following parameters:
 
 | **Name**     |   **Type**   | **Required** | **Description**                                                  |
 | ------------ | :----------: | :----------: | ---------------------------------------------------------------- |
@@ -276,7 +276,7 @@ It returns **201 _created_** and the created object on success.
       > ```
 
 ##### _GET_ list advertisements
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
 
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -357,7 +357,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 ##### _POST_ update advertisement
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
 
 | **Name**     |   **Type**   | **Required** | **Description**                                                  |
 | ------------ | :----------: | :----------: | ---------------------------------------------------------------- |
@@ -400,7 +400,7 @@ Response:
   > ```
 
 ##### _POST_ change advertisement status
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
 
 | **Name** | **Type** | **Required** | **Description**                                               |
 | -------- | :------: | :----------: | ------------------------------------------------------------- |
@@ -436,7 +436,7 @@ Response:
   > ```
 
 ##### _POST_ delete advertisement
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name** | **Type** | **Required** | **Description**                    |
 | -------- | :------: | :----------: | ---------------------------------- |
@@ -575,7 +575,7 @@ Response:
   > ```
 
 ##### _POST_ delete advertisement category
-\(\<Your_Host\>/api/web/v1/notifications/contenido_publicitario/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
+\(\<Your_Host\>/api/web/v1/notifications/informationmb/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name** | **Type** | **Required** | **Description**                             |
 | -------- | :------: | :----------: | ------------------------------------------- |
