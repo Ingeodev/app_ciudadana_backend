@@ -11,7 +11,7 @@ exports.getAll = async (req, res, next) => {
   
       const citiesInDb = await db.City.findAll({
         order: [["city", "ASC"]],
-        attributes: [[Sequelize.col('cityCode'), 'id'], [Sequelize.col('city'), 'name']],
+        attributes: ["id", [Sequelize.col('city'), 'name']],
       });
   
       return res.status(StatusCodes.OK).send(citiesInDb);

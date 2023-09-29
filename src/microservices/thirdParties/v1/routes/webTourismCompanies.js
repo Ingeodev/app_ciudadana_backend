@@ -15,11 +15,11 @@ router.post(
   tourimsCompanyCont.postEdit
 );
 
-// router.get(
-//   "/:id",
-//   // hasPermissions({ role: "super_master_user" }),
-//   tourimsCompanyCont.getProfile
-// );
+ router.get(
+   "/:id",
+   // hasPermissions({ role: "super_master_user" }),
+   tourimsCompanyCont.getProfile
+ );
 
 router.post(
   "/delete",

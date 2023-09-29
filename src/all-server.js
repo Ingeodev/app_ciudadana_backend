@@ -20,6 +20,8 @@ const webCategories = require("./microservices/thirdParties/v1/routes/webCategor
 const webCompanies = require("./microservices/thirdParties/v1/routes/webCompanies.js");
 const webTourismCategories = require("./microservices/thirdParties/v1/routes/webTourismCategories.js");
 const webCompServices = require("./microservices/thirdParties/v1/routes/webCompanyServices.js");
+const webTourismComp = require("./microservices/thirdParties/v1/routes/webTourismCompanies.js");
+const webTourismServ = require("./microservices/thirdParties/v1/routes/webTourismServices.js");
 const webRouteDate = require("./microservices/thirdParties/v1/routes/webRouteTimetableDate.js");
 const webRouteHourTariff= require("./microservices/thirdParties/v1/routes/webRouteTimetableHour.js");
 const webTranspRoutes = require("./microservices/thirdParties/v1/routes/webTransportRoutes.js");
@@ -72,6 +74,8 @@ app.use("/api/mobile/v1/users", mobileRouterUser);
 app.use("/api/web/v1/third_parties/city", webCities);
 app.use("/api/web/v1/third_parties/categories", webCategories);
 app.use("/api/web/v1/third_parties/tourism_categories", webTourismCategories);
+app.use("/api/web/v1/third_parties/tourism_company", webTourismComp);
+app.use("/api/web/v1/third_parties/tourism_service", webTourismServ);
 app.use("/api/web/v1/third_parties/company", webCompanies);
 app.use("/api/web/v1/third_parties/company_service", webCompServices);
 app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
