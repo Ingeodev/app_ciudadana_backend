@@ -25,16 +25,6 @@ const getDependencies = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (dependenciesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Dependencies registered in the database.",
-      };
-    if (dependenciesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page[number]" is too large for the number of possible pages.',
-      };
     const returnDependencies = dependenciesInDb.rows.map(row => row.dataValues);
     return res.status(StatusCodes.OK).send(returnDependencies);
   } catch (error) {

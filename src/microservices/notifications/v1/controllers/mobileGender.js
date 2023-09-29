@@ -61,13 +61,6 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
       order: [["name", "ASC"]], // Sort by date of creation in descending order
     });
 
-    if (categInDb.count <= 0 && attenLInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no gender equality hotlines or registered categories",
-      };
-
-
     const responseCustom = {
       // meta: {
       //   page: objPage.number,
@@ -121,7 +114,7 @@ exports.getAttentionPoins = async (req, res, next) => {
         ),
         "ASC"]];
     }
- 
+
     const pointsInDb = await db.GenderAttentionPoint.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },

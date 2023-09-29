@@ -27,11 +27,7 @@ const getSecurityAttentionPoints = async (req, res, next) => {
                 exclude: ["deletedAt"],
             },
         });
-        if (allPoints.length <= 0)
-            throw {
-                status: StatusCodes.NOT_FOUND,
-                message: 'There are no Security Attention Points registered in the database.',
-            };
+
         const data = allPoints.map(row => {
             const mappedObject = {
                 id: row.dataValues.id,

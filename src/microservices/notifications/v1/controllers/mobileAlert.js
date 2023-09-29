@@ -68,19 +68,6 @@ const getListActive = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (alertsInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no active Alerts in the database",
-      };
-    }
-    if (alertsInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-
     const mappedData = alertsInDb.rows.map(row => {
       const mapRow = {
         id: row.id,

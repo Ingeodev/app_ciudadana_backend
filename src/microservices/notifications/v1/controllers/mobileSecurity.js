@@ -16,24 +16,10 @@ exports.getListAll = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (!attentionLInDb || attentionLInDb.length === 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Attention Lines registered in the database",
-      };
-    }
-
     const categInDb = await db.SecurityCategory.findAll({
       attributes: ["id", "name", [Sequelize.col("imageUri"), "image"], "color"],
       order: [["name", "ASC"]],
     });
-
-    if (!categInDb || categInDb.length === 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Attention Lines registered in the database",
-      };
-    }
 
     const reportCategories = categInDb.map(item => {
       const mappedItem = {
