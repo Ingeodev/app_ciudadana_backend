@@ -11,8 +11,8 @@ const caliCityCode = 76001;
  */
 exports.getTransportRoutes = async (req, res, next) => {
   try {
-    const { idCity, date } = await validator.vMobileGetTransportRoutes({
-      idCity: req.query.idCity,
+    const { city: idCity, date } = await validator.vMobileGetTransportRoutes({
+      city: req.query.city,
       date: req.query.date,
       // number: req.query.page ? parseInt(req.query.page.number) : 1,
       // size: req.query.page ? parseInt(req.query.page.size) : 100,

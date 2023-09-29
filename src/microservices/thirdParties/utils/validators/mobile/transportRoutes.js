@@ -4,7 +4,7 @@ const joi = require("joi");
 const getRoutesSchema = joi.object({
   // number: joi.number().integer().greater(0),
   // size: joi.number().integer().greater(0),
-  idCity: joi.number().integer().greater(0).invalid(0).required(),
+  city: joi.number().integer().greater(0).invalid(0).required(),
   date: joi.string().required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
     .error((errors) => {
