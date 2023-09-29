@@ -35,6 +35,7 @@ exports.postAccountInfo = async (req, res, next) => {
       email,
       clientId: clientId,
       loginPhase: "baseLogin",
+      passwdReset: false,
       disabled: false,
       userMobile: false,
       emailVerified: null,

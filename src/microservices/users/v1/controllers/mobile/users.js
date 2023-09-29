@@ -40,6 +40,7 @@ exports.postAccountInfo = async (req, res, next) => {
     const extraDataUser = {
       clientId: clientId,
       loginPhase: "baseLogin",
+      passwdReset: false,
       disabled: false,
       userMobile: true,
       emailVerified: null,
