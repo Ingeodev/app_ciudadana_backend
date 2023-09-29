@@ -11,8 +11,8 @@ const registerSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {
