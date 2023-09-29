@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/contenido_publicitario`;
+const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/informationmb`;
 
 describe("Advertisement management API points: ", () => {
     jest.setTimeout(8000);
@@ -64,7 +64,7 @@ describe("Advertisement management API points: ", () => {
             });
     });
 
-    describe("POST /notifications/contenido_publicitario/ ", () => {
+    describe("POST /notifications/informationmb/ ", () => {
         test("should respond with status 201 and the new object (data) after creating a new advertisement", async () => {
             const response0 = await request(usedHost).post('/')
                 .set(requestHeaders)
@@ -196,7 +196,7 @@ describe("Advertisement management API points: ", () => {
         });
     });
 
-    describe("GET /notifications/contenido_publicitario/ ", () => {
+    describe("GET /notifications/informationmb/ ", () => {
         test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
             const response0 = await request(usedHost).get('/')
                 .set(requestHeaders)
@@ -291,7 +291,7 @@ describe("Advertisement management API points: ", () => {
         });
     });
 
-    describe("POST /notifications/contenido_publicitario/edit ", () => {
+    describe("POST /notifications/informationmb/edit ", () => {
         test("should respond with status 200 and the edited object (data)", async () => {
             const response0 = await request(usedHost).post('/edit')
                 .set(requestHeaders)
@@ -438,7 +438,7 @@ describe("Advertisement management API points: ", () => {
         });
     });
 
-    describe("POST /notifications/contenido_publicitario/status ", () => {
+    describe("POST /notifications/informationmb/status ", () => {
         test("should respond with status 200 and the edited object (data)", async () => {
             const response0 = await request(usedHost).post('/status')
                 .set(requestHeaders)
@@ -549,7 +549,7 @@ describe("Advertisement management API points: ", () => {
         });
     });
 
-    describe("POST /notifications/contenido_publicitario/delete ", () => {
+    describe("POST /notifications/informationmb/delete ", () => {
         test("should respond with status 200 and the deleted object's id (data)", async () => {
             const response0 = await request(usedHost).post('/delete')
                 .set(requestHeaders)
