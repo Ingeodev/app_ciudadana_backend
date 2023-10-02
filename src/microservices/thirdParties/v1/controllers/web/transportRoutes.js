@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { Sequelize } = require("sequelize");
+const fs = require("fs");
 const path = require("path");
 const xlsx = require("node-xlsx");
 const db = require("../../../../../models/index.js");
@@ -954,7 +955,13 @@ exports.getDownloadXlsxTemplate = async (req, res, next) => {
     const downloadPath = path.resolve(
       path.join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
     );
-    return res.status(StatusCodes.OK).sendFile(downloadPath);
+
+    const fileBuffer = fs.readFileSync(downloadPath);
+
+    res.setHeader('Content-Disposition', 'attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    // return res.status(StatusCodes.OK).sendFile(downloadPath);
+    return res.status(StatusCodes.OK).send(fileBuffer);
   } catch (error) {
     console.error(error);
     return next({
