@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
     && \
     git clone https://github.com/GoogleCloudPlatform/gcsfuse.git && \
     cd ./gcsfuse && \
-    go get . && \
+    # go get . && \
     go install . && \
     cd .. && \
     rm -r ./gcsfuse && \
