@@ -31,8 +31,10 @@ RUN apt-get update && apt-get install -y \
     git \
     golang-go \
     && \
-    go install github.com/googlecloudplatform/gcsfuse@master && \
-    apt-get uninstall -y git && \
+    git clone https://github.com/GoogleCloudPlatform/gcsfuse.git && \
+    go install ./gcsfuse && \
+    rm -r ./gcsfuse && \
+    apt-get remove -y git && \
     apt-get clean
 
 # RUN yum update -y \
