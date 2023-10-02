@@ -35,8 +35,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /gcsfuse
 
-RUN go get . && \
-    go install .
+RUN go install .
 
 WORKDIR /
 
