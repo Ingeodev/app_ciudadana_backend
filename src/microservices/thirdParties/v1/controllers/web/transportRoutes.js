@@ -956,16 +956,37 @@ exports.getDownloadXlsxTemplate = async (req, res, next) => {
       path.join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
     );
 
-    const fileBuffer = fs.readFileSync(downloadPath);
+    // const fileBuffer = fs.readFile(downloadPath);
+    fs.readFile(downloadPath, (err, fileBuffer) => {
+      if (err) {
+        console.error(err);
+        return next({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          message: "The excel template has not been loaded.",
+        });
+      }
 
-    res.setHeader('Content-Disposition', 'attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx');
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx"
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      // Enviar el buffer
+      return res.status(StatusCodes.OK).end(fileBuffer);
+    });
+
+    // res.setHeader('Content-Disposition', 'attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx');
+    // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     // return res.status(StatusCodes.OK).sendFile(downloadPath);
-    return res.status(StatusCodes.OK).send(fileBuffer);
+    // return res.status(StatusCodes.OK).send(fileBuffer);
   } catch (error) {
     console.error(error);
     return next({
-      status: StatusCodes.NOT_FOUND,
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
       message: "The excel template has not been loaded.",
     });
   }
