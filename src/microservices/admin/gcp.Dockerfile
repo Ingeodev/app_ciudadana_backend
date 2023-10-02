@@ -8,18 +8,31 @@ ENV PATH=/usr/local/bin:$PATH \
 
 EXPOSE 3000
 
+# RUN apt-get update && apt-get install -y \
+#     curl \
+#     gnupg \
+#     lsb-release \
+#     tini && \
+#     gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
+#     echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
+#     tee /etc/apt/sources.list.d/gcsfuse.list && \
+#     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+#     apt-key add - && \
+#     apt-get update && \
+#     apt-get install -y gcsfuse && \
+#     apt-get clean
+
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     lsb-release \
-    tini && \
-    gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
-    echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
-    tee /etc/apt/sources.list.d/gcsfuse.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
-    apt-key add - && \
-    apt-get update && \
-    apt-get install -y gcsfuse && \
+    tini \
+    fuse \
+    git \
+    golang-go \
+    && \
+    go install github.com/googlecloudplatform/gcsfuse@master && \
+    apt-get uninstall -y git && \
     apt-get clean
 
 # RUN yum update -y \
