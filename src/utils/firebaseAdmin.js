@@ -9,11 +9,11 @@ exports.createUser = async (data) => {
       const userData = await appFirebase.auth().getUserByEmail(data.email);
       uid = userData.uid;
     } catch (error) {
-      return {
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        detail: `Error creating user: ${error.message}`,
-        code: "Internal Server Error",
-      };
+      // return {
+      //   status: StatusCodes.INTERNAL_SERVER_ERROR,
+      //   detail: `Error creating user: ${error.message}`,
+      //   code: "Internal Server Error",
+      // };
     }
 
     if (uid === null) {
