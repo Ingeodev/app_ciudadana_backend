@@ -8,40 +8,42 @@ ENV PATH=/usr/local/bin:$PATH \
 
 EXPOSE 3000
 
-# RUN apt-get update && apt-get install -y \
-#     curl \
-#     gnupg \
-#     lsb-release \
-#     tini && \
-#     gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
-#     echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
-#     tee /etc/apt/sources.list.d/gcsfuse.list && \
-#     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
-#     apt-key add - && \
-#     apt-get update && \
-#     apt-get install -y gcsfuse && \
-#     apt-get clean
-
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     lsb-release \
-    tini \
-    fuse \
-    git \
-    golang-go \
-    && \
-    git clone --depth 1 --branch v1.1.0 https://github.com/GoogleCloudPlatform/gcsfuse.git 
-
-WORKDIR /gcsfuse
-
-RUN go install .
-
-WORKDIR /
-
-RUN rm -r ./gcsfuse && \
-    apt-get remove -y git && \
+    tini && \
+    gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
+    echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
+    tee /etc/apt/sources.list.d/gcsfuse.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+    apt-key add - && \
+    apt-get update && \
+    apt-get install -y gcsfuse && \
     apt-get clean
+
+# # # Go installation part that didn't work
+# # RUN apt-get update && apt-get install -y \
+# #     curl \
+# #     gnupg \
+# #     lsb-release \
+# #     tini \
+# #     fuse \
+# #     git \
+# #     golang-go \
+# #     && \
+# #     git clone --depth 1 --branch v1.1.0 https://github.com/GoogleCloudPlatform/gcsfuse.git 
+
+# # WORKDIR /gcsfuse
+
+# # RUN go install .
+
+# # WORKDIR /
+
+# # RUN rm -r ./gcsfuse && \
+# #     apt-get remove -y git && \
+# #     apt-get clean
+# # ###########################################
 
 # RUN yum update -y \
 #    && yum install -y curl \
