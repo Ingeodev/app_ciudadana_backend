@@ -31,12 +31,16 @@ RUN apt-get update && apt-get install -y \
     git \
     golang-go \
     && \
-    git clone --depth 1 --branch v1.1.0 https://github.com/GoogleCloudPlatform/gcsfuse.git && \
-    # cd ./gcsfuse && \
-    # go get . && \
-    go install ./gcsfuse && \
-    # cd .. && \
-    rm -r ./gcsfuse && \
+    git clone --depth 1 --branch v1.1.0 https://github.com/GoogleCloudPlatform/gcsfuse.git 
+
+WORKDIR /gcsfuse
+
+RUN go get . && \
+    go install .
+
+WORKDIR /
+
+RUN rm -r ./gcsfuse && \
     apt-get remove -y git && \
     apt-get clean
 
