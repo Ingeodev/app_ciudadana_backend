@@ -51,6 +51,12 @@ const getListAllSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
+const getServicesCompanySchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -87,5 +93,8 @@ module.exports = {
   },
   vWebGetListAll: async (inputData) => {
     return await use_validator_on_data(getListAllSchema, inputData);
+  },
+  vWebGetServicesCompany: async (inputData) => {
+    return await use_validator_on_data(getServicesCompanySchema, inputData);
   },
 };
