@@ -3,6 +3,11 @@ const db = require("../../../../../models/index.js");
 const validatorServ = require("../../../utils/validators/web/tourismServices.js");
 const validatorCompany = require("../../../utils/validators/web/tourismCompanies.js");
 
+/**
+ * Get all servives of one tourism company 
+ * @param {object} req.query - Object containing the number and size
+ * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ */
 exports.getServices = async (req, res, next) => {
   try {
     const objPage = await validatorCompany.vWebGetListAll({
