@@ -46,5 +46,8 @@ module.exports = {
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("AdminNotifications");
+    await queryInterface.sequelize.query(`
+      DROP TYPE "enum_AdminNotifications_status";
+    `);
   }
 };
