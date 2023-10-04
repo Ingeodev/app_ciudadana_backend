@@ -12,7 +12,7 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
-        userId: {
+        createdBy: {
           type: Sequelize.INTEGER,
           allowNull: false,
           unique: false,
@@ -23,9 +23,27 @@ module.exports = {
           onDelete: "RESTRICT",
           onUpdate: "CASCADE",
         },
-        module: {
-          type: Sequelize.ENUM("TOURISM", "TRANSPORTROUTES"),
-          // defaultValue: "NULL",
+        tourismCompanyId: {
+          type: Sequelize.INTEGER,
+          allowNull: true,
+          unique: false,
+          references: {
+            model: "TourismCompanies",
+            key: "id",
+          },
+          onDelete: "RESTRICT",
+          onUpdate: "CASCADE",
+        },
+        transportCompanyId: {
+          type: Sequelize.INTEGER,
+          allowNull: true,
+          unique: false,
+          references: {
+            model: "TransportCompanies",
+            key: "id",
+          },
+          onDelete: "RESTRICT",
+          onUpdate: "CASCADE",
         },
         key: {
           type: Sequelize.TEXT,
@@ -56,7 +74,7 @@ module.exports = {
     );
     return await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX "idx_unique_userApiKey"
-      ON "UserApiKeys"("userId", "module")
+      ON "UserApiKeys"("createdBy", "tourismCompanyId", "transportCompanyId")
       WHERE "deletedAt" IS NULL;
     `);
   },
@@ -65,8 +83,5 @@ module.exports = {
       DROP INDEX IF EXISTS "idx_unique_userApiKey";
     `);
     await queryInterface.dropTable("UserApiKeys");
-    await queryInterface.sequelize.query(`
-      DROP TYPE "enum_UserApiKeys_module";
-    `);
   }
 };

@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+      TransportCompany.hasMany(models.UserApiKey, {
+        foreignKey: {
+          name: "transportCompanyId",
+          allowNull: true,
+          unique: false,
+        },
+      });
     }
   }
   TransportCompany.init(

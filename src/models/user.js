@@ -99,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
 
       User.hasMany(models.UserApiKey, {
         foreignKey: {
-          name: "userId",
+          name: "createdBy",
           allowNull: false,
           unique: false,
         },

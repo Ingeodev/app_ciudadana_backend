@@ -12,8 +12,24 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       UserApiKey.belongsTo(models.User, {
         foreignKey: {
-          name: "userId",
+          name: "createdBy",
           allowNull: false,
+          unique: false,
+        },
+      });
+
+      UserApiKey.belongsTo(models.TourismCompany, {
+        foreignKey: {
+          name: "tourismCompanyId",
+          allowNull: true,
+          unique: false,
+        },
+      });
+
+      UserApiKey.belongsTo(models.TransportCompany, {
+        foreignKey: {
+          name: "transportCompanyId",
+          allowNull: true,
           unique: false,
         },
       });
@@ -28,14 +44,20 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         unique: true,
       },
-      userId: {
+      createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
-      module: {
-        type: DataTypes.ENUM("TOURISM", "TRANSPORTROUTES"),
-        // defaultValue: "NULL",
+      tourismCompanyId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: false,
+      },
+      transportCompanyId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: false,
       },
       key: {
         type: DataTypes.TEXT,

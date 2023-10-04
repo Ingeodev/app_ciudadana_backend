@@ -33,6 +33,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      TourismCompany.hasMany(models.UserApiKey, {
+        foreignKey: {
+          name: "tourismCompanyId",
+          allowNull: true,
+          unique: false,
+        },
+      });
     }
   }
   TourismCompany.init(
