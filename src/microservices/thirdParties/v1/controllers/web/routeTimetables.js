@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
+// const { Op, Sequelize } = require("sequelize");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/web/routeTimetables.js");
-const { Op, Sequelize } = require("sequelize");
 
 /**
  * Create a route timetable
