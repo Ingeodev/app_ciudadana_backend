@@ -266,7 +266,7 @@ exports.postDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id },
+      data: { id, timetableId, companyId, routeId },
     });
   } catch (error) {
     // console.error("Hour n tariff for a route timetabe could not be deleted: ", error.message);
