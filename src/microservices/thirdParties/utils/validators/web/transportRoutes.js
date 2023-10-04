@@ -57,6 +57,12 @@ const getCompaniesRoutesSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
+const getCompanyNRoutesSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+  companyId: joi.number().integer().greater(0).required(),
+});
+
 const getItinerarySchema = joi.object({
   routeId: joi.number().integer().greater(0).required()
 });
@@ -371,6 +377,9 @@ module.exports = {
   },
   vWebGetListCompaniesNRoutes: async (inputData) => {
     return await use_validator_on_data(getCompaniesRoutesSchema, inputData);
+  },
+  vWebGetCompanyNRoutes: async (inputData) => {
+    return await use_validator_on_data(getCompanyNRoutesSchema, inputData);
   },
   vWebGetItinerary: async (inputData) => {
     return await use_validator_on_data(getItinerarySchema, inputData);

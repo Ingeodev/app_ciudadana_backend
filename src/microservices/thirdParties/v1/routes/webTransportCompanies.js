@@ -6,6 +6,12 @@ const citiesController = require("../controllers/web/cities.js");
 
 // ------------------ Transport Company -----------------------------
 router.post(
+  "/api_key",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.postCreateApiKey
+);
+
+router.post(
   "/",
   // hasPermissions({ role: "super_master_user" }),
   transportCompanyController.postRegister
