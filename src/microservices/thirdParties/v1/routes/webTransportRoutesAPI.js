@@ -1,4 +1,5 @@
 const express = require("express");
+const { StatusCodes } = require("http-status-codes");
 const router = express.Router();
 const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 const transpRoutesController = require("../controllers/web/transportRoutesAPI.js");
@@ -103,9 +104,15 @@ router.post(
 );
 
 router.get(
-  "/route/:companyId",
+  "/route",
   // hasPermissions({ role: "super_master_user" }),
   transpRoutesController.getRouteAll
 );
+
+router.use((req, res, next) => {
+  const error = new Error("Route not found");
+  error.status = StatusCodes.NOT_FOUND;
+  return next(error);
+});
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const express = require("express");
+const { StatusCodes } = require("http-status-codes");
 const router = express.Router();
 const tourimsAPI = require("../controllers/web/tourismServicesAPI.js");
 const { authMiddleware, validateModuleTourism } = require("../../../../middleware/authMiddlewareApi.js");
@@ -42,4 +43,11 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   tourimsAPI.postBulkServiceDelete
 );
+
+router.use((req, res, next) => {
+  const error = new Error("Route not found");
+  error.status = StatusCodes.NOT_FOUND;
+  return next(error);
+});
+
 module.exports = router;
