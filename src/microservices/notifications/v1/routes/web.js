@@ -17,9 +17,16 @@ const genderCategoryC = require("../controllers/webGenderCategories");
 const genderAttLineC = require("../controllers/webGenderAttentionLines");
 const securityAttentionPointsController = require("../controllers/webSecurityAttentionPoint");
 const genderAttPointC = require("../controllers/webGenderAttentionPoint");
+const baseController = require("../controllers/webBase.js");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
 router.use(authorization.authMiddleware);
+
+router.post(
+  "/validate_lat_lon",
+  // hasPermissions({ role: "super_master_user" }),
+  baseController.postValidateLatLon
+);
 
 //#region Advertisements end-points
 // Retrieve all the advertisements whether they have a category or not.
