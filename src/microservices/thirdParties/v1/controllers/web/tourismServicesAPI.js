@@ -10,13 +10,14 @@ const validator = require("../../../utils/validators/web/tourismServices.js");
  */
 exports.getServices = async (req, res, next) => {
   try {
-    const objPage = await validator.vWebGetListAll({
+    const objPage = await validator.vWebGetServicesCompany({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
+      companyId: parseInt(req.params.id),
     });
 
     const companiesInDb = await db.TourismService.findAndCountAll({
-      where: { companyId: parseInt(req.params.id) },
+      where: { companyId: objPage.companyId },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]],
@@ -73,7 +74,7 @@ exports.postService = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { service } = await validator.vWebPostOneService(req.body);
+    const service = await validator.vWebPostOneService(req.body);
 
     // First, validate that the company belongs to the user.
     const company = await db.TourismCompany.findOne({
