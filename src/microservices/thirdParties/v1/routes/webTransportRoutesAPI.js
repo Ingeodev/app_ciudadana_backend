@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 const transpRoutesController = require("../controllers/web/transportRoutesAPI.js");
-// const { authMiddleware } = require("../../../../middleware/authMiddlewareApi.js");
+const { authMiddleware, validateModuleTransportRoutes } = require("../../../../middleware/authMiddlewareApi.js");
 
-// router.use(authMiddleware);
+router.use(authMiddleware);
+router.use(validateModuleTransportRoutes);
 
 // * ------------------ Date of Routes Timetables -----------------------------
 router.post(

@@ -8,7 +8,7 @@ router.use(authMiddleware);
 router.use(validateModuleTourism);
 
 router.get(
-  "/services/:id",
+  "/services/",
   // hasPermissions({ role: "super_master_user" }),
   tourimsAPI.getServices
 );

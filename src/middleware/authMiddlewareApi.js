@@ -49,20 +49,7 @@ const authMiddleware = async (req, res, next) => {
         key: apiKey,
         expirationAt: { [Sequelize.Op.gte]: new Date() },
       },
-      paranoid: true,
-      // include: [
-      //   {
-      //     model: db.ThirdPartyCategory,
-      //     attributes: [],
-      //     required: false,
-      //   },
-      // ],
-      // attributes: {
-      //   exclude: ["createdBy", "geolocation", "deletedAt"],
-      //   include: [
-      //     [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
-      //   ],
-      // },
+      paranoid: true
     });
 
     if (apiInDb == null)
@@ -73,8 +60,9 @@ const authMiddleware = async (req, res, next) => {
 
     res.locals = {
       ...res.locals,
-      apiUserId: apiInDb.userId,
-      apiModule: apiInDb.module,
+      apiCreatedBy: apiInDb.createdBy,
+      apiTourismCompanyId: apiInDb.tourismCompanyId,
+      apiTransportCompanyId: apiInDb.transportCompanyId,
     };
     return next();
   } catch (error) {
@@ -86,14 +74,16 @@ const authMiddleware = async (req, res, next) => {
 
 const validateModuleTourism = async (req, res, next) => {
   try {
-    if (res.locals.apiModule !== "TOURISM") {
-      throw {
-        message: "x-api-key not valid",
-        status: StatusCodes.UNAUTHORIZED,
-      };
+    if (
+      !isNaN(res.locals.apiTourismCompanyId) &&
+      res.locals.apiTransportCompanyId === null
+    ) {
+      return next();
     }
-    console.log("valido");
-    return next();
+    throw {
+      message: "x-api-key not valid",
+      status: StatusCodes.UNAUTHORIZED,
+    };
   } catch (error) {
     if (error.code) error.status = StatusCodes.UNAUTHORIZED;
     return next(error);
@@ -102,14 +92,16 @@ const validateModuleTourism = async (req, res, next) => {
 
 const validateModuleTransportRoutes = async (req, res, next) => {
   try {
-    if (res.locals.apiModule !== "TRANSPORTROUTES") {
-      throw {
-        message: "x-api-key not valid",
-        status: StatusCodes.UNAUTHORIZED,
-      };
+    if (
+      !isNaN(res.locals.apiTransportCompanyId) &&
+      res.locals.apiTourismCompanyId === null
+    ) {
+      return next();
     }
-    console.log("valido");
-    return next();
+    throw {
+      message: "x-api-key not valid",
+      status: StatusCodes.UNAUTHORIZED,
+    };
   } catch (error) {
     if (error.code) error.status = StatusCodes.UNAUTHORIZED;
     return next(error);

@@ -13,7 +13,7 @@ exports.getServices = async (req, res, next) => {
     const objPage = await validator.vWebGetServicesCompany({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
-      companyId: parseInt(req.params.id),
+      companyId: res.locals.apiTourismCompanyId,
     });
 
     const companiesInDb = await db.TourismService.findAndCountAll({
@@ -57,7 +57,7 @@ exports.getServices = async (req, res, next) => {
 
 /**
  * Create tourism service
- * @param {Array} req.body - Array of objects containing the fields of service (string) and companyId (integer)
+ * @param {Array} req.body - Array of objects containing the fields of service (string)
  * @return {object} Response contains: statuscode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postService = async (req, res, next) => {
@@ -74,12 +74,12 @@ exports.postService = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const service = await validator.vWebPostOneService(req.body);
+    const { service } = await validator.vWebPostOneService(req.body);
 
     // First, validate that the company belongs to the user.
     const company = await db.TourismCompany.findOne({
       where: {
-        id: service.companyId,
+        id: res.locals.apiTourismCompanyId,
         // createdBy: createdBy.id,
       },
       attributes: ["id"],
@@ -92,7 +92,7 @@ exports.postService = async (req, res, next) => {
         // status: StatusCodes.FORBIDDEN,
       };
 
-    const result = await db.TourismService.create(service);
+    const result = await db.TourismService.create({ service, companyId: res.locals.apiTourismCompanyId });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The address could not be geocoded: ", error.message);
@@ -102,7 +102,7 @@ exports.postService = async (req, res, next) => {
 
 /**
  * Creates tourism services
- * @param {Array} req.body - Array of objects containing the fields of service (string) and companyId (integer)
+ * @param {Array} req.body - Array of objects containing the fields of service (string)
  * @return {object} Response contains: statuscode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postBulkService = async (req, res, next) => {
@@ -119,12 +119,16 @@ exports.postBulkService = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { services } = await validator.vWebPostServices(req.body);
+    const { services } = await validator.vWebPostBulkServices(req.body);
+    const updatedServices = services.map((service) => ({
+      ...service,
+      companyId: res.locals.apiTourismCompanyId,
+    }));
 
     // First, validate that the company belongs to the user.
     const company = await db.TourismCompany.findOne({
       where: {
-        id: services[0].companyId,
+        id: res.locals.apiTourismCompanyId,
         // createdBy: createdBy.id,
       },
       attributes: ["id"],
@@ -137,7 +141,7 @@ exports.postBulkService = async (req, res, next) => {
         // status: StatusCodes.FORBIDDEN,
       };
 
-    const result = await db.TourismService.bulkCreate(services);
+    const result = await db.TourismService.bulkCreate(updatedServices);
 
     // result.forEach((obj, index) => {
     //   result[index] = {
@@ -159,7 +163,7 @@ exports.postBulkService = async (req, res, next) => {
 
 /**
  * Update a tourism service
- * @param {object} req - Object containing the id, service, companyId
+ * @param {object} req - Object containing the id, service
  * @return {object} Response contains: statuscode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -176,9 +180,11 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, service, companyId } = await validator.vWebPostEdit(
-      req.body
-    );
+    const { id, service, companyId } = await validator.vWebPostEdit({
+      id: req.body.id,
+      service: req.body.service,
+      companyId: res.locals.apiTourismCompanyId,
+    });
 
     // First, validate that the company belongs to the user.
     const companyInDb = await db.TourismCompany.findOne({
@@ -250,7 +256,10 @@ exports.postDelete = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, companyId } = await validator.vWebPostDelete(req.body);
+    const { id, companyId } = await validator.vWebPostDelete({
+      id: req.body.id,
+      companyId: res.locals.apiTourismCompanyId,
+    });
 
     // First, validate that the company belongs to the user.
     const companyInDb = await db.TourismCompany.findOne({
@@ -314,7 +323,10 @@ exports.postBulkServiceDelete = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { ids, companyId } = await validator.vWebPostBulkDelete(req.body);
+    const { ids, companyId } = await validator.vWebPostBulkDelete({
+      ids: req.body.ids,
+      companyId: res.locals.apiTourismCompanyId,
+    });
 
     // First, validate that the company belongs to the user.
     const companyInDb = await db.TourismCompany.findOne({
