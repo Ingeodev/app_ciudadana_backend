@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const tourimsAPI = require("../controllers/web/tourismServicesAPI.js");
-// const { authMiddleware } = require("../../../../middleware/authMiddlewareApi.js");
+const { authMiddleware, validateModuleTourism } = require("../../../../middleware/authMiddlewareApi.js");
 
 // ------------------ Tourism Services -----------------------------
-// router.use(authMiddleware);
+router.use(authMiddleware);
+router.use(validateModuleTourism);
 
 router.get(
   "/services/:id",
@@ -37,7 +38,7 @@ router.post(
 );
 
 router.post(
-  "/services_bulk/",
+  "/services_bulk/delete",
   // hasPermissions({ role: "super_master_user" }),
   tourimsAPI.postBulkServiceDelete
 );
