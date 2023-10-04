@@ -2,7 +2,13 @@ const express = require("express");
 const router = express.Router();
 const tourimsCompanyCont = require("../controllers/web/tourismCompanies.js");
 
-// ------------------ Transport Company -----------------------------
+// ------------------ Tourism Company -----------------------------
+router.post(
+  "/api_key",
+  // hasPermissions({ role: "super_master_user" }),
+  tourimsCompanyCont.postCreateApiKey
+);
+
 router.post(
   "/",
   // hasPermissions({ role: "super_master_user" }),

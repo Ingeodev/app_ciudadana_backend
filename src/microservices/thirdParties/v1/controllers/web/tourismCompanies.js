@@ -1,7 +1,71 @@
 const { StatusCodes } = require("http-status-codes");
 const { Sequelize } = require("sequelize");
+const crypto = require("crypto");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/tourismCompanies.js");
+
+/**
+ * Create an Api Key
+ * @param {object} req - Object containing the date (expiration)
+ * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ */
+exports.postCreateApiKey = async (req, res, next) => {
+  try {
+    // ! Pendiente: Validar permisos del usuario
+    const createdBy = await db.User.findOne({
+      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+      attributes: ["id", "clientId"],
+      include: [
+        {
+          model: db.UserApiKey,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+    });
+
+    if (createdBy == null || createdBy.id == null)
+      throw {
+        message: "User not found.",
+        status: StatusCodes.NOT_FOUND,
+      };
+
+    const { date } = await validator.vWebPostApiKey(req.body);
+    // This key could be stored in the db, if you wish to verify the authenticity of the data (eg, createdBy.clientId)
+    const secret = crypto.randomBytes(128).toString("hex");
+    const apiKey = crypto.createHmac("sha512", secret).update(createdBy.clientId).digest("hex");
+
+    if (!Array.isArray(createdBy.dataValues.UserApiKeys) || createdBy.dataValues.UserApiKeys.length === 0) {
+      // Create
+      await db.UserApiKey.create({
+        userId: createdBy.id,
+        module: "TOURISM",
+        key: apiKey,
+        expirationAt: date,
+      });
+    } else {
+      // Renovate
+      await db.UserApiKey.destroy({ where: { id: createdBy.dataValues.UserApiKeys[0].id } });
+      await db.UserApiKey.create({
+        userId: createdBy.id,
+        module: "TOURISM",
+        key: apiKey,
+        expirationAt: date,
+      });
+    }   
+
+    return res.status(StatusCodes.CREATED).json({
+      meta: null,
+      data: {
+        apiKey,
+        date,
+      },
+    });
+  } catch (error) {
+    // console.error("company could not be created: ", error.message);
+    return next(error);
+  }
+};
 
 /**
  * Create a tourism company

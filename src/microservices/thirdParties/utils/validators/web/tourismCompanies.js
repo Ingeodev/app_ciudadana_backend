@@ -22,6 +22,30 @@ const registerSchema = joi.object({
     return value;
 });
 
+const apiKeySchema = joi.object({
+  date: joi
+    .string()
+    .required()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .error((errors) => {
+      errors.forEach((err) => {
+        // const label = err.local?.label || "value";
+        switch (err.code) {
+          case "string.pattern.base":
+            err.message = `"date" format must be aaaa-mm-dd.`;
+            break;
+          case "any.required":
+            err.message = `"date" is required.`;
+            break;
+          default:
+            err.message = `"date" item has an invalid value.`;
+            break;
+        }
+      });
+      return errors;
+    }),
+});
+
 const editSchema = joi.object({
   id: joi.number().empty("").greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
@@ -102,5 +126,8 @@ module.exports = {
   },
   vWebPostDelete: async (inputData) => {
     return await use_validator_on_data(postDeleteSchema, inputData);
+  },
+  vWebPostApiKey: async (inputData) => {
+    return await use_validator_on_data(apiKeySchema, inputData);
   },
 };
