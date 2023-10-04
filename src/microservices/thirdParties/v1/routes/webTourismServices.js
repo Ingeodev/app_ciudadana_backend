@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const tourismServCont = require("../controllers/web/tourismServices.js");
 
-// * ------------------ Company Services -----------------------------
+// * ------------------ Tourism Company Services -----------------------------
 router.get(
   "/:id",
   // hasPermissions({ role: "super_master_user" }),
