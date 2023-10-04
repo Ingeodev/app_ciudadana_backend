@@ -96,6 +96,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      User.hasMany(models.UserApiKey, {
+        foreignKey: {
+          name: "userId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   User.init(
