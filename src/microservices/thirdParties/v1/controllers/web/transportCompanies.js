@@ -6,7 +6,7 @@ const validator = require("../../../utils/validators/web/transportCompanies.js")
 
 /**
  * Create an Api Key
- * @param {object} req - Object containing the date (expiration)
+ * @param {object} req - Object containing the date (expiration) n companyId
  * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postCreateApiKey = async (req, res, next) => {
@@ -15,13 +15,13 @@ exports.postCreateApiKey = async (req, res, next) => {
     const createdBy = await db.User.findOne({
       where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ["id", "clientId"],
-      include: [
-        {
-          model: db.UserApiKey,
-          attributes: ["id"],
-          required: false,
-        },
-      ],
+      // include: [
+      //   {
+      //     model: db.UserApiKey,
+      //     attributes: ["id"],
+      //     required: false,
+      //   },
+      // ],
     });
 
     if (createdBy == null || createdBy.id == null)
@@ -30,39 +30,114 @@ exports.postCreateApiKey = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { date } = await validator.vWebPostApiKey(req.body);
+    const { date, companyId } = await validator.vWebPostApiKey(req.body);
+
+    const companyInDb = await db.TransportCompany.findByPk(companyId, {
+      attributes: ["id"],
+      paranoid: true,
+    });
+
+    if (companyInDb == null)
+      throw {
+        message: "Transport company not found",
+        status: StatusCodes.NOT_FOUND,
+        // status: StatusCodes.UNPROCESSABLE_ENTITY,
+      };
+
     // This key could be stored in the db, if you wish to verify the authenticity of the data (eg, createdBy.clientId)
     const secret = crypto.randomBytes(128).toString("hex");
-    const apiKey = crypto.createHmac("sha512", secret).update(createdBy.clientId).digest("hex");
+    const apiKey = crypto
+      .createHmac("sha512", secret)
+      .update(createdBy.clientId, companyInDb.id)
+      .digest("hex");
+    
+    const newApiKey = {
+      createdBy: createdBy.id,
+      key: apiKey,
+      expirationAt: date,
+      tourismCompanyId: null,
+      transportCompanyId: companyInDb.id,
+    };
 
-    if (!Array.isArray(createdBy.dataValues.UserApiKeys) || createdBy.dataValues.UserApiKeys.length === 0) {
+    // Validate if the company has an apiKey created
+    const apiKeyInDb = await db.UserApiKey.findOne({
+      where: {
+        tourismCompanyId: null,
+        transportCompanyId: companyInDb.id,
+      },
+      attributes: ["id"],
+      paranoid: true,
+    });
+
+    if (apiKeyInDb == null) {
       // Create
-      await db.UserApiKey.create({
-        userId: createdBy.id,
-        module: "TRANSPORTROUTES",
-        key: apiKey,
-        expirationAt: date,
-      });
+      await db.UserApiKey.create(newApiKey);
     } else {
       // Renovate
-      await db.UserApiKey.destroy({ where: { id: createdBy.dataValues.UserApiKeys[0].id } });
-      await db.UserApiKey.create({
-        userId: createdBy.id,
-        module: "TRANSPORTROUTES",
-        key: apiKey,
-        expirationAt: date,
-      });
-    }   
+      await apiKeyInDb.destroy();
+      await db.UserApiKey.create(newApiKey);
+    }
 
     return res.status(StatusCodes.CREATED).json({
       meta: null,
       data: {
         apiKey,
         date,
+        companyId: companyInDb.id,
       },
     });
   } catch (error) {
     // console.error("company could not be created: ", error.message);
+    return next(error);
+  }
+};
+
+/**
+ * Get the apiKey (First 5 characters)
+ * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
+ */
+exports.getApiKey = async (req, res, next) => {
+  try {
+    // // ! Pendiente: Validar permisos del usuario
+    // const createdBy = await db.User.findOne({
+    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
+    //   attributes: ["id"],
+    // });
+
+    // if (createdBy == null || createdBy.id == null)
+    //   throw {
+    //     message: "User not found",
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
+
+    const { companyId } = await validator.vWebGetApiKey(req.body);
+
+    // Validate that the company belongs to the user
+    const companyInDb = await db.TransportCompany.findByPk(companyId, {
+      include: [
+        {
+          model: db.UserApiKey,
+          where: { tourismCompanyId: null },
+          attributes: ["key"],
+          required: true,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
+    });
+
+    if (companyInDb === null)
+      throw {
+        message: "Transport company does not have an api key created",
+        status: StatusCodes.NOT_FOUND,
+      };
+
+    return res.status(StatusCodes.OK).send({
+      meta: null,
+      data: { apiKey: String(companyInDb.UserApiKeys[0].key).substring(0, 5) + "*********" },
+    });
+  } catch (error) {
+    // console.error("company could not be recovered: ", error.message);
     return next(error);
   }
 };

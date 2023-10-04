@@ -60,6 +60,11 @@ const apiKeySchema = joi.object({
       });
       return errors;
     }),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
+});
+
+const getApiKeySchema = joi.object({
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -98,5 +103,8 @@ module.exports = {
   },
   vWebPostApiKey: async (inputData) => {
     return await use_validator_on_data(apiKeySchema, inputData);
+  },
+  vWebGetApiKey: async (inputData) => {
+    return await use_validator_on_data(getApiKeySchema, inputData);
   },
 };

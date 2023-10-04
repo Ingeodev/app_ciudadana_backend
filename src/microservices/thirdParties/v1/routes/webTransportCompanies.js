@@ -11,6 +11,12 @@ router.post(
   transportCompanyController.postCreateApiKey
 );
 
+router.get(
+  "/api_key",
+  // hasPermissions({ role: "super_master_user" }),
+  transportCompanyController.getApiKey
+);
+
 router.post(
   "/",
   // hasPermissions({ role: "super_master_user" }),

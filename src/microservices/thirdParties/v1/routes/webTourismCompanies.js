@@ -9,6 +9,12 @@ router.post(
   tourimsCompanyCont.postCreateApiKey
 );
 
+router.get(
+  "/api_key",
+  // hasPermissions({ role: "super_master_user" }),
+  tourimsCompanyCont.getApiKey
+);
+
 router.post(
   "/",
   // hasPermissions({ role: "super_master_user" }),
