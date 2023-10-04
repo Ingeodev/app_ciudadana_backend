@@ -11,7 +11,7 @@ const caliCodeDane = 76001;
 
 /**
  * Create an transport route
- * @param {Array} req.body - Object containing the origin, destination, companyId, duration
+ * @param {Array} req.body - Object containing the origin, destination, duration
  * @return {object} Response contains: statuscode (integer), json (objects array): id, origin, destination, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRouteRegister = async (req, res, next) => {
@@ -29,7 +29,12 @@ exports.postRouteRegister = async (req, res, next) => {
       };
 
     const { originId, destinationId, companyId, duration } =
-      await validatorRoute.vWebPostRegister(req.body);
+      await validatorRoute.vWebPostRegister({
+        originId: req.body.originId,
+        destinationId: req.body.destinationId,
+        companyId: res.locals.apiTransportCompanyId,
+        duration: req.body.duration,
+      });
 
     const originInDb = await db.City.findByPk(originId, {
       attributes: ["id", "cityCode"],
@@ -110,7 +115,7 @@ exports.postRouteRegister = async (req, res, next) => {
 
 /**
  * Update a transport route
- * @param {object} req - Object containing the id, origin, destination, companyId, duration
+ * @param {object} req - Object containing the id, origin, destination, duration
  * @return {object} Response contains: statuscode (integer), json (route object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRouteEdit = async (req, res, next) => {
@@ -128,7 +133,13 @@ exports.postRouteEdit = async (req, res, next) => {
     //   };
 
     const { id, originId, destinationId, companyId, duration } =
-      await validatorRoute.vWebPostEdit(req.body);
+      await validatorRoute.vWebPostEdit({
+        id: req.body.id,
+        originId: req.body.originId,
+        destinationId: req.body.destinationId,
+        companyId: res.locals.apiTransportCompanyId,
+        duration: req.body.duration,
+      });
 
     const originInDb = await db.City.findByPk(originId, {
       attributes: ["id", "cityCode"],
@@ -232,8 +243,8 @@ exports.postRouteEdit = async (req, res, next) => {
 
 /**
  * Destroy a transport route (soft delete)
- * @param {object} req - Object containing the id, companyId
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @param {object} req - Object containing the id
+ * @return {object} Response contains: statuscode (integer), json (object): id, companyId. Or if there's error, json (object): status, code, detail
  */
 exports.postRouteDelete = async (req, res, next) => {
   try {
@@ -249,7 +260,10 @@ exports.postRouteDelete = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, companyId } = await validatorRoute.vWebPostDelete(req.body);
+    const { id, companyId } = await validatorRoute.vWebPostDelete({
+      id: req.body.id,
+      companyId: res.locals.apiTransportCompanyId,
+    });
 
     // First, validate that the transport company belongs to the user.
     const companyInDb = await db.TransportCompany.findOne({
@@ -307,7 +321,7 @@ exports.postRouteDelete = async (req, res, next) => {
 
 /**
  * Get all transport routes of an company
- * @param {object} req.query - Object containing the companyId, number, and size
+ * @param {object} req.query - Object containing the number, and size
  * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getRouteAll = async (req, res, next) => {
@@ -325,7 +339,7 @@ exports.getRouteAll = async (req, res, next) => {
     //   };
 
     const objPage = await validatorRoute.vWebGetListRoutes({
-      companyId: parseInt(req.params.companyId),
+      companyId: res.locals.apiTransportCompanyId,
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
@@ -424,9 +438,12 @@ exports.getRouteItinerary = async (req, res, next) => {
       // size: req.query.page ? parseInt(req.query.page.size) : null,
     });
 
-    let routeInDb = await db.TransportRoute.findByPk(objPage.routeId, {
+    let routeInDb = await db.TransportRoute.findOne({
       // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
+      where: {
+        id: objPage.routeId,
+        companyId: res.locals.apiTransportCompanyId
+      },
       include: [
         {
           model: db.RouteTimetable,
@@ -464,7 +481,6 @@ exports.getRouteItinerary = async (req, res, next) => {
       throw {
         message: "Route could not be retrieved",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
     routeInDb.duration = formathhmm.secondsToHhmm(routeInDb.duration);
@@ -509,12 +525,17 @@ exports.postRouteUploadXlsx = async (req, res, next) => {
       };
 
     const xlsxFile = await validatorRoute.vMulterMemorySingleItemSchema(req.file);
-    const { companyId } = await validatorRoute.vWebPostUploadXlsxRoutes(req.body);
+    const { companyId } = await validatorRoute.vWebPostUploadXlsxRoutes({
+      companyId: res.locals.apiTransportCompanyId
+    });
 
     // Verify if the transportation company exists
-    const companyInDb = await db.TransportCompany.findByPk(companyId, {
+    const companyInDb = await db.TransportCompany.findOne({
       // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
+      where: {
+        // createdBy: createdBy.id,
+        id: companyId,
+      },
       attributes: ["id", "name"],
     });
 
@@ -887,7 +908,7 @@ exports.getRouteDownloadXlsxTemplate = async (req, res, next) => {
 
 /**
  * Create a route timetable
- * @param {object} req - Object containing the date, routeId, companyId
+ * @param {object} req - Object containing the date, routeId
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDateRegister = async (req, res, next) => {
@@ -895,7 +916,7 @@ exports.postDateRegister = async (req, res, next) => {
     const { date, routeId, companyId } = await validatorDate.vWebPostRegister({
       date: req.body.date,
       routeId: req.body.routeId,
-      companyId: req.body.companyId,
+      companyId: req.locals.apiTransportCompanyId,
     });
 
     // Verify whether the route belongs to the companyId
@@ -934,14 +955,19 @@ exports.postDateRegister = async (req, res, next) => {
 
 /**
  * Create a route timetable with your hours
- * @param {object} req - Object containing the date, routeId, companyId, hours (array)
+ * @param {object} req - Object containing the date, routeId, hours (array)
  * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDateRegisterWithHour = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
     const { date, routeId, companyId, hoursTariffs } =
-      await validatorDate.vWebPostRegisterWithHour(req.body);
+      await validatorDate.vWebPostRegisterWithHour({
+        date: req.body.date,
+        routeId: req.body.routeId,
+        companyId: res.locals.apiTransportCompanyId,
+        hoursTariffs: req.body.hoursTariffs,
+      });
 
     // Verify whether the route belongs to the companyId
     const companyInDb = await db.TransportCompany.findOne({
@@ -1003,7 +1029,7 @@ exports.postDateRegisterWithHour = async (req, res, next) => {
 
 /**
  * Update a route timetable
- * @param {object} req - Object containing the id, date, routeId, companyId
+ * @param {object} req - Object containing the id, date, routeId
  * @return {object} Response contains: statuscode (integer), json (route timetable object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDateEdit = async (req, res, next) => {
@@ -1012,7 +1038,7 @@ exports.postDateEdit = async (req, res, next) => {
       id: req.body.id,
       date: req.body.date,
       routeId: req.body.routeId,
-      companyId: req.body.companyId,
+      companyId: res.locals.apiTransportCompanyId,
     });
 
     // Verify whether the route belongs to the companyId
@@ -1080,7 +1106,7 @@ exports.postDateEdit = async (req, res, next) => {
 exports.getDateAll = async (req, res, next) => {
   try {
     const objPage = await validatorDate.vWebGetAll({
-      companyId: req.query.companyId ? parseInt(req.query.companyId) : null,
+      companyId: res.locals.apiTransportCompanyId ? parseInt(res.locals.apiTransportCompanyId) : null,
       routeId: req.query.routeId ? parseInt(req.query.routeId) : null,
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
@@ -1154,11 +1180,15 @@ exports.getDateAll = async (req, res, next) => {
 
 /**
  * Destroy a Route timetable (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (objeto): id, routeId, companyId. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDateDelete = async (req, res, next) => {
   try {
-    const { id, routeId, companyId } = await validatorDate.vWebPostDelete(req.body);
+    const { id, routeId, companyId } = await validatorDate.vWebPostDelete({
+      id: req.body.id,
+      routeId: req.body.routeId,
+      companyId: res.locals.apiTransportCompanyId,
+    });
 
     // Verify whether the route belongs to the companyId
     const companyInDb = await db.TransportCompany.findOne({
@@ -1199,7 +1229,7 @@ exports.postDateDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id, routeId },
+      data: { id, routeId, companyId },
     });
   } catch (error) {
     // console.error("Route timetable could not be deleted: ", error.message);
@@ -1216,7 +1246,14 @@ exports.postDateDelete = async (req, res, next) => {
  */
 exports.postHourRegister = async (req, res, next) => {
   try {
-    const { hour, tariff, timetableId, companyId, routeId } = await validatorHour.vWebPostRegister(req.body);
+    const { hour, tariff, timetableId, companyId, routeId } =
+      await validatorHour.vWebPostRegister({
+        hour: req.body.hour,
+        tariff: req.body.tariff,
+        timetableId: req.body.timetableId,
+        companyId: res.locals.apiTransportCompanyId,
+        routeId: req.body.routeId,
+      });
 
     const companyInDb = await db.TransportCompany.findOne({
       where: { id: companyId },
@@ -1266,7 +1303,14 @@ exports.postHourEdit = async (req, res, next) => {
   try {
     // ! Por seguridad se deberia de pedir, companyId y routeId
     const { id, hour, tariff, timetableId, companyId, routeId } =
-      await validatorHour.vWebPostEdit(req.body);
+      await validatorHour.vWebPostEdit({
+        id: req.body.id,
+        hour: req.body.hour,
+        tariff: req.body.tariff,
+        timetableId: req.body.timetableId,
+        companyId: res.locals.apiTransportCompanyId,
+        routeId: req.body.routeId,
+      });
 
     // Verify whether the hour n tariff belongs to the timetableId
     const companyInDb = await db.TransportCompany.findOne({
@@ -1338,11 +1382,9 @@ exports.postHourEdit = async (req, res, next) => {
 exports.getHourAll = async (req, res, next) => {
   try {
     const objPage = await validatorHour.vWebGetAll({
-      companyId: req.query.companyId ? parseInt(req.query.companyId) : null,
+      companyId: res.locals.apiTransportCompanyId ? parseInt(res.locals.apiTransportCompanyId) : null,
       routeId: req.query.routeId ? parseInt(req.query.routeId) : null,
-      timetableId: req.query.timetableId
-        ? parseInt(req.query.timetableId)
-        : null,
+      timetableId: req.query.timetableId ? parseInt(req.query.timetableId) : null,
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
@@ -1426,12 +1468,17 @@ exports.getHourAll = async (req, res, next) => {
 
 /**
  * Destroy a hour n tariff for a route timetable (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statuscode (integer), json (objeto): id, timetableId, companyId, routeId. Or if there's error, json (objeto): status, code, detail
  */
 exports.postHourDelete = async (req, res, next) => {
   try {
     const { id, timetableId, companyId, routeId } =
-      await validatorHour.vWebPostDelete(req.body);
+      await validatorHour.vWebPostDelete({
+        id: req.body.id,
+        timetableId: req.body.timetableId,
+        companyId: res.locals.apiTransportCompanyId,
+        routeId: req.body.routeId,
+      });
 
     // Verify whether the hour n tariff belongs to the timetableId
     const companyInDb = await db.TransportCompany.findOne({
@@ -1481,7 +1528,7 @@ exports.postHourDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id },
+      data: { id, timetableId, companyId, routeId },
     });
   } catch (error) {
     // console.error("Hour n tariff for a route timetabe could not be deleted: ", error.message);
