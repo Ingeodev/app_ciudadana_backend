@@ -177,19 +177,11 @@ exports.getAll = async (req, res, next) => {
       paranoid: true,
     });
 
-    if (timetablesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no hour n tariff registered",
-      };
-    }
-    if (timetablesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(timetablesInDb.count / objPage.size);
+    let message = undefined;
+    if (categoriesInDb.count <= 0)
+      message = "There are no hour n tariff registered";
+    if (categoriesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedTimetables = timetablesInDb.rows.map((timetable) => {
       const timetableData = timetable.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -197,17 +189,16 @@ exports.getAll = async (req, res, next) => {
       return timetableData;
     });
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords: timetablesInDb.count,
-        totalPages: totalPages,
+        totalRecords: categoriesInDb.count,
+        totalPages: Math.ceil(categoriesInDb.count / objPage.size),
       },
       data: transformedTimetables,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Route timetables could not be recovered: ", error.message);
     return next(error);
