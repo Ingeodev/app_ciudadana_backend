@@ -10,7 +10,7 @@ router.post(
 );
 
 router.get(
-  "/api_key",
+  "/api_key/:companyId",
   // hasPermissions({ role: "super_master_user" }),
   tourimsCompanyCont.getApiKey
 );

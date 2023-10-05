@@ -30,7 +30,11 @@ exports.postCreateApiKey = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { date, companyId } = await validator.vWebPostApiKey(req.body);
+    const { expirationAt, companyId } = await validator.vWebPostApiKey({
+      // expirationAt: req.body.expirationAt,
+      expirationAt: "2999-12-31",
+      companyId: req.body.companyId,
+    });
 
     const companyInDb = await db.TourismCompany.findByPk(companyId, {
       attributes: ["id"],
@@ -54,7 +58,7 @@ exports.postCreateApiKey = async (req, res, next) => {
     const newApiKey = {
       createdBy: createdBy.id,
       key: apiKey,
-      expirationAt: date,
+      expirationAt,
       tourismCompanyId: companyInDb.id,
       transportCompanyId: null,
     };
@@ -82,7 +86,7 @@ exports.postCreateApiKey = async (req, res, next) => {
       meta: null,
       data: {
         apiKey,
-        date,
+        expirationAt,
         companyId: companyInDb.id,
       },
     });
@@ -110,7 +114,9 @@ exports.getApiKey = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { companyId } = await validator.vWebGetApiKey(req.body);
+    const { companyId } = await validator.vWebGetApiKey({
+      companyId: req.params.companyId ? parseInt(req.params.companyId) : null,
+    });
 
     // Validate that the company belongs to the user
     const companyInDb = await db.TourismCompany.findByPk(companyId, {

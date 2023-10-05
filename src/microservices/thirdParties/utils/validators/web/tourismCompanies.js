@@ -23,7 +23,7 @@ const registerSchema = joi.object({
 });
 
 const apiKeySchema = joi.object({
-  date: joi
+  expirationAt: joi
     .string()
     .required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
@@ -32,13 +32,13 @@ const apiKeySchema = joi.object({
         // const label = err.local?.label || "value";
         switch (err.code) {
           case "string.pattern.base":
-            err.message = `"date" format must be aaaa-mm-dd.`;
+            err.message = `"expirationAt" format must be aaaa-mm-dd.`;
             break;
           case "any.required":
-            err.message = `"date" is required.`;
+            err.message = `"expirationAt" is required.`;
             break;
           default:
-            err.message = `"date" item has an invalid value.`;
+            err.message = `"expirationAt" item has an invalid value.`;
             break;
         }
       });
