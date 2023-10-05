@@ -8,7 +8,8 @@ const validator = require("../../utils/validatorReports.js");
 const { checkIfExists } = require("../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
 
-const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
+// const uploadsFolder = path.join("..", "..", "uploads", "private"); // TODO: transform in env var; ask Esteban.
+const uploadsFolder = path.join("..", "..", "uploads"); // TODO: transform in env var; ask Esteban.
 
 /**
  * Checks whether an SecurityCategory ID exists and refers to an existing category.
@@ -55,7 +56,8 @@ exports.postRegister = async (req, res, next) => {
     const endpoint = "mobileReports";
     const uploadDir = path.join(uploadsFolder, endpoint);
     const filename = uuidV4() + path.extname(pdfFile.originalname);
-    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
+    // const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
+    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/${endpoint}/${filename}`;
 
     const filepath = path.join(uploadDir, filename);
     await checkIfExists(uploadDir, true);
