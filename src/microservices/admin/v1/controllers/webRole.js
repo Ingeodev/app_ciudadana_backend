@@ -99,31 +99,22 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
-    if (rolesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no roles registered",
-      };
-    }
-    if (rolesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(rolesInDb.count / objPage.size);
+    let message = undefined;
+    if (rolesInDb.count <= 0)
+      message = "There are no roles registered";
+    if (rolesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: rolesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(rolesInDb.count / objPage.size),
       },
       data: rolesInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Roles could not be recovered: ", error.message);
     return next(error);
@@ -261,31 +252,22 @@ exports.getUsersByRoleId = async (req, res, next) => {
       },
     });
 
-    if (usersInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no users with this role",
-      };
-    }
-    if (usersInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(usersInDb.count / objPage.size);
+    let message = undefined;
+    if (usersInDb.count <= 0)
+      message = "There are no users with this role";
+    if (usersInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: usersInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(usersInDb.count / objPage.size),
       },
       data: usersInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Users with this role could not be recovered: ", error.message);
     return next(error);

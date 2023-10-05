@@ -336,6 +336,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all admins
+ * @param {object} req.query - Object containing the number, size
  * @return {object} Response contains: statuscode (integer), json (objeto): data admins. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -363,31 +364,22 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
-    if (adminsInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no users registered in the database",
-      };
-    }
-    if (adminsInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(adminsInDb.count / objPage.size);
+    let message = undefined;
+    if (adminsInDb.count <= 0)
+      message = "There are no users registered in the database";
+    if (adminsInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: adminsInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(adminsInDb.count / objPage.size),
       },
       data: adminsInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("document types could not be recovered: ", error.message);
     return next(error);
