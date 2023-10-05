@@ -6,6 +6,7 @@ const companiesController = require("../controllers/mobile/companies.js");
 const transportController = require("../controllers/mobile/transportRoutes.js");
 const citiesController = require("../controllers/mobile/cities.js");
 const tourismCategoryController = require("../controllers/mobile/tourismCategories.js");
+const tourismCompanyController = require("../controllers/mobile/tourismCompanies.js");
 
 // --------------------- Intercity_transport ----------------------------
 router.get(
@@ -33,6 +34,12 @@ router.get(
   "/tourism/categories",
   // hasPermissions({ role: "super_master_user" }),
   tourismCategoryController.getAll
+);
+
+router.get(
+  "/tourism/",
+  // hasPermissions({ role: "super_master_user" }),
+  tourismCompanyController.getCompaniesnServices
 );
 //#endregion - Tourism categories
 
