@@ -1,10 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
-
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/mobile/tourismCategories");
 const { formatColorOutputForMobile } = require("../../../../../utils/mobileColorFormatter");
 
-/** List all the tourism categories in the mobile format */
+/**
+ * List all the tourism categories in the mobile format
+ * @param {object} req.query - Object containing the number and size
+ * @return {object} Response contains: statuscode (integer), json (objeto): categories data. Or if there's error, json (objeto): status, code, detail
+ */
 const getAll = async (req, res, next) => {
   try {
     const { page } = await validator.validateOptionalPaginationSchema(req.query);
