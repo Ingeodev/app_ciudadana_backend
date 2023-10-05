@@ -77,6 +77,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all ThirdParty categories
+ * @param {object} req.query - Object containing the number, size
  * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -92,31 +93,22 @@ exports.getAll = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
     });
 
-    if (categInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Third-party categories registered in the database",
-      };
-    }
-    if (categInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(categInDb.count / objPage.size);
+    let message = undefined;
+    if (categInDb.count <= 0)
+      message = "There are no third-party categories registered";
+    if (categInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: categInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(categInDb.count / objPage.size),
       },
       data: categInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("ThirdParty categories could not be recovered: ", error.message);
     return next(error);
@@ -125,7 +117,8 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Get ThirdParty category by id
- * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
+ * @param {integer} req.params.id - id of the company
+ * @return {object} Response contains: statuscode (integer), json (objeto): data thirdParty category. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {

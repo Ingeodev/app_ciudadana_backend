@@ -288,29 +288,22 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
+    let message = undefined;
     if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not companies registered",
-      };
+      message = "There are no companies registered";
     if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    const totalPages = Math.ceil(companiesInDb.count / objPage.size);
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: companiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(companiesInDb.count / objPage.size),
       },
       data: companiesInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("companies could not be recovered: ", error.message);
     return next(error);

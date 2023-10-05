@@ -6,7 +6,7 @@ const validator = require("../../../utils/validators/mobile/companies.js");
 
 /**
  * Get all companies with your services
- * @param {object} req.query - Object containing the number and size
+ * @param {object} req.query - Object containing the number, size, lat, n lon
  * @return {object} Response contains: statuscode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getCompaniesnServices = async (req, res, next) => {
@@ -83,16 +83,11 @@ exports.getCompaniesnServices = async (req, res, next) => {
       },
     });
 
+    let message = undefined;
     if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not companies registered",
-      };
+      message = "There are no third-party companies registered";
     if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -111,7 +106,16 @@ exports.getCompaniesnServices = async (req, res, next) => {
       };
     });
 
-    return res.status(StatusCodes.OK).send(transformedCompanies);
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: companiesInDb.count,
+        totalPages: Math.ceil(companiesInDb.count / objPage.size),
+      },
+      data: transformedCompanies,
+    });
   } catch (error) {
     // console.error("companies could not be recovered: ", error.message);
     return next(error);

@@ -294,6 +294,7 @@ exports.postDelete = async (req, res, next) => {
 /**
  * Get all transport routes of an company
  * @param {object} req.query - Object containing the companyId, number, and size
+ * @param {integer} req.params.id - id of the company
  * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -341,17 +342,11 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
+    let message = undefined;
     if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not transport routes registered",
-      };
+      message = "There are no registered routes of the transport company";
     if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    const totalPages = Math.ceil(companiesInDb.count / objPage.size);
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -368,17 +363,16 @@ exports.getAll = async (req, res, next) => {
       };
     });
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: companiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(companiesInDb.count / objPage.size),
       },
       data: transformedCompanies,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Transport routes could not be recovered: ", error.message);
     return next(error);
@@ -444,17 +438,11 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
       },
     });
 
+    let message = undefined;
     if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not transport companies registered",
-      };
+      message = "There are no transport companies registered";
     if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    const totalPages = Math.ceil(companiesInDb.count / objPage.size);
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -472,17 +460,16 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
       };
     });
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: companiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(companiesInDb.count / objPage.size),
       },
       data: transformedCompanies,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Transport companies could not be recovered: ", error.message);
     return next(error);

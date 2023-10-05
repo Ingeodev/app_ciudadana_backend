@@ -227,19 +227,11 @@ exports.getAll = async (req, res, next) => {
       paranoid: true
     });
 
-    if (timetablesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no route timetables registered",
-      };
-    }
-    if (timetablesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(timetablesInDb.count / objPage.size);
+    let message = undefined;
+    if (timetablesInDb.count <= 0)
+      message = "There are no route timetables registered";
+    if (timetablesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
     timetablesInDb.rows = timetablesInDb.rows.map((timetable) => {
       return {
@@ -249,17 +241,16 @@ exports.getAll = async (req, res, next) => {
       };
     });
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: timetablesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(timetablesInDb.count / objPage.size),
       },
       data: timetablesInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Route timetables could not be recovered: ", error.message);
     return next(error);

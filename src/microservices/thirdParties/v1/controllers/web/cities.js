@@ -77,6 +77,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all  Cities
+ * @param {object} req.query - Object containing the number, size
  * @return {object} Response contains: statuscode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -95,31 +96,22 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
-    if (citiesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no cities registered in the database",
-      };
-    }
-    if (citiesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(citiesInDb.count / objPage.size);
+    let message = undefined;
+    if (citiesInDb.count <= 0)
+      message = "There are no cities registered";
+    if (citiesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: citiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(citiesInDb.count / objPage.size),
       },
       data: citiesInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Cities could not be recovered: ", error.message);
     return next(error);
@@ -128,6 +120,7 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Get list - autocomplete
+ * @param {object} req.query - Object containing the number, size, q (string-query)
  * @return {object} Response contains: statuscode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAutocomplete = async (req, res, next) => {
@@ -152,33 +145,23 @@ exports.getAutocomplete = async (req, res, next) => {
         exclude: ["deletedAt"],
       },
     });
-    // SELECT * FROM "nameTable" WHERE unaccent(LOWER(nameCol)) LIKE unaccent(LOWER('query')) || '%';
 
-    if (citiesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "Cities not found",
-      };
-    }
-    if (citiesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(citiesInDb.count / objPage.size);
+    let message = undefined;
+    if (citiesInDb.count <= 0)
+      message = "There are no cities registered";
+    if (citiesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
-    const responseCustom = {
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: citiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(citiesInDb.count / objPage.size),
       },
       data: citiesInDb.rows,
-    };
-
-    return res.status(StatusCodes.OK).send(responseCustom);
+    });
   } catch (error) {
     // console.error("Cities could not be recovered: ", error.message);
     return next(error);

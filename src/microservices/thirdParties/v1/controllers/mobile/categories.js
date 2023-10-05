@@ -7,6 +7,7 @@ const { formatColorOutputForMobile } = require("../../../../../utils/mobileColor
 
 /**
  * Get all ThirdPartyCategories
+ * @param {object} req.query - Object containing the number, size
  * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdPartyCategories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -24,19 +25,12 @@ exports.getAll = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (categoriesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no third-party categories registered",
-      };
-    }
-    if (categoriesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-
+    let message = undefined;
+    if (categoriesInDb.count <= 0)
+      message = "There are no third-party categories registered";
+    if (categoriesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
+    
     const mappedRows = categoriesInDb.rows.map(row => {
       const mappedRow = {
         ...row.dataValues,
@@ -44,8 +38,17 @@ exports.getAll = async (req, res, next) => {
       };
       return mappedRow;
     });
-
-    return res.status(StatusCodes.OK).send(mappedRows);
+    
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: categoriesInDb.count,
+        totalPages: Math.ceil(categoriesInDb.count / objPage.size),
+      },
+      data: mappedRows,
+    });
   } catch (error) {
     // console.error("Document types could not be recovered: ", error.message);
     return next(error);

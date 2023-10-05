@@ -98,6 +98,7 @@ exports.postCreateApiKey = async (req, res, next) => {
 
 /**
  * Get the apiKey (First 5 characters)
+ * @param {integer} req.params.id - id of the company
  * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
  */
 exports.getApiKey = async (req, res, next) => {
@@ -311,6 +312,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get the data of tourism company - profile 
+ * @param {integer} req.params.id - id of the company
  * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
@@ -459,17 +461,11 @@ exports.getAll = async (req, res, next) => {
       },
     });
 
+    let message = undefined;
     if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not tourism companies registered",
-      };
+      message = "There are no tourism companies registered";
     if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    const totalPages = Math.ceil(companiesInDb.count / objPage.size);
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const data = companiesInDb.rows.map((row) => {
       return {
@@ -482,12 +478,13 @@ exports.getAll = async (req, res, next) => {
       };
     });
 
-    return res.status(StatusCodes.OK).send({
+    return res.status(StatusCodes.OK).json({
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: companiesInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(companiesInDb.count / objPage.size),
       },
       data,
     });
