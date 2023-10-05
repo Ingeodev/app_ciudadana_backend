@@ -239,8 +239,8 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Destroy a tourism service (soft delete)
- * @param {object} req - Object containing the id, companyId
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @param {object} req - Object containing the id
+ * @return {object} Response contains: statuscode (integer), json (object): id, companyId. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -306,7 +306,7 @@ exports.postDelete = async (req, res, next) => {
 
 /**
  * Destroy many tourism service (soft delete)
- * @param {object} req - Object containing the id, companyId
+ * @param {object} req - Object containing the id
  * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postBulkServiceDelete = async (req, res, next) => {
