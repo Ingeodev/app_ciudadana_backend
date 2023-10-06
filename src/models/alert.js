@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       siteUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       imageUri: {

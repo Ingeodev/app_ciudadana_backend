@@ -59,8 +59,8 @@ const alertSchema = joi.object({
   message: joi.string().required(),
   push: joi.bool().required(),
   sms: joi.bool().required(),
-  siteUri: uri_string.required(),
-  imageUri: uri_string.required(),
+  siteUri: uri_string,
+  imageUri: uri_string,
   expiresAt: joi.date().greater('now'),
 });
 

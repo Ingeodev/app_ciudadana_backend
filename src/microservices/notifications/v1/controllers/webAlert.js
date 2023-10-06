@@ -50,7 +50,11 @@ const getUsersInBatches = async (
  * @param {string} siteUri The URI to a website to use from the push notification
  * @returns `true` if Firebase accepts the notification, `false` otherwise.
  */
-const sendPushNotifications = async (title, message, imageUri, siteUri) => {
+const sendPushNotifications = async (title, message, imageUri = undefined, siteUri = undefined) => {
+  // ! Es necesario revisar la siguiente lógica del envío de la Alerta.
+  // ! Dado que este módulo / servicio(enviar alertas) no se ha podido probar,
+  // ! entonces, se desconoce(aunq es probable) si el servicio falle / rompa.
+  // ! Debido que imageUri, siteUri son opcionales desde front
   try {
     // Code from https://firebase.google.com/docs/cloud-messaging/android/send-image?hl=es-419#build_the_send_request updated from current API (https://firebase.google.com/docs/reference/admin/node/firebase-admin.messaging.messaging.md#messagingsend).
     const notification = {
@@ -172,7 +176,12 @@ const sendAlerts = async (req, res, next) => {
       sms: false,
     };
     if (push)
-      acceptedAlerts.push = await sendPushNotifications(title, message, imageUri, siteUri);
+      acceptedAlerts.push = await sendPushNotifications(
+        title,
+        message,
+        imageUri ? imageUri : undefined,
+        siteUri ? siteUri : undefined
+      );
     if (sms && usersCount > 0) {
       for (let i = 0; i <= totalBatches; i++) {
         const usersDataBatch = await getUsersInBatches(db.User, i, defaultUsersBatchSize);
@@ -187,7 +196,11 @@ const sendAlerts = async (req, res, next) => {
     else
       expirationDate = expiresAt.toUTCString();
     const savedAlert = await db.Alert.create({
-      title, message, siteUri, imageUri, sentBy,
+      title,
+      message,
+      siteUri: siteUri ? siteUri : undefined,
+      imageUri: imageUri ? imageUri : undefined,
+      sentBy,
       isPUSH: push,
       isSMS: sms,
       expiresAt: expirationDate,
