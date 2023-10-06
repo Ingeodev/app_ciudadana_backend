@@ -34,12 +34,12 @@ module.exports = {
         },
         description: {
           type: Sequelize.TEXT,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         phone: {
           type: Sequelize.STRING(50),
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         siteUri: {
@@ -54,7 +54,7 @@ module.exports = {
         },
         imageUri: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         lat: {
