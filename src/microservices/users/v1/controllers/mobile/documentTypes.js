@@ -27,7 +27,7 @@ exports.getAll = async (req, res, next) => {
 
     let message = undefined;
     if (docTypesInDb.count <= 0)
-      message = "There are no third-party categories registered";
+      message = "There are no document types registered";
     if (docTypesInDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
 
