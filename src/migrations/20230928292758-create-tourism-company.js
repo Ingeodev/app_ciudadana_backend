@@ -24,8 +24,8 @@ module.exports = {
         },
         nit: {
           type: Sequelize.STRING,
-          allowNull: false,
-          unique: true,
+          allowNull: true,
+          unique: false,
         },
         categoryId: {
           type: Sequelize.INTEGER,
@@ -34,7 +34,7 @@ module.exports = {
         },
         description: {
           type: Sequelize.STRING(200),
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         address: {
@@ -44,12 +44,12 @@ module.exports = {
         },
         phone: {
           type: Sequelize.STRING(50),
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         imageUri: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         siteUri: {
@@ -83,11 +83,11 @@ module.exports = {
         schema: "public",
       }
     );
-    await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX "idx_unique_tourism_nit"
-      ON "TourismCompanies"("nit")
-      WHERE "deletedAt" IS NULL;
-    `);
+    // await queryInterface.sequelize.query(`
+    //   CREATE UNIQUE INDEX "idx_unique_tourism_nit"
+    //   ON "TourismCompanies"("nit")
+    //   WHERE "deletedAt" IS NULL;
+    // `);
     await queryInterface.addConstraint("TourismCompanies", {
       name: "fk_TourismCompanies_CreatedBy",
       fields: ["createdBy"],
@@ -114,9 +114,9 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint("TourismCompanies", "fk_TourismCompanies_CategoryId");
     await queryInterface.removeConstraint("TourismCompanies", "fk_TourismCompanies_CreatedBy");
-    await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS "idx_unique_tourism_nit";
-    `);
+    // await queryInterface.sequelize.query(`
+    //   DROP INDEX IF EXISTS "idx_unique_tourism_nit";
+    // `);
     await queryInterface.dropTable("TourismCompanies");
   },
 };

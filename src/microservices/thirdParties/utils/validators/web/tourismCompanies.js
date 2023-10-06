@@ -4,7 +4,7 @@ const polygonCali = require("../../../../../utils/polygonCali.js");
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
+  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   categoryId: joi.number().integer().greater(0).invalid(0).required(),
@@ -12,7 +12,7 @@ const registerSchema = joi.object({
   address: joi.string().trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {

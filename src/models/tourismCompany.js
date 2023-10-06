@@ -64,8 +64,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       nit: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       categoryId: {
         type: DataTypes.INTEGER,
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       address: {
@@ -84,12 +84,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       imageUri: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       siteUri: {
@@ -110,13 +110,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
-      indexes: [
-        {
-          name: "idx_unique_tourism_nit",
-          unique: true,
-          fields: ["nit"],
-        },
-      ],
+      // indexes: [
+      //   {
+      //     name: "idx_unique_tourism_nit",
+      //     unique: true,
+      //     fields: ["nit"],
+      //   },
+      // ],
       hooks: {
         beforeCreate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
