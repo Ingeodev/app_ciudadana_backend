@@ -3,15 +3,15 @@ const joi = require("joi");
 
 // * ------------------ Web - Social Networks -----------------
 const postRegisterchema = joi.object({
-  url: joi.string().required().trim().empty("").invalid(" "),
-  icon: joi.string().required().trim().empty("").invalid(" "),
+  url: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  url: joi.string().required().trim().empty("").invalid(" "),
-  icon: joi.string().required().trim().empty("").invalid(" "),
+  url: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 

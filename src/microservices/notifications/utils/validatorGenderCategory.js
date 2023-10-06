@@ -5,16 +5,16 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  title: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  description: joi.string().trim().empty("").invalid(" ").max(200).required(),
+  title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  title: joi.string().trim().empty("").invalid(" ").max(50),
-  description: joi.string().trim().empty("").invalid(" ").max(200),
+  title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
 });

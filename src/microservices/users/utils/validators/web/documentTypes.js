@@ -5,13 +5,13 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   code: joi.string().trim().empty("").invalid(" ").required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   code: joi.string().trim().empty("").invalid(" "),
 });
 

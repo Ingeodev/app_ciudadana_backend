@@ -3,21 +3,21 @@ const joi = require("joi");
 
 // * ------------------ Web - Mobile Services -----------------
 const postRegisterchema = joi.object({
-  route: joi.string().required().trim().empty("").invalid(" ").max(50),
-  name: joi.string().required().trim().empty("").invalid(" ").max(50),
-  subtitle: joi.string().required().trim().empty("").invalid(" ").max(50),
-  imageUri: joi.string().required().trim().empty("").invalid(" ").max(150),
-  icon: joi.string().required().trim().empty("").invalid(" ").max(150),
+  route: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  subtitle: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
+  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
   accessLevel: joi.string().required().trim().empty("").invalid(" ").max(50)
 });
 
 const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  route: joi.string().required().trim().empty("").invalid(" ").max(50),
-  name: joi.string().required().trim().empty("").invalid(" ").max(50),
-  subtitle: joi.string().required().trim().empty("").invalid(" ").max(50),
-  imageUri: joi.string().required().trim().empty("").invalid(" ").max(150),
-  icon: joi.string().required().trim().empty("").invalid(" ").max(150),
+  route: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  subtitle: joi.string().required().trim().empty("").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
+  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
   accessLevel: joi.string().required().trim().empty("").invalid(" ").max(50)
 });
 

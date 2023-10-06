@@ -44,18 +44,18 @@ const simpleIdSchema = joi.object({
 });
 
 const advertisementCategorySchema = joi.object({
-  name: joi.string().trim().min(3).required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').min(3).required(),
   color: hex_color_string.required(),
 });
 
 const editAdvertisementCategorySchema = joi.object({
   id: non_negative_integer.required(),
-  name: joi.string().trim().min(3),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').min(3),
   color: hex_color_string,
 }).or('name', 'color');
 
 const alertSchema = joi.object({
-  title: joi.string().required(),
+  title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   message: joi.string().required(),
   push: joi.bool().required(),
   sms: joi.bool().required(),
@@ -99,8 +99,8 @@ const multerMemorySingleItemSchema = joi.object({
 }).required().error(new Error('A valid file is required.'));
 
 const securityAttentionPointCreationSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  description: joi.string().trim().empty("").invalid(" ").max(200).required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   phone: numberic_string.min(10).max(15).required(),
   color: hex_color_string.required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
@@ -111,8 +111,8 @@ const securityAttentionPointCreationSchema = joi.object({
 
 const securityAttentionPointUpdateSchema = joi.object({
   id: non_negative_integer.required(),
-  name: joi.string().trim().empty("").invalid(" ").max(50),
-  description: joi.string().trim().empty("").invalid(" ").max(200),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: numberic_string.min(10).max(15),
   color: hex_color_string,
   address: joi.string().trim().empty("").invalid(" "),

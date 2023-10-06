@@ -5,18 +5,16 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  city: joi.string().trim().empty("").invalid(" ").max(100).required(),
+  city: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100).required(),
   cityCode: joi.number().integer().greater(0).invalid(0).required(),
-  // cityCode: joi.string().trim().empty("").invalid(" ").max(50).required(),
-  state: joi.string().trim().empty("").invalid(" ").max(100).required(),
+  state: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100).required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  city: joi.string().trim().empty("").invalid(" ").max(100),
+  city: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100),
   cityCode: joi.number().integer().greater(0).invalid(0),
-  // cityCode: joi.string().trim().empty("").invalid(" ").max(50),
-  state: joi.string().trim().empty("").invalid(" ").max(100),
+  state: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100),
 });
 
 const getAllSchema = joi.object({
@@ -70,9 +68,9 @@ const excelHeaderSchema = joi.object({
 
 
 const excelCitySchema = joi.object({
-  city: joi.string().trim().empty("").invalid(" ").max(100).required(),
+  city: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100).required(),
   cityCode: joi.number().integer().greater(0).invalid(0).required(),
-  state: joi.string().trim().empty("").invalid(" ").max(100).required(),
+  state: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

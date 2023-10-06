@@ -5,7 +5,7 @@ const joi = require("joi");
 // const integer_number = joi.number().integer();
 
 const registerSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
@@ -13,7 +13,7 @@ const registerSchema = joi.object({
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" ").max(50),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),

@@ -3,7 +3,7 @@ const joi = require("joi");
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   phone: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
@@ -11,7 +11,7 @@ const postRegisterchema = joi.object({
 
 const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" "),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   phone: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),

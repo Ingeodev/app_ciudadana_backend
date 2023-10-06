@@ -3,12 +3,12 @@ const joi = require("joi");
 
 
 const registerSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").max(50).required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   categoryId: joi.number().integer().greater(0).invalid(0).required(),
-  description: joi.string().trim().empty("").invalid(" "),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" ").required(),
@@ -19,12 +19,12 @@ const registerSchema = joi.object({
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  name: joi.string().trim().empty("").invalid(" ").max(50),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   categoryId: joi.number().integer().greater(0).invalid(0),
-  description: joi.string().trim().empty("").invalid(" "),
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: joi.string().trim().empty("").invalid(" "),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
