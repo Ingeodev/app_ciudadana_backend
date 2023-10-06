@@ -344,7 +344,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
 
 /**
  * Get web users or app users
- * @param {object} req.query - Object containing the number and size
+ * @param {object} req.query - Object containing the number, size, webUser, n mobileUser
  * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 exports.getUsersListByDevice = async (req, res, next) => {
@@ -439,19 +439,11 @@ exports.getUsersListByDevice = async (req, res, next) => {
       attributes,
     });
 
-    if (usersInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Users registered",
-      };
-    }
-    if (usersInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    const totalPages = Math.ceil(usersInDb.count / objPage.size);
+    let message = undefined;
+    if (usersInDb.count <= 0)
+      message = "There are no Users registered";
+    if (usersInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
 
     // Additional processing to remove the object from documentType
     // const adjustedUsers = usersInDb.rows.map((user) => {
@@ -462,10 +454,11 @@ exports.getUsersListByDevice = async (req, res, next) => {
 
     const responseCustom = {
       meta: {
+        message,
         page: objPage.number,
         pageSize: objPage.size,
         totalRecords: usersInDb.count,
-        totalPages: totalPages,
+        totalPages: Math.ceil(usersInDb.count / objPage.size),
       },
       // data: adjustedUsers,
       data: usersInDb.rows,

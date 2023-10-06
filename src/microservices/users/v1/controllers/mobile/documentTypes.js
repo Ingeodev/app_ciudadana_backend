@@ -6,6 +6,7 @@ const validator = require("../../../utils/validators/mobile/documentTypes.js");
 
 /**
  * Get all document types
+ * @param {object} req.query - Object containing the number, size
  * @return {object} Response contains: statuscode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
@@ -24,19 +25,22 @@ exports.getAll = async (req, res, next) => {
       order: [["code", "ASC"]],
     });
 
-    if (docTypesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Document types registered in the database",
-      };
-    }
-    if (docTypesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
-    return res.status(StatusCodes.OK).send(docTypesInDb.rows);
+    let message = undefined;
+    if (docTypesInDb.count <= 0)
+      message = "There are no third-party categories registered";
+    if (docTypesInDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
+
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: docTypesInDb.count,
+        totalPages: Math.ceil(docTypesInDb.count / objPage.size),
+      },
+      data: docTypesInDb.rows,
+    });
   } catch (error) {
     // console.error("Document types could not be recovered: ", error.message);
     return next(error);
