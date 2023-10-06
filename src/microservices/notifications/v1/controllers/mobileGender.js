@@ -135,16 +135,11 @@ exports.getAttentionPoins = async (req, res, next) => {
       ],
     });
 
+    let message = undefined;
     if (pointsInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not gender attention points registered",
-      };
+      message = "There are not gender attention points registered";
     if (pointsInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+      message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedPoints = pointsInDb.rows.map((point) => {
       const pointData = point.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -159,7 +154,16 @@ exports.getAttentionPoins = async (req, res, next) => {
       return pointData;
     });
 
-    return res.status(StatusCodes.OK).send(transformedPoints);
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: objPage.number,
+        pageSize: objPage.size,
+        totalRecords: pointsInDb.count,
+        totalPages: Math.ceil(pointsInDb.count / objPage.size),
+      },
+      data: transformedPoints,
+    });
   } catch (error) {
     return next(error);
   }
