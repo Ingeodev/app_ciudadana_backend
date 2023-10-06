@@ -12,7 +12,7 @@ const registerSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   title: joi.string().trim().empty("").invalid(" ").max(50),
   description: joi.string().trim().empty("").invalid(" ").max(200),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
@@ -25,11 +25,11 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

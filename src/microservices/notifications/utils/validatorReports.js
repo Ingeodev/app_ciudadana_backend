@@ -11,7 +11,7 @@ const polygonCali = require("../../../utils/polygonCali.js");
 // * ------------------ Mobile - Reports -----------------
 const postRegisterSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  categoryId: joi.number().empty("").invalid(0).required(),
+  categoryId: joi.number().integer().invalid(0).required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {

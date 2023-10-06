@@ -5,14 +5,14 @@ const joi = require("joi");
 const postRegisterchema = joi.object({
   url: joi.string().required().trim().empty("").invalid(" "),
   icon: joi.string().required().trim().empty("").invalid(" "),
-  socialNetworkTypeId: joi.number().required().empty("").greater(0).invalid(0),
+  socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postUpdatechema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   url: joi.string().required().trim().empty("").invalid(" "),
   icon: joi.string().required().trim().empty("").invalid(" "),
-  socialNetworkTypeId: joi.number().required().empty("").greater(0).invalid(0),
+  socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const getListAllSchema = joi.object({
@@ -21,15 +21,15 @@ const getListAllSchema = joi.object({
 });
 
 const getGetOneSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().required().empty("").greater(0).invalid(0),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   // active: joi.boolean().required(),
 });
 const postStatusSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   active: joi.bool().required(),
 });
 

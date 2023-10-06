@@ -6,15 +6,15 @@ const joi = require("joi");
 
 const registerSchema = joi.object({
   city: joi.string().trim().empty("").invalid(" ").max(100).required(),
-  cityCode: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  cityCode: joi.number().integer().greater(0).invalid(0).required(),
   // cityCode: joi.string().trim().empty("").invalid(" ").max(50).required(),
   state: joi.string().trim().empty("").invalid(" ").max(100).required(),
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   city: joi.string().trim().empty("").invalid(" ").max(100),
-  cityCode: joi.number().integer().empty("").greater(0).invalid(0),
+  cityCode: joi.number().integer().greater(0).invalid(0),
   // cityCode: joi.string().trim().empty("").invalid(" ").max(50),
   state: joi.string().trim().empty("").invalid(" ").max(100),
 });
@@ -31,11 +31,11 @@ const getAutocSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 // ---------- Excel - Start -----------------------
@@ -71,7 +71,7 @@ const excelHeaderSchema = joi.object({
 
 const excelCitySchema = joi.object({
   city: joi.string().trim().empty("").invalid(" ").max(100).required(),
-  cityCode: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  cityCode: joi.number().integer().greater(0).invalid(0).required(),
   state: joi.string().trim().empty("").invalid(" ").max(100).required(),
 });
 

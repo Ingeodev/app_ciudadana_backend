@@ -7,7 +7,7 @@ const registerSchema = joi.object({
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
-  categoryId: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  categoryId: joi.number().integer().greater(0).invalid(0).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
@@ -52,12 +52,12 @@ const getApiKeySchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
-  categoryId: joi.number().integer().empty("").greater(0).invalid(0),
+  categoryId: joi.number().integer().greater(0).invalid(0),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   address: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
@@ -86,7 +86,7 @@ const editSchema = joi.object({
 
 
 const getProfile = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const getListAllSchema = joi.object({
@@ -95,7 +95,7 @@ const getListAllSchema = joi.object({
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {

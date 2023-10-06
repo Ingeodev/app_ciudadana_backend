@@ -10,7 +10,7 @@ const postRegisterchema = joi.object({
 });
 
 const postUpdatechema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
@@ -23,11 +23,11 @@ const getListAllSchema = joi.object({
 });
 
 const getGetOneSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------

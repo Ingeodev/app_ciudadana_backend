@@ -30,7 +30,7 @@ const routesSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   originId: joi.number().integer().greater(0).invalid(0).required(),
   destinationId: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
@@ -42,7 +42,7 @@ const editSchema = joi.object({
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 

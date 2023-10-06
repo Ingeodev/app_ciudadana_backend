@@ -6,7 +6,7 @@ const servicesSchema = joi.object({
   services: joi.array().min(1).items(
       joi.object({
         service: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),        
-        companyId: joi.number().integer().empty("").greater(0).invalid(0).required(),
+        companyId: joi.number().integer().greater(0).invalid(0).required(),
       }).unknown(false) // This is to ensure that there are no additional fields in the object.
   )
     .required()
@@ -35,13 +35,13 @@ const oneServiceSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   service: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),   
   companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 

@@ -14,7 +14,7 @@ const registerSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").max(50),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
@@ -26,7 +26,7 @@ const editSchema = joi.object({
 });
 
 const getProfile = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const getListAllSchema = joi.object({
@@ -35,7 +35,7 @@ const getListAllSchema = joi.object({
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const apiKeySchema = joi.object({

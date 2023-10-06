@@ -16,7 +16,7 @@ const registerSchema = joi.object({
 });
 
 const editSchema = joi.object({
-  id: joi.number().integer().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   permission: joi.string().custom((value, helpers) => {
@@ -36,16 +36,16 @@ const getAllSchema = joi.object({
 });
 
 const getOneSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postDeleteSchema = joi.object({
-  id: joi.number().empty("").greater(0).invalid(0).required(),
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const roleToUserSchema = joi.object({
-  userId: joi.number().empty("").greater(0).invalid(0).required(),
-  roleId: joi.number().empty("").greater(0).invalid(0).required(),
+  userId: joi.number().integer().greater(0).invalid(0).required(),
+  roleId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const getUsersByIdroleSchema = joi.object({
