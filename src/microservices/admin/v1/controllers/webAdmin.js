@@ -388,12 +388,13 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Get admin by id
+ * @param {integer} req.params.id - admin Id
  * @return {object} Response contains: statuscode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
     const { id } = await validator.vWebGetOneById({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     const adminInDb = await db.User.findByPk(id, {

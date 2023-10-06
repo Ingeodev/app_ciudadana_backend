@@ -114,12 +114,13 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Get document type by id
+ * @param {integer} req.params.id - document type - id
  * @return {object} Response contains: statuscode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
     const { id } = await validator.vWebGetOneById({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     const docTypeInDb = await db.DocumentType.findByPk(id);

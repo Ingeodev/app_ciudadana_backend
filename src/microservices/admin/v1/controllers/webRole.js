@@ -294,7 +294,7 @@ exports.getRole = async (req, res, next) => {
     //   };
 
     const { id } = await validator.vWebGetOneById({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     // Validate that the company belongs to the user

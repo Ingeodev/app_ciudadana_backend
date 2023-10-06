@@ -330,7 +330,7 @@ exports.getProfile = async (req, res, next) => {
     //   };
 
     const { id } = await validator.vWebGetProfile({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     // Validate that the company belongs to the user

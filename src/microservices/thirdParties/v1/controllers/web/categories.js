@@ -123,7 +123,7 @@ exports.getAll = async (req, res, next) => {
 exports.getOneById = async (req, res, next) => {
   try {
     const { id } = await validator.vWebGetOneById({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     const categInDb = await db.ThirdPartyCategory.findByPk(id);

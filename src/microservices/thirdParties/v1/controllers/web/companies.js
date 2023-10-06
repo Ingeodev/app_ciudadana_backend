@@ -168,6 +168,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get the data of company and your services - to profile 
+ * @param {integer} req.params.id - companyId
  * @return {object} Response contains: statuscode (integer), json (object): company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
@@ -185,7 +186,7 @@ exports.getProfile = async (req, res, next) => {
     //   };
 
     const { id } = await validator.vWebGetProfile({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     // Validate that the company belongs to the user

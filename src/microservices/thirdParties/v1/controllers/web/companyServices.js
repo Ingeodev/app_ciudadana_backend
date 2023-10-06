@@ -14,10 +14,11 @@ exports.getServices = async (req, res, next) => {
     const objPage = await validatorCompany.vWebGetListAll({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
+      companyId: req.params.id ? parseInt(req.params.id) : null,
     });
 
     const companiesInDb = await db.ThirdPartyService.findAndCountAll({
-      where: { companyId: parseInt(req.params.id) },
+      where: { companyId: objPage.companyId },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]],

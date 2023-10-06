@@ -312,7 +312,7 @@ exports.getAll = async (req, res, next) => {
     //   };
 
     const objPage = await validator.vWebGetListRoutes({
-      companyId: parseInt(req.params.companyId),
+      companyId: req.params.companyId ? parseInt(req.params.companyId) : null,
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });

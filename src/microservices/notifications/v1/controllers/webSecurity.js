@@ -129,12 +129,13 @@ exports.getListAll = async (req, res, next) => {
 
 /**
  * Get an attention line of security/emergency by id
+ * @param {integer} req.params.id - attention line of security/emergency - id
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.getSecurity = async (req, res, next) => {
   try {
     const { id } = await validator.vWebGetOne({
-      id: parseInt(req.params.id),
+      id: req.params.id ? parseInt(req.params.id) : null,
     });
 
     const attentionLInDb = await db.Security.findByPk(id);

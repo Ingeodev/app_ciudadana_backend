@@ -118,7 +118,7 @@ const postDelete = async (req, res, next) => {
 
 /**
  * Retrieve only one gender attention point by ID
- * @param {integer} req.body.id - id of attention point of gender equity
+ * @param {integer} req.params.id - id of attention point of gender equity
  * @return {object} Response contains: statuscode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
  */
 const getOneGenderAttentionPoint = async (req, res, next) => {
