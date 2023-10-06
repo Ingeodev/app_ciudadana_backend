@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       imageUri: DataTypes.STRING,
+      imageMobileUri: DataTypes.STRING,
       siteUri: DataTypes.STRING,
       categoryId: DataTypes.INTEGER,
       active: {
@@ -41,26 +42,37 @@ module.exports = (sequelize, DataTypes) => {
       hooks: {
         beforeCreate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.imageMobileUri = transformReceivedUriToSave(obj.imageMobileUri);
         },
         beforeUpdate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.imageMobileUri = transformReceivedUriToSave(obj.imageMobileUri);
         },
         afterCreate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.imageMobileUri = transformSavedUriToSend(obj.imageMobileUri);
         },
         afterUpdate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.imageMobileUri = transformSavedUriToSend(obj.imageMobileUri);
         },
         afterFind: (result, options) => {
           if (Array.isArray(result)) {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
+              obj.dataValues.imageMobileUri = transformSavedUriToSend(obj.imageMobileUri);
               if (obj.image || obj.dataValues.image) {
                 obj.dataValues.image = transformSavedUriToSend(
                   obj.dataValues.image
                 );
                 delete obj.dataValues.imageUri;
+              }
+              if (obj.imageMobile || obj.dataValues.imageMobile) {
+                obj.dataValues.image = transformSavedUriToSend(
+                  obj.dataValues.imageMobile
+                );
+                delete obj.dataValues.imageMobileUri;
               }
             });
           } else if (result) {
@@ -68,11 +80,20 @@ module.exports = (sequelize, DataTypes) => {
             result.dataValues.imageUri = transformSavedUriToSend(
               result.imageUri
             );
+            result.dataValues.imageMobileUri = transformSavedUriToSend(
+              result.imageMobileUri
+            );
             if (result.image || result.dataValues.image) {
               result.dataValues.image = transformSavedUriToSend(
                 result.dataValues.image
               );
               delete result.dataValues.imageUri;
+            }
+            if (result.imageMobile || result.dataValues.imageMobile) {
+              result.dataValues.imageMobile = transformSavedUriToSend(
+                result.dataValues.imageMobile
+              );
+              delete result.dataValues.imageMobileUri;
             }
           }
         },

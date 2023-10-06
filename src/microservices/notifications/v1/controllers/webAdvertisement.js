@@ -66,7 +66,8 @@ const getAllAdvertisements = async (req, res, next) => {
 // Create a new advertisement.
 const postAdvertisement = async (req, res, next) => {
     try {
-        const { imageUri, siteUri, categoryId } = await validator.validateAdvertisementSchema(req.body);
+        const { imageUri, imageMobileUri, siteUri, categoryId } =
+          await validator.validateAdvertisementSchema(req.body);
         if (!await checkCategoryExists(categoryId))
             throw {
                 status: StatusCodes.NOT_FOUND,
@@ -74,6 +75,7 @@ const postAdvertisement = async (req, res, next) => {
             };
         const newAdvertisement = await db.Advertisement.create({
             imageUri,
+            imageMobileUri,
             siteUri,
             categoryId,
         });

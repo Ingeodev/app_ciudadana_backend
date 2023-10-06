@@ -12,6 +12,9 @@ module.exports = {
       imageUri: {
         type: Sequelize.STRING,
       },
+      imageMobileUri: {
+        type: Sequelize.STRING,
+      },
       siteUri: {
         type: Sequelize.STRING,
       },

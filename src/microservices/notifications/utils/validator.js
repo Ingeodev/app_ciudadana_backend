@@ -18,6 +18,7 @@ const page_object = joi.object({
 
 const advertisementSchema = joi.object({
   imageUri: uri_string.required(),
+  imageMobileUri: uri_string.required(),
   siteUri: uri_string.required(),
   categoryId: integer_number,
 });
@@ -25,6 +26,7 @@ const advertisementSchema = joi.object({
 const editAdvertisementSchema = joi.object({
   id: non_negative_integer.required(),
   imageUri: uri_string,
+  imageMobileUri: uri_string,
   siteUri: uri_string,
   categoryId: integer_number.allow(null),
   active: joi.bool(),

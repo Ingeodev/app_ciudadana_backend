@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
-const { Op } = require('sequelize');
+const { Op, col } = require('sequelize');
 const { ne, eq } = Op;
 
 const db = require('../../../../models');
@@ -9,14 +9,14 @@ const db = require('../../../../models');
 const getUncategorized = async (req, res, next) => {
     try {
         const notCategorizedAdvertisements = await db.Advertisement.findAll({
-            where: {
-                active: true,
-                categoryId: { [eq]: null },
-            },
-            attributes: {
-                include: [['imageUri', 'image'], ['siteUri', 'url']],
-                exclude: ['id', 'imageUri', 'siteUri', 'categoryId', 'active', 'createdAt', 'updatedAt', 'deletedAt'],
-            }
+          where: {
+            active: true,
+            categoryId: { [eq]: null },
+          },
+          attributes: [
+            [col("imageMobileUri"), "image"],
+            [col("siteUri"), "url"],
+          ],
         });
         return res.status(StatusCodes.OK)
             .json(notCategorizedAdvertisements);
@@ -29,20 +29,22 @@ const getUncategorized = async (req, res, next) => {
 const getCategorized = async (req, res, next) => {
     try {
         const categorizedAdvertisements = await db.Advertisement.findAll({
-            where: {
-                active: true,
-                categoryId: { [ne]: null },
+          where: {
+            active: true,
+            categoryId: { [ne]: null },
+          },
+          include: [
+            {
+              model: db.MobileService,
+              as: "MobileService",
+              attributes: ["route"],
+              required: true,
             },
-            include: [{
-                model: db.MobileService,
-                as: 'MobileService',
-                attributes: ['route'],
-                required: true,
-            }],
-            attributes: {
-                include: [['imageUri', 'image'], ['siteUri', 'url']],
-                exclude: ['id', 'imageUri', 'siteUri', 'categoryId', 'active', 'createdAt', 'updatedAt', 'deletedAt'],
-            }
+          ],
+          attributes: [
+            [col("imageMobileUri"), "image"],
+            [col("siteUri"), "url"],
+          ],
         });
         const banners = categorizedAdvertisements.map(advertisement => {
             advertisement.dataValues.category = advertisement.dataValues.MobileService.route;
