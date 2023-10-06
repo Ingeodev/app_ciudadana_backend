@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-
+const polygonCali = require("../../../../../utils/polygonCali.js");
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
@@ -15,6 +15,11 @@ const registerSchema = joi.object({
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
+}).custom((value, helpers) => {
+    if (!polygonCali.isLocationInCali(value.lat, value.lon)) {
+      return helpers.message("lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");
+    }
+    return value;
 });
 
 const editSchema = joi.object({
@@ -29,8 +34,25 @@ const editSchema = joi.object({
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  lat: joi.number().min(-90).max(90),
-  lon: joi.number().min(-180).max(180),
+  lat: joi.number().min(-90).max(90).when('address', {
+    is: joi.exist(),
+    then: joi.required()
+  }),
+  lon: joi.number().min(-180).max(180).when('address', {
+    is: joi.exist(),
+    then: joi.required()
+  })
+}).and('lat', 'lon').with('lat', 'address').with('lon', 'address').custom((data, helpers) => {
+  if (!isNaN(parseFloat(data.lat)) && !isNaN(parseFloat(data.lon))) {
+    if (!polygonCali.isLocationInCali(data.lat, data.lon)) {
+      // return helpers.error("any.invalid", {
+      //   message: "lat and lon must be within the municipality of Cali, Valle del Cauca, Colombia",
+      // });
+      return helpers.message("lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");
+    }
+    return data;
+  }
+  return data;
 });
 
 const getProfile = joi.object({
