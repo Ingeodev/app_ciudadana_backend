@@ -24,12 +24,12 @@ module.exports = {
         },
         description: {
           type: Sequelize.STRING(200),
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         imageUri: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         siteUri: {
