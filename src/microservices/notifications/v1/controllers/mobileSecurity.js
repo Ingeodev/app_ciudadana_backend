@@ -29,9 +29,17 @@ exports.getListAll = async (req, res, next) => {
       return mappedItem;
     });
 
+    const transformedLines = attentionLInDb.map((line) => {
+      const lineData = line.get({ plain: true }); // Convert Sequelize instance to simple object
+      if (lineData.phone != null) {
+        lineData.phone = String(lineData.phone).replace("+57", "");
+      }
+      return lineData;
+    });
+
     const responseCustom = {
       reportCategories,
-      securityLines: attentionLInDb,
+      securityLines: transformedLines,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);

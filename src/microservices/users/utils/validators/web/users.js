@@ -7,7 +7,7 @@ const joi = require('joi');
 const postAccountInfoSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  phone: joi.string().trim().empty("").invalid(" ").required(),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
   // ! HU-B1 Monday - Solo el email es requerido?. Requerido en la db o para la solicitud HTTP?
   email: joi.string().trim().email().empty("").invalid(" ").required(),
 });
@@ -23,7 +23,7 @@ const postAccountFullLoginSchema = joi.object({
 const postAccountUpdateUserSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
-  phone: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
   address: joi.string().trim().empty("").invalid(" "),
 });
 

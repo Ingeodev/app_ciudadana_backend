@@ -8,7 +8,7 @@ const registerSchema = joi.object({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  phone: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ")
 });
@@ -20,7 +20,7 @@ const editSchema = joi.object({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  phone: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ")
 });

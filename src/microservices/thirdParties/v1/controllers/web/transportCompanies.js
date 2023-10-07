@@ -176,7 +176,7 @@ exports.postRegister = async (req, res, next) => {
       description,
       imageUri,
       nit,
-      phone,
+      phone: `+57${phone}`,
       siteUri,
     };
 
@@ -225,7 +225,7 @@ exports.postEdit = async (req, res, next) => {
       description,
       imageUri,
       nit,
-      phone,
+      phone: `+57${phone}`,
       siteUri,
     };
 

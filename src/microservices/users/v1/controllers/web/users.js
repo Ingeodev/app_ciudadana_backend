@@ -31,7 +31,7 @@ exports.postAccountInfo = async (req, res, next) => {
     const dataUser = {
       name,
       lastName,
-      phone,
+      phone: `+57${phone}`,
       email,
       clientId: clientId,
       loginPhase: "baseLogin",
@@ -41,21 +41,10 @@ exports.postAccountInfo = async (req, res, next) => {
       emailVerified: null,
     };
 
-    const result = await db.User.create(dataUser); 
-    delete result.dataValues.clientId;
-    delete result.dataValues.emailVerified;
-    delete result.dataValues.tokenEmailVerified;
-    delete result.dataValues.passwdReset;
-    delete result.dataValues.address;
-    delete result.dataValues.serviceReceiptUri;
-    delete result.dataValues.pushDeviceToken;
-    delete result.dataValues.roleId;
-    delete result.dataValues.disabled;
-    delete result.dataValues.loginPhase;
-    delete result.dataValues.userMobile;
+    await db.User.create(dataUser);
     return res.status(StatusCodes.CREATED).json({
       meta: null,
-      data: result,
+      data: { name, lastName, phone: `+57${phone}`, email },
     });
   } catch (error) {
     // console.error( "account postAccountInfo could not be created/updated: ", error.message);
@@ -120,18 +109,14 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     };
     await db.AdminNotification.create(dataNotif);
     await transaction.commit();
-    delete resultUpdate.dataValues.clientId;
-    delete resultUpdate.dataValues.emailVerified;
-    delete resultUpdate.dataValues.tokenEmailVerified;
-    delete resultUpdate.dataValues.passwdReset;
-    delete resultUpdate.dataValues.pushDeviceToken;
-    delete resultUpdate.dataValues.roleId;
-    delete resultUpdate.dataValues.loginPhase;
-    delete resultUpdate.dataValues.disabled;
-    delete resultUpdate.dataValues.userMobile;
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: resultUpdate,
+      data: {
+        documentTypeId,
+        document,
+        address,
+        serviceReceiptUri: resultUpdate.dataValues.serviceReceiptUri,
+      },
     });
   } catch (error) {
     await transaction.rollback();
@@ -199,7 +184,6 @@ exports.getAccountInfo = async (req, res, next) => {
     
     delete userInDb.dataValues.clientId;
     delete userInDb.dataValues.tokenEmailVerified;
-    delete userInDb.dataValues.address;
     delete userInDb.dataValues.serviceReceiptUri;
     delete userInDb.dataValues.pushDeviceToken;
     delete userInDb.dataValues.disabled;
@@ -292,7 +276,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       name,
       lastName,
       address,
-      phone,
+      phone: `+57${phone}`,
     };
 
     const userInDb = await db.User.findOne({
@@ -309,22 +293,11 @@ exports.postAccountFullLogin = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await userInDb.update(dataUser);
-    delete resultUpdate.dataValues.clientId;
-    delete resultUpdate.dataValues.emailVerified;
-    delete resultUpdate.dataValues.tokenEmailVerified;
-    delete resultUpdate.dataValues.passwdReset;
-    delete resultUpdate.dataValues.address;
-    delete resultUpdate.dataValues.serviceReceiptUri;
-    delete resultUpdate.dataValues.pushDeviceToken;
-    delete resultUpdate.dataValues.roleId;
-    delete resultUpdate.dataValues.disabled;
-    delete resultUpdate.dataValues.loginPhase;
-    delete resultUpdate.dataValues.userMobile;
+    await userInDb.update(dataUser);
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: resultUpdate,
+      data: dataUser,
     });
   } catch (error) {
     // console.error("account full_login could not be retrieved: ", error);
@@ -512,21 +485,11 @@ exports.postUsersStatus = async (req, res, next) => {
       };
     }
 
-    const result = await userInDb.update({ disabled });
-    delete result.dataValues.emailVerified;
-    delete result.dataValues.tokenEmailVerified;
-    delete result.dataValues.passwdReset;
-    delete result.dataValues.address;
-    delete result.dataValues.phone;
-    delete result.dataValues.serviceReceiptUri;
-    delete result.dataValues.pushDeviceToken;
-    delete result.dataValues.roleId;
-    delete result.dataValues.loginPhase;
-    delete result.dataValues.userMobile;
+    await userInDb.update({ disabled });
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: result,
+      data: { clientId, disabled },
     });
   } catch (error) {
     // console.error("users could not be deleted: ", error.message);
@@ -559,21 +522,11 @@ exports.postUsersFullLogin = async (req, res, next) => {
       };
     }
 
-    const result = await userInDb.update(dataUser);
-    delete result.dataValues.emailVerified;
-    delete result.dataValues.tokenEmailVerified;
-    delete result.dataValues.passwdReset;
-    delete result.dataValues.address;
-    delete result.dataValues.serviceReceiptUri;
-    delete result.dataValues.pushDeviceToken;
-    delete result.dataValues.roleId;
-    delete result.dataValues.userMobile;
-    delete result.dataValues.disabled;
+    await userInDb.update(dataUser);
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      // data: { clientId },
-      data: result,
+      data: { clientId },
     });
   } catch (error) {
     // console.error("user could not be updated: ", error.message);

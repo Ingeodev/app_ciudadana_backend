@@ -29,7 +29,7 @@ exports.postRegister = async (req, res, next) => {
     const dataQuery = {
       createdBy: createdBy.id,
       name,
-      phone,
+      phone: `+57${phone}`,
       imageUri,
       address,
     };
@@ -69,7 +69,7 @@ exports.postEdit = async (req, res, next) => {
     const dataQuery = {
       id,
       name,
-      phone,
+      phone: `+57${phone}`,
       imageUri,
       address,
     };

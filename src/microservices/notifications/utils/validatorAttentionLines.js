@@ -3,8 +3,8 @@ const joi = require("joi");
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
-  phone: joi.number().integer().greater(0).less(9999999999).required(),
-  whatsapp: joi.number().integer().greater(0).less(9999999999).required(),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
+  whatsapp: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
 });
 // * ------------------ END - Web - Attention Lines -----------------
 // * ------------------ Mobile - Attention Lines -----------------

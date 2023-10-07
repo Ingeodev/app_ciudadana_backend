@@ -61,6 +61,14 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
       order: [["name", "ASC"]], // Sort by date of creation in descending order
     });
 
+    const transformedLines = attenLInDb.rows.map((line) => {
+      const lineData = line.get({ plain: true }); // Convert Sequelize instance to simple object
+      if (lineData.phone != null) {
+        lineData.phone = String(lineData.phone).replace("+57", "");
+      }
+      return lineData;
+    });
+
     const responseCustom = {
       // meta: {
       //   page: objPage.number,
@@ -69,7 +77,7 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
       //   totalPages: totalPages,
       // },
       info: categInDb.rows,
-      genderLines: attenLInDb.rows,
+      genderLines: transformedLines,
     };
 
     return res.status(StatusCodes.OK).send(responseCustom);

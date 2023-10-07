@@ -91,6 +91,9 @@ exports.getCompaniesnServices = async (req, res, next) => {
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      if (company.phone != null) {
+        company.phone = String(company.phone).replace("+57", "");
+      }
       if (companyData.ThirdPartyCategory == null) companyData.ThirdPartyCategory = { name: null };
       const categoryName = companyData.ThirdPartyCategory.name;
       delete companyData.ThirdPartyCategory;

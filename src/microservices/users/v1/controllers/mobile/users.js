@@ -34,7 +34,7 @@ exports.postAccountInfo = async (req, res, next) => {
     const dataUser = {
       name,
       lastName,
-      phone,
+      phone: `+57${phone}`,
       email,
     };
     const extraDataUser = {
@@ -48,7 +48,7 @@ exports.postAccountInfo = async (req, res, next) => {
 
     await db.User.create({ ...dataUser, ...extraDataUser });
 
-    return res.status(StatusCodes.CREATED).json(dataUser);
+    return res.status(StatusCodes.CREATED).json({ ...dataUser, phone});
   } catch (error) {
     // console.error("account postAccountInfo could not be created/updated: ", error.message);
     return next(error);
@@ -187,7 +187,7 @@ exports.getAccountInfo = async (req, res, next) => {
         name,
         lastName,
         email,
-        phone,
+        phone: String(phone).replace("+57", ""),
       },
     });
   } catch (error) {
@@ -262,7 +262,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
       name,
       lastName,
       address,
-      phone,
+      phone: `+57${phone}`,
     };
 
     const userInDb = await db.User.findOne({
@@ -281,7 +281,7 @@ exports.postAccountFullLogin = async (req, res, next) => {
 
     await userInDb.update(dataUser);
 
-    return res.status(StatusCodes.OK).json(dataUser);
+    return res.status(StatusCodes.OK).json({ ...dataUser, phone });
   } catch (error) {
     // console.error("account full_login could not be retrieved: ", error);
     
