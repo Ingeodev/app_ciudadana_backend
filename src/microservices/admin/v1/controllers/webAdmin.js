@@ -193,7 +193,12 @@ exports.postRegister = async (req, res, next) => {
     delete userInDb.dataValues.roleId;
     delete userInDb.dataValues.userMobile;
     delete userInDb.dataValues.disabled;
-    return res.status(StatusCodes.CREATED).json({ meta: null, data: userInDb });
+    return res
+      .status(StatusCodes.CREATED)
+      .json({
+        meta: null,
+        data: { name, lastName, email, documentTypeId, document },
+      });
   } catch (error) {
     await transaction.rollback();
     return next(error);
@@ -267,11 +272,11 @@ exports.postAddRole = async (req, res, next) => {
     const role = "super_master_user";
     await firebase.addCustomClaim(clientId, role);
 
-    const resultUpdate = await adminInDb.update(roleId);
+    await adminInDb.update(roleId);
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ meta: null, data: resultUpdate });
+      .json({ meta: null, data: { id, roleId } });
   } catch (error) {
     return next(error);
   }
@@ -303,22 +308,10 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await adminInDb.update(dataQuery);
-    delete resultUpdate.dataValues.clientId;
-    delete resultUpdate.dataValues.emailVerified;
-    delete resultUpdate.dataValues.tokenEmailVerified;
-    delete resultUpdate.dataValues.passwdReset;
-    delete resultUpdate.dataValues.phone;
-    delete resultUpdate.dataValues.address;
-    delete resultUpdate.dataValues.serviceReceiptUri;
-    delete resultUpdate.dataValues.loginPhase;
-    delete resultUpdate.dataValues.pushDeviceToken;
-    delete resultUpdate.dataValues.roleId;
-    delete resultUpdate.dataValues.userMobile;
-    delete resultUpdate.dataValues.disabled;
+    await adminInDb.update(dataQuery);
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: resultUpdate,
+      data: { id, name, lastName, documentTypeId, document },
     });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
