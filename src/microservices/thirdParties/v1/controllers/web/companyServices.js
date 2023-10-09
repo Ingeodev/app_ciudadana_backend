@@ -1,7 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companyServices.js");
-const validatorCompany = require("../../../utils/validators/web/companies.js");
 
 /**
  * Get all services of one company
@@ -11,7 +10,7 @@ const validatorCompany = require("../../../utils/validators/web/companies.js");
  */
 exports.getServices = async (req, res, next) => {
   try {
-    const objPage = await validatorCompany.vWebGetListAll({
+    const objPage = await validator.vWebGetListAll({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
       companyId: req.params.id ? parseInt(req.params.id) : null,

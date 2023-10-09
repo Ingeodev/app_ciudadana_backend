@@ -3,11 +3,6 @@ const router = express.Router();
 const companyServicesController = require("../controllers/web/companyServices.js");
 
 // * ------------------ Company Services -----------------------------
-router.get(
-  "/:id",
-  // hasPermissions({ role: "super_master_user" }),
-  companyServicesController.getServices
-);
 
 router.post(
   "",
@@ -25,6 +20,12 @@ router.post(
   "/delete",
   // hasPermissions({ role: "super_master_user" }),
   companyServicesController.postDelete
+);
+
+router.get(
+  "/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  companyServicesController.getServices
 );
 //#endregion - Company
 module.exports = router;

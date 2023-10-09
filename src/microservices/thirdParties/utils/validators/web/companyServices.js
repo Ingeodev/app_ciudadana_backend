@@ -33,6 +33,12 @@ const postDeleteSchema = joi.object({
   companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
+const getListAllSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -60,5 +66,8 @@ module.exports = {
   },
   vWebPostDelete: async (inputData) => {
     return await use_validator_on_data(postDeleteSchema, inputData);
+  },
+  vWebGetListAll: async (inputData) => {
+    return await use_validator_on_data(getListAllSchema, inputData);
   },
 };
