@@ -37,12 +37,11 @@ router.post(
   adminController.postDelete
 );
 
-// ! Pendiente: Diferenciar el usuario admin por rol
-router.get(
-  "/",
-  // hasPermissions({ role: "super_master_user" }),
-  adminController.getAll
-);
+// router.get(
+//   "/",
+//   // hasPermissions({ role: "super_master_user" }),
+//   adminController.getAll
+// );
 
 router.get(
   "/:id",
