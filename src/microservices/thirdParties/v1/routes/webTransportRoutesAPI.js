@@ -1,7 +1,7 @@
 const express = require("express");
 const { StatusCodes } = require("http-status-codes");
 const router = express.Router();
-const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
+// const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 const transpRoutesController = require("../controllers/web/transportRoutesAPI.js");
 const { authMiddleware, validateModuleTransportRoutes } = require("../../../../middleware/authMiddlewareApi.js");
 
@@ -66,18 +66,18 @@ router.get(
 
 // * ------------------ Company Routes -----------------------------
 
-router.get(
-  "/route/template",
-  // hasPermissions({ role: "super_master_user" }),
-  transpRoutesController.getRouteDownloadXlsxTemplate
-);
+// router.get(
+//   "/route/template",
+//   // hasPermissions({ role: "super_master_user" }),
+//   transpRoutesController.getRouteDownloadXlsxTemplate
+// );
 
-router.post(
-  "/route/excel",
-  // hasPermissions({ role: "super_master_user" }),
-  uploadSingleExcel.single("file"),
-  transpRoutesController.postRouteUploadXlsx
-);
+// router.post(
+//   "/route/excel",
+//   // hasPermissions({ role: "super_master_user" }),
+//   uploadSingleExcel.single("file"),
+//   transpRoutesController.postRouteUploadXlsx
+// );
 
 router.get(
   "/route/itinerary",
