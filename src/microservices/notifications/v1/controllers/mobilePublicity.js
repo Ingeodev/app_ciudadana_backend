@@ -14,7 +14,8 @@ const getUncategorized = async (req, res, next) => {
             categoryId: { [eq]: null },
           },
           attributes: [
-            [col("imageMobileUri"), "image"],
+            [col("imageUri"), "image"],
+            [col("imageMobileUri"), "imageMobile"],
             [col("siteUri"), "url"],
           ],
         });
@@ -42,7 +43,8 @@ const getCategorized = async (req, res, next) => {
             },
           ],
           attributes: [
-            [col("imageMobileUri"), "image"],
+            [col('"Advertisement"."imageUri"'), "image"],
+            [col('"Advertisement"."imageMobileUri"'), "imageMobile"],
             [col("siteUri"), "url"],
           ],
         });
