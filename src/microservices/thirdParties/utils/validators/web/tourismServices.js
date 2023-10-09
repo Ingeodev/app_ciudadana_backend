@@ -56,6 +56,7 @@ const postBulkDeleteSchema = joi.object({
 const getListAllSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const getServicesCompanySchema = joi.object({

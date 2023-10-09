@@ -1,7 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../../models/index.js");
-const validatorServ = require("../../../utils/validators/web/tourismServices.js");
-const validatorCompany = require("../../../utils/validators/web/tourismCompanies.js");
+const validator = require("../../../utils/validators/web/tourismServices.js");
 
 /**
  * Get all servives of one tourism company 
@@ -11,7 +10,7 @@ const validatorCompany = require("../../../utils/validators/web/tourismCompanies
  */
 exports.getServices = async (req, res, next) => {
   try {
-    const objPage = await validatorCompany.vWebGetListAll({
+    const objPage = await validator.vWebGetListAll({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
       companyId: req.params.id ? parseInt(req.params.id) : null,
@@ -68,7 +67,7 @@ exports.postServices = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { services } = await validatorServ.vWebPostServices(req.body);
+    const { services } = await validator.vWebPostServices(req.body);
 
     // First, validate that the company belongs to the user.
     const company = await db.TourismCompany.findOne({
@@ -125,7 +124,7 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, service, companyId } = await validatorServ.vWebPostEdit(req.body);
+    const { id, service, companyId } = await validator.vWebPostEdit(req.body);
 
     // First, validate that the company belongs to the user.
     const companyInDb = await db.TourismCompany.findOne({
@@ -197,7 +196,7 @@ exports.postDelete = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, companyId } = await validatorServ.vWebPostDelete(req.body);
+    const { id, companyId } = await validator.vWebPostDelete(req.body);
 
     // First, validate that the company belongs to the user.
     const companyInDb = await db.TourismCompany.findOne({
