@@ -16,23 +16,13 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
     const categInDb = await db.GenderCategory.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
-      attributes: {
-        exclude: [
-          "createdBy",
-          "siteUri",
-          "imageUri",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-        ],
-        include: [
-          "id",
-          "title",
-          "description",
-          ["imageUri", "image"],
-          ["siteUri", "url"],
-        ],
-      },
+      attributes: [
+        "id",
+        "title",
+        "description",
+        [Sequelize.col("imageUri"), "image"],
+        [Sequelize.col("siteUri"), "url"],
+      ],
 
       // limit: objPage.size,
       // offset: (objPage.number - 1) * objPage.size,
@@ -45,17 +35,12 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
     const attenLInDb = await db.GenderAttentionLine.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
       // where: { createdBy: createdBy.id },
-      attributes: {
-        exclude: [
-          "id",
-          "createdBy",
-          "imageUri",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-        ],
-        include: ["name", "phone", "address", ["imageUri", "image"]],
-      },
+      attributes: [
+        "name",
+        "phone",
+        "address",
+        [Sequelize.col("imageUri"), "image"],
+      ],
       // limit: objPage.size,
       // offset: (objPage.number - 1) * objPage.size,
       order: [["name", "ASC"]], // Sort by date of creation in descending order

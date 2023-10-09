@@ -118,13 +118,16 @@ exports.getListAllClosest = async (req, res, next) => {
         attributes: ['name'],
         required: false,
       }],
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt", "SecurityCategory"],
-        include: [
-          [Sequelize.col('"Report"."imageUri"'), 'image'],
-          [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
-        ],
-      },
+      attributes: [
+        "id",
+        "description",
+        "securityCategoryId",
+        "userId",
+        "lat",
+        "lon",
+        [Sequelize.col('"Report"."imageUri"'), 'image'],
+        [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
+      ]
     });
 
     const data = reportsDb.rows.map(row => {
