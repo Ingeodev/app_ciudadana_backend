@@ -7,7 +7,7 @@ const integer_number = joi.number().integer();
 const positive_integer = integer_number.positive();
 const non_negative_integer = integer_number.min(0);
 const hex_color_string = joi.string().trim().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
-const numberic_string = joi.string().trim().regex(/^[0-9]*$/, 'Numeric String');
+const numeric_string = joi.string().trim().regex(/^[0-9]*$/, 'Numeric String');
 const latitude_number = joi.number().min(-90).max(90);
 const longitude_number = joi.number().min(-180).max(180);
 
@@ -103,7 +103,7 @@ const multerMemorySingleItemSchema = joi.object({
 const securityAttentionPointCreationSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  phone: numberic_string.min(10).max(15).required(),
+  phone: numeric_string.min(10).max(15).required(),
   color: hex_color_string.required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: uri_string.required(),
@@ -115,7 +115,7 @@ const securityAttentionPointUpdateSchema = joi.object({
   id: non_negative_integer.required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  phone: numberic_string.min(10).max(15),
+  phone: numeric_string.min(10).max(15),
   color: hex_color_string,
   address: joi.string().trim().empty("").invalid(" "),
   imageUri: uri_string,
