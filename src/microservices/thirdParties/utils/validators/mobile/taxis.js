@@ -7,7 +7,8 @@ const colombian_car_plate = joi.string().uppercase().trim().regex(colombian_car_
 const numeric_string = joi.string().trim().regex(/^[0-9]*$/, 'Numeric String');
 
 const taxiQuerySchema = joi.object({
-    q: [colombian_car_plate.required(), numeric_string.required()],
+    q: joi.alternatives()
+        .try(colombian_car_plate, numeric_string).required(),
 });
 
 
