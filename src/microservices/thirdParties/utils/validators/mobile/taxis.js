@@ -1,7 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-const colombian_car_plate = joi.string().uppercase().trim().regex(/^[A-Z]{3}[0-9]{3}$/, 'Colombian Car Plate');
+const colombian_car_plate_regex = /^[A-Z]{3}[0-9]{3}$/;
+
+const colombian_car_plate = joi.string().uppercase().trim().regex(colombian_car_plate_regex, 'Colombian Car Plate');
 const numeric_string = joi.string().trim().regex(/^[0-9]*$/, 'Numeric String');
 
 const taxiQuerySchema = joi.object({
@@ -35,6 +37,7 @@ const use_validator_on_data = async (validator_schema, data) => {
 };
 
 module.exports = {
+    getColombianCarPlateRegex: () => colombian_car_plate_regex,
     validateTaxiQuerySchema: async (inputData) => {
         return await use_validator_on_data(taxiQuerySchema, inputData);
     },
