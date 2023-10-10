@@ -85,11 +85,26 @@ const postDelete = async (req, res, next) => {
   try {
     // ! Pendiente: Validar permisos del usuario
     const { id } = await validator.validateSimpleDeleteByIdSchema(req.body);
-    const originalTourCat = await db.TourismCategory.findByPk(id);
+    const originalTourCat = await db.TourismCategory.findByPk(id, {
+      include: [
+        {
+          model: db.TourismCompany,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
+    });
     if (originalTourCat == null)
       throw {
         status: StatusCodes.NOT_FOUND,
         message: `The requested Tourism Category with id ${id} has already been deleted.`
+      };
+    if (originalTourCat.TourismCompanies.length != 0)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: "The Tourism Category has related Tourism Companies and cannot be deleted.",
       };
     await originalTourCat.destroy();
     return res.status(StatusCodes.OK).send({ data: { id } });
