@@ -65,7 +65,7 @@ const getQuery = async (req, res, next) => {
 const postComplaint = async (req, res, next) => {
   try {
     // TODO: Implement
-    const data = { msg: "TODO: implement."};
+    const data = { msg: "TODO: implement." };
     console.warn("TODO: consume the API and return real data.");
     return res.status(StatusCodes.CREATED).json(data);
   } catch (error) {
@@ -75,5 +75,5 @@ const postComplaint = async (req, res, next) => {
 
 module.exports = {
   getQuery,
-
+  postComplaint,
 };
