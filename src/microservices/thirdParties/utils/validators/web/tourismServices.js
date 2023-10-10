@@ -3,23 +3,12 @@ const joi = require("joi");
 
 
 const servicesSchema = joi.object({
+  companyId: joi.number().integer().greater(0).invalid(0).required(),
   services: joi.array().min(1).items(
       joi.object({
         service: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),        
-        companyId: joi.number().integer().greater(0).invalid(0).required(),
       }).unknown(false) // This is to ensure that there are no additional fields in the object.
-  )
-    .required()
-    .custom((value, helpers) => {
-      // Ensure that all companyId's are the same
-      const firstCompanyId = value[0].companyId;
-      for (let i = 1; i < value.length; i++) {
-        if (value[i].companyId !== firstCompanyId) {
-          return helpers.message("All companyId values must be the same");
-        }
-      } 
-      return value;
-    }),
+  ).required(),
 });
 
 const bulkServicesSchema = joi.object({

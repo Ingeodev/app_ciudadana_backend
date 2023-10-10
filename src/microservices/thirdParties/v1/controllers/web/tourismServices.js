@@ -67,12 +67,12 @@ exports.postServices = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { services } = await validator.vWebPostServices(req.body);
+    const { services, companyId } = await validator.vWebPostServices(req.body);
 
     // First, validate that the company belongs to the user.
     const company = await db.TourismCompany.findOne({
       where: {
-        id: services[0].companyId,
+        id: companyId,
         // createdBy: createdBy.id,
       },
       attributes: ["id"],
@@ -84,6 +84,13 @@ exports.postServices = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
         // status: StatusCodes.FORBIDDEN,
       };
+    
+    services.forEach((obj, index) => {
+      services[index] = {
+        service: obj.service,
+        companyId,
+      };
+    });
 
     const result = await db.TourismService.bulkCreate(services);
 
