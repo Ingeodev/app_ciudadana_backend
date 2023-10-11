@@ -4,19 +4,19 @@ const validator = require("../../utils/validatorSecurityCategory.js");
 
 /**
  * Create a security category
- * @param {object} req - Object containing the name, imageUri, color
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req - Object containing the name, iconMap, color
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, imageUri, color } = await validator.vWebPostRegister(
+    const { name, iconMap, color } = await validator.vWebPostRegister(
       req.body
     );
     // TODO: Gracefully handle the error when name exists, or allow duplicate names.
 
     const dataQuery = {
       name,
-      imageUri,
+      iconMap,
       color,
     };
 
@@ -30,17 +30,17 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update security category
- * @param {object} req - Object containing the id, name, imageUri, color
- * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req - Object containing the id, name, iconMap, color
+ * @return {object} Response contains: statusCode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, imageUri, color } = await validator.vWebPostEdit(req.body);
+    const { id, name, iconMap, color } = await validator.vWebPostEdit(req.body);
 
     const dataQuery = {
       id,
       name,
-      imageUri,
+      iconMap,
       color,
     };
 
@@ -75,7 +75,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all security categories
- * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -118,7 +118,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get security category by id
  * @param {integer} req.params.id - security category - id
- * @return {object} Response contains: statuscode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data security categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
@@ -146,7 +146,7 @@ exports.getOneById = async (req, res, next) => {
 
 /**
  * Destroy a security category (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {

@@ -12,12 +12,12 @@ exports.getListAll = async (req, res, next) => {
   try {
     const attentionLInDb = await db.Security.findAll({
       where: { active: true },
-      attributes: ["name", "phone", "address", [Sequelize.col("imageUri"), 'image'], "siteUri"],
+      attributes: ["name", "phone", "address", [Sequelize.col("imageUri"), 'image']],
       order: [["name", "ASC"]],
     });
 
     const categInDb = await db.SecurityCategory.findAll({
-      attributes: ["id", "name", [Sequelize.col("imageUri"), "image"], "color"],
+      attributes: ["id", "name", [Sequelize.col("iconMap"), "image"], "color"],
       order: [["name", "ASC"]],
     });
 
