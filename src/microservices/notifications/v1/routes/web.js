@@ -11,6 +11,7 @@ const attentionLinesController = require("../controllers/webAttentionLines");
 const alertController = require('../controllers/webAlert');
 const socialNetworkController = require('../controllers/webSocialNetwork');
 const reportController = require("../controllers/webReports");
+const reportConfigCont = require("../controllers/webReportConfigurations.js");
 const dependenciesController = require("../controllers/webDependencies");
 const mobileServiceController = require("../controllers/webMobileService");
 const genderCategoryC = require("../controllers/webGenderCategories");
@@ -66,6 +67,20 @@ router.post('/security/attentionPoint/delete', securityAttentionPointsController
 // Retrieve all the reports by user.
 router.get('/security/reports', reportController.getListAll);
 //#endregion
+
+//#region Report Configurations end-points
+router.post(
+  "/security/report_configuration",
+  // hasPermissions({ role: "super_master_user" }),
+  reportConfigCont.postRegister
+);
+
+router.get(
+  "/security/report_configuration",
+  // hasPermissions({ role: "super_master_user" }),
+  reportConfigCont.getReportConfig
+);
+//#endRegion
 
 //#region Security end-points
 router.post(

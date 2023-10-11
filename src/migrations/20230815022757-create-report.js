@@ -47,6 +47,11 @@ module.exports = {
           allowNull: false,
           unique: false,
         },
+        isApproved: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          unique: false,
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,

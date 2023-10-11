@@ -71,6 +71,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
+      isApproved: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+      },
     },
     {
       sequelize,

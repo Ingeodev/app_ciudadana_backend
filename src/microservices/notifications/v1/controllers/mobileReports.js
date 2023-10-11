@@ -32,15 +32,6 @@ const checkCategoryExists = async (categoryId) => {
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { description, categoryId, lat, lon } =
-      await validator.vMobilePostRegister(JSON.parse(req.body.report));
-
-    if (!(await checkCategoryExists(categoryId)))
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "The assigned category does not exist.",
-      };
-
     const userData = await db.User.findOne({
       where: { disabled: false, userMobile: true, clientId: res.locals.uid },
       attributes: ["id"],
@@ -51,6 +42,14 @@ exports.postRegister = async (req, res, next) => {
         message:
           "Requesting user is not allowed to create reports or is not registered in the database yet.",
         status: StatusCodes.FORBIDDEN,
+      };
+
+    const { description, categoryId, lat, lon } = await validator.vMobilePostRegister(JSON.parse(req.body.report));
+
+    if (!(await checkCategoryExists(categoryId)))
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "The assigned category does not exist.",
       };
     
     const pdfFile = await validator.vFileReports(req.file);
@@ -72,6 +71,19 @@ exports.postRegister = async (req, res, next) => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
 
+
+    const configInDb = await db.ReportConfiguration.findOne({
+      attributes: ["automaticApproval"],
+      order: [["createdAt", "DESC"]], // Ordered from current date
+    });
+
+    if (configInDb === null) {
+      throw {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        message: "Report configuration data could not be retrieved",
+      };
+    }
+
     const dataQuery = {
       description,
       securityCategoryId: categoryId,
@@ -80,6 +92,7 @@ exports.postRegister = async (req, res, next) => {
       lat,
       lon,
       expiresAt,
+      isApproved: configInDb.automaticApproval,
     };
 
     const result = await db.Report.create(dataQuery);
