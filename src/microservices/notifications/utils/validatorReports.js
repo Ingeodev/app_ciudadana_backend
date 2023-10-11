@@ -39,6 +39,11 @@ const getListAllClosestSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
 });
+
+const getListSchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
 // * ------------------ END - Mobile - Reports -----------------
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -64,6 +69,9 @@ module.exports = {
   // vWebGetListAllByUser: async (inputData) => {
   //   return await use_validator_on_data(getListAllByUserSchema, inputData);
   // },
+  vWebGetListAllClosest: async (inputData) => {
+    return await use_validator_on_data(getListSchema, inputData);
+  },
   // * ------------------ END - Web - Reports -----------------
   // * ------------------ Mobile - Reports -----------------
   vMobilePostRegister: async (inputData) => {

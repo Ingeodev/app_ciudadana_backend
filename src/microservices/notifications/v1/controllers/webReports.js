@@ -5,7 +5,7 @@ const { Sequelize } = require("sequelize");
 
 /**
  * Get all reports by user
- * @return {object} Response contains: statuscode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAllByUser = async (req, res, next) => {
   try {
@@ -80,9 +80,14 @@ exports.getListAllByUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Get all reports
+ * @param {object} req.query - Object containing the number, size
+ * @return {object} Response contains: statusCode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
+ */
 exports.getListAll = async (req, res, next) => {
   try {
-    const objPage = await validator.vMobileGetListAllClosest({
+    const objPage = await validator.vWebGetListAllClosest({
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
