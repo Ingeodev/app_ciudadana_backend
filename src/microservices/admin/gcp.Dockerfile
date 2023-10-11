@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     tee /etc/apt/sources.list.d/gcsfuse.list && \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
     apt-key add - && \
-    apt-get update && \
+    apt-get update --fix-missing && \
     apt-get install -y gcsfuse && \
     apt-get clean
 
