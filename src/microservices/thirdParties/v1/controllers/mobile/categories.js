@@ -25,11 +25,18 @@ exports.getAll = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    let message = undefined;
-    if (categoriesInDb.count <= 0)
-      message = "There are no third-party categories registered";
-    if (categoriesInDb.rows.length <= 0)
-      message = '"page[number]" is too large for the number of possible pages.';
+    if (categoriesInDb.count <= 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "There are no third-party categories registered",
+      };
+    }
+    if (categoriesInDb.rows.length <= 0) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: '"page.number" is too large for the number of possible pages',
+      };
+    }
     
     const mappedRows = categoriesInDb.rows.map(row => {
       const mappedRow = {
@@ -39,16 +46,7 @@ exports.getAll = async (req, res, next) => {
       return mappedRow;
     });
     
-    return res.status(StatusCodes.OK).json({
-      meta: {
-        message,
-        page: objPage.number,
-        pageSize: objPage.size,
-        totalRecords: categoriesInDb.count,
-        totalPages: Math.ceil(categoriesInDb.count / objPage.size),
-      },
-      data: mappedRows,
-    });
+    return res.status(StatusCodes.OK).json(mappedRows);
   } catch (error) {
     // console.error("Document types could not be recovered: ", error.message);
     return next(error);
