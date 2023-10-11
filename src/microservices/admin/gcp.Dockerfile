@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
     apt-key add - && \
     apt-get update --fix-missing && \
-    apt-get install -y gcsfuse && \
+    apt-get install -f -y gcsfuse && \
     apt-get clean
 
 # # # Go installation part that didn't work
