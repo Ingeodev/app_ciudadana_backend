@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       SecurityCategory.hasMany(models.Report, {
         foreignKey: {
           name: "securityCategoryId",
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
       });
@@ -33,14 +33,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      imageUri: {
+      iconMap: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       color: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
     },
@@ -53,40 +53,26 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       hooks: {
         beforeCreate: (obj, options) => {
-          obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
         },
         beforeUpdate: (obj, options) => {
-          obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
         },
         afterCreate: (obj, options) => {
-          obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
         },
         afterUpdate: (obj, options) => {
-          obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
         },
         afterFind: (result, options) => {
           if (Array.isArray(result)) {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
-              obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
-              if (obj.image || obj.dataValues.image) {
-                obj.dataValues.image = transformSavedUriToSend(
-                  obj.dataValues.image
-                );
-                delete obj.dataValues.imageUri;
-              }
+              obj.dataValues.iconMap = transformSavedUriToSend(obj.iconMap);
             });
           } else if (result) {
             // If the result is a single record
-            result.dataValues.imageUri = transformSavedUriToSend(
-              result.imageUri
-            );
-            if (result.image || result.dataValues.image) {
-              result.dataValues.image = transformSavedUriToSend(
-                result.dataValues.image
-              );
-              delete result.dataValues.imageUri;
-            }
+            result.dataValues.iconMap = transformSavedUriToSend(result.iconMap);
           }
         },
       },

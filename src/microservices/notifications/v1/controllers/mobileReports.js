@@ -27,8 +27,8 @@ const checkCategoryExists = async (categoryId) => {
 
 /**
  * Create report
- * @param {object} req - Object containing the description, categoryId, userId, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req - Object containing the description, categoryId, userId, lat, lon, file (image)
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -43,25 +43,34 @@ exports.postRegister = async (req, res, next) => {
 
     const userData = await db.User.findOne({
       where: { disabled: false, userMobile: true, clientId: res.locals.uid },
-      attributes: ['id'],
+      attributes: ["id"],
     });
 
     if (userData == null || userData.id == null)
       throw {
-        message: 'Requesting user is not allowed to create reports or is not registered in the database yet.',
+        message:
+          "Requesting user is not allowed to create reports or is not registered in the database yet.",
         status: StatusCodes.FORBIDDEN,
       };
     
-    const pdfFile = await validator.vfileReports(req.file);
-    const endpoint = "mobileReports";
-    const uploadDir = path.join(uploadsFolder, endpoint);
-    const filename = uuidV4() + path.extname(pdfFile.originalname);
-    // const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
-    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/${endpoint}/${filename}`;
+    const pdfFile = await validator.vFileReports(req.file);
+    let imageUri = undefined;
 
-    const filepath = path.join(uploadDir, filename);
-    await checkIfExists(uploadDir, true);
-    await fs.writeFile(filepath, pdfFile.buffer);
+    if (pdfFile) {
+      console.log("pdfFile");
+      const endpoint = "mobileReports";
+      const uploadDir = path.join(uploadsFolder, endpoint);
+      const filename = uuidV4() + path.extname(pdfFile.originalname);
+      // imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
+      imageUri = `${filesMsHostUri}/api/v1/file_management/download/${endpoint}/${filename}`;
+
+      const filepath = path.join(uploadDir, filename);
+      await checkIfExists(uploadDir, true);
+      await fs.writeFile(filepath, pdfFile.buffer);
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
 
     const dataQuery = {
       description,
@@ -70,12 +79,19 @@ exports.postRegister = async (req, res, next) => {
       imageUri,
       lat,
       lon,
+      expiresAt,
     };
 
     const result = await db.Report.create(dataQuery);
     return res.status(StatusCodes.CREATED).json({
       meta: null,
-      data: { description, categoryId, lat, lon, image: result.dataValues.imageUri },
+      data: {
+        description,
+        categoryId,
+        lat,
+        lon,
+        image: result.dataValues.imageUri,
+      },
     });
   } catch (error) {
     return next(error);
@@ -84,7 +100,7 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Get the reports from the day that are closest to the user's location.
- * @return {object} Response contains: statuscode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAllClosest = async (req, res, next) => {
   try {
@@ -125,7 +141,7 @@ exports.getListAllClosest = async (req, res, next) => {
         "userId",
         "lat",
         "lon",
-        [Sequelize.col('"Report"."imageUri"'), 'image'],
+        [Sequelize.col('"Report"."iconMap"'), 'iconMap'],
         [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
       ]
     });

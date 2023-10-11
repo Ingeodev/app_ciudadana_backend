@@ -28,33 +28,39 @@ module.exports = {
           unique: false,
         },
         imageUri: {
-          // ! Limite de tamanio del String?
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         lat: {
           type: Sequelize.FLOAT,
-          allowNull: true,
+          allowNull: false,
+          unique: false,
         },
         lon: {
           type: Sequelize.FLOAT,
-          allowNull: true,
+          allowNull: false,
+          unique: false,
+        },
+        expiresAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          unique: false,
         },
         createdAt: {
-          type: "TIMESTAMP",
+          type: Sequelize.DATE,
           allowNull: false,
-          // type: Sequelize.DATE
+          unique: false,
         },
         updatedAt: {
-          type: "TIMESTAMP",
+          type: Sequelize.DATE,
           allowNull: true,
-          // type: Sequelize.DATE
+          unique: false,
         },
         deletedAt: {
-          type: "TIMESTAMP",
+          type: Sequelize.DATE,
           allowNull: true,
-          // type: Sequelize.DATE
+          unique: false,
         },
       },
       {

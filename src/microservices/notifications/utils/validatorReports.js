@@ -28,7 +28,7 @@ const vFileSchema = joi.object({
   mimetype: joi.string().required(),
   size: joi.number().required(),
   buffer: joi.binary().required(),
-}).required().error(new Error('A valid file is required.'));
+});
 
 const getGetCoordinatesSchema = joi.object({
   lat: joi.number().min(-90).max(90),
@@ -69,7 +69,7 @@ module.exports = {
   vMobilePostRegister: async (inputData) => {
     return await use_validator_on_data(postRegisterSchema, inputData);
   },
-  vfileReports: async (inputData) => {
+  vFileReports: async (inputData) => {
     return await use_validator_on_data(vFileSchema, inputData);
   },
   vMobileGetCoordinates: async (inputData) => {

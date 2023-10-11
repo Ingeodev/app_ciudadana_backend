@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      User.hasMany(models.Report, {
+        foreignKey: {
+          name: "userId",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
       User.hasMany(models.ThirdPartyCompany, {
         foreignKey: {
           name: "createdBy",

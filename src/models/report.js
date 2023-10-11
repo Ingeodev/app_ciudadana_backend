@@ -13,14 +13,16 @@ module.exports = (sequelize, DataTypes) => {
       Report.belongsTo(models.SecurityCategory, {
         foreignKey: {
           name: "securityCategoryId",
-          allowNull: true,
+          allowNull: false,
+          unique: false,
         },
       });
 
       Report.belongsTo(models.User, {
         foreignKey: {
           name: "userId",
-          allowNull: true,
+          allowNull: false,
+          unique: false,
         },
       });
     }
@@ -41,26 +43,33 @@ module.exports = (sequelize, DataTypes) => {
       },
       securityCategoryId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       imageUri: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       lat: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: false,
+        unique: false,
       },
       lon: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: false,
+        unique: false,
+      },
+      expiresAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        unique: false,
       },
     },
     {
