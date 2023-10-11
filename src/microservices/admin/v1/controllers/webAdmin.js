@@ -425,7 +425,12 @@ exports.getOneById = async (req, res, next) => {
 exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const adminInDb = await db.User.findByPk(id);
+    const adminInDb = await db.User.findOne({
+      where: {
+        id,
+        userMobile: false
+      }
+    });
 
     if (adminInDb === null) {
       throw {
