@@ -19,8 +19,17 @@ RUN apt-get update && apt-get install -y \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
     apt-key add - && \
     apt-get update && \
-    apt-get install -y gcsfuse && \
+    # apt-get install -y gcsfuse && \
     apt-get clean
+
+# workaround
+ENV GCSFUSE_VERSION=1.2.0
+RUN apt-get update -y && \
+    curl -LJO "https://github.com/GoogleCloudPlatform/gcsfuse/releases/download/v${GCSFUSE_VERSION}/gcsfuse_${GCSFUSE_VERSION}_amd64.deb" && \
+    apt-get -y install fuse && \
+    apt-get clean && \
+    dpkg -i "gcsfuse_${GCSFUSE_VERSION}_amd64.deb"
+
 
 # RUN yum update -y \
 #    && yum install -y curl \
