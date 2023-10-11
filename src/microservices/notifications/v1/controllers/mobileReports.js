@@ -7,6 +7,7 @@ const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorReports.js");
 const { checkIfExists } = require("../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
+const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 
 // const uploadsFolder = path.join("..", "..", "uploads", "private"); // TODO: transform in env var; ask Esteban.
 const uploadsFolder = path.join("..", "..", "uploads"); // TODO: transform in env var; ask Esteban.
@@ -112,18 +113,20 @@ exports.postRegister = async (req, res, next) => {
 };
 
 /**
- * Get the reports from the day that are closest to the user's location.
+ * Get the approved and not expired reports. They can be sorted by proximity or by date of creation.
+ * @param {object} req.query - Object containing the number, size, lat, lon
  * @return {object} Response contains: statusCode (integer), json (objeto): reports data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAllClosest = async (req, res, next) => {
   try {
-    const { lat, lon } = await validator.vMobileGetCoordinates(req.query);
-
-    var date = new Date();
-    date.setDate(date.getDate() - 1);
+    const { size, number, lat, lon } = await validator.vMobileGetListAllClosest({
+      lat: req.query.lat,
+      lon: req.query.lon,
+      number: req.query.page ? parseInt(req.query.page.number) : 1,
+      size: req.query.page ? parseInt(req.query.page.size) : 100,
+    });
 
     let order = [["createdAt", "DESC"]];
-    // let order = [["description", "ASC"]];
     if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
       order = [[
         Sequelize.fn("ST_Distance",
@@ -135,32 +138,42 @@ exports.getListAllClosest = async (req, res, next) => {
 
     const reportsDb = await db.Report.findAndCountAll({
       where: {
-        updatedAt: {
-          [Sequelize.Op.gt]: date
-        }
+        expiresAt: {
+          [Sequelize.Op.gt]: new Date(),
+        },
+        isApproved: true,
       },
-      unique: true,
       paranoid: true,
+      limit: size,
+      offset: (number - 1) * size,
       order,
-      include: [{
-        model: db.SecurityCategory,
-        attributes: ['name'],
-        required: false,
-      }],
+      include: [
+        {
+          model: db.SecurityCategory,
+          attributes: ["name", "color", "iconMap"],
+          required: false,
+        },
+      ],
       attributes: [
         "id",
+        "createdAt",
+        [Sequelize.col('"SecurityCategory"."name"'), "name"],
+        [Sequelize.col('"Report"."securityCategoryId"'), "categoryId"],
+        [Sequelize.col('"SecurityCategory"."color"'), "color"],
+        [Sequelize.col('"SecurityCategory"."iconMap"'), "iconMap"],
         "description",
-        "securityCategoryId",
-        "userId",
+        [Sequelize.col('"Report"."imageUri"'), "image"],
         "lat",
         "lon",
-        [Sequelize.col('"Report"."iconMap"'), 'iconMap'],
-        [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
-      ]
+      ],
     });
 
     const data = reportsDb.rows.map(row => {
-      return { ...row.dataValues, SecurityCategory: undefined };
+      return {
+        ...row.dataValues,
+        SecurityCategory: undefined,
+        color: formatColorOutputForMobile(row.dataValues.color),
+      };
     });
 
     return res.status(StatusCodes.OK).json(data);

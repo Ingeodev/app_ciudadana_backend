@@ -30,15 +30,12 @@ const vFileSchema = joi.object({
   buffer: joi.binary().required(),
 });
 
-const getGetCoordinatesSchema = joi.object({
+const getListAllClosestSchema = joi.object({
   lat: joi.number().min(-90).max(90),
   lon: joi.number().min(-180).max(180),
-}).and('lat', 'lon');
-
-const getListAllClosestSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
-});
+}).and('lat', 'lon');
 
 const getListSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
@@ -79,9 +76,6 @@ module.exports = {
   },
   vFileReports: async (inputData) => {
     return await use_validator_on_data(vFileSchema, inputData);
-  },
-  vMobileGetCoordinates: async (inputData) => {
-    return await use_validator_on_data(getGetCoordinatesSchema, inputData);
   },
   vMobileGetListAllClosest: async (inputData) => {
     return await use_validator_on_data(getListAllClosestSchema, inputData);
