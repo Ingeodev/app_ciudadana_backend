@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models");
 const validator = require("../../utils/validatorReports.js");
-const { Sequelize } = require("sequelize");
+const { col, Op } = require("sequelize");
 
 /**
  * Get all reports by user
@@ -51,7 +51,7 @@ exports.getListAllByUser = async (req, res, next) => {
       attributes: {
         exclude: ["deletedAt", "SecurityCategory"],
         include: [
-          [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
+          [col('"SecurityCategory"."name"'), 'securityCategoryName']
         ],
       },
     });
@@ -107,7 +107,7 @@ exports.getListAll = async (req, res, next) => {
       attributes: {
         exclude: ["deletedAt", "SecurityCategory"],
         include: [
-          [Sequelize.col('"SecurityCategory"."name"'), 'securityCategoryName']
+          [col('"SecurityCategory"."name"'), 'securityCategoryName']
         ],
       },
     });
@@ -130,6 +130,211 @@ exports.getListAll = async (req, res, next) => {
         totalPages: Math.ceil(reportsDb.count / objPage.size),
       },
       data,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Approve a report
+ * @param {integer} req.body.id - id of the report
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postApprove = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const { id } = await validator.vWebPostApprove({ id: req.body.id });
+
+    const reportInDb = await db.Report.findByPk(id, {
+      include: [
+        {
+          model: db.ReportStatus,
+          // as: "ReportStatus",
+          attributes: ["status"],
+          required: false,
+          order: [["createdAt", "DESC"]],
+          limit: 1,
+          where: {
+            status: {
+              [Op.ne]: "APPROVED",
+            },
+          },
+        },
+      ],
+    });
+
+    if (reportInDb === null || reportInDb.ReportStatuses.length === 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The report does not exist or has been approved`,
+      };
+    }
+
+    // Verify if it is within three days (period to approve the report).
+    const createdAt = new Date(reportInDb.createdAt);
+    const currentDate = new Date();
+    const difference = currentDate - createdAt;
+
+    const differenceInHours = difference / (1000 * 60 * 60);
+    let resultUpdate = null;
+    if (differenceInHours <= 72) {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+
+      resultUpdate = await reportInDb.update(
+        { isApproved: "yes", expiresAt },
+        { transaction }
+      );
+
+      await db.ReportStatus.create(
+        {
+          reportId: reportInDb.dataValues.id,
+          status: "APPROVED",
+        },
+        { transaction }
+      );
+    } else {
+      throw {
+        status: StatusCodes.FORBIDDEN,
+        message: `The report cannot be approved because more than 3 days have passed since its creation.`,
+      };
+    }
+
+    await transaction.commit();
+    delete resultUpdate.dataValues.ReportStatuses;
+    delete resultUpdate.dataValues.deletedAt;
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
+ * Disapprove a report
+ * @param {integer} req.body.id - id of the report
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postDisapprove = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const { id } = await validator.vWebPostApprove({ id: req.body.id });
+
+    const reportInDb = await db.Report.findByPk(id, {
+      include: [
+        {
+          model: db.ReportStatus,
+          // as: "ReportStatus",
+          attributes: ["status"],
+          required: false,
+          order: [["createdAt", "DESC"]],
+          limit: 1,
+          where: {
+            status: {
+              [Op.ne]: "DISAPPROVED",
+            },
+          },
+        },
+      ],
+    });
+
+    if (reportInDb === null || reportInDb.ReportStatuses.length === 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The report does not exist or has been disapproved`,
+      };
+    }
+
+    // Verify if it is within three days
+    const createdAt = new Date(reportInDb.createdAt);
+    const currentDate = new Date();
+    const difference = currentDate - createdAt;
+
+    const differenceInHours = difference / (1000 * 60 * 60);
+    if (differenceInHours > 72 && reportInDb.isApproved === "APPROVED") {
+      throw {
+        status: StatusCodes.FORBIDDEN,
+        message: `The report cannot be disapproved because more than 3 days have passed since its creation.`,
+      };
+    }
+
+    const resultUpdate = await reportInDb.update(
+      { isApproved: "no", expiresAt: null },
+      { transaction }
+    );
+
+    await db.ReportStatus.create(
+      {
+        reportId: reportInDb.dataValues.id,
+        status: "DISAPPROVED",
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
+    delete resultUpdate.dataValues.ReportStatuses;
+    delete resultUpdate.dataValues.deletedAt;
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
+ * Modify the expiration date of an approved report
+ * @param {object} req.body - id of the report, n expires (max 23:59) in format hh:mm
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postExpires = async (req, res, next) => {
+  try {
+    const { id, expires  } = await validator.vWebPostExpires(req.body);
+
+    const reportInDb = await db.Report.findOne({
+      where: {
+        id,
+        isApproved: "yes"
+      },
+      include: [
+        {
+          model: db.ReportStatus,
+          // as: "ReportStatus",
+          attributes: ["status"],
+          required: false,
+          order: [["createdAt", "DESC"]],
+          limit: 1,
+          where: {
+            status: "APPROVED",
+          },
+        },
+      ],
+    });
+
+    if (reportInDb === null || reportInDb.ReportStatuses.length === 0) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The report does not exist or has not been approved`,
+      };
+    }
+
+    const [hours, minutes] = expires.split(":").map(Number);
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + hours);
+    currentDate.setMinutes(currentDate.getMinutes() + minutes);
+
+    const resultUpdate = await reportInDb.update({ expiresAt: currentDate });
+    delete resultUpdate.dataValues.ReportStatuses;
+    delete resultUpdate.dataValues.deletedAt;
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: resultUpdate,
     });
   } catch (error) {
     return next(error);

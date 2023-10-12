@@ -41,6 +41,20 @@ const getListSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
 });
+
+const postApproveSchema = joi.object({
+  id: joi.number().integer().greater(0).required(),
+});
+
+const regexAfter0029 = /^(00:[3-9][0-9]|0[1-9]:[0-5][0-9]|1[0-9]:[0-5][0-9]|2[0-3]:[0-5][0-9]|24:00)$/;
+
+const postExpiresSchema = joi.object({
+  id: joi.number().integer().greater(0).required(),
+  expires: joi.string().trim().required().pattern(regexAfter0029, 'between-00:29-24:00')
+  .message({
+    'string.pattern.between-00:29-24:00': 'The time must be between 00:29 and 24:00'
+  })
+});
 // * ------------------ END - Mobile - Reports -----------------
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -68,6 +82,12 @@ module.exports = {
   // },
   vWebGetListAllClosest: async (inputData) => {
     return await use_validator_on_data(getListSchema, inputData);
+  },
+  vWebPostApprove: async (inputData) => {
+    return await use_validator_on_data(postApproveSchema, inputData);
+  },
+  vWebPostExpires: async (inputData) => {
+    return await use_validator_on_data(postExpiresSchema, inputData);
   },
   // * ------------------ END - Web - Reports -----------------
   // * ------------------ Mobile - Reports -----------------

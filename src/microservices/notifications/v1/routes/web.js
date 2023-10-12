@@ -44,7 +44,7 @@ router.post('/informationmb/status', advertisingController.postAdvertisementStat
 
 // Delete an advertisement.
 router.post('/informationmb/delete', advertisingController.postAdvertisementDelete);
-//#endregion
+//#endRegion
 
 //#region Security Attention Point end-points
 // Retrieve all the Security Attention Points.
@@ -61,12 +61,34 @@ router.post('/security/attentionPoint/edit', securityAttentionPointsController.p
 
 // Delete a Security Attention Point.
 router.post('/security/attentionPoint/delete', securityAttentionPointsController.postDeleteSecurityAttentionPoint);
-//#endregion
+//#endRegion
 
 //#region Reports end-points
 // Retrieve all the reports by user.
-router.get('/security/reports', reportController.getListAll);
-//#endregion
+router.get(
+  "/security/reports",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.getListAll
+);
+
+router.post(
+  "/security/reports/approve",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.postApprove
+);
+
+router.post(
+  "/security/reports/disapprove",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.postDisapprove
+);
+
+router.post(
+  "/security/reports/expires",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.postExpires
+);
+//#endRegion
 
 //#region Report Configurations end-points
 router.post(
@@ -141,7 +163,7 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   securityCatController.getOneById
 );
-//#endregion
+//#endRegion
 
 //#region Gender Attention Lines end-points
 router.post(
@@ -191,7 +213,7 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   genderCategoryC.getAll
 );
-//#endregion - Gender Attention Lines
+//#endRegion - Gender Attention Lines
 
 //#region Gender Attention Points end-points
 router.post(
@@ -217,7 +239,7 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   genderAttPointC.getListAll
 );
-//#endregion - Gender Attention Points
+//#endRegion - Gender Attention Points
 
 //#region Alerts end-points
 router.post('/alert', alertController.sendAlerts);
@@ -227,7 +249,7 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   alertController.getlistAll
 );
-//#endregion
+//#endRegion
 
 //#region AttentionLines end-points
 router.post(
@@ -235,7 +257,7 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postRegister
 );
-//#endregion
+//#endRegion
 
 //#region Social Networks end-points
 router.get(
@@ -262,7 +284,7 @@ router.post(
   "/social_networks/delete",
   socialNetworkController.deleteSocialNetwork
 );
-//#endregion
+//#endRegion
 
 //#region Mobile Services end-points
 router.get(
@@ -289,7 +311,7 @@ router.post(
   "/mobile_services/delete",
   mobileServiceController.deleteMobileService
 );
-//#endregion
+//#endRegion
 
 //#region Dependencies end-points
 // List All dependencies (WEB).
@@ -305,7 +327,7 @@ router.get('/dependencies/excel', dependenciesController.getDownloadXlsxDependen
 router.post('/dependencies/excel',
   uploadSingleExcel.single('file'),
   dependenciesController.postUploadXlsxDependencies);
-//#endregion
+//#endRegion
 
 router.get("/", (req, res) => {
   res.status(200).json("Web API - Notificacions Microservice");

@@ -25,6 +25,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      Report.hasMany(models.ReportStatus, {
+        foreignKey: {
+          name: "reportId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   Report.init(
@@ -68,13 +76,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       expiresAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       isApproved: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
+        type: DataTypes.ENUM("yes", "no"),
+        allowNull: true,
         unique: false,
+        // yes: The report has been approved.
+        // no: The report has been disapproved.
+        // null: The report has not been approved or disapproved.
       },
     },
     {

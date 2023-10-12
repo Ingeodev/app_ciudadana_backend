@@ -44,13 +44,16 @@ module.exports = {
         },
         expiresAt: {
           type: Sequelize.DATE,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         isApproved: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
+          type: Sequelize.ENUM("yes", "no"),
+          allowNull: true,
           unique: false,
+          // yes: The report has been approved.
+          // no: The report has been disapproved.
+          // null: The report has not been approved or disapproved.
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -97,6 +100,9 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP TYPE "enum_Reports_isApproved";
+    `);
     await queryInterface.removeConstraint("Reports", "fk_Reports_Users");
     await queryInterface.removeConstraint("Reports", "fk_Reports_SecurityCategories");
     await queryInterface.dropTable("Reports");
