@@ -120,8 +120,8 @@ exports.getListAll = async (req, res, next) => {
     const currentDate = new Date();    
     const data = reportsDb.rows.map(row => {
       // Verify if it is within three days (period to approve the report).
-      const expires = new Date(row.dataValues.expiresAt);
-      const difference = currentDate - expires;
+      const created = new Date(row.dataValues.createdAt);
+      const difference = currentDate - created;
 
       const differenceInHours = difference / (1000 * 60 * 60);
       let editable = null;
