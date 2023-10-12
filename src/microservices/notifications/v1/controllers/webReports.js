@@ -116,9 +116,54 @@ exports.getListAll = async (req, res, next) => {
       message = 'There are no Reports registered in the database.';
     if (reportsDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
-
+    
+    const currentDate = new Date();    
     const data = reportsDb.rows.map(row => {
-      return { ...row.dataValues, SecurityCategory: undefined };
+      // Verify if it is within three days (period to approve the report).
+      const expires = new Date(row.dataValues.expiresAt);
+      const difference = currentDate - expires;
+
+      const differenceInHours = difference / (1000 * 60 * 60);
+      let editable = null;
+      if (differenceInHours <= 72) {
+        switch (row.dataValues.isApproved) {
+          case "yes":
+            editable = "disapprove";
+            break;
+          case "no":
+            editable = "approve";
+            break;
+          case null:
+            editable = "both";
+            break;
+          default:
+            throw {
+              message: "Inconsistent data in the db",
+              status: StatusCodes.INTERNAL_SERVER_ERROR,
+            };
+            break;
+        }
+      } else {
+        switch (row.dataValues.isApproved) {
+          case "yes":
+            editable = "none";
+            break;
+          case "no":
+            editable = "none";
+            break;
+          case null:
+            editable = "disapprove";
+            break;
+          default:
+            throw {
+              message: "Inconsistent data in the db",
+              status: StatusCodes.INTERNAL_SERVER_ERROR,
+            };
+            break;
+        }
+      }
+
+      return { ...row.dataValues, SecurityCategory: undefined, editable };
     });
 
     return res.status(StatusCodes.OK).json({
