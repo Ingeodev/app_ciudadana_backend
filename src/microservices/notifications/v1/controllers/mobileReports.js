@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { fn, col, Op } = require("sequelize");
 const fs = require("fs/promises");
 const path = require("path");
 const { v4: uuidV4 } = require("uuid");
@@ -32,6 +32,7 @@ const checkCategoryExists = async (categoryId) => {
  * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const userData = await db.User.findOne({
       where: { disabled: false, userMobile: true, clientId: res.locals.uid },
@@ -45,19 +46,19 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.FORBIDDEN,
       };
 
-    const { description, categoryId, lat, lon } = await validator.vMobilePostRegister(JSON.parse(req.body.report));
+    const { description, categoryId, lat, lon } =
+      await validator.vMobilePostRegister(JSON.parse(req.body.report));
 
     if (!(await checkCategoryExists(categoryId)))
       throw {
         status: StatusCodes.NOT_FOUND,
         message: "The assigned category does not exist.",
       };
-    
+
     const pdfFile = await validator.vFileReports(req.file);
     let imageUri = undefined;
 
     if (pdfFile) {
-      console.log("pdfFile");
       const endpoint = "mobileReports";
       const uploadDir = path.join(uploadsFolder, endpoint);
       const filename = uuidV4() + path.extname(pdfFile.originalname);
@@ -68,10 +69,6 @@ exports.postRegister = async (req, res, next) => {
       await checkIfExists(uploadDir, true);
       await fs.writeFile(filepath, pdfFile.buffer);
     }
-
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24);
-
 
     const configInDb = await db.ReportConfiguration.findOne({
       attributes: ["automaticApproval"],
@@ -85,18 +82,40 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      description,
-      securityCategoryId: categoryId,
-      userId: userData.id,
-      imageUri,
-      lat,
-      lon,
-      expiresAt,
-      isApproved: configInDb.automaticApproval,
-    };
+    // If automatic approval is enabled (true)
+    let isApproved = null;
+    let expiresAt = null;
+    let status = "PENDING";
+    if (configInDb.automaticApproval) {
+      expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+      isApproved = "yes";
+      status = "APPROVED";
+    }
 
-    const result = await db.Report.create(dataQuery);
+    const reportInDb = await db.Report.create(
+      {
+        description,
+        securityCategoryId: categoryId,
+        userId: userData.id,
+        imageUri,
+        lat,
+        lon,
+        expiresAt,
+        isApproved,
+      },
+      { transaction }
+    );
+
+    await db.ReportStatus.create(
+      {
+        reportId: reportInDb.dataValues.id,
+        status,
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
     return res.status(StatusCodes.CREATED).json({
       meta: null,
       data: {
@@ -104,10 +123,11 @@ exports.postRegister = async (req, res, next) => {
         categoryId,
         lat,
         lon,
-        image: result.dataValues.imageUri,
+        image: reportInDb.dataValues.imageUri,
       },
     });
   } catch (error) {
+    await transaction.rollback();
     return next(error);
   }
 };
@@ -129,9 +149,9 @@ exports.getListAllClosest = async (req, res, next) => {
     let order = [["createdAt", "DESC"]];
     if (lat != null && lon != null && typeof lat == 'number' && typeof lon == 'number') {
       order = [[
-        Sequelize.fn("ST_Distance",
-          Sequelize.fn("ST_MakePoint", Sequelize.col('lon'), Sequelize.col('lat')),
-          Sequelize.fn("ST_MakePoint", lon, lat)
+        fn("ST_Distance",
+          fn("ST_MakePoint", col('lon'), col('lat')),
+          fn("ST_MakePoint", lon, lat)
         ),
         "ASC"]];
     }
@@ -139,9 +159,9 @@ exports.getListAllClosest = async (req, res, next) => {
     const reportsDb = await db.Report.findAndCountAll({
       where: {
         expiresAt: {
-          [Sequelize.Op.gt]: new Date(),
+          [Op.gt]: new Date(),
         },
-        isApproved: true,
+        isApproved: "yes",
       },
       paranoid: true,
       limit: size,
@@ -157,12 +177,12 @@ exports.getListAllClosest = async (req, res, next) => {
       attributes: [
         "id",
         "createdAt",
-        [Sequelize.col('"SecurityCategory"."name"'), "name"],
-        [Sequelize.col('"Report"."securityCategoryId"'), "categoryId"],
-        [Sequelize.col('"SecurityCategory"."color"'), "color"],
-        [Sequelize.col('"SecurityCategory"."iconMap"'), "iconMap"],
+        [col('"SecurityCategory"."name"'), "name"],
+        [col('"Report"."securityCategoryId"'), "categoryId"],
+        [col('"SecurityCategory"."color"'), "color"],
+        [col('"SecurityCategory"."iconMap"'), "iconMap"],
         "description",
-        [Sequelize.col('"Report"."imageUri"'), "image"],
+        [col('"Report"."imageUri"'), "image"],
         "lat",
         "lon",
       ],
