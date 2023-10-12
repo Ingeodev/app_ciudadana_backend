@@ -22,6 +22,18 @@ exports.postRegister = async (req, res, next) => {
 
     const { automaticApproval } = await validator.vWebPostRegister(req.body);
 
+    const configInDb = await db.ReportConfiguration.findOne({
+      attributes: ["automaticApproval"],
+      order: [["createdAt", "DESC"]], // Ordered from current date
+    });
+
+    if (configInDb != null && configInDb.automaticApproval === automaticApproval) {
+      throw {
+        message: "The automatic report approval setting is already configured as you desire.",
+        status: StatusCodes.CONFLICT,
+      };
+    }
+
     const result = await db.ReportConfiguration.create({
       automaticApproval,
       createdBy: userInDb.id,
