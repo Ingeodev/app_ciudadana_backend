@@ -23,7 +23,7 @@ router.get('/publicity/', publicityController.getUncategorized);
 
 // Retrieve the advertisements with a category attached.
 router.get('/publicity/banners', publicityController.getCategorized);
-//#endregion
+//#endRegion
 
 //#region Dependencies end-points
 // Retrieve up to 500 dependencies.
@@ -32,14 +32,14 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   dependenciesController.getDependencies
 );
-//#endregion
+//#endRegion
 
 // router.post(
 //   "/attention_lines/pqrsdf",
 //   // hasPermissions({ role: "super_master_user" }),
 //   attentionController.postPqrsdf
 // );
-//#endregion
+//#endRegion
 
 //#region Security end-points
 router.get(
@@ -47,7 +47,7 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   securityController.getListAll
 );
-//#endregion
+//#endRegion
 
 //#region Reports end-points
 router.post(
@@ -62,14 +62,14 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   reportController.getListAllClosest
 );
-//#endregion
+//#endRegion
 
 //#region Security Attention Point end-points
 // Retrieve all the Security Attention Points.
 router.get('/security/attention_points',
   // hasPermissions({ role: "super_master_user" }),
   securityAttentionPointsController.getSecurityAttentionPoints);
-//#endregion
+//#endRegion
 
 //#region AttentionLines end-points
 router.get(
@@ -77,32 +77,32 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   attentionController.getAttentionLine
 );
-//#endregion
+//#endRegion
 
 //#region Alerts (Notifications in swagger) end-points
 router.post('/notifications/register', alertController.registerPush);
 router.get('/notifications/', alertController.getListActive);
-//#endregion
+//#endRegion
 
 //#region AttentionLines end-points
 router.get(
   "/social_networks/",
   socialNetworkController.getSocialNetworks
 );
-//#endregion
+//#endRegion
 
 //#region gender end-points
 router.get(
   "/gender/attention_points",
   // hasPermissions({ role: "super_master_user" }),
-  genderController.getAttentionPoins
+  genderController.getAttentionPoints
 );
 router.get(
   "/gender",
   // hasPermissions({ role: "super_master_user" }),
   genderController.getCategoriesnAttentionLines
 );
-//#endregion
+//#endRegion
 
 
 router.get('/services/', mobileServiceController.getMobileServices);

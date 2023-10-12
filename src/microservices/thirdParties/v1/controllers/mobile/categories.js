@@ -25,18 +25,18 @@ exports.getAll = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
 
-    if (categoriesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no third-party categories registered",
-      };
-    }
-    if (categoriesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
+    // if (categoriesInDb.count <= 0) {
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "There are no third-party categories registered",
+    //   };
+    // }
+    // if (categoriesInDb.rows.length <= 0) {
+    //   throw {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     message: '"page.number" is too large for the number of possible pages',
+    //   };
+    // }
     
     const mappedRows = categoriesInDb.rows.map(row => {
       const mappedRow = {

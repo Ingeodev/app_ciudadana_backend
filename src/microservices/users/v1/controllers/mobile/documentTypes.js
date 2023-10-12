@@ -25,18 +25,18 @@ exports.getAll = async (req, res, next) => {
       order: [["code", "ASC"]],
     });
 
-    if (docTypesInDb.count <= 0) {
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are no Document types registered in the database",
-      };
-    }
-    if (docTypesInDb.rows.length <= 0) {
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
-    }
+    // if (docTypesInDb.count <= 0) {
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "There are no Document types registered in the database",
+    //   };
+    // }
+    // if (docTypesInDb.rows.length <= 0) {
+    //   throw {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     message: '"page.number" is too large for the number of possible pages',
+    //   };
+    // }
 
     return res.status(StatusCodes.OK).json(docTypesInDb.rows);
   } catch (error) {

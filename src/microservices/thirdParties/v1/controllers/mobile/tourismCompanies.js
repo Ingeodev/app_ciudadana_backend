@@ -66,16 +66,16 @@ exports.getCompaniesnServices = async (req, res, next) => {
       ],
     });
 
-    if (companiesInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not companies registered",
-      };
-    if (companiesInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+    // if (companiesInDb.count <= 0)
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "There are not companies registered",
+    //   };
+    // if (companiesInDb.rows.length <= 0)
+    //   throw {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     message: '"page.number" is too large for the number of possible pages',
+    //   };
 
     const transformedCompanies = companiesInDb.rows.map((point) => {
       const companyData = point.get({ plain: true }); // Convert Sequelize instance to simple object

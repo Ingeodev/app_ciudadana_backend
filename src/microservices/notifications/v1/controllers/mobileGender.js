@@ -5,7 +5,7 @@ const validator = require("../../utils/validatorGenderAttentionPoint.js");
 
 /**
  * Get all gender attention lines and gender categories
- * @return {object} Response contains: statuscode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getCategoriesnAttentionLines = async (req, res, next) => {
   try {
@@ -55,12 +55,6 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
     });
 
     const responseCustom = {
-      // meta: {
-      //   page: objPage.number,
-      //   pageSize: objPage.size,
-      //   totalRecords: categInDb.count,
-      //   totalPages: totalPages,
-      // },
       info: categInDb.rows,
       genderLines: transformedLines,
     };
@@ -75,9 +69,9 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
 /**
  * Get all gender attention points
  * @param {object} req.query - Object containing the number, size, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): gender attention points data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): gender attention points data. Or if there's error, json (objeto): status, code, detail
  */
-exports.getAttentionPoins = async (req, res, next) => {
+exports.getAttentionPoints = async (req, res, next) => {
   try {
     // // ! Pendiente: Validar permisos del usuario
     // const createdBy = await db.User.findOne({
@@ -128,16 +122,16 @@ exports.getAttentionPoins = async (req, res, next) => {
       ],
     });
 
-    if (pointsInDb.count <= 0)
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: "There are not gender attention points registered",
-      };
-    if (pointsInDb.rows.length <= 0)
-      throw {
-        status: StatusCodes.BAD_REQUEST,
-        message: '"page.number" is too large for the number of possible pages',
-      };
+    // if (pointsInDb.count <= 0)
+    //   throw {
+    //     status: StatusCodes.NOT_FOUND,
+    //     message: "There are not gender attention points registered",
+    //   };
+    // if (pointsInDb.rows.length <= 0)
+    //   throw {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     message: '"page.number" is too large for the number of possible pages',
+    //   };
 
     const transformedPoints = pointsInDb.rows.map((point) => {
       const pointData = point.get({ plain: true }); // Convert Sequelize instance to simple object
