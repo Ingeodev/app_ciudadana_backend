@@ -29,12 +29,39 @@ exports.getRoadStates = async (req, res, next) => {
       const roadData = point.get({ plain: true }); 
       roadData.color = formatColorOutputForMobile(roadData.color);
       let tempType = null;
-      if (String(roadData.type.type) === "LineString") {
-        tempType = "line";
-      } else {
-        tempType = String(roadData.type.type).toLowerCase();
+      switch (String(roadData.type.type).toLowerCase()) {
+        case "linestring":
+          tempType = "line";
+          roadData.points = roadData.type.coordinates.map((coord) => ({
+            lat: coord[1],
+            lon: coord[0],
+          }));
+          break;
+        case "point":
+          tempType = String(roadData.type.type).toLowerCase();
+          roadData.points = [
+            {
+              lat: roadData.type.coordinates[1],
+              lon: roadData.type.coordinates[0],
+            },
+          ];
+          break;
+        case "polygon":
+          tempType = String(roadData.type.type).toLowerCase();
+          roadData.points = roadData.type.coordinates[0].map((coord) => {
+            return {
+              lat: coord[1],
+              lon: coord[0],
+            };
+          });
+          break;
+        default:
+          throw {
+            message: `Geometry type not supported: ${roadData.type.type}`,
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+          };
+          break;
       }
-      roadData.points = roadData.type.coordinates;
       delete roadData.type;
       roadData.type = tempType;
       return roadData;
