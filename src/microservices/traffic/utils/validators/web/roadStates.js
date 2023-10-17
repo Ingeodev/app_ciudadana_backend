@@ -2,6 +2,16 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const polygonCali = require("../../../../../utils/polygonCali.js");
 
+const coordinate = joi.array().length(2).items(
+    joi.number().min(-180).max(180).required(), // lon
+    joi.number().min(-90).max(90).required()    // lat
+).custom((value, helpers) => {
+  if (!polygonCali.isLocationInCali(value[1], value[0])) {
+    return helpers.message("The coordinate(s) must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");
+  }
+  return value;
+});
+
 const registerSchema = joi.object({
   title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
@@ -11,13 +21,17 @@ const registerSchema = joi.object({
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
   recurrence: joi.string().trim().empty("").valid('day', 'week').required(),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon').required(),
-  // coordinates: joi.array().min(1).items(
-  //     joi.array().items(
-  //         joi.number().min(-180).max(180).required(), // Lon
-  //         joi.number().min(-90).max(90).required()  // Lat
-  //       ).length(2)
-  // ).required(),
-  coordinates: joi.array().min(1).required(),
+  coordinates: joi.when('typeCoordinates', {
+        is: 'Point',
+        then: coordinate,
+        otherwise: joi.when('typeCoordinates', {
+            is: 'LineString',
+            then: joi.array().items(coordinate).length(2),
+            otherwise: joi.array().items(
+                joi.array().items(coordinate).min(3)
+            )
+        })
+    }).required()
 });
 
 const editSchema = joi.object({
@@ -30,13 +44,17 @@ const editSchema = joi.object({
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
   recurrence: joi.string().trim().empty("").valid('day', 'week'),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon'),
-  // coordinates: joi.array().min(1).items(
-  //     joi.array().items(
-  //         joi.number().min(-180).max(180).required(), // Lon
-  //         joi.number().min(-90).max(90).required()  // Lat
-  //       ).length(2)
-  // ).required(),
-  coordinates: joi.array().min(1),
+  coordinates: joi.when('typeCoordinates', {
+        is: 'Point',
+        then: coordinate,
+        otherwise: joi.when('typeCoordinates', {
+            is: 'LineString',
+            then: joi.array().items(coordinate).length(2),
+            otherwise: joi.array().items(
+                joi.array().items(coordinate).min(3)
+            )
+        })
+    })
 }).and('typeCoordinates', 'coordinates');
 
 const getProfile = joi.object({
