@@ -45,3 +45,11 @@ resource "google_artifact_registry_repository" "artifactory_repository_notificat
   format        = "DOCKER"
   description   = "cali-mobility-notifications repository "
 }
+
+resource "google_artifact_registry_repository" "artifactory_repository_traffic" {
+  project      = var.project_id
+  location      = var.region
+  repository_id = "cali-mobility-traffic"
+  format        = "DOCKER"
+  description   = "cali-mobility-traffic repository "
+}
