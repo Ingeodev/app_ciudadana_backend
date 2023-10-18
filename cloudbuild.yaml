@@ -45,7 +45,7 @@ steps:
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest']
 # traffic 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/Dockerfile', '.']
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/gcp.Dockerfile', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest']
 # deployments
