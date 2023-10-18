@@ -44,10 +44,10 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest']
 # traffic 
-# - name: 'gcr.io/cloud-builders/docker'
-#   args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/Dockerfile', '.']
-# - name: 'gcr.io/cloud-builders/docker'
-#   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest']
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/Dockerfile', '.']
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest']
 # deployments
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
@@ -66,6 +66,10 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'gcloud'
   args: ['run', 'deploy', 'third-parties', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest', '--region', 'us-east1']
+# traffic
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args: ['run', 'deploy', 'traffic', '--image', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '--region', 'us-east1']
 availableSecrets:
   secretManager:
     - versionName: projects/85094745134/secrets/service_key/versions/2
