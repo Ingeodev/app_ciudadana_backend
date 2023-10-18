@@ -120,6 +120,22 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      User.hasMany(models.RoadState, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
+
+      User.hasMany(models.TrafficNotification, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   User.init(

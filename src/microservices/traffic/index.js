@@ -7,6 +7,7 @@ const { authMiddleware } = require('../../middleware/authMiddleware.js');
 const mobileRouter = require("./v1/routes/mobile.js");
 const webBase = require("./v1/routes/webBase.js");
 const webRoadState = require("./v1/routes/webRoadStates.js");
+const webTrafficNotification = require("./v1/routes/webTrafficNotification.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(authMiddleware);
 //#region Web-oriented end-points
 app.use("/api/web/v1/traffic", webBase);
 app.use("/api/web/v1/traffic/road_state", webRoadState);
+app.use("/api/web/v1/traffic/traffic_notification", webTrafficNotification);
 //#endRegion
 
 //#region Mobile-oriented end-points
