@@ -257,6 +257,12 @@ router.post(
   // hasPermissions({ role: "super_master_user" }),
   attentionLinesController.postRegister
 );
+
+router.get(
+  "/attention_lines/",
+  // hasPermissions({ role: "super_master_user" }),
+  attentionLinesController.getOne
+);
 //#endRegion
 
 //#region Social Networks end-points
