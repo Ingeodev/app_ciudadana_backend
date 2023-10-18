@@ -19,7 +19,7 @@ const registerSchema = joi.object({
   endDate: joi.date().greater(joi.ref('startDate')).required(),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
-  recurrence: joi.string().trim().empty("").valid('day', 'week').required(),
+  recurrence: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon').required(),
   coordinates: joi.when('typeCoordinates', {
         is: 'Point',
@@ -42,7 +42,7 @@ const editSchema = joi.object({
   endDate: joi.date().greater(joi.ref('startDate')),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
-  recurrence: joi.string().trim().empty("").valid('day', 'week'),
+  recurrence: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon'),
   coordinates: joi.when('typeCoordinates', {
         is: 'Point',
