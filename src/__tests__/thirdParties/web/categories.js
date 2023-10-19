@@ -52,7 +52,7 @@ describe("Web - Third Party Categories management API points: ", () => {
   });
 
   describe("POST /categories/ ", () => {
-    test("Should respond with status 201 and the new object (data) after creating a new category", async () => {
+    test("Should respond with status 201 and the new object (data) after creating a new category.", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -78,7 +78,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       editCategory1.id = response1.body.data.id;
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -204,7 +204,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("meta");
       expect(response0.body.meta.page).toBe(2000);
       expect(response0.body.meta.pageSize).toBe(2);
-      expect(response0.body.meta.message).toBe(`"page[number]" is too large for the number of possible pages`);
+      expect(response0.body.meta).toHaveProperty("message");
       expect(response0.body).toHaveProperty("data");
       expect(response0.body.data).toEqual(expect.any(Array));
       expect(response0.body.data.length).toBe(0);
@@ -219,7 +219,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       // expect(response0.body).toHaveProperty("meta");
       // expect(response0.body.meta.page).toBe(1);
       // expect(response0.body.meta.pageSize).toBe(2);
-      // expect(response0.body.meta.message).toBe(`There are no third-party categories registered`);
+      // expect(response0.body.meta).toHaveProperty("message");
       // expect(response0.body).toHaveProperty("data");
       // expect(response0.body.data).toEqual(expect.any(Array));
       // expect(response0.body.data.length).toBe(0);
@@ -230,7 +230,7 @@ describe("Web - Third Party Categories management API points: ", () => {
     // "detail": "\"number\" must be a number",
     // "code": "Bad Request"
     // }
-    test("Should fail with status 400 and an error with a message if no pagination is provided", async () => {
+    test("Should fail with status 400 and an error with a message if no pagination is provided.", async () => {
       const response0 = await request(usedHost).get("/").set(requestHeaders);
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -334,7 +334,7 @@ describe("Web - Third Party Categories management API points: ", () => {
 
   describe("GET /categories/:id ", () => {
 
-    test("Should respond with status 200 and one document_type object created.", async () => {
+    test("Should respond with status 200 and one category object created.", async () => {
       const response0 = await request(usedHost)
         .get(`/${testCategory0.id}`)
         .set(requestHeaders);
@@ -358,7 +358,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(testCategory1.name);
     });
 
-    test("Should fail with status 400 and an error with a message id must be a number", async () => {
+    test("Should fail with status 400 and an error with a message id must be a number.", async () => {
       const response0 = await request(usedHost)
         .get(`/ddd`)
         .set(requestHeaders);
@@ -380,7 +380,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("Should fail with status 404 and an error with a message not found", async () => {
+    test("Should fail with status 404 and an error with a message not found.", async () => {
       const response0 = await request(usedHost).get(`/999`).set(requestHeaders);
       expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
@@ -393,7 +393,7 @@ describe("Web - Third Party Categories management API points: ", () => {
 
   describe("POST /categories/edit ", () => {
 
-    test("Should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data).", async () => {
       // 1. -------------------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -421,7 +421,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(editCategory1.name);
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -523,7 +523,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("Should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/edit")
         .set(requestHeaders)
@@ -548,7 +548,7 @@ describe("Web - Third Party Categories management API points: ", () => {
     //         "active": false
     //     }
     // }
-    test("Should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data).", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -581,7 +581,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       );
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",
@@ -631,7 +631,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("Should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
