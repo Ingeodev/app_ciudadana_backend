@@ -1,10 +1,7 @@
 const request = require("supertest");
 const { v4: uuidV4 } = require("uuid");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/categories`;
-// Local
-const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/web/v1/third_parties/categories`;
+const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/categories`;
 describe("Web - Third Party Categories management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -12,31 +9,35 @@ describe("Web - Third Party Categories management API points: ", () => {
     Authorization: "Bearer ",
   };
 
+  const generateAlphanumeric = () => {
+    return uuidV4().replace(/-/g, ""); // elimina los guiones
+  };
+
   const testCategory0 = {
-    name: uuidV4(),
-    icon: "http://localhost:3000/icon.png",
-    iconMap: "http://localhost:3000/iconMap.png",
+    name: generateAlphanumeric(),
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
     color: "#DB85D6",
   };
 
   const testCategory1 = {
-    name: uuidV4(),
-    icon: "http://localhost:3000/iconUniversity.png",
-    iconMap: "http://localhost:3000/iconMapUniversity.png",
+    name: generateAlphanumeric(),
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
     color: "#E40F81",
   };
 
   const editCategory0 = {
-    name: uuidV4(),
-    icon: "http://localhost:3000/icon-modified.png",
-    iconMap: "http://localhost:3000/iconMap-modified.png",
+    name: generateAlphanumeric(),
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
     color: "#805cf7",
   };
 
   const editCategory1 = {
-    name: uuidV4(),
-    icon: "http://localhost:3000/iconUniversity-modified.png",
-    iconMap: "http://localhost:3000/iconMapUniversity-modified.png",
+    name: generateAlphanumeric(),
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
     color: "#E40F81",
   };
 
@@ -51,7 +52,7 @@ describe("Web - Third Party Categories management API points: ", () => {
   });
 
   describe("POST /categories/ ", () => {
-    test("should respond with status 201 and the new object (data) after creating a new category", async () => {
+    test("Should respond with status 201 and the new object (data) after creating a new category", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -77,7 +78,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       editCategory1.id = response1.body.data.id;
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -136,33 +137,33 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response5.body).toHaveProperty("status", 400);
       expect(response5.body).toHaveProperty("code");
       expect(response5.body).toHaveProperty("detail");
-    });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+      // 5. ----------------------------------------------
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testCategory0);
-      expect(response0.statusCode).toBe(500);
+      expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("status", 400);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
 
+      // 6. ----------------------------------------------
       const response1 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testCategory1);
-      expect(response1.statusCode).toBe(500);
+      expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 500);
+      expect(response1.body).toHaveProperty("status", 400);
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
     });
 
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -174,7 +175,7 @@ describe("Web - Third Party Categories management API points: ", () => {
   });
 
   describe("GET /categories/ ", () => {
-    test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
+    test("Should respond with status 200 and a array of objects containing the two created objects.", async () => {
       const response0 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
@@ -194,12 +195,42 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body.data[1].name).toBe(testCategory0.name);
     });
 
+    test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .get("/")
+        .set(requestHeaders)
+        .query({ page: { number: 2000, size: 2 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta.page).toBe(2000);
+      expect(response0.body.meta.pageSize).toBe(2);
+      expect(response0.body.meta.message).toBe(`"page[number]" is too large for the number of possible pages`);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toEqual(expect.any(Array));
+      expect(response0.body.data.length).toBe(0);
+    });
+      
+    test("Disabled - Should respond with status 200 and an empty array, because There are no third-party categories registered.", async () => {
+      // const response0 = await request(usedHost)
+      //   .get("/")
+      //   .set(requestHeaders)
+      //   .query({ page: { number: 1, size: 2 } });
+      // expect(response0.statusCode).toBe(200);
+      // expect(response0.body).toHaveProperty("meta");
+      // expect(response0.body.meta.page).toBe(1);
+      // expect(response0.body.meta.pageSize).toBe(2);
+      // expect(response0.body.meta.message).toBe(`There are no third-party categories registered`);
+      // expect(response0.body).toHaveProperty("data");
+      // expect(response0.body.data).toEqual(expect.any(Array));
+      // expect(response0.body.data.length).toBe(0);
+    });
+
     // {
     // "status": 400,
     // "detail": "\"number\" must be a number",
     // "code": "Bad Request"
     // }
-    test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
+    test("Should fail with status 400 and an error with a message if no pagination is provided", async () => {
       const response0 = await request(usedHost).get("/").set(requestHeaders);
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -290,7 +321,7 @@ describe("Web - Third Party Categories management API points: ", () => {
     //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
     //     "code": "Unauthorized"
     // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -299,25 +330,11 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
-
-    test("DISABLED - Categories table must not have any records. should fail with status 404 and an error with a message of categories not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 } });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-    });
   });
 
   describe("GET /categories/:id ", () => {
 
-    test("should respond with status 200 and one document_type object created.", async () => {
+    test("Should respond with status 200 and one document_type object created.", async () => {
       const response0 = await request(usedHost)
         .get(`/${testCategory0.id}`)
         .set(requestHeaders);
@@ -341,7 +358,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(testCategory1.name);
     });
 
-    test("should fail with status 400 and an error with a message id must be a number", async () => {
+    test("Should fail with status 400 and an error with a message id must be a number", async () => {
       const response0 = await request(usedHost)
         .get(`/ddd`)
         .set(requestHeaders);
@@ -353,12 +370,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get(`/${testCategory0.id}`);
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -368,7 +380,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 404 and an error with a message not found", async () => {
+    test("Should fail with status 404 and an error with a message not found", async () => {
       const response0 = await request(usedHost).get(`/999`).set(requestHeaders);
       expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
@@ -381,7 +393,7 @@ describe("Web - Third Party Categories management API points: ", () => {
 
   describe("POST /categories/edit ", () => {
 
-    test("should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data)", async () => {
       // 1. -------------------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -409,7 +421,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(editCategory1.name);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -485,31 +497,33 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response6.body).toHaveProperty("code");
       expect(response6.body).toHaveProperty("detail");
 
+      // 6. -------------------------------------
+      const response7 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editCategory0,
+          id: editCategory1.id,
+        });
+      expect(response7.statusCode).toBe(400);
+      expect(response7.body).not.toHaveProperty("meta");
+      expect(response7.body).not.toHaveProperty("data");
+      expect(response7.body).toHaveProperty("status", 400);
+      expect(response7.body).toHaveProperty("code");
+      expect(response7.body).toHaveProperty("detail");
     });
 
-    
-    // test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
-    //   const response0 = await request(usedHost)
-    //     .post("/edit")
-    //     .set(requestHeaders)
-    //     .send({
-    //       ...testCategory1,
-    //       code: testCategory0.code,
-    //     });
-    //   expect(response0.statusCode).toBe(500);
-    //   expect(response0.body).not.toHaveProperty("meta");
-    //   expect(response0.body).not.toHaveProperty("data");
-    //   expect(response0.body).toHaveProperty("status", 500);
-    //   expect(response0.body).toHaveProperty("code");
-    //   expect(response0.body).toHaveProperty("detail");
-    // });
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).post("/edit");
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
 
-    // {
-    //     "status": 404,
-    //     "detail": "The category with id=99 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with status 404 and an error with a message if the id does not exist", async () => {
       const response0 = await request(usedHost)
         .post("/edit")
         .set(requestHeaders)
@@ -524,21 +538,6 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
-
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).post("/edit");
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
   });
 
   describe("POST /categories/delete ", () => {
@@ -549,7 +548,7 @@ describe("Web - Third Party Categories management API points: ", () => {
     //         "active": false
     //     }
     // }
-    test("should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data)", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -582,7 +581,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",
@@ -620,12 +619,19 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response3.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 404,
-    //     "detail": "The document type with id=999 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).post("/delete").send({
+        id: 999,
+      });
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message if the id does not exist", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -636,23 +642,6 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
       expect(response0.body).toHaveProperty("status", 404);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
-
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).post("/delete").send({
-        id: 999,
-      });
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });

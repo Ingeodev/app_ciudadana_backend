@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/categories.js");
 /**
  * Create a thirdParty category
  * @param {object} req - Object containing the name, icon, iconMap, color
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -23,6 +23,10 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("ThirdParty category could not be created: ", error.message);
+    if (error.name === 'SequelizeUniqueConstraintError' && error.fields && error.fields.name) {
+        error.message = "Name must be unique";
+        error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
@@ -30,7 +34,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a thirdParty category
  * @param {object} req - Object containing the id, name, icon, iconMap, color
- * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -63,13 +67,11 @@ exports.postEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError' && error.fields && error.fields.name) {
+        error.message = "Name must be unique";
+        error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -78,7 +80,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all ThirdParty categories
  * @param {object} req.query - Object containing the number, size
- * @return {object} Response contains: statuscode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data ThirdParty categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -97,7 +99,7 @@ exports.getAll = async (req, res, next) => {
     if (categInDb.count <= 0)
       message = "There are no third-party categories registered";
     if (categInDb.rows.length <= 0)
-      message = '"page[number]" is too large for the number of possible pages.';
+      message = '"page[number]" is too large for the number of possible pages';
 
     return res.status(StatusCodes.OK).json({
       meta: {
@@ -118,7 +120,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get ThirdParty category by id
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (objeto): data thirdParty category. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data thirdParty category. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
@@ -144,7 +146,8 @@ exports.getOneById = async (req, res, next) => {
 
 /**
  * Destroy a ThirdParty category (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @param {integer} req.body.id - id of ThirdParty category
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
