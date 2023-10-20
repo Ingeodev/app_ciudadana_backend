@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { literal, col } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companies.js");
 
@@ -20,7 +20,7 @@ const checkCategoryExists = async (categoryId) => {
 /**
  * Create a company
  * @param {object} req - Object containing the name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon
- * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -57,7 +57,7 @@ exports.postRegister = async (req, res, next) => {
       imageUri,
       lat,
       lon,
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
     };
 
     const result = await db.ThirdPartyCompany.create(dataQuery);
@@ -79,7 +79,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a company
  * @param {object} req - Object containing the id, name, nit, categoryId, description, phone, siteUri, address, imageUri, lat, lon
- * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (category object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -109,11 +109,12 @@ exports.postEdit = async (req, res, next) => {
       lon,
     } = await validator.vWebPostEdit(req.body);
 
-    if (!await checkCategoryExists(categoryId))
-      throw {
-        status: StatusCodes.NOT_FOUND,
-        message: 'The assigned category does not exist.',
-      };
+    if (!isNaN(categoryId))
+      if (!(await checkCategoryExists(categoryId)))
+        throw {
+          status: StatusCodes.NOT_FOUND,
+          message: "The assigned category does not exist.",
+        };
 
     const dataQuery = {
       id,
@@ -127,8 +128,7 @@ exports.postEdit = async (req, res, next) => {
       imageUri,
       lat,
       lon,
-      // ! Decirle al front que siempre envie el par alt, lon
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
     };
 
     // Validate that the company belongs to the user
@@ -171,7 +171,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get the data of company and your services - to profile 
  * @param {integer} req.params.id - companyId
- * @return {object} Response contains: statuscode (integer), json (object): company data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
   try {
@@ -208,7 +208,7 @@ exports.getProfile = async (req, res, next) => {
       attributes: {
         exclude: ["createdBy", "geolocation", "deletedAt"],
         include: [
-          [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
+          [col('"ThirdPartyCategory"."name"'), "categoryName"],
         ],
       },
     });
@@ -248,7 +248,7 @@ exports.getProfile = async (req, res, next) => {
 /**
  * Get all companies 
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -285,8 +285,8 @@ exports.getAll = async (req, res, next) => {
       attributes: {
         exclude: ["createdBy", "geolocation", "deletedAt"],
         include: [
-          [Sequelize.col('"ThirdPartyCategory"."name"'), "categoryName"],
-          [Sequelize.col('"ThirdPartyCategory"."color"'), "categoryColor"],
+          [col('"ThirdPartyCategory"."name"'), "categoryName"],
+          [col('"ThirdPartyCategory"."color"'), "categoryColor"],
         ],
       },
     });
@@ -315,7 +315,7 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Destroy a company (soft delete)
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
