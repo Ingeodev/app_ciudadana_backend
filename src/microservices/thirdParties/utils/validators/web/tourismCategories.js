@@ -20,8 +20,8 @@ const simplePaginationSchema = joi.object({
 const createTourCatSchema = joi.object({
     name: name_str.required(),
     color: hex_color_string.required(),
-    icon: uri_string.required(),
-    iconMap: uri_string.required(),
+    icon: uri_string,
+    iconMap: uri_string,
 });
 
 const editTourCatSchema = joi.object({
