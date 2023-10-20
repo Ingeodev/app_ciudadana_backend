@@ -7,7 +7,7 @@ const validator = require("../../../utils/validators/mobile/companies.js");
 /**
  * Get all companies with your services
  * @param {object} req.query - Object containing the number, size, lat, n lon
- * @return {object} Response contains: statuscode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getCompaniesnServices = async (req, res, next) => {
   try {
@@ -48,51 +48,24 @@ exports.getCompaniesnServices = async (req, res, next) => {
       order,
       include: [
         {
-          model: db.ThirdPartyCategory,
-          attributes: ["name"],
-          required: false,
-        },
-        {
           model: db.ThirdPartyService,
           attributes: ["service"],
           required: false,
         },
       ],
-      attributes: {
-        exclude: [
-          "id",
-          "nit",
-          "createdBy",
-          "siteUri",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-          "imageUri",
-        ],
-        include: [
-          "geolocation",
-          "name",
-          "description",
-          "address",
-          "phone",
-          ["imageUri", "image"],
-          // [Sequelize.col("imageUri"), "image"],
-          "lat",
-          "lon",
-        ],
-      },
+      attributes: [
+        "id",
+        "categoryId",
+        "geolocation",
+        "name",
+        "description",
+        "address",
+        "phone",
+        [Sequelize.col("imageUri"), "image"],
+        "lat",
+        "lon",
+      ],
     });
-
-    // if (companiesInDb.count <= 0)
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "There are not companies registered",
-    //   };
-    // if (companiesInDb.rows.length <= 0)
-    //   throw {
-    //     status: StatusCodes.BAD_REQUEST,
-    //     message: '"page.number" is too large for the number of possible pages',
-    //   };
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
       const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
@@ -100,7 +73,6 @@ exports.getCompaniesnServices = async (req, res, next) => {
         company.phone = String(company.phone).replace("+57", "");
       }
       if (companyData.ThirdPartyCategory == null) companyData.ThirdPartyCategory = { name: null };
-      const categoryName = companyData.ThirdPartyCategory.name;
       delete companyData.ThirdPartyCategory;
       if (companyData.ThirdPartyServices == null) companyData.ThirdPartyServices = [];
       const services = companyData.ThirdPartyServices.map((obj) => obj.service);
@@ -109,7 +81,6 @@ exports.getCompaniesnServices = async (req, res, next) => {
 
       return {
         ...companyData,
-        categoryName,
         services,
       };
     });
