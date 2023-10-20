@@ -5,16 +5,13 @@ const validator = require("../../utils/validatorSecurity.js");
 
 /**
  * Create an attention line of security/emergency
- * @param {object} req - Object containing the name, phone, imageUri, siteUri, address
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req - Object containing the name, phone, imageUri, address
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
-    const { name, phone, imageUri, siteUri, address } =
-      await validator.vWebPostRegister({
-        ...req.body,
-        siteUri: req.body.siteUri ? req.body.siteUri : null,
-      });
+    const { name, phone, imageUri, address } =
+      await validator.vWebPostRegister(req.body);
 
     // TODO: Gracefully handle the error when name exists, or allow duplicate names.
 
@@ -22,7 +19,6 @@ exports.postRegister = async (req, res, next) => {
       name,
       phone: `+57${phone}`,
       imageUri,
-      siteUri,
       address,
       active: true,
       createdAt: formatDate(new Date()),
@@ -38,12 +34,12 @@ exports.postRegister = async (req, res, next) => {
 
 /**
  * Update an attention line of security/emergency
- * @param {object} req - Object containing the id, name, phone, imageUri, siteUri, address
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req - Object containing the id, name, phone, imageUri, address
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, phone, imageUri, siteUri, address } =
+    const { id, name, phone, imageUri, address } =
       await validator.vWebPostUpdate(req.body);
 
     const dataQuery = {
@@ -51,7 +47,6 @@ exports.postEdit = async (req, res, next) => {
       name,
       phone: `+57${phone}`,
       imageUri,
-      siteUri,
       address,
     };
 
@@ -84,10 +79,9 @@ exports.postEdit = async (req, res, next) => {
   }
 };
 
-
 /**
  * Get all attention lines of security/emergency
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAll = async (req, res, next) => {
   try {
@@ -130,7 +124,7 @@ exports.getListAll = async (req, res, next) => {
 /**
  * Get an attention line of security/emergency by id
  * @param {integer} req.params.id - attention line of security/emergency - id
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.getSecurity = async (req, res, next) => {
   try {
@@ -158,7 +152,7 @@ exports.getSecurity = async (req, res, next) => {
 
 /**
  * Destroy (Soft delete) an attention line of security/emergency
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {

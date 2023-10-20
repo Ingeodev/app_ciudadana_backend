@@ -36,11 +36,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: false,
       },
-      siteUri: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false,
-      },
       address: {
         type: DataTypes.STRING,
         allowNull: false,

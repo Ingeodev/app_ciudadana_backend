@@ -18,25 +18,16 @@ module.exports = {
           unique: true,
         },
         phone: {
-          // ! Limite de tamanio del String?
           type: Sequelize.STRING,
           allowNull: false,
           unique: false,
         },
         imageUri: {
-          // ! Limite de tamanio del String?
           type: Sequelize.STRING,
           allowNull: false,
           unique: false,
         },
-        siteUri: {
-          // ! Limite de tamanio del String?
-          type: Sequelize.STRING,
-          allowNull: true,
-          unique: false,
-        },
         address: {
-          // ! Limite de tamanio del String?
           type: Sequelize.STRING,
           allowNull: false,
           unique: false,
