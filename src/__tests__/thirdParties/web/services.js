@@ -1,10 +1,8 @@
 const request = require("supertest");
 const { v4: uuidV4 } = require("uuid");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users/company_service`;
-// Local
-const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/web/v1/third_parties/company_service`;
+
+const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/company_service`;
 describe("Web - Third Party Services management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -12,28 +10,39 @@ describe("Web - Third Party Services management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  const testCompanyId = 31;
-  const testCompanyId_Other = 32;
+  const generateAlphanumeric = () => {
+    return uuidV4().replace(/-/g, ""); // elimina los guiones
+  };
+
+  const testCompanyId = 55;
 
   const testService0 = {
+    companyId: testCompanyId,
     services: [
       {
-        service: uuidV4(),
-        companyId: testCompanyId,
+        service: generateAlphanumeric(),
       },
       {
-        service: uuidV4(),
-        companyId: testCompanyId,
+        service: generateAlphanumeric(),
       },
       {
-        service: uuidV4(),
-        companyId: testCompanyId,
+        service: generateAlphanumeric(),
       },
     ],
   };
 
   const editService0 = {
-    service: uuidV4(),
+    service: generateAlphanumeric(),
+    companyId: testCompanyId,
+  };
+
+  const editService1 = {
+    service: generateAlphanumeric(),
+    companyId: testCompanyId,
+  };
+
+  const editService2 = {
+    service: generateAlphanumeric(),
     companyId: testCompanyId,
   };
 
@@ -48,7 +57,7 @@ describe("Web - Third Party Services management API points: ", () => {
   });
 
   describe("POST /company_service ", () => {
-    test("should respond with status 201 and the new object (data) after creating a new service", async () => {
+    test("Should respond with status 201 and the new object (data) after creating a new service.", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -60,47 +69,18 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response0.body.data[0]).toHaveProperty("id");
       testService0.services[0].id = response0.body.data[0].id;
       editService0.id = response0.body.data[0].id;
+      editService1.id = response0.body.data[1].id;
+      editService2.id = response0.body.data[2].id;
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
-      // 0. ----------------------------------------------
-      const response0 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          services: [
-            {
-              service: "service 1",
-              companyId: testCompanyId,
-            },
-            {
-              service: "service 2",
-              companyId: 999,
-            },
-            {
-              service: "service 3",
-              companyId: testCompanyId,
-            },
-          ],
-        });
-      expect(response0.statusCode).toBe(400);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 400);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       // 1. ----------------------------------------------
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send({
-          services: [
-            {
-              service: -5,
-              companyId: "must be a number",
-            },
-          ],
+          ...testService0,
+          companyId: "must be a number",
         });
       expect(response2.statusCode).toBe(400);
       expect(response2.body).not.toHaveProperty("meta");
@@ -114,10 +94,10 @@ describe("Web - Third Party Services management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send({
+          companyId: testService0.companyId,
           services: [
             {
-              service: "service 1",
-              companyId: "must be a number",
+              service: -5,
             },
           ],
         });
@@ -133,10 +113,10 @@ describe("Web - Third Party Services management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send({
+          companyId: testService0.companyId,
           services: [
             {
-              service: "service 1",
-              companyId: "must be a number",
+              service: -5,
               keyNotValid: "nothing",
             },
           ],
@@ -153,12 +133,8 @@ describe("Web - Third Party Services management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send({
-          services: [
-            {
-              service: "service 1",
-              // companyId: "must be a number",
-            },
-          ],
+          companyId: undefined,
+          services: testService0.services,
         });
       expect(response5.statusCode).toBe(400);
       expect(response5.body).not.toHaveProperty("meta");
@@ -172,12 +148,8 @@ describe("Web - Third Party Services management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send({
-          services: [
-            {
-              // service: "service 1",
-              companyId: "must be a number",
-            },
-          ],
+          companyId: testService0.companyId,
+          services: undefined,
         });
       expect(response6.statusCode).toBe(400);
       expect(response6.body).not.toHaveProperty("meta");
@@ -186,67 +158,29 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response6.body).toHaveProperty("code");
       expect(response6.body).toHaveProperty("detail");
 
-      // 6. ----------------------------------------------
-      const response7 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          services: [
-            {
-              service: "service 1",
-              companyId: "must be a number",
-            },
-          ],
-        });
-      expect(response7.statusCode).toBe(400);
-      expect(response7.body).not.toHaveProperty("meta");
-      expect(response7.body).not.toHaveProperty("data");
-      expect(response7.body).toHaveProperty("status", 400);
-      expect(response7.body).toHaveProperty("code");
-      expect(response7.body).toHaveProperty("detail");
-
-      // 7. ----------------------------------------------
-      const response8 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          services: null,
-        });
-      expect(response8.statusCode).toBe(400);
-      expect(response8.body).not.toHaveProperty("meta");
-      expect(response8.body).not.toHaveProperty("data");
-      expect(response8.body).toHaveProperty("status", 400);
-      expect(response8.body).toHaveProperty("code");
-      expect(response8.body).toHaveProperty("detail");
-
       // 8. ----------------------------------------------
       const response9 = await request(usedHost).post("/").set(requestHeaders);
-      // .send({
-      //   services: null,
-      // });
       expect(response9.statusCode).toBe(400);
       expect(response9.body).not.toHaveProperty("meta");
       expect(response9.body).not.toHaveProperty("data");
       expect(response9.body).toHaveProperty("status", 400);
       expect(response9.body).toHaveProperty("code");
       expect(response9.body).toHaveProperty("detail");
-    });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
-      // 1. ----------------------------------------------
+      // 9. ----------------------------------------------
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testService0);
-      expect(response0.statusCode).toBe(500);
+      expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("status", 400);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -255,10 +189,26 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
+
+    test("Should fail with error 404 and a message if the company does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .post("/")
+        .set(requestHeaders)
+        .send({
+          ...testService0,
+          companyId: 9999,
+        });
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
   });
 
   describe("POST /company_service/edit ", () => {
-    test("should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data).", async () => {
       // 1. -------------------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -273,7 +223,7 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response0.body.data.service).toBe(editService0.service);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -318,14 +268,36 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response3.body).toHaveProperty("status", 400);
       expect(response3.body).toHaveProperty("code");
       expect(response3.body).toHaveProperty("detail");
+
+      // 4. -------------------------------------
+      const response4 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editService1,
+          service: editService0.service,
+        });
+      expect(response4.statusCode).toBe(400);
+      expect(response4.body).not.toHaveProperty("meta");
+      expect(response4.body).not.toHaveProperty("data");
+      expect(response4.body).toHaveProperty("status", 400);
+      expect(response4.body).toHaveProperty("code");
+      expect(response4.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 404,
-    //     "detail": "The category with id=99 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost)
+        .post("/edit")
+        .send(editService0);
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message if the service does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/edit")
         .set(requestHeaders)
@@ -341,15 +313,162 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 404 and a message if the company does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/edit")
-        .send(editService0);
+        .set(requestHeaders)
+        .send({
+          ...editService0,
+          companyId: 9999,
+        });
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("GET /company_service/:id ", () => {
+    test("Should respond with status 200 and a array of services objects.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 1, size: 2 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta.page).toBe(1);
+      expect(response0.body.meta.pageSize).toBe(2);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toEqual(expect.any(Array));
+      expect(response0.body.data.length).toBe(2);
+      expect(response0.body.data[0]).toHaveProperty("id");
+      expect(response0.body.data[0]).toHaveProperty("service");
+      expect(response0.body.data[1]).toHaveProperty("id");
+      expect(response0.body.data[1]).toHaveProperty("service");
+    });
+
+    test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 2000, size: 2 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta.page).toBe(2000);
+      expect(response0.body.meta.pageSize).toBe(2);
+      expect(response0.body.meta).toHaveProperty("message");
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toEqual(expect.any(Array));
+      expect(response0.body.data.length).toBe(0);
+    });
+
+    test("Disabled - Should respond with status 200 and an empty array, because there are no services registered.", async () => {
+      // const response0 = await request(usedHost)
+      //   .get(`/${testCompanyId}`)
+      //   .set(requestHeaders)
+      //   .query({ page: { number: 1, size: 2 } });
+      // expect(response0.statusCode).toBe(200);
+      // expect(response0.body).toHaveProperty("meta");
+      // expect(response0.body.meta.page).toBe(1);
+      // expect(response0.body.meta.pageSize).toBe(2);
+      // expect(response0.body.meta).toHaveProperty("message");
+      // expect(response0.body).toHaveProperty("data");
+      // expect(response0.body.data).toEqual(expect.any(Array));
+      // expect(response0.body.data.length).toBe(0);
+    });
+
+    test("Should fail with status 400 and an error with a message if no pagination is provided.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders);
+      expect(response0.statusCode).toBe(400);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 400);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+
+      const response1 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: {} });
+      expect(response1.statusCode).toBe(400);
+      expect(response1.body).not.toHaveProperty("meta");
+      expect(response1.body).not.toHaveProperty("data");
+      expect(response1.body).toHaveProperty("status", 400);
+      expect(response1.body).toHaveProperty("code");
+      expect(response1.body).toHaveProperty("detail");
+
+      const response2 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 1 } });
+      expect(response2.statusCode).toBe(400);
+      expect(response2.body).not.toHaveProperty("data");
+      expect(response2.body).toHaveProperty("status", 400);
+      expect(response2.body).toHaveProperty("code");
+      expect(response2.body).toHaveProperty("detail");
+
+      const response3 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { size: 1 } });
+      expect(response3.statusCode).toBe(400);
+      expect(response3.body).not.toHaveProperty("meta");
+      expect(response3.body).not.toHaveProperty("data");
+      expect(response3.body).toHaveProperty("status", 400);
+      expect(response3.body).toHaveProperty("code");
+      expect(response3.body).toHaveProperty("detail");
+
+      const response4 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 0, size: 1 } });
+      expect(response4.statusCode).toBe(400);
+      expect(response4.body).not.toHaveProperty("meta");
+      expect(response4.body).not.toHaveProperty("data");
+      expect(response4.body).toHaveProperty("status", 400);
+      expect(response4.body).toHaveProperty("code");
+      expect(response4.body).toHaveProperty("detail");
+
+      const response5 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 1, size: 0 } });
+      expect(response5.statusCode).toBe(400);
+      expect(response5.body).not.toHaveProperty("meta");
+      expect(response5.body).not.toHaveProperty("data");
+      expect(response5.body).toHaveProperty("status", 400);
+      expect(response5.body).toHaveProperty("code");
+      expect(response5.body).toHaveProperty("detail");
+
+      const response6 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: "A", size: 2 } });
+      expect(response6.statusCode).toBe(400);
+      expect(response6.body).not.toHaveProperty("meta");
+      expect(response6.body).not.toHaveProperty("data");
+      expect(response6.body).toHaveProperty("status", 400);
+      expect(response6.body).toHaveProperty("code");
+      expect(response6.body).toHaveProperty("detail");
+
+      const response7 = await request(usedHost)
+        .get(`/${testCompanyId}`)
+        .set(requestHeaders)
+        .query({ page: { number: 2, size: "B" } });
+      expect(response7.statusCode).toBe(400);
+      expect(response7.body).not.toHaveProperty("meta");
+      expect(response7.body).not.toHaveProperty("data");
+      expect(response7.body).toHaveProperty("status", 400);
+      expect(response7.body).toHaveProperty("code");
+      expect(response7.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).get(`/${testCompanyId}`);
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -360,14 +479,7 @@ describe("Web - Third Party Services management API points: ", () => {
   });
 
   describe("POST /company_service/delete ", () => {
-    // {
-    //     "meta": null,
-    //     "data": {
-    //         "id": 1,
-    //         "active": false
-    //     }
-    // }
-    test("should respond with status 200 and the edited object (data)", async () => {
+    test("Should respond with status 200 and the edited object (data).", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -385,14 +497,45 @@ describe("Web - Third Party Services management API points: ", () => {
           companyId: editService0.companyId,
         })
       );
+
+      const response1 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: editService1.id,
+          companyId: editService1.companyId,
+        });
+      expect(response1.statusCode).toBe(200);
+      expect(response1.body).toHaveProperty("meta");
+      expect(response1.body.meta).toBe(null);
+      expect(response1.body).toHaveProperty("data");
+      expect(response1.body.data).toEqual(
+        expect.objectContaining({
+          id: editService1.id,
+          companyId: editService1.companyId,
+        })
+      );
+
+      const response2 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: editService2.id,
+          companyId: editService2.companyId,
+        });
+      expect(response2.statusCode).toBe(200);
+      expect(response2.body).toHaveProperty("meta");
+      expect(response2.body.meta).toBe(null);
+      expect(response2.body).toHaveProperty("data");
+      expect(response2.body.data).toEqual(
+        expect.objectContaining({
+          id: editService2.id,
+          companyId: editService2.companyId,
+        })
+      );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
-      // {
-      //     "status": 400,
-      //     "detail": "\"id\" is required",
-      //     "code": "Bad Request"
-      // }
+    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -455,17 +598,25 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response4.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 404,
-    //     "detail": "The document type with id=999 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).post("/delete").send({
+        id: editService0.id,
+        companyId: editService0.companyId,
+      });
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
         .send({
-          id: 999,
+          id: 9999,
           companyId: editService0.companyId,
         });
       expect(response0.statusCode).toBe(404);
@@ -476,20 +627,18 @@ describe("Web - Third Party Services management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).post("/delete").send({
-        id: editService0.id,
-        companyId: editService0.companyId,
-      });
-      expect(response0.statusCode).toBe(401);
+    test("Should fail with error 404 and a message if the company does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: editService0.id,
+          companyId: 9999,
+        });
+      expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("status", 404);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });

@@ -3,10 +3,24 @@ const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/companyServices.js");
 
 /**
+ * Checks whether an ThirdPartyCompany ID exists and refers to an existing category.
+ * @param {number} companyId The ID of an ThirdPartyCompany, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the ThirdPartyCompany table. ``false`` otherwise.
+ */
+const checkCompanyExists = async (companyId) => {
+  if (companyId != null) {
+    const companyInDb = await db.ThirdPartyCompany.findByPk(companyId, { attributes: ['id'], paranoid: true });
+    if (companyInDb == null)
+      return false;
+  }
+  return true;
+};
+
+/**
  * Get all services of one company
  * @param {object} req.query - Object containing the number, size
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (objeto): services data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): services data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getServices = async (req, res, next) => {
   try {
@@ -15,6 +29,12 @@ exports.getServices = async (req, res, next) => {
       size: req.query.page ? parseInt(req.query.page.size) : null,
       companyId: req.params.id ? parseInt(req.params.id) : null,
     });
+
+    if (!(await checkCompanyExists(objPage.companyId)))
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "The company not found.",
+      };
 
     const companiesInDb = await db.ThirdPartyService.findAndCountAll({
       where: { companyId: objPage.companyId },
@@ -51,7 +71,7 @@ exports.getServices = async (req, res, next) => {
 /**
  * Creates and updates company services
  * @param {Array} req.body - Array of objects containing the fields of service (string) and companyId (integer)
- * @return {object} Response contains: statuscode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postServices = async (req, res, next) => {
   try {
@@ -69,20 +89,10 @@ exports.postServices = async (req, res, next) => {
 
     const { services, companyId } = await validator.vWebPostServices(req.body);
 
-    // First, validate that the company belongs to the user.
-    const company = await db.ThirdPartyCompany.findOne({
-      where: {
-        id: companyId,
-        // createdBy: createdBy.id,
-      },
-      attributes: ["id"],
-    });
-
-    if (company == null || company.id == null)
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The company not found.",
       };
     
     services.forEach((obj, index) => {
@@ -108,6 +118,10 @@ exports.postServices = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The address could not be geocoded: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "There is a service(s) that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
@@ -115,7 +129,7 @@ exports.postServices = async (req, res, next) => {
 /**
  * Update a service company
  * @param {object} req - Object containing the id, service, companyId
- * @return {object} Response contains: statuscode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -133,27 +147,17 @@ exports.postEdit = async (req, res, next) => {
 
     const { id, service, companyId } = await validator.vWebPostEdit(req.body);
 
-    // First, validate that the company belongs to the user.
-    const companyInDb = await db.ThirdPartyCompany.findOne({
-      where: {
-        id: companyId,
-        // createdBy: createdBy.id,
-      },
-      attributes: ["id"],
-    });
-
-    if (companyInDb == null || companyInDb.id == null)
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The company not found.",
       };
 
     // Validate that the service belongs to the user
     const serviceInDb = await db.ThirdPartyService.findOne({
       where: {
         id,
-        companyId: companyInDb.id,
+        companyId,
       },
     });
 
@@ -161,10 +165,8 @@ exports.postEdit = async (req, res, next) => {
       throw {
         message: "Service not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    // const serviceInDb = await db.ThirdPartyCategory.findByPk(id);
 
     const resultUpdate = await serviceInDb.update({ service });
     delete resultUpdate.dataValues.deletedAt;
@@ -172,13 +174,11 @@ exports.postEdit = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "service must be unique";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -187,7 +187,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Destroy a service company (soft delete)
  * @param {object} req - Object containing the id, companyId
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -205,27 +205,17 @@ exports.postDelete = async (req, res, next) => {
 
     const { id, companyId } = await validator.vWebPostDelete(req.body);
 
-    // First, validate that the company belongs to the user.
-    const companyInDb = await db.ThirdPartyCompany.findOne({
-      where: {
-        id: companyId,
-        // createdBy: createdBy.id,
-      },
-      attributes: ["id"],
-    });
-
-    if (companyInDb == null || companyInDb.id == null)
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The company not found.",
       };
 
     // Validate that the service belongs to the company
     const serviceInDb = await db.ThirdPartyService.findOne({
       where: {
         id,
-        companyId: companyInDb.id,
+        companyId,
       },
     });
 
