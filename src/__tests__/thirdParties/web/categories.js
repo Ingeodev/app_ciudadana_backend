@@ -210,7 +210,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response0.body.data.length).toBe(0);
     });
       
-    test("Disabled - Should respond with status 200 and an empty array, because There are no third-party categories registered.", async () => {
+    test("Disabled - Should respond with status 200 and an empty array, because there are no third-party categories registered.", async () => {
       // const response0 = await request(usedHost)
       //   .get("/")
       //   .set(requestHeaders)
