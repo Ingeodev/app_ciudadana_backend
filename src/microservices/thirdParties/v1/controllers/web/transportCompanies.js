@@ -6,8 +6,8 @@ const validator = require("../../../utils/validators/web/transportCompanies.js")
 
 /**
  * Create an Api Key
- * @param {object} req - Object containing the date (expiration) n companyId
- * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ * @param {object} req - Object containing the expirationAt (disabled) n companyId
+ * @return {object} Response contains: statusCode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postCreateApiKey = async (req, res, next) => {
   try {
@@ -15,13 +15,6 @@ exports.postCreateApiKey = async (req, res, next) => {
     const createdBy = await db.User.findOne({
       where: { disabled: false, userMobile: false, clientId: res.locals.uid },
       attributes: ["id", "clientId"],
-      // include: [
-      //   {
-      //     model: db.UserApiKey,
-      //     attributes: ["id"],
-      //     required: false,
-      //   },
-      // ],
     });
 
     if (createdBy == null || createdBy.id == null)
@@ -99,7 +92,7 @@ exports.postCreateApiKey = async (req, res, next) => {
 /**
  * Get the apiKey (First 5 characters)
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
  */
 exports.getApiKey = async (req, res, next) => {
   try {
@@ -152,7 +145,7 @@ exports.getApiKey = async (req, res, next) => {
 /**
  * Create a transport company
  * @param {object} req - Object containing the name, nit, phone, siteUri, description, imageUri
- * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -186,6 +179,10 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("company could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = `${error.errors[0].path} must be unique`;
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -193,7 +190,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a transport company
  * @param {object} req - Object containing the id, name, nit, phone, siteUri, description, imageUri
- * @return {object} Response contains: statuscode (integer), json (transport company object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (transport company object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -254,13 +251,11 @@ exports.postEdit = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = `${error.errors[0].path} must be unique`;
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -269,7 +264,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get the data of transport company - profile 
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (object): transport company data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): transport company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
   try {
@@ -326,7 +321,7 @@ exports.getProfile = async (req, res, next) => {
 
 /**
  * Destroy a transport company (soft delete)
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -375,7 +370,7 @@ exports.postDelete = async (req, res, next) => {
 /**
  * Get all transport companies 
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {

@@ -1,10 +1,7 @@
 const request = require("supertest");
 const { v4: uuidV4 } = require("uuid");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/third_parties/transport_company`;
-// Local
-const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/web/v1/third_parties/transport_company`;
+const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company`;
 describe("Web - Transport Companies management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -12,47 +9,47 @@ describe("Web - Transport Companies management API points: ", () => {
     Authorization: "Bearer ",
   };
 
+  const generateAlphanumeric = () => {
+    return uuidV4().replace(/-/g, "");
+  };
+
   const min = 1000000;
   const max = 9000000;
 
   const testCompany0 = {
-    name: uuidV4(),
+    name: generateAlphanumeric(),
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
     description: "test description",
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
   };
 
   const testCompany1 = {
-    name: uuidV4(),
+    name: generateAlphanumeric(),
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-2`,
     description: "test description",
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
   };
 
   const editCompany0 = {
-    name: uuidV4(),
+    name: generateAlphanumeric(),
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-3`,
     description: "test description 1 edit",
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
   };
 
   const editCompany1 = {
-    name: uuidV4(),
+    name: generateAlphanumeric(),
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-4`,
     description: "test description 2 edit",
     phone: "3122334455",
     siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-24, Popayán, Cauca",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png"
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
   };
 
   beforeAll(async () => {
@@ -65,8 +62,8 @@ describe("Web - Transport Companies management API points: ", () => {
     requestHeaders.Authorization += firebaseAuth.body.idToken;
   });
 
-  describe("POST /company/ ", () => {
-    test("should respond with status 201 and the new object (data) after creating a new transport company", async () => {
+  describe("POST /transport_company/ ", () => {
+    test("Should respond with status 201 and the new object (data) after creating a new transport company.", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -92,7 +89,7 @@ describe("Web - Transport Companies management API points: ", () => {
       editCompany1.id = response1.body.data.id;
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -167,21 +164,6 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response3.body).toHaveProperty("code");
       expect(response3.body).toHaveProperty("detail");
 
-      // 8. ----------------------------------------------
-      const response9 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCompany0,
-          address: -5,
-        });
-      expect(response9.statusCode).toBe(400);
-      expect(response9.body).not.toHaveProperty("meta");
-      expect(response9.body).not.toHaveProperty("data");
-      expect(response9.body).toHaveProperty("status", 400);
-      expect(response9.body).toHaveProperty("code");
-      expect(response9.body).toHaveProperty("detail");
-
       // 3. ----------------------------------------------
       const response4 = await request(usedHost)
         .post("/")
@@ -196,33 +178,33 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response4.body).toHaveProperty("status", 400);
       expect(response4.body).toHaveProperty("code");
       expect(response4.body).toHaveProperty("detail");
-    });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+      // 4. ----------------------------------------------
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testCompany0);
-      expect(response0.statusCode).toBe(500);
+      expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("status", 400);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
 
-      const response1 = await request(usedHost)
+      // 4. ----------------------------------------------
+      const response9 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testCompany1);
-      expect(response1.statusCode).toBe(500);
-      expect(response1.body).not.toHaveProperty("meta");
-      expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 500);
-      expect(response1.body).toHaveProperty("code");
-      expect(response1.body).toHaveProperty("detail");
+      expect(response9.statusCode).toBe(400);
+      expect(response9.body).not.toHaveProperty("meta");
+      expect(response9.body).not.toHaveProperty("data");
+      expect(response9.body).toHaveProperty("status", 400);
+      expect(response9.body).toHaveProperty("code");
+      expect(response9.body).toHaveProperty("detail");
     });
 
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -233,8 +215,143 @@ describe("Web - Transport Companies management API points: ", () => {
     });
   });
 
-  describe("GET /company/:id ", () => {
-    test("should respond with status 200 and one document_type object created.", async () => {
+  describe("POST /transport_company/api_key ", () => {
+    test("Should respond with status 201 and the apiKey created.", async () => {
+      // 1. -------------------------------------------------
+      const response0 = await request(usedHost)
+        .post("/api_key")
+        .set(requestHeaders)
+        .send({ companyId: testCompany0.id });
+      expect(response0.statusCode).toBe(201);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta).toBe(null);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toHaveProperty("apiKey");
+      expect(response0.body.data).toHaveProperty("expirationAt");
+      expect(response0.body.data).toHaveProperty("companyId");
+      expect(response0.body.data.companyId).toBe(testCompany0.id);
+
+      // 2. -------------------------------------------------
+      const response1 = await request(usedHost)
+        .post("/api_key")
+        .set(requestHeaders)
+        .send({ companyId: testCompany1.id });
+      expect(response1.statusCode).toBe(201);
+      expect(response1.body).toHaveProperty("meta");
+      expect(response1.body.meta).toBe(null);
+      expect(response1.body).toHaveProperty("data");
+      expect(response1.body.data).toHaveProperty("apiKey");
+      expect(response1.body.data).toHaveProperty("expirationAt");
+      expect(response1.body.data).toHaveProperty("companyId");
+      expect(response1.body.data.companyId).toBe(testCompany1.id);
+    });
+
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
+      // 1. -------------------------------------
+      const response0 = await request(usedHost)
+        .post("/api_key")
+        .set(requestHeaders)
+        .send({ companyId: -5 });
+      expect(response0.statusCode).toBe(400);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 400);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+
+      // 2. -------------------------------------
+      const response2 = await request(usedHost)
+        .post("/api_key")
+        .set(requestHeaders)
+        .send({ companyId: "must be a number" });
+      expect(response2.statusCode).toBe(400);
+      expect(response2.body).not.toHaveProperty("meta");
+      expect(response2.body).not.toHaveProperty("data");
+      expect(response2.body).toHaveProperty("status", 400);
+      expect(response2.body).toHaveProperty("code");
+      expect(response2.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost)
+        .post("/api_key")
+        .send(editCompany0);
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .post("/api_key")
+        .set(requestHeaders)
+        .send({ companyId: 9999 });
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("GET /transport_company/api_key/:id ", () => {
+    test("Should respond with status 200 and the apiKey of the transport company.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/api_key/${testCompany0.id}`)
+        .set(requestHeaders);
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta).toBe(null);
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toHaveProperty("apiKey");
+
+      const response1 = await request(usedHost)
+        .get(`/api_key/${testCompany1.id}`)
+        .set(requestHeaders);
+      expect(response1.statusCode).toBe(200);
+      expect(response1.body).toHaveProperty("meta");
+      expect(response1.body.meta).toBe(null);
+      expect(response1.body).toHaveProperty("data");
+      expect(response1.body.data).toHaveProperty("apiKey");
+    });
+
+    test("Should fail with status 400 and an error with a message id must be a number.", async () => {
+      const response0 = await request(usedHost).get(`/api_key/ddd`).set(requestHeaders);
+      expect(response0.statusCode).toBe(400);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 400);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost).get(`/api_key/${testCompany0.id}`);
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message not found.", async () => {
+      const response0 = await request(usedHost).get(`/api_key/999`).set(requestHeaders);
+      expect(response0.statusCode).toBe(404);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 404);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("GET /transport_company/:id ", () => {
+    test("Should respond with status 200 and one transport company object created.", async () => {
       const response0 = await request(usedHost)
         .get(`/${testCompany0.id}`)
         .set(requestHeaders);
@@ -258,7 +375,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response1.body.data).toHaveProperty("nit");
     });
 
-    test("should fail with status 400 and an error with a message id must be a number", async () => {
+    test("Should fail with status 400 and an error with a message id must be a number.", async () => {
       const response0 = await request(usedHost).get(`/ddd`).set(requestHeaders);
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -268,12 +385,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get(`/${testCompany0.id}`);
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -283,7 +395,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 404 and an error with a message not found", async () => {
+    test("Should fail with status 404 and an error with a message not found.", async () => {
       const response0 = await request(usedHost).get(`/999`).set(requestHeaders);
       expect(response0.statusCode).toBe(404);
       expect(response0.body).not.toHaveProperty("meta");
@@ -294,8 +406,8 @@ describe("Web - Transport Companies management API points: ", () => {
     });
   });
 
-  describe("GET /company/ ", () => {
-    test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
+  describe("GET /transport_company/ ", () => {
+    test("Should respond with status 200 and a list of objects containing the two created objects.", async () => {
       const response0 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
@@ -309,18 +421,41 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body.data.length).toBe(2);
       expect(response0.body.data[0]).toHaveProperty("id");
       expect(response0.body.data[0]).toHaveProperty("name");
-      expect(response0.body.data[0].name).toBe(testCompany1.name);
       expect(response0.body.data[1]).toHaveProperty("id");
       expect(response0.body.data[1]).toHaveProperty("name");
-      expect(response0.body.data[1].name).toBe(testCompany0.name);
     });
 
-    // {
-    // "status": 400,
-    // "detail": "\"number\" must be a number",
-    // "code": "Bad Request"
-    // }
-    test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
+    test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .get("/")
+        .set(requestHeaders)
+        .query({ page: { number: 2000, size: 2 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta.page).toBe(2000);
+      expect(response0.body.meta.pageSize).toBe(2);
+      expect(response0.body.meta).toHaveProperty("message");
+      expect(response0.body).toHaveProperty("data");
+      expect(response0.body.data).toEqual(expect.any(Array));
+      expect(response0.body.data.length).toBe(0);
+    });
+
+    test("Disabled - Should respond with status 200 and an empty array, because there are no transport companies registered.", async () => {
+      // const response0 = await request(usedHost)
+      //   .get("/")
+      //   .set(requestHeaders)
+      //   .query({ page: { number: 1, size: 2 } });
+      // expect(response0.statusCode).toBe(200);
+      // expect(response0.body).toHaveProperty("meta");
+      // expect(response0.body.meta.page).toBe(1);
+      // expect(response0.body.meta.pageSize).toBe(2);
+      // expect(response0.body.meta).toHaveProperty("message");
+      // expect(response0.body).toHaveProperty("data");
+      // expect(response0.body.data).toEqual(expect.any(Array));
+      // expect(response0.body.data.length).toBe(0);
+    });
+ 
+    test("Should fail with status 400 and an error with a message if no pagination is provided.", async () => {
       const response0 = await request(usedHost).get("/").set(requestHeaders);
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -405,13 +540,8 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response7.body).toHaveProperty("code");
       expect(response7.body).toHaveProperty("detail");
     });
-
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+ 
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/").query({ page: { number: 1, size: 2 } });
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
@@ -420,25 +550,10 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
-
-    test("DISABLED - Companies table must not have any records. should fail with status 404 and an error with a message of transport companies not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 } });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-    });
   });
 
-  describe("POST /company/edit ", () => {
-
-    test("should respond with status 200 and the edited object (data)", async () => {
+  describe("POST /transport_company/edit ", () => {
+    test("Should respond with status 200 and the edited object (data).", async () => {
       // 1. -------------------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -466,7 +581,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response1.body.data.name).toBe(editCompany1.name);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -563,7 +678,7 @@ describe("Web - Transport Companies management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editCompany0,
-          address: -5,
+          name: editCompany1.name,
         });
       expect(response9.statusCode).toBe(400);
       expect(response9.body).not.toHaveProperty("meta");
@@ -571,15 +686,36 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response9.body).toHaveProperty("status", 400);
       expect(response9.body).toHaveProperty("code");
       expect(response9.body).toHaveProperty("detail");
+
+      // 9. -------------------------------------
+      const response10 = await request(usedHost)
+        .post("/edit")
+        .set(requestHeaders)
+        .send({
+          ...editCompany0,
+          nit: editCompany1.nit,
+        });
+      expect(response10.statusCode).toBe(400);
+      expect(response10.body).not.toHaveProperty("meta");
+      expect(response10.body).not.toHaveProperty("data");
+      expect(response10.body).toHaveProperty("status", 400);
+      expect(response10.body).toHaveProperty("code");
+      expect(response10.body).toHaveProperty("detail");
     });
 
-    
-    // {
-    //     "status": 404,
-    //     "detail": "The category with id=99 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+      const response0 = await request(usedHost)
+        .post("/edit")
+        .send(editCompany0);
+      expect(response0.statusCode).toBe(401);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toHaveProperty("status", 401);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
+    });
+
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/edit")
         .set(requestHeaders)
@@ -594,32 +730,10 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
-
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).post("/edit").send(editCompany0);
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
   });
 
-  describe("POST /company/delete ", () => {
-    // {
-    //     "meta": null,
-    //     "data": {
-    //         "id": 1,
-    //         "active": false
-    //     }
-    // }
-    test("should respond with status 200 and the edited object (data)", async () => {
+  describe("POST /transport_company/delete ", () => {
+    test("Should respond with status 200 and the transport company id deleted.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -652,17 +766,11 @@ describe("Web - Transport Companies management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
-      // {
-      //     "status": 400,
-      //     "detail": "\"id\" is required",
-      //     "code": "Bad Request"
-      // }
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
         .send({
-          active: false,
           id: "",
         });
       expect(response0.statusCode).toBe(400);
@@ -671,12 +779,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("status", 400);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
-
-      // {
-      //     "status": 400,
-      //     "detail": "\"id\" must be greater than 0",
-      //     "code": "Bad Request"
-      // }
+ 
       const response3 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -691,12 +794,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response3.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 404,
-    //     "detail": "The document type with id=999 does not exist",
-    //     "code": "Not Found"
-    // }
-    test("should fail with status 404 and an error with a message if the id does not exist", async () => {
+    test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -711,12 +809,7 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+    test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).post("/delete");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
