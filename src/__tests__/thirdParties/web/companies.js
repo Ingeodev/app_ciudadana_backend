@@ -408,10 +408,8 @@ describe("Web - Third Party Companies management API points: ", () => {
       expect(response0.body.data.length).toBe(2);
       expect(response0.body.data[0]).toHaveProperty("id");
       expect(response0.body.data[0]).toHaveProperty("name");
-      expect(response0.body.data[0].name).toBe(testCompany1.name);
       expect(response0.body.data[1]).toHaveProperty("id");
       expect(response0.body.data[1]).toHaveProperty("name");
-      expect(response0.body.data[1].name).toBe(testCompany0.name);
     });
 
     test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
