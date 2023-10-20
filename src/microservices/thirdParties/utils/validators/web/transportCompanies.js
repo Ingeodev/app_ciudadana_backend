@@ -7,10 +7,10 @@ const registerSchema = joi.object({
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
-  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ")
+  description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').required(),
+  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required()
 });
 
 const editSchema = joi.object({

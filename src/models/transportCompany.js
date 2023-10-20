@@ -59,22 +59,22 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       siteUri: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
       imageUri: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: false,
       },
     },

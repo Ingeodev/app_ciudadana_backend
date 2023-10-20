@@ -29,38 +29,38 @@ module.exports = {
         },
         description: {
           type: Sequelize.TEXT,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         phone: {
           type: Sequelize.STRING(50),
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         siteUri: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         imageUri: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: false,
         },
         createdAt: {
-          type: "TIMESTAMP",
+          type: Sequelize.DATE,
           allowNull: false,
-          // type: Sequelize.DATE
+          unique: false,
         },
         updatedAt: {
-          type: "TIMESTAMP",
-          allowNull: true,
-          // type: Sequelize.DATE
+          type: Sequelize.DATE,
+          allowNull: false,
+          unique: false,
         },
         deletedAt: {
-          type: "TIMESTAMP",
+          type: Sequelize.DATE,
           allowNull: true,
-          // type: Sequelize.DATE
+          unique: false,
         },
       },
       {
@@ -68,7 +68,7 @@ module.exports = {
         schema: "public",
       }
     );
-    return await queryInterface.addConstraint("TransportCompanies", {
+    await queryInterface.addConstraint("TransportCompanies", {
       name: "fk_TransportCompanies_CreatedBy",
       fields: ["createdBy"],
       type: "foreign key",
@@ -79,8 +79,16 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_transportCompany"
+      ON "TransportCompanies"("name", "nit")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_transportCompany";
+    `);
     await queryInterface.removeConstraint("TransportCompanies", "fk_TransportCompanies_CreatedBy");
     await queryInterface.dropTable("TransportCompanies");
   },
