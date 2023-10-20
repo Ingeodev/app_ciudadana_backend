@@ -55,6 +55,10 @@ const postExpiresSchema = joi.object({
     'string.pattern.between-00:29-24:00': 'The time must be between 00:29 and 24:00'
   })
 });
+
+const getOneSchema = joi.object({
+  id: joi.number().integer().greater(0).required(),
+});
 // * ------------------ END - Mobile - Reports -----------------
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -88,6 +92,10 @@ module.exports = {
   },
   vWebPostExpires: async (inputData) => {
     return await use_validator_on_data(postExpiresSchema, inputData);
+  },
+
+  vWebGetOne: async (inputData) => {
+    return await use_validator_on_data(getOneSchema, inputData);
   },
   // * ------------------ END - Web - Reports -----------------
   // * ------------------ Mobile - Reports -----------------

@@ -385,3 +385,82 @@ exports.postExpires = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * Get report by id
+ * @param {integer} req.params.id - id of report
+ * @return {object} Response contains: statusCode (integer), json (objeto): report data. Or if there's error, json (objeto): status, code, detail
+ */
+exports.getReport = async (req, res, next) => {
+  try {
+    const { id } = await validator.vWebGetOne({
+      id: req.params.id ? parseInt(req.params.id) : null,
+    });
+
+    const reportInDb = await db.Report.findByPk(id, {
+      attributes: {
+        exclude: ["deletedAt"],
+      },
+    });
+
+    if (reportInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "Report information could not be retrieved",
+      };
+    }
+
+    const currentDate = new Date();
+    
+    // Verify if it is within three days (period to approve the report).
+    const created = new Date(reportInDb.dataValues.createdAt);
+    const difference = currentDate - created;
+
+    const differenceInHours = difference / (1000 * 60 * 60);
+    let editable = null;
+    if (differenceInHours <= 72) {
+      switch (reportInDb.dataValues.isApproved) {
+        case "yes":
+          editable = "disapprove";
+          break;
+        case "no":
+          editable = "approve";
+          break;
+        case null:
+          editable = "both";
+          break;
+        default:
+          throw {
+            message: "Inconsistent data in the db",
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+          };
+          break;
+      }
+    } else {
+      switch (reportInDb.dataValues.isApproved) {
+        case "yes":
+          editable = "none";
+          break;
+        case "no":
+          editable = "none";
+          break;
+        case null:
+          editable = "disapprove";
+          break;
+        default:
+          throw {
+            message: "Inconsistent data in the db",
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+          };
+          break;
+      }
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .send({ meta: null, data: { ...reportInDb.dataValues, editable } });
+  } catch (error) {
+    // console.error("Report could not be recovered: ", error.message);
+    return next(error);
+  }
+};

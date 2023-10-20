@@ -64,13 +64,6 @@ router.post('/security/attentionPoint/delete', securityAttentionPointsController
 //#endRegion
 
 //#region Reports end-points
-// Retrieve all the reports by user.
-router.get(
-  "/security/reports",
-  // hasPermissions({ role: "super_master_user" }),
-  reportController.getListAll
-);
-
 router.post(
   "/security/reports/approve",
   // hasPermissions({ role: "super_master_user" }),
@@ -101,6 +94,18 @@ router.get(
   "/security/report_configuration",
   // hasPermissions({ role: "super_master_user" }),
   reportConfigCont.getReportConfig
+);
+
+router.get(
+  "/security/reports",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.getListAll
+);
+
+router.get(
+  "/security/reports/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  reportController.getReport
 );
 //#endRegion
 
