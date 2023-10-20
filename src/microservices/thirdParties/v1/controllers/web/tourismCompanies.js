@@ -1,13 +1,27 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { literal, col } = require("sequelize");
 const crypto = require("crypto");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/tourismCompanies.js");
 
 /**
+ * Checks whether an TourismCategory ID exists and refers to an existing category.
+ * @param {number} categoryId The ID of an TourismCategory, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the TourismCategory table. ``false`` otherwise.
+ */
+const checkCategoryExists = async (categoryId) => {
+  if (categoryId != null) {
+    const categoryExists = await db.TourismCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true });
+    if (categoryExists == null)
+      return false;
+  }
+  return true;
+};
+
+/**
  * Create an Api Key
  * @param {object} req - Object containing the date (expiration) n companyId
- * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postCreateApiKey = async (req, res, next) => {
   try {
@@ -99,7 +113,7 @@ exports.postCreateApiKey = async (req, res, next) => {
 /**
  * Get the apiKey (First 5 characters)
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
  */
 exports.getApiKey = async (req, res, next) => {
   try {
@@ -152,7 +166,7 @@ exports.getApiKey = async (req, res, next) => {
 /**
  * Create a tourism company
  * @param {object} req - Object containing the name, nit, categoryId, description, address, phone, imageUri, siteUri, lat, lon
- * @return {object} Response contains: statuscode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): echo reply, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -181,12 +195,10 @@ exports.postRegister = async (req, res, next) => {
       lon,
     } = await validator.vWebPostRegister(req.body);
 
-    // Check if the category exists
-    const categInDb = await db.TourismCategory.findByPk(categoryId);
-    if (categInDb == null || categInDb.id == null)
+    if (!(await checkCategoryExists(categoryId)))
       throw {
-        message: "Category not found.",
         status: StatusCodes.NOT_FOUND,
+        message: "The assigned category does not exist.",
       };
 
     const result = await db.TourismCompany.create({
@@ -199,7 +211,7 @@ exports.postRegister = async (req, res, next) => {
       phone: `+57${phone}`,
       imageUri,
       siteUri,
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
     });
 
     const data = {
@@ -221,7 +233,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a tourism company
  * @param {object} req - Object containing the id, name, nit, categoryId, description, address, phone, imageUri, siteUri, lat, lon
- * @return {object} Response contains: statuscode (integer), json (tourism company object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (tourism company object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -238,18 +250,15 @@ exports.postEdit = async (req, res, next) => {
     //   };
 
     const update = await validator.vWebPostEdit(req.body);
-    let categInDb = undefined;
     let lat = undefined;
     let lon = undefined;
 
-    if (!isNaN(update.categoryId)) {
-      categInDb = await db.TourismCategory.findByPk(update.categoryId);
-      if (categInDb == null || categInDb.id == null)
+    if (!isNaN(update.categoryId))
+      if (!await checkCategoryExists(update.categoryId))
         throw {
-          message: "Category not found.",
           status: StatusCodes.NOT_FOUND,
+          message: 'The assigned category does not exist.',
         };
-    }
 
     // Validate that the company belongs to the user
     const companyInDb = await db.TourismCompany.findByPk(update.id);
@@ -269,7 +278,7 @@ exports.postEdit = async (req, res, next) => {
     
     delete update.id;
     if (update.lat != null) {
-      update.geolocation = Sequelize.literal(
+      update.geolocation = literal(
         `ST_GeomFromText('POINT(${update.lon} ${update.lat})')`
       );
       lat = update.lat;
@@ -294,6 +303,7 @@ exports.postEdit = async (req, res, next) => {
       lon,
     };
     return res.status(StatusCodes.OK).json({
+      meta: null,
       data,
     });
   } catch (error) {
@@ -313,7 +323,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get the data of tourism company - profile 
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): tourism company data. Or if there's error, json (object): status, code, detail
  */
 exports.getProfile = async (req, res, next) => {
   try {
@@ -349,14 +359,13 @@ exports.getProfile = async (req, res, next) => {
       throw {
         message: "Tourism company could not be retrieved",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    
-
-    // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
     delete companyInDb.dataValues.createdBy;
     delete companyInDb.dataValues.deletedAt;
+    companyInDb.dataValues.lat = companyInDb.dataValues.geolocation.coordinates[1];
+    companyInDb.dataValues.lon = companyInDb.dataValues.geolocation.coordinates[0];
+    delete companyInDb.dataValues.geolocation;
 
     return res.status(StatusCodes.OK).send({
       meta: null,
@@ -370,7 +379,7 @@ exports.getProfile = async (req, res, next) => {
 
 /**
  * Destroy a tourism company (soft delete)
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -418,7 +427,7 @@ exports.postDelete = async (req, res, next) => {
 /**
  * Get all tourism companies 
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data tourism companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data tourism companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -455,8 +464,8 @@ exports.getAll = async (req, res, next) => {
       attributes: {
         exclude: ["createdBy", "deletedAt"],
         include: [
-          [Sequelize.col('"TourismCategory"."name"'), "categoryName"],
-          [Sequelize.col('"TourismCategory"."color"'), "categoryColor"],
+          [col('"TourismCategory"."name"'), "categoryName"],
+          [col('"TourismCategory"."color"'), "categoryColor"],
         ],
       },
     });
