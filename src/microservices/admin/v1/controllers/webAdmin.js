@@ -1,14 +1,12 @@
 const { StatusCodes } = require("http-status-codes");
-const crypto = require("crypto");
+const { randomInt } = require("crypto");
 const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
 const firebase = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
 const mailService = require("../../../../utils/sendMail.js");
-const { formatDate } = require("../../../../middleware/formatDate.js");
-// const urlFront = process.env.URL_FRONT;
-const urlFront = "https://frontend-cmiesjcqoq-uc.a.run.app";
-// const urlFront = "http://localhost:3000";
+const msURLS = require("../../../../config/microservices_urls.json");
+const urlFront = msURLS.front;
 
 /**
  * Generates a (random) string of length n.
@@ -42,7 +40,7 @@ function generateSecureRandomString(length) {
   
       // result += validChars.charAt(Math.floor(Math.random() * charactersLength));
       // result += validChars.charAt(bytes[i] % charactersLength);
-      result += validChars.charAt(crypto.randomInt(0, charactersLength));
+      result += validChars.charAt(randomInt(0, charactersLength));
     }
     return result;
   } catch (error) {
@@ -57,7 +55,7 @@ function generateSecureRandomString(length) {
 /**
  * Send the invitation email along with the credentials
  * @param {object} req - Object containing name, lastName, email, documentTypeId, document
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId) {
   try {
@@ -106,7 +104,7 @@ async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId
 /**
  * Create a admin
  * @param {object} req - Object containing name, lastName, email, documentTypeId, document
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
@@ -208,7 +206,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Enter a new passwd
  * @param {object} req - Object containing passwd
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postSetPasswd = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
@@ -261,7 +259,7 @@ exports.postSetPasswd = async (req, res, next) => {
 /**
  * Add role an admin
  * @param {object} req - Object containing the id, roleId
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAddRole = async (req, res, next) => {
   try {
@@ -285,7 +283,7 @@ exports.postAddRole = async (req, res, next) => {
 /**
  * Update admin
  * @param {object} req - Object containing the name, lastName, documentTypeId, document
- * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -330,7 +328,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all admins
  * @param {object} req.query - Object containing the number, size
- * @return {object} Response contains: statuscode (integer), json (objeto): data admins. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data admins. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -382,7 +380,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get admin by id
  * @param {integer} req.params.id - admin Id
- * @return {object} Response contains: statuscode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
@@ -420,7 +418,7 @@ exports.getOneById = async (req, res, next) => {
 
 /**
  * Delete an admin
- * @return {object} Response contains: statuscode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -454,7 +452,7 @@ exports.postDelete = async (req, res, next) => {
 /**
  * Send mail to allow admin user to create (reset) his password
  * @param {object} req - Object containing the code, name, abbreviation
- * @return {object} Response contains: statuscode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data admin, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postSendMailResetPasswd = async (req, res, next) => {
   try {

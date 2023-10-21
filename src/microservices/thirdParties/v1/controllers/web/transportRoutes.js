@@ -1,17 +1,18 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
-const fs = require("fs");
-const path = require("path");
-const xlsx = require("node-xlsx");
+const { Op } = require("sequelize");
+const { readFile } = require("fs");
+const { resolve, join } = require("path");
+const { parse } = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
 const formathhmm = require("../../../utils/formatHH_MM.js")
-const caliCodeDane = 76001;
+const constant = require("../../../constant.json");
+const caliCityCode = constant.CALI_CITY_CODE;
 
 /**
  * Create an transport route
  * @param {Array} req.body - Object containing the origin, destination, companyId, duration
- * @return {object} Response contains: statuscode (integer), json (objects array): id, origin, destination, companyId, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objects array): id, origin, destination, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -51,8 +52,8 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    if (originInDb.dataValues.cityCode !== caliCodeDane &&
-      destinationInDb.dataValues.cityCode !== caliCodeDane) {
+    if (originInDb.dataValues.cityCode !== caliCityCode &&
+      destinationInDb.dataValues.cityCode !== caliCityCode) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -103,7 +104,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a transport route
  * @param {object} req - Object containing the id, origin, destination, companyId, duration
- * @return {object} Response contains: statuscode (integer), json (route object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (route object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -144,8 +145,8 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    if (originInDb.dataValues.cityCode !== caliCodeDane &&
-      destinationInDb.dataValues.cityCode !== caliCodeDane) {
+    if (originInDb.dataValues.cityCode !== caliCityCode &&
+      destinationInDb.dataValues.cityCode !== caliCityCode) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -219,7 +220,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Destroy a transport route (soft delete)
  * @param {object} req - Object containing the id, companyId
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -295,7 +296,7 @@ exports.postDelete = async (req, res, next) => {
  * Get all transport routes of an company
  * @param {object} req.query - Object containing the companyId, number, and size
  * @param {integer} req.params.id - id of the company
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -349,7 +350,7 @@ exports.getAll = async (req, res, next) => {
       message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
-      const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      const companyData = company.get({ plain: true });
       const tOriginName = companyData.originName.city;
       delete companyData.originName;
       const tDestinationName = companyData.destinationName.city;
@@ -382,7 +383,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get all transport companies with your routes
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getCompaniesNRoutes = async (req, res, next) => {
   try {
@@ -412,30 +413,21 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
       include: [
         {
           model: db.TransportRoute,
-          attributes: ["id", "origin", "destination", "duration" ],
+          attributes: ["id", "origin", "destination", "duration"],
           required: false,
         },
       ],
-      attributes: {
-        exclude: [
-          "createdBy",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-          // "imageUri",
-        ],
-        include: [
-          "id",
-          "name",
-          "nit",
-          "description",
-          "phone",
-          "siteUri",
-          "imageUri",
-          // ["imageUri", "image"],
-          // [Sequelize.col("imageUri"), "image"],
-        ],
-      },
+      attributes: [
+        "id",
+        "name",
+        "nit",
+        "description",
+        "phone",
+        "siteUri",
+        "imageUri",
+        // ["imageUri", "image"],
+        // [Sequelize.col("imageUri"), "image"],
+      ],
     });
 
     let message = undefined;
@@ -445,7 +437,7 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
       message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
-      const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      const companyData = company.get({ plain: true });
       const routes = companyData.TransportRoutes.map((obj) => ({
         id: obj.id,
         origin: obj.origin,
@@ -479,7 +471,7 @@ exports.getCompaniesNRoutes = async (req, res, next) => {
 /**
  * Get all route timetables of an route
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
  */
 exports.getItinerary = async (req, res, next) => {
   try {
@@ -507,7 +499,7 @@ exports.getItinerary = async (req, res, next) => {
       include: [
         {
           model: db.RouteTimetable,
-          where: { date: { [Sequelize.Op.gte]: new Date() } },
+          where: { date: { [Op.gte]: new Date() } },
           include: [
             {
               model: db.RouteTimetableHourTariff,
@@ -519,18 +511,15 @@ exports.getItinerary = async (req, res, next) => {
           required: false,
         },
       ],
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt", "createdBy"],
-        include: [
-          "id",
-          "origin",
-          "destination",
-          "companyId",
-          "duration",
-          // ["imageUri", "image"],
-          // [Sequelize.col("imageUri"), "image"],
-        ],
-      },
+      attributes: [
+        "id",
+        "origin",
+        "destination",
+        "companyId",
+        "duration",
+        // ["imageUri", "image"],
+        // [Sequelize.col("imageUri"), "image"],
+      ],
       order: [
         [db.RouteTimetable, "date", "ASC"],
         [db.RouteTimetable, db.RouteTimetableHourTariff, "hour", "ASC"],
@@ -569,7 +558,7 @@ exports.getItinerary = async (req, res, next) => {
 
 /**
  * Upload an excel file that will create/update transport routes in the database. This use "Plantilla_Registro_Rutas_de_Transporte.xlsx". With: originCode, destinationCode, duration, date, hour, tariff
- * @return {object} Response contains: statuscode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
  */
 exports.postUploadXlsx = async (req, res, next) => {
   try {
@@ -602,7 +591,7 @@ exports.postUploadXlsx = async (req, res, next) => {
       };
     }
 
-    const contents = xlsx.parse(xlsxFile.buffer);
+    const contents = parse(xlsxFile.buffer);
     let success = [];
     let errors = [];
 
@@ -669,7 +658,7 @@ exports.postUploadXlsx = async (req, res, next) => {
         }
 
         // TODO: Only routes to and from Cali, Valle del Cauca
-        if (originCode !== caliCodeDane && destinationCode !== caliCodeDane) {
+        if (originCode !== caliCityCode && destinationCode !== caliCityCode) {
           errors.push(
             `Fila ${
               row + 1
@@ -935,16 +924,16 @@ exports.postUploadXlsx = async (req, res, next) => {
 
 /**
  * Download the template to create new transport routes.
- * @return {object} Response contains: statuscode (integer), file. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), file. Or if there's error, json (objeto): status, code, detail
  */
 exports.getDownloadXlsxTemplate = async (req, res, next) => {
   try {
-    const downloadPath = path.resolve(
-      path.join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
+    const downloadPath = resolve(
+      join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
     );
 
     // const fileBuffer = fs.readFile(downloadPath);
-    fs.readFile(downloadPath, (err, fileBuffer) => {
+    readFile(downloadPath, (err, fileBuffer) => {
       if (err) {
         console.error(err);
         return next({

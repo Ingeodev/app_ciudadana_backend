@@ -22,7 +22,7 @@ COPY src/package-lock.json /src
 COPY src/middleware /src/middleware/
 COPY src/models /src/models/
 COPY src/config /src/config/
-COPY workspace/secrets/account_service_key.json /src
+COPY workspace/config/account_service_key.json /src/config
 COPY workspace/secrets/email_service_key.json /src
 COPY workspace/config/config.json /src/config
 

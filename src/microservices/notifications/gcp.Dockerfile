@@ -50,7 +50,7 @@ COPY src/models /src/models/
 COPY src/config /src/config/
 COPY src/constants /src/constants/
 COPY src/utils /src/utils/
-COPY workspace/secrets/account_service_key.json /src
+COPY workspace/config/account_service_key.json /src/config
 COPY workspace/secrets/notification_secrets.json /src/microservices/notifications/secrets.json
 COPY workspace/config/config.json /src/config
 

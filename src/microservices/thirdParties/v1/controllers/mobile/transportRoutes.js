@@ -2,12 +2,13 @@ const { StatusCodes } = require("http-status-codes");
 const { Op } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/mobile/transportRoutes.js");
-const caliCityCode = 76001;
+const constant = require("../../../constant.json");
+const caliCityCode = constant.CALI_CITY_CODE;
 
 /**
  * Get the available routes for a given route
  * @param {object} req.query - Object containing the idCity n date
- * @return {object} Response contains: statuscode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): companies data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getTransportRoutes = async (req, res, next) => {
   try {

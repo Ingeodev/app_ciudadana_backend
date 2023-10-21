@@ -1,7 +1,7 @@
 const adminFirebase = require("firebase-admin");
 const { StatusCodes } = require("http-status-codes");
 
-const serviceAccount = require("../account_service_key.json");
+const serviceAccount = require("../config/account_service_key.json");
 
 const appFirebase = adminFirebase.initializeApp({
   credential: adminFirebase.credential.cert(serviceAccount)

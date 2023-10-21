@@ -1,7 +1,7 @@
 steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
-    args: [ "-c", "mkdir -p workspace/secrets && echo $$API_KEY > workspace/secrets/account_service_key.json" ]
+    args: [ "-c", "mkdir -p workspace/config && echo $$API_KEY > workspace/config/account_service_key.json" ]
     secretEnv: [ "API_KEY" ]
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
@@ -13,8 +13,8 @@ steps:
     secretEnv: [ "DB_SECRETS" ]
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
-    args: [ "-c", "mkdir -p workspace/secrets && echo $$NOTIFICATIONS_ENV > workspace/secrets/.env" ]
-    secretEnv: [ "NOTIFICATIONS_ENV" ]
+    args: [ "-c", "mkdir -p workspace/secrets && echo $$NOTIFICATIONS_SECRETS > workspace/secrets/notification_secrets.json" ]
+    secretEnv: [ "NOTIFICATIONS_SECRETS" ]
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
     args: [ "-c", "cd workspace && ls" ]
@@ -62,13 +62,13 @@ steps:
     args: ['run', 'deploy', 'third-parties', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-third-parties/third-parties:latest', '--region', 'us-east1']
 availableSecrets:
   secretManager:
-    - versionName: projects/360955405402/secrets/service_key/versions/1
+    - versionName: projects/360955405402/secrets/service_key/versions/latest
       env: API_KEY
-    - versionName: projects/360955405402/secrets/email_key/versions/1
+    - versionName: projects/360955405402/secrets/email_key/versions/latest
       env: EMAIL_KEY
-    - versionName: projects/360955405402/secrets/db_secrets/versions/1
+    - versionName: projects/360955405402/secrets/db_secrets/versions/latest
       env: DB_SECRETS
-    - versionName: projects/360955405402/secrets/notifications_env/versions/1
-      env: NOTIFICATIONS_ENV
+    - versionName: projects/360955405402/secrets/notifications_secrets/versions/latest
+      env: NOTIFICATIONS_SECRETS
 options:
   logging: CLOUD_LOGGING_ONLY
