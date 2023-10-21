@@ -1,8 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
+const { Router } = require("express");
+const router = Router();
+// const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 const transportCompanyController = require("../controllers/web/transportCompanies.js");
-const citiesController = require("../controllers/web/cities.js");
 
 // ------------------ Transport Company -----------------------------
 router.post(

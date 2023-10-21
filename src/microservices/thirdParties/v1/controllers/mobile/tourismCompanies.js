@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { fn, col } = require("sequelize");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/mobile/tourismCompanies.js");
 // const { formatColorOutputForMobile } = require("../../../../../utils/mobileColorFormatter");
@@ -33,9 +33,9 @@ exports.getCompaniesnServices = async (req, res, next) => {
     let order = [["name", "ASC"]];
     if (objPage.lat != null && objPage.lon != null && typeof objPage.lat == 'number' && typeof objPage.lon == 'number') {
       order = [[
-        Sequelize.fn("ST_Distance",
-          Sequelize.col('geolocation'),
-          Sequelize.fn("ST_MakePoint", objPage.lon, objPage.lat)
+        fn("ST_Distance",          
+          col('geolocation'),
+          fn("ST_MakePoint", objPage.lon, objPage.lat)
         ),
         "ASC"]];
     }
@@ -60,8 +60,8 @@ exports.getCompaniesnServices = async (req, res, next) => {
         "description",
         "address",
         "phone",
-        [Sequelize.col("imageUri"), "image"],
-        [Sequelize.col("siteUri"), "url"],
+        [col("imageUri"), "image"],
+        [col("siteUri"), "url"],
         "geolocation",
       ],
     });
@@ -78,7 +78,7 @@ exports.getCompaniesnServices = async (req, res, next) => {
     //   };
 
     const transformedCompanies = companiesInDb.rows.map((point) => {
-      const companyData = point.get({ plain: true }); // Convert Sequelize instance to simple object
+      const companyData = point.get({ plain: true });
       if (companyData.phone != null) {
         companyData.phone = String(companyData.phone).replace("+57", "");
       }

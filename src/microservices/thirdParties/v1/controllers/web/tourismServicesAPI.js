@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { Op } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/tourismServices.js");
 
@@ -341,7 +341,7 @@ exports.postBulkServiceDelete = async (req, res, next) => {
     const serviceInDb = await db.TourismService.destroy({
       where: {
         id: {
-          [Sequelize.Op.in]: ids,
+          [Op.in]: ids,
         },
         companyId: companyInDb.id,
       },

@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+const { Router } = require("express");
+const router = Router();
 const tourismServCont = require("../controllers/web/tourismServices.js");
 
 // * ------------------ Tourism Company Services -----------------------------

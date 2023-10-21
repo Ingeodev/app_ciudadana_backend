@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { fn, col } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/mobile/companies.js");
 
@@ -33,9 +33,9 @@ exports.getCompaniesnServices = async (req, res, next) => {
     let order = [["name", "ASC"]];
     if (objPage.lat != null && objPage.lon != null && typeof objPage.lat == 'number' && typeof objPage.lon == 'number') {
       order = [[
-        Sequelize.fn("ST_Distance",
-          Sequelize.col('geolocation'),
-          Sequelize.fn("ST_MakePoint", objPage.lon, objPage.lat)
+        fn("ST_Distance",
+          col('geolocation'),
+          fn("ST_MakePoint", objPage.lon, objPage.lat)
         ),
         "ASC"]];
     }
@@ -61,14 +61,14 @@ exports.getCompaniesnServices = async (req, res, next) => {
         "description",
         "address",
         "phone",
-        [Sequelize.col("imageUri"), "image"],
+        [col("imageUri"), "image"],
         "lat",
         "lon",
       ],
     });
 
     const transformedCompanies = companiesInDb.rows.map((company) => {
-      const companyData = company.get({ plain: true }); // Convert Sequelize instance to simple object
+      const companyData = company.get({ plain: true });
       if (company.phone != null) {
         company.phone = String(company.phone).replace("+57", "");
       }

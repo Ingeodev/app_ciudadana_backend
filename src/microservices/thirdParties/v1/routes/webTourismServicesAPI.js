@@ -1,6 +1,6 @@
-const express = require("express");
+const { Router } = require("express");
+const router = Router();
 const { StatusCodes } = require("http-status-codes");
-const router = express.Router();
 const tourimsAPI = require("../controllers/web/tourismServicesAPI.js");
 const { authMiddleware, validateModuleTourism } = require("../../../../middleware/authMiddlewareApi.js");
 

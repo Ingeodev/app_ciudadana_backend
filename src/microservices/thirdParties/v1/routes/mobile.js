@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+const { Router } = require("express");
+const router = Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
 const categoryController = require("../controllers/mobile/categories.js");
 const companiesController = require("../controllers/mobile/companies.js");
