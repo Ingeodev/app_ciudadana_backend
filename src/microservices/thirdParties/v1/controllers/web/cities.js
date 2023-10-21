@@ -1,13 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
-const xlsx = require("node-xlsx");
+const { parse } = require("node-xlsx");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/web/cities.js");
-const { Op, Sequelize } = require("sequelize");
+const { Op, where, fn, col } = require("sequelize");
 
 /**
  * Create a city
- * @param {object} req - Object containing the city, cityCode, state
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.body - Object containing the city, cityCode, state
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -24,14 +24,18 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("City could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The city has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
 
 /**
  * Update a city
- * @param {object} req - Object containing the id, city, cityCode, state
- * @return {object} Response contains: statuscode (integer), json (City object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.body - Object containing the id, city, cityCode, state
+ * @return {object} Response contains: statusCode (integer), json (City object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -63,13 +67,11 @@ exports.postEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("City could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "City n State must be unique";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -78,7 +80,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all  Cities
  * @param {object} req.query - Object containing the number, size
- * @return {object} Response contains: statuscode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -121,7 +123,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get list - autocomplete
  * @param {object} req.query - Object containing the number, size, q (string-query)
- * @return {object} Response contains: statuscode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Cities. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAutocomplete = async (req, res, next) => {
   try {
@@ -132,18 +134,16 @@ exports.getAutocomplete = async (req, res, next) => {
     });
 
     const citiesInDb = await db.City.findAndCountAll({
-      // where: Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("city")), {
+      // where: where(fn("LOWER", col("city")), {
       //   [Op.like]: "%" + objPage.q + "%",
       // }),
-      where: Sequelize.where(Sequelize.fn("unaccent", Sequelize.col("city")), {
+      where: where(fn("unaccent", col("city")), {
         [Op.iLike]: "%" + objPage.q + "%",
       }),
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["city", "ASC"]],
-      attributes: {
-        exclude: ["deletedAt"],
-      },
+      attributes: ["id", "city", "cityCode", "state"]
     });
 
     let message = undefined;
@@ -170,7 +170,8 @@ exports.getAutocomplete = async (req, res, next) => {
 
 /**
  * Destroy a City (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @param {integer} req.body.id - id of City
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -221,8 +222,9 @@ exports.postDelete = async (req, res, next) => {
 };
 
 /**
- * Upload an excel file that will create/update transport routes in the database. This use "Plantilla_Registro_Rutas_de_Transporte.xlsx". With: cityCode, destinationCode, duration, city, state, tariff
- * @return {object} Response contains: statuscode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
+ * Upload an excel file that will create/update transport routes in the database. This use "Codigos_municipios_DANE.xlsx". With: code of municipality, name of department, name of municipality
+ * @param {file} req.file - file with the cities/municipalities to be create/update
+ * @return {object} Response contains: statusCode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
  */
 exports.postUploadXlsx = async (req, res, next) => {
   try {
@@ -240,26 +242,18 @@ exports.postUploadXlsx = async (req, res, next) => {
 
     const xlsxFile = await validator.vMulterMemorySingleItemSchema(req.file);
 
-    const contents = xlsx.parse(xlsxFile.buffer);
+    const contents = parse(xlsxFile.buffer);
     let success = [];
     let errors = [];
 
     // Only one sheet is allowed in the xls
     const namePages = await validator.vExcelPagesSchema(contents);
-    // city/municipality code, state name, city/municipality name
-
-    // Validation of the first row of each sheet - name of the columns
-    // for (let iPage = 0; iPage < namePages.length; iPage++) {
-    // Validate column names
-    // await validator.vExcelHeaderSchema({ header: contents[iPage].data[0] });
-    // }
 
     const iPage = 0;
     let endRow = contents[iPage].data.length;
 
     for (let row = 1; row < contents[iPage].data.length; row++) {
       let item = contents[iPage].data[row].slice(0, 4).toString();
-      // const transaction = await db.sequelize.transaction();
 
       // Check if there are no more data
       try {
@@ -275,7 +269,6 @@ exports.postUploadXlsx = async (req, res, next) => {
             contents[iPage].data[row][2] === undefined)
         ) {
           endRow = row;
-          // await transaction.rollback();
           break;
         }
 
@@ -292,30 +285,24 @@ exports.postUploadXlsx = async (req, res, next) => {
             }));
         } catch (error) {
           errors.push(`Row ${row + 1} - [${item}]. Error ${error.message}.`);
-          // await transaction.rollback();
           continue;
         }
 
         const cityInDb = await db.City.findOne({
-          // // ! Pendiente: Validar permisos del usuario
           where: { cityCode },
           attributes: ["id", "city", "state"],
         });
 
         if (cityInDb === null) {
-          await db.City.create({city, cityCode, state }
-            // { transaction }
-          );
-          // await transaction.rollback();
-          // success.push(`Row ${row + 1} - [${item}]. Created.`);
+          await db.City.create({ city, cityCode, state });
+          success.push(`Row ${row + 1} - [${item}]. The city has been created.`);          
           continue;
         }
-
-        // await transaction.commit();        
+        cityInDb.update({ city, state });
+        success.push(`Row ${row + 1} - [${item}]. The city has been updated.`);
         // -------------------------- End Row
       } catch (error) {
-        // await transaction.rollback();
-        errors.push(`Row ${row + 1} - [${item}]. Server error.`);
+        errors.push(`Row ${row + 1} - [${item}]. The city could not be created.`);
         continue;
       }
     } // End for - End Excel rows
@@ -323,15 +310,13 @@ exports.postUploadXlsx = async (req, res, next) => {
     let resJSON = {
       meta: {
         page: 1,
-        // pageSize: resJSON.routes.length,
-        // totalRecords: resJSON.routes.length,
         totalPages: 1,
         numRows: endRow - 1,
         numErrors: errors.length,
         numSuccess: endRow - 1 - errors.length,
       },
       data: {
-        // success,
+        success,
         errors,
       },
     };

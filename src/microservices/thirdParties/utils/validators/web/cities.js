@@ -55,10 +55,7 @@ const excelPagesSchema = joi
   .items(
     joi.object({
       name: joi.string().required(),
-      data: joi.array().min(numRow).items(joi.array().length(numCol)),
-      // data: joi.array().min(2).items(joi.array().length(2).items(
-      //   joi.alternatives([non_negative_integer, joi.string().max(200)])
-      // )),
+      // data: joi.array().min(numRow).items(joi.array().length(numCol)),
     })
   );
 
