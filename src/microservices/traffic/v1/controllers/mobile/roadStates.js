@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const { Op } = require("sequelize");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/mobile/roadStates.js");
 const { formatColorOutputForMobile } = require("../../../../../utils/mobileColorFormatter");
@@ -18,11 +19,25 @@ exports.getRoadStates = async (req, res, next) => {
 
     const roadsInDb = await db.RoadState.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
+      where: {
+        // createdBy: createdBy.id,
+        endDate: {
+          [Op.gte]: new Date(),
+        },
+      },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]],
-      attributes: ["type", "title", "description", "startDate", "endDate", "color", "iconMap"],
+      paranoid: true,
+      attributes: [
+        "type",
+        "title",
+        "description",
+        "startDate",
+        "endDate",
+        "color",
+        "iconMap",
+      ],
     });
 
     const transformedRoads = roadsInDb.rows.map((point) => {
