@@ -43,12 +43,25 @@ const apiKeySchema = joi.object({
     .string()
     .required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const currentDate = new Date();
+      const inputDate = new Date(value);
+
+      // We check if the date is invalid or in the past.
+      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+        return helpers.error("array.greaterThan");
+      }
+      return value; // Return date if valid
+    })
     .error((errors) => {
       errors.forEach((err) => {
         // const label = err.local?.label || "value";
         switch (err.code) {
           case "string.pattern.base":
             err.message = `"expirationAt" format must be aaaa-mm-dd.`;
+            break;
+          case "array.greaterThan":
+            err.message = `"expirationAt" must be greater than the current date.`;
             break;
           case "any.required":
             err.message = `"expirationAt" is required.`;

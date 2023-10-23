@@ -7,6 +7,16 @@ const getRoutesSchema = joi.object({
   city: joi.number().integer().greater(0).invalid(0).required(),
   date: joi.string().required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const currentDate = new Date();
+      const inputDate = new Date(value);
+
+      // We check if the date is invalid or in the past.
+      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+        return helpers.error("array.greaterThan");
+      }
+      return value; // Return date if valid
+    })
     .error((errors) => {
       errors.forEach((err) => {
         // const label = err.local?.label || "value";
@@ -16,6 +26,9 @@ const getRoutesSchema = joi.object({
             break;
           case "any.required":
             err.message = `"date" is required.`;
+            break;
+          case "array.greaterThan":
+            err.message = `"date" must be greater than the current date.`;
             break;
           default:
             err.message = `"date" item has an invalid value.`;

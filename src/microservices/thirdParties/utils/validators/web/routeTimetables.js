@@ -7,6 +7,16 @@ const registerSchema = joi.object({
     .string()
     .required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const currentDate = new Date();
+      const inputDate = new Date(value);
+
+      // We check if the date is invalid or in the past.
+      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+        return helpers.error("array.greaterThan");
+      }
+      return value; // Return date if valid
+    })
     .error((errors) => {
       errors.forEach((err) => {
         // const label = err.local?.label || "value";
@@ -16,6 +26,9 @@ const registerSchema = joi.object({
             break;
           case "any.required":
             err.message = `"date" is required.`;
+            break;
+          case "array.greaterThan":
+            err.message = `"date" must be greater than the current date.`;
             break;
           default:
             err.message = `"date" item has an invalid value.`;
@@ -75,6 +88,16 @@ const registerWithHourSchema = joi.object({
     .string()
     .required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const currentDate = new Date();
+      const inputDate = new Date(value);
+
+      // We check if the date is invalid or in the past.
+      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+        return helpers.error("array.greaterThan");
+      }
+      return value; // Return date if valid
+    })
     .error((errors) => {
       errors.forEach((err) => {
         // const label = err.local?.label || "value";
@@ -85,6 +108,9 @@ const registerWithHourSchema = joi.object({
           case "any.required":
             err.message = `"date" is required.`;
             break;
+          case "array.greaterThan":
+            err.message = `"date" must be greater than the current date.`;
+            break;
           default:
             err.message = `"date" item has an invalid value.`;
             break;
@@ -94,23 +120,34 @@ const registerWithHourSchema = joi.object({
     }),
   routeId: joi.number().integer().greater(0).invalid(0).required(),
   companyId: joi.number().integer().greater(0).invalid(0).required(),
-  hoursTariffs: joi.array().min(1).items(
-      joi.object({
-        hour: joi.string().trim().required().pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/),
-        tariff: joi.number().integer().min(1000).required(),
-      }).unknown(false) // This is to ensure that there are no additional fields in the object.
-  )
+  hoursTariffs: joi
+    .array()
+    .min(1)
+    .items(
+      joi
+        .object({
+          hour: joi
+            .string()
+            .trim()
+            .required()
+            .pattern(/^([01][0-9]|2[0-3]):([0-5][0-9])$/),
+          tariff: joi.number().integer().min(1000).required(),
+        })
+        .unknown(false) // This is to ensure that there are no additional fields in the object.
+    )
     .required()
     .custom((value, helpers) => {
-      const hours = value.map(item => item.hour);
+      const hours = value.map((item) => item.hour);
       const uniqueHours = [...new Set(hours)];
 
       if (hours.length !== uniqueHours.length) {
-        return helpers.error('array.unique', { message: 'Every hour must be unique' });
+        return helpers.error("array.unique", {
+          message: "Every hour must be unique",
+        });
       }
 
       return value; // If everything is fine, return the value as is
-    }, 'Every hour is unique')
+    }, "Every hour is unique"),
 });
 
 // .greater(new Date().toISOString().split("T")[0])
@@ -119,12 +156,25 @@ const editSchema = joi.object({
   date: joi
     .string()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const currentDate = new Date();
+      const inputDate = new Date(value);
+
+      // We check if the date is invalid or in the past.
+      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+        return helpers.error("array.greaterThan");
+      }
+      return value; // Return date if valid
+    })
     .error((errors) => {
       errors.forEach((err) => {
         // const label = err.local?.label || "value";
         switch (err.code) {
           case "string.pattern.base":
             err.message = `"date" format must be aaaa-mm-dd.`;
+            break;
+          case "array.greaterThan":
+            err.message = `"date" must be greater than the current date.`;
             break;
           default:
             err.message = `"date" item has an invalid value.`;
