@@ -1,12 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
-const { Op } = require("sequelize");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/tourismServices.js");
 
 /**
- * Get all servives of one tourism company 
+ * Get all services of one tourism company
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data company services. Or if there's error, json (objeto): status, code, detail
  */
 exports.getServices = async (req, res, next) => {
   try {
@@ -51,7 +50,7 @@ exports.getServices = async (req, res, next) => {
 /**
  * Create tourism service
  * @param {Array} req.body - Array of objects containing the fields of service (string)
- * @return {object} Response contains: statuscode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postService = async (req, res, next) => {
   try {
@@ -85,10 +84,17 @@ exports.postService = async (req, res, next) => {
         // status: StatusCodes.FORBIDDEN,
       };
 
-    const result = await db.TourismService.create({ service, companyId: res.locals.apiTourismCompanyId });
+    const result = await db.TourismService.create({
+      service,
+      companyId: res.locals.apiTourismCompanyId,
+    });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The address could not be geocoded: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "There is a service(s) that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -96,7 +102,7 @@ exports.postService = async (req, res, next) => {
 /**
  * Creates tourism services
  * @param {Array} req.body - Array of objects containing the fields of service (string)
- * @return {object} Response contains: statuscode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objects array): id, service, companyId, if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postBulkService = async (req, res, next) => {
   try {
@@ -150,14 +156,18 @@ exports.postBulkService = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The address could not be geocoded: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "There is a service(s) that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
 
 /**
  * Update a tourism service
- * @param {object} req - Object containing the id, service
- * @return {object} Response contains: statuscode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
+ * @param {object} req.body - Object containing the id, service
+ * @return {object} Response contains: statusCode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -218,7 +228,10 @@ exports.postEdit = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "service must be unique";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (
       error &&
       error.errors &&
       error.errors.length > 0 &&
@@ -232,8 +245,8 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Destroy a tourism service (soft delete)
- * @param {object} req - Object containing the id
- * @return {object} Response contains: statuscode (integer), json (object): id, companyId. Or if there's error, json (object): status, code, detail
+ * @param {object} req.body - Object containing the id
+ * @return {object} Response contains: statusCode (integer), json (object): id, companyId. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -299,10 +312,11 @@ exports.postDelete = async (req, res, next) => {
 
 /**
  * Destroy many tourism service (soft delete)
- * @param {object} req - Object containing the id
- * @return {object} Response contains: statuscode (integer), json (object): id. Or if there's error, json (object): status, code, detail
+ * @param {object} req .body- Object containing the id
+ * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postBulkServiceDelete = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
   try {
     // // ! Pendiente: Validar permisos del usuario
     // const createdBy = await db.User.findOne({
@@ -336,23 +350,30 @@ exports.postBulkServiceDelete = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
         // status: StatusCodes.FORBIDDEN,
       };
-
-    // Validate that the service belongs to the company
-    const serviceInDb = await db.TourismService.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
+    
+    for (let index = 0; index < ids.length; index++) {
+      const serviceInDb = await db.TourismService.findOne({
+        where: {
+          id: ids[index],
+          companyId,
         },
-        companyId: companyInDb.id,
-      },
-    });
+      });
 
+      if (serviceInDb == null)
+        throw {
+          message: `One service (id=${ids[index]}) was not found.`,
+          status: StatusCodes.NOT_FOUND,
+        };
+      await serviceInDb.destroy({ transaction });
+    }
+    await transaction.commit();
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: { ids, companyId },
     });
   } catch (error) {
     // console.error("ThirdParty categories could not be deleted: ", error.message);
+    await transaction.rollback();
     return next(error);
   }
 };
