@@ -22,7 +22,7 @@ exports.getRoadStates = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]],
-      attributes: ["type", "title", "startDate", "endDate", "color", "iconMap"],
+      attributes: ["type", "title", "description", "startDate", "endDate", "color", "iconMap"],
     });
 
     const transformedRoads = roadsInDb.rows.map((point) => {
