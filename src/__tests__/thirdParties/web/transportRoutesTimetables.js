@@ -265,6 +265,21 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
         expect(response7.body).toHaveProperty("code");
         expect(response7.body).toHaveProperty("detail");
 
+        // 6. ----------------------------------------------
+        const response8 = await request(usedHost)
+          .post("/date")
+          .set(requestHeaders)
+          .send({
+            ...testDate0,
+            date: "2000-01-01",
+          });
+        expect(response8.statusCode).toBe(400);
+        expect(response8.body).not.toHaveProperty("meta");
+        expect(response8.body).not.toHaveProperty("data");
+        expect(response8.body).toHaveProperty("status", 400);
+        expect(response8.body).toHaveProperty("code");
+        expect(response8.body).toHaveProperty("detail");
+
         // 7. ----------------------------------------------
         const response9 = await request(usedHost)
           .post("/date")
@@ -410,6 +425,21 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
         expect(response6.body).toHaveProperty("status", 400);
         expect(response6.body).toHaveProperty("code");
         expect(response6.body).toHaveProperty("detail");
+
+        // 5. -------------------------------------
+        const response7 = await request(usedHost)
+          .post("/date/edit")
+          .set(requestHeaders)
+          .send({
+            ...editDate0,
+            date: "2000-01-01",
+          });
+        expect(response7.statusCode).toBe(400);
+        expect(response7.body).not.toHaveProperty("meta");
+        expect(response7.body).not.toHaveProperty("data");
+        expect(response7.body).toHaveProperty("status", 400);
+        expect(response7.body).toHaveProperty("code");
+        expect(response7.body).toHaveProperty("detail");
       });
 
       test("Should fail with error 400 and an error if the hour/tariff of transport route exists in advance.", async () => {
@@ -545,6 +575,21 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
         expect(response7.body).toHaveProperty("status", 400);
         expect(response7.body).toHaveProperty("code");
         expect(response7.body).toHaveProperty("detail");
+
+        // 6. ----------------------------------------------
+        const response10 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            date: "2000-01-10",
+          });
+        expect(response10.statusCode).toBe(400);
+        expect(response10.body).not.toHaveProperty("meta");
+        expect(response10.body).not.toHaveProperty("data");
+        expect(response10.body).toHaveProperty("status", 400);
+        expect(response10.body).toHaveProperty("code");
+        expect(response10.body).toHaveProperty("detail");
 
         // 7. ----------------------------------------------
         const response8 = await request(usedHost)
