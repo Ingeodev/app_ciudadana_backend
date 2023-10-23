@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
-const { Op } = require("sequelize");
+const { Op, col } = require("sequelize");
 const db = require("../../../../../models/index.js");
+const { convertTo12h } = require("../../../utils/formatHH_MM.js");
 const validator = require("../../../utils/validators/mobile/transportRoutes.js");
 const constant = require("../../../constant.json");
 const caliCityCode = constant.CALI_CITY_CODE;
@@ -61,72 +62,32 @@ exports.getTransportRoutes = async (req, res, next) => {
               include: [
                 {
                   model: db.RouteTimetableHourTariff,
-                  // RouteTimetableHourTariff
-                  attributes: {
-                    exclude: [
-                      "id",
-                      "timetableId",
-                      "hour",
-                      "tariff",
-                      "createdAt",
-                      "updatedAt",
-                      "deletedAt",
-                    ],
-                    include: [
-                      ["hour", "time"],
-                      ["tariff", "cost"],
-                    ],
-                  },
+                  attributes: [
+                    [col("hour"), "time"],
+                    [col("tariff"), "cost"],
+                  ],
                 },
               ],
               // RouteTimetable
+              required: false,
               paranoid: true,
-              attributes: {
-                exclude: [
-                  "id",
-                  "routeId",
-                  "createdAt",
-                  "updatedAt",
-                  "deletedAt",
-                ],
-                include: ["date"],
-              },
+              attributes: ["date"],
             },
           ],
           // TransportRoutes
+          required: false,
           paranoid: true,
-          attributes: {
-            exclude: [
-              "id",
-              "createdBy",
-              "origin",
-              "destination",
-              "companyId",
-              "createdAt",
-              "updatedAt",
-              "deletedAt",
-            ],
-            include: ["duration"],
-          },
+          attributes: ["duration"],
         },
       ],
       // Companies
+      required: false,
       paranoid: true,
-      attributes: {
-        exclude: [
-          "createdBy",
-          "name",
-          "nit",
-          "description",
-          "phone",
-          "siteUri",
-          "imageUri",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-        ],
-        include: ["id", ["name", "companyName"], ["imageUri", "image"]],
-      },
+      attributes: [
+        "id",
+        [col("name"), "companyName"],
+        [col("imageUri"), "image"],
+      ],
     });
 
     let transformedToCali = toCaliInDb.map((company) => {
@@ -139,7 +100,7 @@ exports.getTransportRoutes = async (req, res, next) => {
             timetable.dataValues.RouteTimetableHourTariffs.map(
               (hourTariff) => ({
                 duration: route.dataValues.duration,
-                time: hourTariff.dataValues.time,
+                time: convertTo12h(hourTariff.dataValues.time),
                 cost: hourTariff.dataValues.cost,
               })
             )
@@ -163,25 +124,14 @@ exports.getTransportRoutes = async (req, res, next) => {
               include: [
                 {
                   model: db.RouteTimetableHourTariff,
-                  // RouteTimetableHourTariff
-                  attributes: {
-                    exclude: [
-                      "id",
-                      "timetableId",
-                      "hour",
-                      "tariff",
-                      "createdAt",
-                      "updatedAt",
-                      "deletedAt",
-                    ],
-                    include: [
-                      ["hour", "time"],
-                      ["tariff", "cost"],
-                    ],
-                  },
+                  attributes: [
+                    [col("hour"), "time"],
+                    [col("tariff"), "cost"],
+                  ],
                 },
               ],
               // RouteTimetable
+              required: true,
               paranoid: true,
               attributes: {
                 include: ["date"],
@@ -189,6 +139,7 @@ exports.getTransportRoutes = async (req, res, next) => {
             },
           ],
           // TransportRoutes
+          required: true,
           paranoid: true,
           attributes: {
             include: ["duration"],
@@ -196,51 +147,42 @@ exports.getTransportRoutes = async (req, res, next) => {
         },
       ],
       // Companies
+      required: true,
       paranoid: true,
-      attributes: {
-        exclude: [
-          "createdBy",
-          "name",
-          "nit",
-          "description",
-          "phone",
-          "siteUri",
-          "imageUri",
-          "createdAt",
-          "updatedAt",
-          "deletedAt",
-        ],
-        include: ["id", ["name", "companyName"], ["imageUri", "image"]],
-      },
+      attributes: [
+        "id",
+        [col("name"), "companyName"],
+        [col("imageUri"), "image"],
+      ],
     });
 
-    if (
-      (!fromCaliInDb ||
-        fromCaliInDb.length === 0 ||
-        !fromCaliInDb[0].TransportRoutes ||
-        fromCaliInDb[0].TransportRoutes.length === 0 ||
-        !fromCaliInDb[0].TransportRoutes[0].RouteTimetables ||
-        fromCaliInDb[0].TransportRoutes[0].RouteTimetables.length === 0 ||
-        !fromCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
-          .RouteTimetableHourTariffs ||
-        fromCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
-          .RouteTimetableHourTariffs.length === 0) &&
-      (!toCaliInDb ||
-        toCaliInDb.length === 0 ||
-        !toCaliInDb[0].TransportRoutes ||
-        toCaliInDb[0].TransportRoutes.length === 0 ||
-        !toCaliInDb[0].TransportRoutes[0].RouteTimetables ||
-        toCaliInDb[0].TransportRoutes[0].RouteTimetables.length === 0 ||
-        !toCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
-          .RouteTimetableHourTariffs ||
-        toCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
-          .RouteTimetableHourTariffs.length === 0)
-    ) {
-      throw {
-        message: `Transport routes between ${objCity.caliCity.city} and ${objCity.otherCity.city} not found.`,
-        status: StatusCodes.NOT_FOUND,
-      };
-    }
+    // if (
+    //   (!fromCaliInDb ||
+    //     fromCaliInDb.length === 0 ||
+    //     !fromCaliInDb[0].TransportRoutes ||
+    //     fromCaliInDb[0].TransportRoutes.length === 0 ||
+    //     !fromCaliInDb[0].TransportRoutes[0].RouteTimetables ||
+    //     fromCaliInDb[0].TransportRoutes[0].RouteTimetables.length === 0 ||
+    //     !fromCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
+    //       .RouteTimetableHourTariffs ||
+    //     fromCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
+    //       .RouteTimetableHourTariffs.length === 0) &&
+    //   (!toCaliInDb ||
+    //     toCaliInDb.length === 0 ||
+    //     !toCaliInDb[0].TransportRoutes ||
+    //     toCaliInDb[0].TransportRoutes.length === 0 ||
+    //     !toCaliInDb[0].TransportRoutes[0].RouteTimetables ||
+    //     toCaliInDb[0].TransportRoutes[0].RouteTimetables.length === 0 ||
+    //     !toCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
+    //       .RouteTimetableHourTariffs ||
+    //     toCaliInDb[0].TransportRoutes[0].RouteTimetables[0]
+    //       .RouteTimetableHourTariffs.length === 0)
+    // ) {
+    //   throw {
+    //     message: `Transport routes between ${objCity.caliCity.city} and ${objCity.otherCity.city} not found.`,
+    //     status: StatusCodes.NOT_FOUND,
+    //   };
+    // }
 
     let transformedFromCali = fromCaliInDb.map((company) => {
       return {
@@ -253,7 +195,7 @@ exports.getTransportRoutes = async (req, res, next) => {
               timetable.dataValues.RouteTimetableHourTariffs.map(
                 (hourTariff) => ({
                   duration: route.dataValues.duration,
-                  time: hourTariff.dataValues.time,
+                  time: convertTo12h(hourTariff.dataValues.time),
                   cost: hourTariff.dataValues.cost,
                 })
               )
@@ -294,13 +236,10 @@ exports.getTransportRoutes = async (req, res, next) => {
     // Convert combinedMap from object to array
     let combinedArray = Object.values(combinedMap);
 
-    // if routesToOrigin and routesToDestination are equal to [], then have that object removed from the array
-    combinedArray = combinedArray.filter((company) => {
-      return !(
-        company.routesToOrigin.length === 0 &&
-        company.routesToDestination.length === 0
-      );
-    });
+    // TODO: if routesToOrigin and routesToDestination are equal to [], then have that object removed from the array
+    // combinedArray = combinedArray.filter((company) => {
+    //   return !(company.routesToOrigin.length === 0 && company.routesToDestination.length === 0);
+    // });
     return res.status(StatusCodes.OK).send(combinedArray);
   } catch (error) {
     return next(error);
