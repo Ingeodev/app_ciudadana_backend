@@ -1,30 +1,12 @@
 const request = require("supertest");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/categories`;
-// Local
-const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/categories`;
+const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/third_parties/categories`;
 describe("Mobile - Third Party Categories management API points: ", () => {
   jest.setTimeout(8000);
 
   const requestHeaders = {
     Authorization: "Bearer ",
   };
-
-  const testCategory0 = {
-    name: "mobility",
-    icon: "http://localhost:3000/icon.png",
-    iconMap: "http://localhost:3000/iconMap.png",
-    color: "#DB85D6",
-  };
-
-  const testCategory1 = {
-    name: "university",
-    icon: "http://localhost:3000/iconUniversity.png",
-    iconMap: "http://localhost:3000/iconMapUniversity.png",
-    color: "#E40F81",
-  };
-
 
   beforeAll(async () => {
     const firebaseAuth = await request(
@@ -61,11 +43,18 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response1.body[1]).toHaveProperty("name");
     });
 
-    // {
-    // "status": 400,
-    // "detail": "\"number\" must be a number",
-    // "code": "Bad Request"
-    // }
+    test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/`)
+        .set(requestHeaders)
+        .query({ page: { number: 200000, size: 100 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toEqual(expect.any(Array));
+      expect(response0.body.length).toBe(0);
+    });
+
     test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
       const response2 = await request(usedHost)
         .get("/")
@@ -133,11 +122,6 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response7.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/");
       expect(response0.statusCode).toBe(401);
@@ -148,19 +132,6 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("DISABLED - Categories table must not have any records. should fail with status 404 and an error with a message of categories not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 } });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-    });
   });
 
 });
