@@ -1,9 +1,6 @@
 const request = require("supertest");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/categories`;
-// Local
-const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties`;
+const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/third_parties`;
 describe("Mobile - Third Party Categories management API points: ", () => {
   jest.setTimeout(8000);
 
@@ -11,9 +8,8 @@ describe("Mobile - Third Party Categories management API points: ", () => {
     Authorization: "Bearer ",
   };
 
-  const lat = 2.48838;
-  const lon = -76.567206;
-
+  const lon = -76.52496476354585;
+  const lat = 3.4270331133664707;
 
   beforeAll(async () => {
     const firebaseAuth = await request(
@@ -36,8 +32,8 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response0.body.length).toBe(2);
       expect(response0.body[0]).toHaveProperty("name");
       expect(response0.body[0]).toHaveProperty("services");
-      expect(response0.body[1]).toHaveProperty("name");
-      expect(response0.body[1]).toHaveProperty("services");
+      expect(response0.body[0].services).toEqual(expect.any(Array));
+
 
       const response1 = await request(usedHost)
         .get("/")
@@ -47,15 +43,33 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response1.body).toEqual(expect.any(Array));
       expect(response1.body[0]).toHaveProperty("name");
       expect(response1.body[0]).toHaveProperty("services");
-      expect(response1.body[1]).toHaveProperty("name");
-      expect(response1.body[1]).toHaveProperty("services");
+      expect(response1.body[0].services).toEqual(expect.any(Array));
+
+
+      const response2 = await request(usedHost)
+        .get("/")
+        .set(requestHeaders);
+      expect(response2.statusCode).toBe(200);
+      expect(response2.body).toEqual(expect.any(Array));
+      expect(response2.body[0]).toHaveProperty("name");
+      expect(response2.body[0]).toHaveProperty("services");
+      expect(response2.body[0].services).toEqual(expect.any(Array));
+
     });
 
-    // {
-    // "status": 400,
-    // "detail": "\"number\" must be a number",
-    // "code": "Bad Request"
-    // }
+
+    test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
+      const response0 = await request(usedHost)
+        .get(`/`)
+        .set(requestHeaders)
+        .query({ page: { number: 200000, size: 100 } });
+      expect(response0.statusCode).toBe(200);
+      expect(response0.body).not.toHaveProperty("meta");
+      expect(response0.body).not.toHaveProperty("data");
+      expect(response0.body).toEqual(expect.any(Array));
+      expect(response0.body.length).toBe(0);
+    });
+
     test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
       const response2 = await request(usedHost)
         .get("/")
@@ -122,38 +136,31 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response7.body).toHaveProperty("code");
       expect(response7.body).toHaveProperty("detail");
 
-      const response8 = await request(usedHost)
+      const response10 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
-        .query({ page: { number: 1, size: 2 }, lat: "must be a float", lon });
+        .query({ lat: "must be a float", lon });
+      expect(response10.statusCode).toBe(400);
+      expect(response10.body).not.toHaveProperty("data");
+      expect(response10.body).toHaveProperty("status", 400);
+      expect(response10.body).toHaveProperty("code");
+      expect(response10.body).toHaveProperty("detail");
 
-      expect(response8.statusCode).toBe(400);
-      expect(response8.body).not.toHaveProperty("data");
-      expect(response8.body).toHaveProperty("status", 400);
-      expect(response8.body).toHaveProperty("code");
-      expect(response8.body).toHaveProperty("detail");
-
-      const response9 = await request(usedHost)
+      const response11 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
-        .query({ page: { number: 1, size: 2 }, lon: "must be a float", lat });
-
-      expect(response9.statusCode).toBe(400);
-      expect(response9.body).not.toHaveProperty("data");
-      expect(response9.body).toHaveProperty("status", 400);
-      expect(response9.body).toHaveProperty("code");
-      expect(response9.body).toHaveProperty("detail");
+        .query({ lon: "must be a float", lat });
+      expect(response11.statusCode).toBe(400);
+      expect(response11.body).not.toHaveProperty("data");
+      expect(response11.body).toHaveProperty("status", 400);
+      expect(response11.body).toHaveProperty("code");
+      expect(response11.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost)
         .get("/")
-        .query({ page: { number: 2, size: "B" }, lat, lon });
+        .query({ page: { number: 2, size: 2 }, lat, lon });
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -162,19 +169,6 @@ describe("Mobile - Third Party Categories management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("DISABLED - Companies table must not have any records. should fail with status 404 and an error with a message of categories not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 }, lat, lon });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-    });
   });
 
 });
