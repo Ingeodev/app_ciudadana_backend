@@ -82,7 +82,7 @@ describe("Web - Security management API points: ", () => {
       expect(response1.body.data.active).toBe(true);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -399,7 +399,7 @@ describe("Web - Security management API points: ", () => {
       expect(response1.body.data.name).toBe(editCategory1.name);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -585,7 +585,7 @@ describe("Web - Security management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",

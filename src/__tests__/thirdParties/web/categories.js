@@ -78,7 +78,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       editCategory1.id = response1.body.data.id;
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -421,7 +421,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       expect(response1.body.data.name).toBe(editCategory1.name);
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -541,14 +541,8 @@ describe("Web - Third Party Categories management API points: ", () => {
   });
 
   describe("POST /categories/delete ", () => {
-    // {
-    //     "meta": null,
-    //     "data": {
-    //         "id": 1,
-    //         "active": false
-    //     }
-    // }
-    test("Should respond with status 200 and the edited object (data).", async () => {
+
+    test("Should respond with status 200 and the category id deleted.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -581,7 +575,7 @@ describe("Web - Third Party Categories management API points: ", () => {
       );
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",

@@ -47,7 +47,8 @@ module.exports = {
     );
     await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX "idx_cityCode"
-      ON "Cities"("cityCode");
+      ON "Cities"("cityCode")
+      WHERE "deletedAt" IS NULL;
     `);
     return await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX "idx_unique_city_state"

@@ -8,6 +8,21 @@ const validator = require("../../../utils/validators/web/transportRoutes.js");
 const formathhmm = require("../../../utils/formatHH_MM.js")
 const constant = require("../../../constant.json");
 const caliCityCode = constant.CALI_CITY_CODE;
+const templateRoutesXlsx = constant.TEMPLATE_TRANSPORT_ROUTES;
+
+/**
+ * Checks whether an TransportCompany ID exists.
+ * @param {number} companyId The ID of an TransportCompany, or ``null``.
+ * @returns {boolean} `true` if the `companyId` is `null` or exists in the TransportCompany table. ``false`` otherwise.
+ */
+const checkCompanyExists = async (companyId) => {
+  if (companyId != null) {
+    const companyInDb = await db.TransportCompany.findByPk(companyId, { attributes: ['id'], paranoid: true });
+    if (companyInDb == null)
+      return false;
+  }
+  return true;
+};
 
 /**
  * Create an transport route
@@ -28,7 +43,8 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
       };
 
-    const { originId, destinationId, companyId, duration } = await validator.vWebPostRegister(req.body);
+    const { originId, destinationId, companyId, duration } =
+      await validator.vWebPostRegister(req.body);
 
     const originInDb = await db.City.findByPk(originId, {
       attributes: ["id", "cityCode"],
@@ -52,39 +68,35 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    if (originInDb.dataValues.cityCode !== caliCityCode &&
-      destinationInDb.dataValues.cityCode !== caliCityCode) {
+    if (
+      originInDb.dataValues.cityCode !== caliCityCode &&
+      destinationInDb.dataValues.cityCode !== caliCityCode
+    ) {
       throw {
         message: "Only routes to and from Cali, Valle del Cauca are allowed.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
     }
 
-    if (originInDb.dataValues.cityCode === destinationInDb.dataValues.cityCode) {
+    if (
+      originInDb.dataValues.cityCode === destinationInDb.dataValues.cityCode
+    ) {
       throw {
         message: "Origin and destination are the same.",
         status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
     }
 
-    // First, validate that the transport company belongs to the user.
-    const company = await db.TransportCompany.findOne({
-      where: {
-        id: companyId,
-      },
-      attributes: ["id"],
-    });
-
-    if (company == null || company.id == null)
+    // Validate that the transport company belongs to the user.
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The transport company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The transport company not found.",
       };
 
     const dataQuery = {
-      origin: originInDb.dataValues.cityCode,
-      destination: destinationInDb.dataValues.cityCode,
+      origin: originInDb.dataValues.id,
+      destination: destinationInDb.dataValues.id,
       companyId,
       duration: formathhmm.hhmmToSeconds(duration),
       createdBy: createdBy.id,
@@ -93,10 +105,16 @@ exports.postRegister = async (req, res, next) => {
     let result = await db.TransportRoute.create(dataQuery);
     delete result.dataValues.deletedAt;
     delete result.dataValues.createdBy;
-    result.dataValues.duration = formathhmm.secondsToHhmm(result.dataValues.duration);
+    result.dataValues.duration = formathhmm.secondsToHhmm(
+      result.dataValues.duration
+    );
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("The transport route could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "There is a similar transport route that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -160,27 +178,18 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    // First, validate that the transport company belongs to the user.
-    const companyInDb = await db.TransportCompany.findOne({
-      where: {
-        id: companyId,
-        // createdBy: createdBy.id,
-      },
-      attributes: ["id"],
-    });
-
-    if (companyInDb == null || companyInDb.id == null)
+    // Validate that the transport company belongs to the user.
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The transport company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The transport company not found.",
       };
 
     // Validate that the route belongs to the user
     const routeInDb = await db.TransportRoute.findOne({
       where: {
         id,
-        companyId: companyInDb.id,
+        companyId,
       },
     });
 
@@ -191,11 +200,9 @@ exports.postEdit = async (req, res, next) => {
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    // const routeInDb = await db.ThirdPartyCategory.findByPk(id);
-
     let resultUpdate = await routeInDb.update({
-      origin: originInDb.dataValues.cityCode,
-      destination: destinationInDb.dataValues.cityCode,
+      origin: originInDb.dataValues.id,
+      destination: destinationInDb.dataValues.id,
       duration: formathhmm.hhmmToSeconds(duration),
     });
     delete resultUpdate.dataValues.deletedAt;
@@ -205,13 +212,11 @@ exports.postEdit = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "There is a similar transport route that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -238,28 +243,17 @@ exports.postDelete = async (req, res, next) => {
 
     const { id, companyId } = await validator.vWebPostDelete(req.body);
 
-    // First, validate that the transport company belongs to the user.
-    const companyInDb = await db.TransportCompany.findOne({
-      where: {
-        id: companyId,
-        // createdBy: createdBy.id,
-      },
-      attributes: ["id"],
-      paranoid: true,
-    });
-
-    if (companyInDb == null || companyInDb.id == null)
+    if (!(await checkCompanyExists(companyId)))
       throw {
-        message: "The transport company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
+        message: "The transport company not found.",
       };
 
     // Validate that the route belongs to the transport company
     const routeInDb = await db.TransportRoute.findOne({
       where: {
         id,
-        companyId: companyInDb.id,
+        companyId,
       },
       // // ! Es necesario borrar primero los horarios para borrar las rutas?
       // include: [
@@ -293,7 +287,7 @@ exports.postDelete = async (req, res, next) => {
 };
 
 /**
- * Get all transport routes of an company
+ * Get all transport routes by company
  * @param {object} req.query - Object containing the companyId, number, and size
  * @param {integer} req.params.id - id of the company
  * @return {object} Response contains: statusCode (integer), json (objeto): data transport companies. Or if there's error, json (objeto): status, code, detail
@@ -317,6 +311,12 @@ exports.getAll = async (req, res, next) => {
       number: req.query.page ? parseInt(req.query.page.number) : null,
       size: req.query.page ? parseInt(req.query.page.size) : null,
     });
+
+    if (!(await checkCompanyExists(objPage.companyId)))
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "The transport company not found.",
+      };
 
     const companiesInDb = await db.TransportRoute.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
@@ -557,7 +557,7 @@ exports.getItinerary = async (req, res, next) => {
 };
 
 /**
- * Upload an excel file that will create/update transport routes in the database. This use "Plantilla_Registro_Rutas_de_Transporte.xlsx". With: originCode, destinationCode, duration, date, hour, tariff
+ * Upload an excel file that will create/update transport routes in the database. This use "template.xlsx". With: originCode, destinationCode, duration, date, hour, tariff
  * @return {object} Response contains: statusCode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
  */
 exports.postUploadXlsx = async (req, res, next) => {
@@ -717,8 +717,8 @@ exports.postUploadXlsx = async (req, res, next) => {
         routeInDb = await db.TransportRoute.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: {
-            origin: originInDb.dataValues.cityCode,
-            destination: destinationInDb.dataValues.cityCode,
+            origin: originInDb.dataValues.id,
+            destination: destinationInDb.dataValues.id,
             companyId,
           },
           attributes: ["id", "duration"],
@@ -731,8 +731,8 @@ exports.postUploadXlsx = async (req, res, next) => {
             // Create route in db
             const queryRoute = {
               createdBy: createdBy.id,
-              origin: originInDb.dataValues.cityCode,
-              destination: destinationInDb.dataValues.cityCode,
+              origin: originInDb.dataValues.id,
+              destination: destinationInDb.dataValues.id,
               duration,
               companyId,
             };
@@ -795,8 +795,9 @@ exports.postUploadXlsx = async (req, res, next) => {
               transaction,
             });
             msgSuccess += "Fecha creada, ";
+          } else {
+            msgSuccess += "Fecha no creada, ";
           }
-          msgSuccess += "Fecha no creada, ";
         } catch (error) {
           await transaction.rollback();
           errors.push(
@@ -928,9 +929,7 @@ exports.postUploadXlsx = async (req, res, next) => {
  */
 exports.getDownloadXlsxTemplate = async (req, res, next) => {
   try {
-    const downloadPath = resolve(
-      join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
-    );
+    const downloadPath = resolve(join(".", "static", templateRoutesXlsx));
 
     // const fileBuffer = fs.readFile(downloadPath);
     readFile(downloadPath, (err, fileBuffer) => {
@@ -944,7 +943,7 @@ exports.getDownloadXlsxTemplate = async (req, res, next) => {
 
       res.setHeader(
         "Content-Disposition",
-        "attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx"
+        `attachment; filename=${templateRoutesXlsx}`
       );
       res.setHeader(
         "Content-Type",
@@ -955,7 +954,7 @@ exports.getDownloadXlsxTemplate = async (req, res, next) => {
       return res.status(StatusCodes.OK).end(fileBuffer);
     });
 
-    // res.setHeader('Content-Disposition', 'attachment; filename=Plantilla_Registro_Rutas_de_Transporte.xlsx');
+    // res.setHeader('Content-Disposition', `attachment; filename=${templateRoutesXlsx}`);
     // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     // return res.status(StatusCodes.OK).sendFile(downloadPath);
     // return res.status(StatusCodes.OK).send(fileBuffer);

@@ -128,7 +128,7 @@ exports.postServices = async (req, res, next) => {
 
 /**
  * Update a service company
- * @param {object} req - Object containing the id, service, companyId
+ * @param {object} req.body - Object containing the id, service, companyId
  * @return {object} Response contains: statusCode (integer), json (service object updated) if 200OK. Or if there's error, json (object): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
@@ -186,7 +186,7 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Destroy a service company (soft delete)
- * @param {object} req - Object containing the id, companyId
+ * @param {object} req.body - Object containing the id, companyId
  * @return {object} Response contains: statusCode (integer), json (object): id. Or if there's error, json (object): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {

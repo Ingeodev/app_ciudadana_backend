@@ -14,37 +14,23 @@ describe("Web - Tourism Services management API points: ", () => {
     return uuidV4().replace(/-/g, ""); // elimina los guiones
   };
 
-  const testCompanyId = 5;
+  const lonCali = -76.52496476354585;
+  const latCali = 3.4270331133664707;
+  const min = 100000;
+  const max = 900000;
 
-  const testService0 = {
-    companyId: testCompanyId,
-    services: [
-      {
-        service: generateAlphanumeric(),
-      },
-      {
-        service: generateAlphanumeric(),
-      },
-      {
-        service: generateAlphanumeric(),
-      },
-    ],
+  const testTourCat0 = {
+    name: generateAlphanumeric(),
+    color: "#AAFFBB",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
   };
-
-  const editService0 = {
-    service: generateAlphanumeric(),
-    companyId: testCompanyId,
-  };
-
-  const editService1 = {
-    service: generateAlphanumeric(),
-    companyId: testCompanyId,
-  };
-
-  const editService2 = {
-    service: generateAlphanumeric(),
-    companyId: testCompanyId,
-  };
+  
+  let testCompany0 = undefined;
+  let testService0 = undefined;
+  let editService0 = undefined;
+  let editService1 = undefined;
+  let editService2 = undefined;
 
   beforeAll(async () => {
     const firebaseAuth = await request(
@@ -54,6 +40,71 @@ describe("Web - Tourism Services management API points: ", () => {
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestWebUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
+  });
+
+  describe("Create a (test) category and company. ", () => {
+    test("Should respond with status 201 and the new object (data) after creating a new category/company.", async () => {
+      // Create a test tourism category
+      const response0 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_categories`)
+        .post("/")
+        .set(requestHeaders)
+        .send(testTourCat0);
+      expect(response0.statusCode).toBe(201);
+      expect(response0.body.data).toHaveProperty("id");
+      testTourCat0.id = response0.body.data.id;
+
+      testCompany0 = {
+        name: generateAlphanumeric(),
+        nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
+        categoryId: testTourCat0.id,
+        description: "test description",
+        phone: "3122334455",
+        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        address: "Calle 70 norte #17N-99",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        lat: latCali,
+        lon: lonCali,
+      };
+
+      // Create a test tourism company
+      const response1 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_company`)
+        .post("/")
+        .set(requestHeaders)
+        .send(testCompany0);
+      expect(response1.statusCode).toBe(201);
+      expect(response1.body.data).toHaveProperty("id");
+      testCompany0.id = response1.body.data.id;
+
+      testService0 = {
+        companyId: testCompany0.id,
+        services: [
+          {
+            service: generateAlphanumeric(),
+          },
+          {
+            service: generateAlphanumeric(),
+          },
+          {
+            service: generateAlphanumeric(),
+          },
+        ],
+      };
+
+      editService0 = {
+        service: generateAlphanumeric(),
+        companyId: testCompany0.id,
+      };
+
+      editService1 = {
+        service: generateAlphanumeric(),
+        companyId: testCompany0.id,
+      };
+
+      editService2 = {
+        service: generateAlphanumeric(),
+        companyId: testCompany0.id,
+      };      
+    });
   });
 
   describe("POST /tourism_service ", () => {
@@ -73,7 +124,7 @@ describe("Web - Tourism Services management API points: ", () => {
       editService2.id = response0.body.data[2].id;
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. ----------------------------------------------
       const response2 = await request(usedHost)
         .post("/")
@@ -223,7 +274,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response0.body.data.service).toBe(editService0.service);
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -333,7 +384,7 @@ describe("Web - Tourism Services management API points: ", () => {
   describe("GET /tourism_service/:id ", () => {
     test("Should respond with status 200 and a array of services objects.", async () => {
       const response0 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 1, size: 2 } });
       expect(response0.statusCode).toBe(200);
@@ -351,7 +402,7 @@ describe("Web - Tourism Services management API points: ", () => {
 
     test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
       const response0 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 2000, size: 2 } });
       expect(response0.statusCode).toBe(200);
@@ -366,7 +417,7 @@ describe("Web - Tourism Services management API points: ", () => {
 
     test("Disabled - Should respond with status 200 and an empty array, because there are no services registered.", async () => {
       // const response0 = await request(usedHost)
-      //   .get(`/${testCompanyId}`)
+      //   .get(`/${testCompany0.id}`)
       //   .set(requestHeaders)
       //   .query({ page: { number: 1, size: 2 } });
       // expect(response0.statusCode).toBe(200);
@@ -381,7 +432,7 @@ describe("Web - Tourism Services management API points: ", () => {
 
     test("Should fail with status 400 and an error with a message if no pagination is provided.", async () => {
       const response0 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders);
       expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
@@ -391,7 +442,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
 
       const response1 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: {} });
       expect(response1.statusCode).toBe(400);
@@ -402,7 +453,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response1.body).toHaveProperty("detail");
 
       const response2 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 1 } });
       expect(response2.statusCode).toBe(400);
@@ -412,7 +463,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response2.body).toHaveProperty("detail");
 
       const response3 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { size: 1 } });
       expect(response3.statusCode).toBe(400);
@@ -423,7 +474,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response3.body).toHaveProperty("detail");
 
       const response4 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 0, size: 1 } });
       expect(response4.statusCode).toBe(400);
@@ -434,7 +485,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response4.body).toHaveProperty("detail");
 
       const response5 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 1, size: 0 } });
       expect(response5.statusCode).toBe(400);
@@ -445,7 +496,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response5.body).toHaveProperty("detail");
 
       const response6 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: "A", size: 2 } });
       expect(response6.statusCode).toBe(400);
@@ -456,7 +507,7 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response6.body).toHaveProperty("detail");
 
       const response7 = await request(usedHost)
-        .get(`/${testCompanyId}`)
+        .get(`/${testCompany0.id}`)
         .set(requestHeaders)
         .query({ page: { number: 2, size: "B" } });
       expect(response7.statusCode).toBe(400);
@@ -468,7 +519,7 @@ describe("Web - Tourism Services management API points: ", () => {
     });
 
     test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).get(`/${testCompanyId}`);
+      const response0 = await request(usedHost).get(`/${testCompany0.id}`);
       expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
@@ -535,7 +586,7 @@ describe("Web - Tourism Services management API points: ", () => {
       );
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -643,4 +694,25 @@ describe("Web - Tourism Services management API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
   });
+
+  describe("Delete the (test) category and company created. ", () => {
+    test("Should respond with status 200 and the company/category id deleted.", async () => {
+      const response1 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_company`)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testCompany0.id,
+        });
+      expect(response1.statusCode).toBe(200);
+
+      const response0 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_categories`)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testTourCat0.id,
+        });
+      expect(response0.statusCode).toBe(200);
+    });
+  });
+  
 });

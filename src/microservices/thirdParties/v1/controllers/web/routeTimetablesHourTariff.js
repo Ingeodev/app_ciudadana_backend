@@ -4,8 +4,8 @@ const validator = require("../../../utils/validators/web/routeTimetablesHourTari
 
 /**
  * Create a hour n tariff for a route timetable
- * @param {object} req - Object containing the hour, tariff, timetableId
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.body - Object containing the hour, tariff, timetableId
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -46,14 +46,18 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("Route timetable could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The date (of transport route) has been assigned that hour/tariff.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
 
 /**
  * Update a hour n tariff for a route timetable
- * @param {object} req - Object containing the id, hour, tariff, timetableId
- * @return {object} Response contains: statuscode (integer), json (hour n tariff (object updated) for a route timetable) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.body - Object containing the id, hour, tariff, timetableId
+ * @return {object} Response contains: statusCode (integer), json (hour n tariff (object updated) for a route timetable) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -111,13 +115,11 @@ exports.postEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("Route timetable could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "The date (of transport route) has been assigned that hour/tariff.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -125,7 +127,8 @@ exports.postEdit = async (req, res, next) => {
 
 /**
  * Get all  - hour n tariff for a route timetable
- * @return {object} Response contains: statuscode (integer), json (objeto): data (hour n tariff) Route timetables. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.query - Object containing the number, size, companyId, n routeId
+ * @return {object} Response contains: statusCode (integer), json (objeto): data (hour n tariff) Route timetables. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -178,9 +181,9 @@ exports.getAll = async (req, res, next) => {
     });
 
     let message = undefined;
-    if (categoriesInDb.count <= 0)
+    if (timetablesInDb.count <= 0)
       message = "There are no hour n tariff registered";
-    if (categoriesInDb.rows.length <= 0)
+    if (timetablesInDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedTimetables = timetablesInDb.rows.map((timetable) => {
@@ -194,8 +197,8 @@ exports.getAll = async (req, res, next) => {
         message,
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords: categoriesInDb.count,
-        totalPages: Math.ceil(categoriesInDb.count / objPage.size),
+        totalRecords: timetablesInDb.count,
+        totalPages: Math.ceil(timetablesInDb.count / objPage.size),
       },
       data: transformedTimetables,
     });
@@ -207,7 +210,8 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Destroy a hour n tariff for a route timetable (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @param {object} req.body - Object containing the id, timetableId, routeId, companyId
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -260,7 +264,7 @@ exports.postDelete = async (req, res, next) => {
       data: { id, timetableId, companyId, routeId },
     });
   } catch (error) {
-    // console.error("Hour n tariff for a route timetabe could not be deleted: ", error.message);
+    // console.error("Hour n tariff for a route timetable could not be deleted: ", error.message);
     return next(error);
   }
 };

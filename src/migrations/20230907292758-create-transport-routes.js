@@ -80,8 +80,7 @@ module.exports = {
       type: "foreign key",
       references: {
         table: "Cities",
-        field: "cityCode",
-        // field: "id",
+        field: "id",
       },
       onDelete: "RESTRICT",
       onUpdate: "cascade",
@@ -92,8 +91,7 @@ module.exports = {
       type: "foreign key",
       references: {
         table: "Cities",
-        field: "cityCode",
-        // field: "id",
+        field: "id",
       },
       onDelete: "RESTRICT",
       onUpdate: "cascade",

@@ -64,7 +64,7 @@ describe("Web - Attention Lines management API points: ", () => {
       // testDocType0.id = response1.body.data.id;
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       // "status": 400,
       // "detail": "\"phone\" must be a number",

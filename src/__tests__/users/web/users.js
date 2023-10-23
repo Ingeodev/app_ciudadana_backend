@@ -43,7 +43,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /account/info", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. ---------------------------------------------------------------
       const response0 = await request(usedHost)
         .post("/account/info")
@@ -214,7 +214,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /account/full_login ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // 1. ---------------------------------------------------------------
       const response0 = await request(usedHost)
         .post("/account/full_login")
@@ -586,7 +586,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /full_login ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 2. ---------------------------------------------------------------
 
       const response1 = await request(usedHost)
@@ -720,7 +720,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /account/edit ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 3. ---------------------------------------------------------------
       const response2 = await request(usedHost)
         .post("/account/edit")
@@ -975,7 +975,7 @@ describe("Web - Users management API points: ", () => {
   // });
 
   describe("POST /status ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 3. ---------------------------------------------------------------
       const response2 = await request(usedHost)
         .post("/status")

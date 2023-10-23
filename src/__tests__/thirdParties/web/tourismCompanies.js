@@ -13,65 +13,22 @@ describe("Web - Tourism Companies management API points: ", () => {
     return uuidV4().replace(/-/g, ""); // elimina los guiones
   };
 
-  const lonCali = -76.52496476354585;
-  const latCali = 3.4270331133664707;
   const lonNoCali = -76.59027606073045;
   const latNoCali = 2.460658430870321;
-
-  const testCategoryId = 21;
+  const lonCali = -76.52496476354585;
+  const latCali = 3.4270331133664707;
   const min = 100000;
   const max = 900000;
+  let testCompany0 = undefined;
+  let testCompany1 = undefined;
+  let editCompany0 = undefined;
+  let editCompany1 = undefined;
 
-  const testCompany0 = {
-    name: generateAlphanumeric(),
-    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
-    categoryId: testCategoryId,
-    description: "test description",
-    phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-99",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    lat: latCali,
-    lon: lonCali,
-  };
-
-  const testCompany1 = {
-    name: generateAlphanumeric(),
-    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-2`,
-    categoryId: testCategoryId,
-    description: "test description",
-    phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-99",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    lat: latCali,
-    lon: lonCali,
-  };
-
-  const editCompany0 = {
-    name: generateAlphanumeric(),
-    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-3`,
-    categoryId: testCategoryId,
-    description: "test description 1 edit",
-    phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-99",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    lat: latCali,
-    lon: lonCali,
-  };
-
-  const editCompany1 = {
-    name: generateAlphanumeric(),
-    nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-4`,
-    categoryId: testCategoryId,
-    description: "test description 2 edit",
-    phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    address: "Calle 70 norte #17N-99",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    lat: latCali,
-    lon: lonCali,
+  const testTourCat0 = {
+      name: generateAlphanumeric(),
+      color: "#AAFFBB",
+      icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+      iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
   };
 
   beforeAll(async () => {
@@ -82,6 +39,71 @@ describe("Web - Tourism Companies management API points: ", () => {
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestWebUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
+  });
+
+  describe("Create a (test) tourism category. ", () => {
+    test("Should respond with status 201 and the new object (data) after creating a new tourism category.", async () => {
+      // Create a test tourism category
+      const response0 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_categories`)
+        .post("/")
+        .set(requestHeaders)
+        .send(testTourCat0);
+      expect(response0.statusCode).toBe(201);
+      expect(response0.body.data).toHaveProperty("id");
+      testTourCat0.id = response0.body.data.id;
+
+      testCompany0 = {
+        name: generateAlphanumeric(),
+        nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
+        categoryId: testTourCat0.id,
+        description: "test description",
+        phone: "3122334455",
+        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        address: "Calle 70 norte #17N-99",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        lat: latCali,
+        lon: lonCali,
+      };
+
+      testCompany1 = {
+        name: generateAlphanumeric(),
+        nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-2`,
+        categoryId: testTourCat0.id,
+        description: "test description",
+        phone: "3122334455",
+        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        address: "Calle 70 norte #17N-99",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        lat: latCali,
+        lon: lonCali,
+      };
+
+      editCompany0 = {
+        name: generateAlphanumeric(),
+        nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-3`,
+        categoryId: testTourCat0.id,
+        description: "test description 1 edit",
+        phone: "3122334455",
+        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        address: "Calle 70 norte #17N-99",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        lat: latCali,
+        lon: lonCali,
+      };
+
+      editCompany1 = {
+        name: generateAlphanumeric(),
+        nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-4`,
+        categoryId: testTourCat0.id,
+        description: "test description 2 edit",
+        phone: "3122334455",
+        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        address: "Calle 70 norte #17N-99",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        lat: latCali,
+        lon: lonCali,
+      };
+    });
   });
 
   describe("POST /tourism_company/ ", () => {
@@ -111,7 +133,7 @@ describe("Web - Tourism Companies management API points: ", () => {
       editCompany1.id = response1.body.data.id;
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -674,7 +696,7 @@ describe("Web - Tourism Companies management API points: ", () => {
       expect(response1.body.data.name).toBe(editCompany1.name);
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -953,7 +975,7 @@ describe("Web - Tourism Companies management API points: ", () => {
       );
     });
 
-    test("Should fail with status 400 and an error with a message if the entry is not well formatead.", async () => {
+    test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response0 = await request(usedHost)
         .post("/delete")
         .set(requestHeaders)
@@ -1014,6 +1036,18 @@ describe("Web - Tourism Companies management API points: ", () => {
       expect(response0.body).toHaveProperty("status", 401);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
+    });
+  });
+
+  describe("Delete the (test) tourism category created. ", () => {
+    test("Should respond with status 200 and the tourism category id deleted.", async () => {
+      const response0 = await request(`${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_categories`)
+        .post("/delete")
+        .set(requestHeaders)
+        .send({
+          id: testTourCat0.id,
+        });
+      expect(response0.statusCode).toBe(200);
     });
   });
 

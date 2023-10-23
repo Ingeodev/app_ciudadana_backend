@@ -7,7 +7,7 @@ const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third
 const sleepNow = async (delay) =>
   new Promise((resolve) => setTimeout(resolve, delay));
 
-describe("WEB Dependencies configuration API points: ", () => {
+describe("WEB Cities configuration API points: ", () => {
   jest.setTimeout(10000);
 
   const requestHeaders = {
@@ -30,7 +30,7 @@ describe("WEB Dependencies configuration API points: ", () => {
   const powerpoint = path.join(filesPath, "PowerPoint.pptx");
   const word = path.join(filesPath, "Word.docx");
 
-  const min1 = 9910;
+  const min1 = 9920;
   const max1 = 9950;
   const min2 = 9951;
   const max2 = 9999;
@@ -95,12 +95,12 @@ describe("WEB Dependencies configuration API points: ", () => {
         .set(requestHeaders)
         .attach("file", creationXls);
       expect(response1.statusCode).toBe(201);
-      expect(response0.body.data).toHaveProperty("success");
-      expect(response0.body.data.success).toEqual(expect.any(Array));
-      expect(response0.body.data.success.length).toBe(3);
-      expect(response0.body.data).toHaveProperty("errors");
-      expect(response0.body.data.errors).toEqual(expect.any(Array));
-      expect(response0.body.data.errors.length).toBe(0);
+      expect(response1.body.data).toHaveProperty("success");
+      expect(response1.body.data.success).toEqual(expect.any(Array));
+      expect(response1.body.data.success.length).toBe(3);
+      expect(response1.body.data).toHaveProperty("errors");
+      expect(response1.body.data.errors).toEqual(expect.any(Array));
+      expect(response1.body.data.errors.length).toBe(0);
 
       const response2 = await request(usedHost)
         .post("/excel")
@@ -434,6 +434,9 @@ describe("WEB Dependencies configuration API points: ", () => {
         .query({ page: { number: 1, size: 100 }, q: "TEST" });
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("meta");
+      expect(response0.body.meta).toHaveProperty("page");
+      expect(response0.body.meta).toHaveProperty("pageSize");
+      expect(response0.body.meta).toHaveProperty("totalRecords");
       expect(response0.body.meta.page).toBe(1);
       expect(response0.body.meta.pageSize).toBe(100);
       expect(response0.body).toHaveProperty("data");

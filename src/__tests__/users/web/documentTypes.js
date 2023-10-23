@@ -87,7 +87,7 @@ describe("Web - Document Type management API points: ", () => {
     // "detail": "\"code\" must be a number",
     // "code": "Bad Request"
     // }
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -494,7 +494,7 @@ describe("Web - Document Type management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       // "status": 400,
       // "detail": "\"id\" is required",
@@ -675,7 +675,7 @@ describe("Web - Document Type management API points: ", () => {
   //     );
   //   });
 
-  //   test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+  //   test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
   //   // {
   //   //     "status": 400,
   //   //     "detail": "\"id\" is required",

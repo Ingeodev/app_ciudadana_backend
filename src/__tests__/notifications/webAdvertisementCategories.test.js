@@ -62,7 +62,7 @@ describe("Advertisement Category management API points: ", () => {
     //         expect(response1.body.data).toEqual(expect.objectContaining({ ...testCategory1 }));
     //     });
 
-    //     test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    //     test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
     //         const response0 = await request(usedHost).post('/')
     //             .set(requestHeaders)
     //             .send({
@@ -255,7 +255,7 @@ describe("Advertisement Category management API points: ", () => {
     //         }));
     //     });
 
-    //     test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    //     test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
     //         const response0 = await request(usedHost).post('/edit')
     //             .set(requestHeaders)
     //             .send({
@@ -385,7 +385,7 @@ describe("Advertisement Category management API points: ", () => {
     //         expect(response1.body.data).toEqual({ id: testCategory1.id });
     //     });
 
-    //     test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    //     test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
     //         const response0 = await request(usedHost).post('/delete').set(requestHeaders);
     //         expect(response0.statusCode).toBe(400);
     //         expect(response0.body).not.toHaveProperty("data");

@@ -83,7 +83,7 @@ describe("All Tourism Categories API points: ", () => {
             expect(response1.body.data).toEqual(expect.objectContaining(testTourCat1));
         });
 
-        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+        test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
             const response0 = await request(usedWebHost).post('/')
                 .set(requestHeadersWeb)
                 .send({
@@ -311,7 +311,7 @@ describe("All Tourism Categories API points: ", () => {
             }));
         });
 
-        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+        test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
             const response0 = await request(usedWebHost).post('/edit')
                 .set(requestHeadersWeb)
                 .send({
@@ -538,7 +538,7 @@ describe("All Tourism Categories API points: ", () => {
             expect(response1.body.data).toEqual({ id: testTourCat1.id });
         });
 
-        test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+        test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
             const response0 = await request(usedWebHost).post('/delete').set(requestHeadersWeb);
             expect(response0.statusCode).toBe(400);
             expect(response0.body).not.toHaveProperty("data");

@@ -68,7 +68,7 @@ describe("WEB Alert configuration API points: ", () => {
             expect(response0.body).toHaveProperty("detail");
         });
 
-        test("should fail with error 400 and a message if request data is not complete and well-formated.", async () => {
+        test("should fail with error 400 and a message if request data is not complete and well-formatted.", async () => {
             const response0 = await request(usedHost).post('/alert').set(requestHeaders)
                 .send({
                     ...push_AlertItem,

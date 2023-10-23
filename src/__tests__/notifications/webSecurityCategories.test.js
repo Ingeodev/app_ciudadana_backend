@@ -63,7 +63,7 @@ describe("Web - Security Categories management API points: ", () => {
     // "detail": "\"color\" must be a number",
     // "code": "Bad Request"
     // }
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -358,7 +358,7 @@ describe("Web - Security Categories management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       // "status": 400,
       // "detail": "\"id\" is required",
@@ -573,7 +573,7 @@ describe("Web - Security Categories management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",

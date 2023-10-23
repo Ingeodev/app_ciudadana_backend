@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           unique: false,
         },
-        targetKey: "cityCode",
+        targetKey: "id",
       });
 
       TransportRoute.belongsTo(models.City, {
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           unique: false,
         },
-        targetKey: "cityCode",
+        targetKey: "id",
       });
 
       TransportRoute.hasMany(models.RouteTimetable, {

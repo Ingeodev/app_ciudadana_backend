@@ -42,8 +42,7 @@ exports.getTransportRoutes = async (req, res, next) => {
       caliCity: {
         id: cities.find((city) => city.cityCode === caliCityCode).id,
         city: cities.find((city) => city.cityCode === caliCityCode).city,
-        cityCode: cities.find((city) => city.cityCode === caliCityCode)
-          .cityCode,
+        cityCode: cities.find((city) => city.cityCode === caliCityCode).cityCode,
       },
     };
 
@@ -52,8 +51,8 @@ exports.getTransportRoutes = async (req, res, next) => {
         {
           model: db.TransportRoute,
           where: {
-            origin: objCity.otherCity.cityCode,
-            destination: objCity.caliCity.cityCode,
+            origin: objCity.otherCity.id,
+            destination: objCity.caliCity.id,
           },
           include: [
             {
@@ -154,8 +153,8 @@ exports.getTransportRoutes = async (req, res, next) => {
         {
           model: db.TransportRoute,
           where: {
-            origin: objCity.caliCity.cityCode,
-            destination: objCity.otherCity.cityCode,
+            origin: objCity.caliCity.id,
+            destination: objCity.otherCity.id,
           },
           include: [
             {

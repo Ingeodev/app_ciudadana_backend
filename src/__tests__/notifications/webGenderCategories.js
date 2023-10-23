@@ -77,7 +77,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
       editGender1.id = response1.body.data.id;
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       const response2 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
@@ -343,7 +343,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
       expect(response1.body.data.title).toBe(editGender1.title);
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // 1. -------------------------------------
       const response0 = await request(usedHost)
         .post("/edit")
@@ -515,7 +515,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
       );
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //     "status": 400,
       //     "detail": "\"id\" is required",

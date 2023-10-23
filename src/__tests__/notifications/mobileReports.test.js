@@ -134,7 +134,7 @@ describe("Mobile - Reports management API points: ", () => {
       expect(response0.body.data).toHaveProperty("lon");
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //   "status": 400,
       //   "detail": "\"title\" is required",
@@ -194,7 +194,7 @@ describe("Mobile - Reports management API points: ", () => {
       expect(response1.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //   "status": 400,
       //   "detail": "\"imageUri\" must be a valid uri",
@@ -233,7 +233,7 @@ describe("Mobile - Reports management API points: ", () => {
       expect(response1.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //   "status": 400,
       //   "detail": "\"lat\" must be greater than or equal to -90",
@@ -255,7 +255,7 @@ describe("Mobile - Reports management API points: ", () => {
       expect(response1.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
       // {
       //   "status": 400,
       //   "detail": "\"lon\" must be greater than or equal to -180",

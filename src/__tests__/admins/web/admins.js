@@ -50,7 +50,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /admin/", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. ---------------------------------------------------------------
       const response0 = await request(usedHost)
         .post("/")
@@ -252,7 +252,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("DISABLED - Fk roleId not set - POST /admin/add_role ", () => {
-    // test("should fail with status 400 and an error with a message if the entry is not well formated", async () => {
+    // test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
     //   // 1. ---------------------------------------------------------------
     //   const response0 = await request(usedHost)
     //     .post("/add_role")
@@ -419,7 +419,7 @@ describe("Web - Users management API points: ", () => {
   });
   
   describe("POST /admin/edit", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // 1. ---------------------------------------------------------------
       const response01 = await request(usedHost)
         .post("/edit")
@@ -779,7 +779,7 @@ describe("Web - Users management API points: ", () => {
   });
 
   describe("POST /admin/delete ", () => {
-    test("should fail with status 400 and an error with a message if the entry is not well formated.", async () => {
+    test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       // ! Pendiente: Validar este caso y mejorar restricciones joi
       // 3. ---------------------------------------------------------------
       // const response2 = await request(usedHost)

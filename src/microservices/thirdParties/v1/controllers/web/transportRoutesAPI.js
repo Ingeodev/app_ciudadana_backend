@@ -94,8 +94,8 @@ exports.postRouteRegister = async (req, res, next) => {
       };
 
     const dataQuery = {
-      origin: originInDb.dataValues.cityCode,
-      destination: destinationInDb.dataValues.cityCode,
+      origin: originInDb.dataValues.id,
+      destination: destinationInDb.dataValues.id,
       companyId,
       duration: formathhmm.hhmmToSeconds(duration),
       createdBy: createdBy.id,
@@ -217,8 +217,8 @@ exports.postRouteEdit = async (req, res, next) => {
     // const routeInDb = await db.ThirdPartyCategory.findByPk(id);
 
     let resultUpdate = await routeInDb.update({
-      origin: originInDb.dataValues.cityCode,
-      destination: destinationInDb.dataValues.cityCode,
+      origin: originInDb.dataValues.id,
+      destination: destinationInDb.dataValues.id,
       duration: formathhmm.hhmmToSeconds(duration),
     });
     delete resultUpdate.dataValues.deletedAt;
@@ -663,8 +663,8 @@ exports.postRouteUploadXlsx = async (req, res, next) => {
         routeInDb = await db.TransportRoute.findOne({
           // // ! Pendiente: Validar permisos del usuario
           where: {
-            origin: originInDb.dataValues.cityCode,
-            destination: destinationInDb.dataValues.cityCode,
+            origin: originInDb.dataValues.id,
+            destination: destinationInDb.dataValues.id,
             companyId,
           },
           attributes: ["id", "duration"],
@@ -677,8 +677,8 @@ exports.postRouteUploadXlsx = async (req, res, next) => {
             // Create route in db
             const queryRoute = {
               createdBy: createdBy.id,
-              origin: originInDb.dataValues.cityCode,
-              destination: destinationInDb.dataValues.cityCode,
+              origin: originInDb.dataValues.id,
+              destination: destinationInDb.dataValues.id,
               duration,
               companyId,
             };
@@ -744,8 +744,9 @@ exports.postRouteUploadXlsx = async (req, res, next) => {
               transaction,
             });
             msgSuccess += "Fecha creada, ";
+          } else {
+            msgSuccess += "Fecha no creada, ";
           }
-          msgSuccess += "Fecha no creada, ";
         } catch (error) {
           await transaction.rollback();
           errors.push(
@@ -1412,9 +1413,9 @@ exports.getHourAll = async (req, res, next) => {
     });
 
     let message = undefined;
-    if (companyInDb.count <= 0)
+    if (timetablesInDb.count <= 0)
       message = "There are no  registered hour n tariff for a route timetable";
-    if (companyInDb.rows.length <= 0)
+    if (timetablesInDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
 
     const transformedTimetables = timetablesInDb.rows.map((timetable) => {
@@ -1428,8 +1429,8 @@ exports.getHourAll = async (req, res, next) => {
         message,
         page: objPage.number,
         pageSize: objPage.size,
-        totalRecords: companyInDb.count,
-        totalPages: Math.ceil(companyInDb.count / objPage.size),
+        totalRecords: timetablesInDb.count,
+        totalPages: Math.ceil(timetablesInDb.count / objPage.size),
       },
       data: transformedTimetables,
     });
