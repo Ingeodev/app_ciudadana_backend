@@ -21,6 +21,7 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
   let pereiraObj = {};
   let calimaObj = {};
   let testRoute0 = {};
+  let testDateHours0 = {};
   let testDate0 = {};
   let testDate1 = {};
   let editDate0 = {};
@@ -171,6 +172,19 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
           routeId: testRoute0.id,
           hour: "11:30",
           tariff: 30000,
+        };
+
+        // ##############################
+
+        testDateHours0 = {
+          date: "2099-12-05",
+          routeId: testRoute0.id,
+          companyId: testCompany0.id,
+          hoursTariffs: [
+            { hour: "08:00", tariff: "10000" },
+            { hour: "09:00", tariff: "10000" },
+            { hour: "10:00", tariff: "10000" },
+          ],
         };
       });
     });
@@ -462,6 +476,134 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
           .set(requestHeaders)
           .send({
             ...editDate1,
+            routeId: 99999,
+          });
+        expect(response1.statusCode).toBe(422);
+        expect(response1.body).not.toHaveProperty("meta");
+        expect(response1.body).not.toHaveProperty("data");
+        expect(response1.body).toHaveProperty("status", 422);
+        expect(response1.body).toHaveProperty("code");
+        expect(response1.body).toHaveProperty("detail");
+      });
+    });
+
+    describe("POST /route/hour        - Create a date with hours n tariffs", () => {
+      test("Should respond with status 201 and the new object (data) after creating a the hours/tariffs for one transport route.", async () => {
+        const response0 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send(testDateHours0);
+        expect(response0.statusCode).toBe(201);
+        expect(response0.body).toHaveProperty("meta");
+        expect(response0.body.meta).toBe(null);
+        expect(response0.body).toHaveProperty("data");
+        expect(response0.body.data).toHaveProperty("id");
+        testDateHours0.id = response0.body.data.id;
+      });
+
+      test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
+        const response2 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            routeId: "must be a number",
+          });
+        expect(response2.statusCode).toBe(400);
+        expect(response2.body).not.toHaveProperty("meta");
+        expect(response2.body).not.toHaveProperty("data");
+        expect(response2.body).toHaveProperty("status", 400);
+        expect(response2.body).toHaveProperty("code");
+        expect(response2.body).toHaveProperty("detail");
+
+        // 4. ----------------------------------------------
+        const response5 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            companyId: "must be a number",
+          });
+        expect(response5.statusCode).toBe(400);
+        expect(response5.body).not.toHaveProperty("meta");
+        expect(response5.body).not.toHaveProperty("data");
+        expect(response5.body).toHaveProperty("status", 400);
+        expect(response5.body).toHaveProperty("code");
+        expect(response5.body).toHaveProperty("detail");
+
+        // 6. ----------------------------------------------
+        const response7 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            date: "must be yyyy/mm/dd",
+          });
+        expect(response7.statusCode).toBe(400);
+        expect(response7.body).not.toHaveProperty("meta");
+        expect(response7.body).not.toHaveProperty("data");
+        expect(response7.body).toHaveProperty("status", 400);
+        expect(response7.body).toHaveProperty("code");
+        expect(response7.body).toHaveProperty("detail");
+
+        // 7. ----------------------------------------------
+        const response8 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            hoursTariffs: -5,
+          });
+        expect(response8.statusCode).toBe(400);
+        expect(response8.body).not.toHaveProperty("meta");
+        expect(response8.body).not.toHaveProperty("data");
+        expect(response8.body).toHaveProperty("status", 400);
+        expect(response8.body).toHaveProperty("code");
+        expect(response8.body).toHaveProperty("detail");
+
+        // 9. ----------------------------------------------
+        const response9 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send(testDateHours0);
+        expect(response9.statusCode).toBe(400);
+        expect(response9.body).not.toHaveProperty("meta");
+        expect(response9.body).not.toHaveProperty("data");
+        expect(response9.body).toHaveProperty("status", 400);
+        expect(response9.body).toHaveProperty("code");
+        expect(response9.body).toHaveProperty("detail");
+      });
+
+      test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+        const response0 = await request(usedHost).post("/date/hours");
+        expect(response0.statusCode).toBe(401);
+        expect(response0.body).not.toHaveProperty("meta");
+        expect(response0.body).not.toHaveProperty("data");
+        expect(response0.body).toHaveProperty("status", 401);
+        expect(response0.body).toHaveProperty("code");
+        expect(response0.body).toHaveProperty("detail");
+      });
+
+      test("Should fail with status 422 and an error with a message if the transport company/route/date does not exist.", async () => {
+        const response0 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
+            companyId: 99999,
+          });
+        expect(response0.statusCode).toBe(422);
+        expect(response0.body).not.toHaveProperty("meta");
+        expect(response0.body).not.toHaveProperty("data");
+        expect(response0.body).toHaveProperty("status", 422);
+        expect(response0.body).toHaveProperty("code");
+        expect(response0.body).toHaveProperty("detail");
+
+        const response1 = await request(usedHost)
+          .post("/date/hours")
+          .set(requestHeaders)
+          .send({
+            ...testDateHours0,
             routeId: 99999,
           });
         expect(response1.statusCode).toBe(422);
@@ -1386,6 +1528,78 @@ describe("Web - Transport Routes (dates n hours/tariffs) management API points: 
         expect(response2.body).toHaveProperty("status", 422);
         expect(response2.body).toHaveProperty("code");
         expect(response2.body).toHaveProperty("detail");
+      });
+    });
+
+    describe("GET /route/itinerary        - Get route with timetables", () => {
+      test("Should respond with status 200 and a get of object containing the date/hours/tariffs of one transport routes.", async () => {
+        const response0 = await request(usedHost)
+          .get(`/itinerary`)
+          .set(requestHeaders)
+          .query({
+            routeId: testRoute0.id,
+          });
+        expect(response0.statusCode).toBe(200);
+        expect(response0.body).toHaveProperty("meta");
+        expect(response0.body).toHaveProperty("data");
+        expect(response0.body.data).toHaveProperty("id");
+        expect(response0.body.data).toHaveProperty("origin");
+        expect(response0.body.data).toHaveProperty("destination");
+        expect(response0.body.data).toHaveProperty("companyId");
+        expect(response0.body.data).toHaveProperty("duration");
+        expect(response0.body.data).toHaveProperty("RouteTimetables");
+        expect(response0.body.data.RouteTimetables).toEqual(expect.any(Array));
+        expect(response0.body.data.RouteTimetables[0]).toHaveProperty("id");
+        expect(response0.body.data.RouteTimetables[0]).toHaveProperty("date");
+        expect(response0.body.data.RouteTimetables[0]).toHaveProperty("routeId");
+        expect(response0.body.data.RouteTimetables[0]).toHaveProperty("RouteTimetableHourTariffs");
+        expect(response0.body.data.RouteTimetables[0].RouteTimetableHourTariffs).toEqual(expect.any(Array));
+        expect(response0.body.data.RouteTimetables[0].RouteTimetableHourTariffs[0]).toHaveProperty("id");
+        expect(response0.body.data.RouteTimetables[0].RouteTimetableHourTariffs[0]).toHaveProperty("timetableId");
+        expect(response0.body.data.RouteTimetables[0].RouteTimetableHourTariffs[0]).toHaveProperty("hour");
+        expect(response0.body.data.RouteTimetables[0].RouteTimetableHourTariffs[0]).toHaveProperty("tariff");
+      });
+
+      test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
+        const response0 = await request(usedHost)
+          .get(`/itinerary`)
+          .set(requestHeaders)
+          .query({
+            routeId: -5,
+          });
+        expect(response0.statusCode).toBe(400);
+        expect(response0.body).not.toHaveProperty("meta");
+        expect(response0.body).not.toHaveProperty("data");
+        expect(response0.body).toHaveProperty("status", 400);
+        expect(response0.body).toHaveProperty("code");
+        expect(response0.body).toHaveProperty("detail");
+      });
+
+      test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
+        const response0 = await request(usedHost).get(`/itinerary`).query({
+          routeId: testRoute0.id,
+        });
+        expect(response0.statusCode).toBe(401);
+        expect(response0.body).not.toHaveProperty("meta");
+        expect(response0.body).not.toHaveProperty("data");
+        expect(response0.body).toHaveProperty("status", 401);
+        expect(response0.body).toHaveProperty("code");
+        expect(response0.body).toHaveProperty("detail");
+      });
+
+      test("Should fail with status 404 and an error with a message if the id does not exist.", async () => {
+        const response0 = await request(usedHost)
+          .get(`/itinerary`)
+          .set(requestHeaders)
+          .query({
+            routeId: 9999999,
+          });
+        expect(response0.statusCode).toBe(404);
+        expect(response0.body).not.toHaveProperty("meta");
+        expect(response0.body).not.toHaveProperty("data");
+        expect(response0.body).toHaveProperty("status", 404);
+        expect(response0.body).toHaveProperty("code");
+        expect(response0.body).toHaveProperty("detail");
       });
     });
   });

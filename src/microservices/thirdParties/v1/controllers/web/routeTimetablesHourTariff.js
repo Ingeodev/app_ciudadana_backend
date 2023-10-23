@@ -61,7 +61,6 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    // ! Por seguridad se deberia de pedir, companyId y routeId
     const { id, hour, tariff, timetableId, companyId, routeId } = await validator.vWebPostEdit(req.body);
 
     // Verify whether the hour n tariff belongs to the timetableId
