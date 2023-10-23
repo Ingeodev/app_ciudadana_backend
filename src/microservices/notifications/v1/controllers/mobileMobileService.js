@@ -8,8 +8,9 @@ const getMobileServices = async (req, res, next) => {
   try {
 
     const mobileServicesInDb = await db.MobileService.findAll({
+      where: { active: false },
       attributes: ["route", "name", "subtitle", [Sequelize.col('imageUri'), 'image'], "icon", "accessLevel"],
-      order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
+      order: [["createdAt", "DESC"]],
     });
 
     return res.status(StatusCodes.OK).send(mobileServicesInDb);
