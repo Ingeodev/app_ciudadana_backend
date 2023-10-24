@@ -26,7 +26,8 @@ const registerSchema = joi.object({
         then: coordinate,
         otherwise: joi.when('typeCoordinates', {
             is: 'LineString',
-            then: joi.array().items(coordinate).length(2),
+            then: joi.array().items(coordinate).min(2), // crooked line
+            // then: joi.array().items(coordinate).length(2), // line of two points
             otherwise: joi.array().items(
                 joi.array().items(coordinate).min(3)
             )
