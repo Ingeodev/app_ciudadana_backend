@@ -237,9 +237,9 @@ exports.getTransportRoutes = async (req, res, next) => {
     let combinedArray = Object.values(combinedMap);
 
     // TODO: if routesToOrigin and routesToDestination are equal to [], then have that object removed from the array
-    // combinedArray = combinedArray.filter((company) => {
-    //   return !(company.routesToOrigin.length === 0 && company.routesToDestination.length === 0);
-    // });
+    combinedArray = combinedArray.filter((company) => {
+      return !(company.routesToOrigin.length === 0 && company.routesToDestination.length === 0);
+    });
     return res.status(StatusCodes.OK).send(combinedArray);
   } catch (error) {
     return next(error);
