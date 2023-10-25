@@ -17,6 +17,10 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("document type could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The document type has been used previously.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };

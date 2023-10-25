@@ -7,7 +7,7 @@ const validator = require("../../../utils/validators/mobile/documentTypes.js");
 /**
  * Get all document types
  * @param {object} req.query - Object containing the number, size
- * @return {object} Response contains: statuscode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
