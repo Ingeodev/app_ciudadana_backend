@@ -30,12 +30,10 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING(50),
-          // ! Verificar si Firebase en ocasiones email=null
           allowNull: true,
           unique: true,
         },
         documentTypeId: {
-          // type: Sequelize.INTEGER,
           type: Sequelize.STRING(50),
           allowNull: true,
           unique: false,
@@ -43,7 +41,6 @@ module.exports = {
         document: {
           type: Sequelize.STRING(50),
           allowNull: true,
-          // ! unique: true? Diversidad de tipos de documentos
           unique: true,
         },
         phone: {
@@ -79,17 +76,14 @@ module.exports = {
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
-          // type: Sequelize.DATE
         },
         updatedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
         deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
       },
       {

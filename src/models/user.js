@@ -161,7 +161,6 @@ module.exports = (sequelize, DataTypes) => {
       lastName: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
-        // ! Verificar si Firebase en ocasiones email=null
         allowNull: true,
         unique: true,
       },
@@ -181,7 +180,6 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       documentTypeId: {
-        // type: DataTypes.INTEGER,
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
