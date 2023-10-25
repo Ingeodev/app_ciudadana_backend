@@ -12,14 +12,12 @@ exports.postRegister = async (req, res, next) => {
     const { name, icon, iconMap, color } =
       await validator.vWebPostRegister(req.body);
 
-    const dataQuery = {
+    const result = await db.ThirdPartyCategory.create({
       name,
       icon,
       iconMap,
       color,
-    };
-
-    const result = await db.ThirdPartyCategory.create(dataQuery);
+    });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("ThirdParty category could not be created: ", error.message);
@@ -42,14 +40,6 @@ exports.postEdit = async (req, res, next) => {
       req.body
     );
 
-    const dataQuery = {
-      id,
-      name,
-      icon,
-      iconMap,
-      color,
-    };
-
     const categoryInDb = await db.ThirdPartyCategory.findByPk(id);
 
     if (categoryInDb === null) {
@@ -59,7 +49,13 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await categoryInDb.update(dataQuery);
+    const resultUpdate = await categoryInDb.update({
+      id,
+      name,
+      icon,
+      iconMap,
+      color,
+    });
 
     return res.status(StatusCodes.OK).json({
       meta: null,

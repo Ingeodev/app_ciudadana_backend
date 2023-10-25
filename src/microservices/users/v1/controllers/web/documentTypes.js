@@ -5,7 +5,7 @@ const validator = require("../../../utils/validators/web/documentTypes.js");
 /**
  * Create a document type
  * @param {object} req - Object containing the code, name, abbreviation
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -13,13 +13,7 @@ exports.postRegister = async (req, res, next) => {
       req.body
     );
 
-    const dataQuery = {
-      code,
-      name,
-      active: true,
-    };
-
-    const result = await db.DocumentType.create(dataQuery);
+    const result = await db.DocumentType.create({ code, name, active: true });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("document type could not be created: ", error.message);
@@ -30,17 +24,11 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update document type
  * @param {object} req - Object containing the code, name, abbreviation
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
     const { id, code, name } = await validator.vWebPostEdit(req.body);
-
-    const dataQuery = {
-      id,
-      code,
-      name,
-    };
 
     const docTypeInDb = await db.DocumentType.findByPk(id);
 
@@ -51,7 +39,7 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await docTypeInDb.update(dataQuery);
+    const resultUpdate = await docTypeInDb.update({ id, code, name });
 
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -75,7 +63,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all document types
  * @param {object} req.query - Object containing the number, size
- * @return {object} Response contains: statuscode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data document types. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -115,7 +103,7 @@ exports.getAll = async (req, res, next) => {
 /**
  * Get document type by id
  * @param {integer} req.params.id - document type - id
- * @return {object} Response contains: statuscode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
  */
 exports.getOneById = async (req, res, next) => {
   try {
@@ -143,7 +131,7 @@ exports.getOneById = async (req, res, next) => {
 
 /**
  * Update the status of the documentType.active field (enabled/disabled) for a document type
- * @return {object} Response contains: statuscode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data document type. Or if there's error, json (objeto): status, code, detail
  */
 // exports.postStatus = async (req, res, next) => {
 //   try {

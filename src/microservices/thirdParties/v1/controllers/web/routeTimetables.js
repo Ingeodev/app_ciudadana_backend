@@ -34,12 +34,10 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
+    const result = await db.RouteTimetable.create({
       date,
       routeId,
-    };
-
-    const result = await db.RouteTimetable.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     result.dataValues.day = new Date(date).getDay();
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
@@ -82,12 +80,10 @@ exports.postRegisterWithHour = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      date,
-      routeId,
-    };
-
-    let result = await db.RouteTimetable.create(dataQuery, { transaction });
+    let result = await db.RouteTimetable.create(
+      { date, routeId },
+      { transaction }
+    );
     delete result.dataValues.deletedAt;
     result.dataValues.day = new Date(date).getDay();
 

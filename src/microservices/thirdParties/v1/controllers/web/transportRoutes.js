@@ -94,15 +94,13 @@ exports.postRegister = async (req, res, next) => {
         message: "The transport company not found.",
       };
 
-    const dataQuery = {
+    let result = await db.TransportRoute.create({
       origin: originInDb.dataValues.id,
       destination: destinationInDb.dataValues.id,
       companyId,
       duration: formathhmm.hhmmToSeconds(duration),
       createdBy: createdBy.id,
-    };
-
-    let result = await db.TransportRoute.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     delete result.dataValues.createdBy;
     result.dataValues.duration = formathhmm.secondsToHhmm(

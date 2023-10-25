@@ -1,5 +1,4 @@
 const { StatusCodes } = require("http-status-codes");
-// const { Sequelize } = require("sequelize");
 const crypto = require("crypto");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportCompanies.js");
@@ -163,7 +162,7 @@ exports.postRegister = async (req, res, next) => {
 
     const { name, description, imageUri, nit, phone, siteUri } = await validator.vWebPostRegister(req.body);
 
-    const dataQuery = {
+    const result = await db.TransportCompany.create({
       createdBy: createdBy.id,
       name,
       description,
@@ -171,9 +170,7 @@ exports.postRegister = async (req, res, next) => {
       nit,
       phone: `+57${phone}`,
       siteUri,
-    };
-
-    const result = await db.TransportCompany.create(dataQuery);
+    });
     delete result.dataValues.createdBy;
     delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
@@ -216,16 +213,6 @@ exports.postEdit = async (req, res, next) => {
       siteUri,
     } = await validator.vWebPostEdit(req.body);
 
-    const dataQuery = {
-      id,
-      name,
-      description,
-      imageUri,
-      nit,
-      phone: `+57${phone}`,
-      siteUri,
-    };
-
     // Validate that the company belongs to the user
     const companyInDb = await db.TransportCompany.findOne({
       where: {
@@ -244,7 +231,15 @@ exports.postEdit = async (req, res, next) => {
 
     // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
 
-    const resultUpdate = await companyInDb.update(dataQuery);
+    const resultUpdate = await companyInDb.update({
+      id,
+      name,
+      description,
+      imageUri,
+      nit,
+      phone: `+57${phone}`,
+      siteUri,
+    });
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.deletedAt;
 

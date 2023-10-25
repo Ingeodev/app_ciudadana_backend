@@ -143,22 +143,23 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      clientId: resCreate.uid,
-      name,
-      lastName,
-      email,
-      documentTypeId,
-      document,
-      disabled: false,
-      userMobile: false,
-      loginPhase: null,
-      emailVerified: null,
-      tokenEmailVerified,
-      passwdReset: true,
-    };
-
-    const userInDb = await db.User.create(dataQuery, { transaction });
+    const userInDb = await db.User.create(
+      {
+        clientId: resCreate.uid,
+        name,
+        lastName,
+        email,
+        documentTypeId,
+        document,
+        disabled: false,
+        userMobile: false,
+        loginPhase: null,
+        emailVerified: null,
+        tokenEmailVerified,
+        passwdReset: true,
+      },
+      { transaction }
+    );
 
     // The following two options do not send the mail, the link is received (this link redirects the user to a Firebase interface), and must be sent
     // const link = await firebase.generateLinkPasswordReset(email, urlFront);
@@ -290,13 +291,6 @@ exports.postEdit = async (req, res, next) => {
     const { id, name, lastName, documentTypeId, document } =
       await validator.vWebPostEdit(req.body);
 
-    const dataQuery = {
-      name,
-      lastName,
-      documentTypeId,
-      document,
-    };
-
     const adminInDb = await db.User.findByPk(id);
 
     if (adminInDb === null) {
@@ -306,7 +300,12 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    await adminInDb.update(dataQuery);
+    await adminInDb.update({
+      name,
+      lastName,
+      documentTypeId,
+      document,
+    });
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: { id, name, lastName, documentTypeId, document },

@@ -1,8 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const { parse } = require("node-xlsx");
+const { Op, where, fn, col } = require("sequelize");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/web/cities.js");
-const { Op, where, fn, col } = require("sequelize");
 
 /**
  * Create a city
@@ -13,13 +13,11 @@ exports.postRegister = async (req, res, next) => {
   try {
     const { city, cityCode, state } = await validator.vWebPostRegister(req.body);
 
-    const dataQuery = {
+    const result = await db.City.create({
       city,
       cityCode,
       state,
-    };
-
-    const result = await db.City.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
@@ -43,13 +41,6 @@ exports.postEdit = async (req, res, next) => {
       req.body
     );
 
-    const dataQuery = {
-      id,
-      city,
-      cityCode,
-      state,
-    };
-
     const cityInDb = await db.City.findByPk(id);
 
     if (cityInDb === null) {
@@ -59,7 +50,12 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await cityInDb.update(dataQuery);
+    const resultUpdate = await cityInDb.update({
+      id,
+      city,
+      cityCode,
+      state,
+    });
     delete resultUpdate.dataValues.deletedAt;
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -68,7 +64,7 @@ exports.postEdit = async (req, res, next) => {
   } catch (error) {
     // console.error("City could not be updated: ", error.message);
     if (error.name === 'SequelizeUniqueConstraintError') {
-      error.message = "City n State must be unique";
+      error.message = "City and State must be unique";
       error.status = StatusCodes.BAD_REQUEST;
     } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
         error.message = error.errors[0].message;

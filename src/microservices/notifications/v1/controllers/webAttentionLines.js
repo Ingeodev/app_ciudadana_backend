@@ -10,13 +10,11 @@ const validator = require("../../utils/validatorAttentionLines.js");
 exports.postRegister = async (req, res, next) => {
   try {
     const { phone, whatsapp } = await validator.vWebPostRegister(req.body);
-
-    const dataQuery = {
-      phone: `+57${phone}`,
-      whatsapp: `+57${whatsapp}`
-    };
     
-    const result = await db.AttentionLine.create(dataQuery);
+    const result = await db.AttentionLine.create({
+      phone: `+57${phone}`,
+      whatsapp: `+57${whatsapp}`,
+    });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     console.error(

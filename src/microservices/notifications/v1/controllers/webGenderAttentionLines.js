@@ -1,12 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorGenderAttentionLine.js");
 
 /**
  * Create an attention line of gender equity 
  * @param {object} req - Object containing the name, phone, address, imageUri
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -26,15 +25,13 @@ exports.postRegister = async (req, res, next) => {
       req.body
     );
 
-    const dataQuery = {
+    const result = await db.GenderAttentionLine.create({
       createdBy: createdBy.id,
       name,
       phone: `+57${phone}`,
       imageUri,
       address,
-    };
-
-    const result = await db.GenderAttentionLine.create(dataQuery);
+    });
     delete result.dataValues.createdBy;
     delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
@@ -47,7 +44,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update an attention line of gender equity
  * @param {object} req - Object containing the id, name, phone, address, imageUri
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -66,15 +63,7 @@ exports.postEdit = async (req, res, next) => {
     const { id, name, phone, address, imageUri } =
       await validator.vWebPostUpdate(req.body);
 
-    const dataQuery = {
-      id,
-      name,
-      phone: `+57${phone}`,
-      imageUri,
-      address,
-    };
-
-    // Validate that the gender attentio line belongs to the user
+    // Validate that the gender attention line belongs to the user
     const attLInDb = await db.GenderAttentionLine.findOne({
       where: {
         id,
@@ -90,7 +79,13 @@ exports.postEdit = async (req, res, next) => {
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    const resultUpdate = await attLInDb.update(dataQuery);
+    const resultUpdate = await attLInDb.update({
+      id,
+      name,
+      phone: `+57${phone}`,
+      imageUri,
+      address,
+    });
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.deletedAt;
 
@@ -116,7 +111,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all attention lines of gender equity
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention lines. Or if there's error, json (objeto): status, code, detail
  */
 exports.getListAll = async (req, res, next) => {
   try {
@@ -175,7 +170,7 @@ exports.getListAll = async (req, res, next) => {
 
 // /**
 //  * Get an attention line of gender equity by id
-//  * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
+//  * @return {object} Response contains: statusCode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
 //  */
 // exports.getSecurity = async (req, res, next) => {
 //   try {
@@ -203,7 +198,7 @@ exports.getListAll = async (req, res, next) => {
 
 /**
  * Destroy (Soft delete) an attention line of gender equity
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention line. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {

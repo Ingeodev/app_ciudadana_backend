@@ -12,15 +12,12 @@ exports.postRegister = async (req, res, next) => {
     const { name, iconMap, color } = await validator.vWebPostRegister(
       req.body
     );
-    // TODO: Gracefully handle the error when name exists, or allow duplicate names.
 
-    const dataQuery = {
+    const result = await db.SecurityCategory.create({
       name,
       iconMap,
       color,
-    };
-
-    const result = await db.SecurityCategory.create(dataQuery);
+    });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     console.error("security category could not be created: ", error.message);
@@ -37,13 +34,6 @@ exports.postEdit = async (req, res, next) => {
   try {
     const { id, name, iconMap, color } = await validator.vWebPostEdit(req.body);
 
-    const dataQuery = {
-      id,
-      name,
-      iconMap,
-      color,
-    };
-
     const categoryInDb = await db.SecurityCategory.findByPk(id);
 
     if (categoryInDb === null) {
@@ -53,7 +43,12 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await categoryInDb.update(dataQuery);
+    const resultUpdate = await categoryInDb.update({
+      id,
+      name,
+      iconMap,
+      color,
+    });
 
     return res.status(StatusCodes.OK).json({
       meta: null,

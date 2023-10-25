@@ -13,18 +13,14 @@ exports.postRegister = async (req, res, next) => {
     const { name, phone, imageUri, address } =
       await validator.vWebPostRegister(req.body);
 
-    // TODO: Gracefully handle the error when name exists, or allow duplicate names.
-
-    const dataQuery = {
+    const result = await db.Security.create({
       name,
       phone: `+57${phone}`,
       imageUri,
       address,
       active: true,
       createdAt: formatDate(new Date()),
-    };
-
-    const result = await db.Security.create(dataQuery);
+    });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("attention line of security/emergency could not be created: ", error.message);
@@ -42,14 +38,6 @@ exports.postEdit = async (req, res, next) => {
     const { id, name, phone, imageUri, address } =
       await validator.vWebPostUpdate(req.body);
 
-    const dataQuery = {
-      id,
-      name,
-      phone: `+57${phone}`,
-      imageUri,
-      address,
-    };
-
     const attLInDb = await db.Security.findByPk(id);
 
     if (attLInDb === null) {
@@ -59,7 +47,13 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await attLInDb.update(dataQuery);
+    const resultUpdate = await attLInDb.update({
+      id,
+      name,
+      phone: `+57${phone}`,
+      imageUri,
+      address,
+    });
 
     return res.status(StatusCodes.OK).json({
       meta: null,

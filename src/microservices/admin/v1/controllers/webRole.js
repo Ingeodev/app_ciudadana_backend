@@ -1,26 +1,24 @@
 const { StatusCodes } = require('http-status-codes');
+const { Op } = require('sequelize');
 const db = require('../../../../models');
 const validator = require('../../utils/schemaValidator');
-const { Op } = require('sequelize');
 
 /**
  * Create a role
  * @param {object} req - Object containing the name, description, permission
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
     const { name, description, permission } = await validator.vWebPostRegister(req.body);
     // const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
 
-    const dataQuery = {
+    const result = await db.Role.create({
       name,
       description,
       permission,
       // permission: jsonFile.buffer.toString('utf-8')
-    };
-
-    const result = await db.Role.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
@@ -32,7 +30,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update a role
  * @param {object} req - Object containing the id, name, description, permission
- * @return {object} Response contains: statuscode (integer), json (Role object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (Role object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -40,14 +38,6 @@ exports.postEdit = async (req, res, next) => {
       req.body
     );
     // const jsonFile = await validator.vMulterMemorySingleItemSchema(req.file);
-
-    const dataQuery = {
-      id,
-      name,
-      description,
-      // permission: jsonFile.buffer.toString("utf-8"),
-      permission,
-    };
 
     const roleInDb = await db.Role.findByPk(id);
 
@@ -58,7 +48,13 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await roleInDb.update(dataQuery);
+    const resultUpdate = await roleInDb.update({
+      id,
+      name,
+      description,
+      // permission: jsonFile.buffer.toString("utf-8"),
+      permission,
+    });
     delete resultUpdate.dataValues.deletedAt;
     return res.status(StatusCodes.OK).json({
       meta: null,
@@ -81,7 +77,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all Roles
  * @param {object} req.query - Object containing the number, and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data Roles. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Roles. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -123,7 +119,7 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Destroy a Role (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
@@ -168,7 +164,7 @@ exports.postDelete = async (req, res, next) => {
 /**
  * Assign a role to a user
  * @param {object} req - Object containing the userId n roleId
- * @return {object} Response contains: statuscode (integer), json object: userId n roleId, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json object: userId n roleId, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAssignRoleToUser = async (req, res, next) => {
   try {
@@ -215,7 +211,7 @@ exports.postAssignRoleToUser = async (req, res, next) => {
 /**
  * Get the users that have a certain role
  * @param {object} req.query - Object containing the roleId, number, and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data Roles. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Roles. Or if there's error, json (objeto): status, code, detail
  */
 exports.getUsersByRoleId = async (req, res, next) => {
   try {
@@ -277,7 +273,7 @@ exports.getUsersByRoleId = async (req, res, next) => {
 /**
  * Get the data of a role
  * @param {integer} req.params.id - roleId
- * @return {object} Response contains: statuscode (integer), json (object): role data. Or if there's error, json (object): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (object): role data. Or if there's error, json (object): status, code, detail
  */
 exports.getRole = async (req, res, next) => {
   try {

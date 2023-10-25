@@ -45,7 +45,7 @@ exports.postRegister = async (req, res, next) => {
         message: 'The assigned category does not exist.',
       };
 
-    const dataQuery = {
+    const result = await db.ThirdPartyCompany.create({
       createdBy: createdBy.id,
       name,
       nit,
@@ -58,9 +58,7 @@ exports.postRegister = async (req, res, next) => {
       lat,
       lon,
       geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
-    };
-
-    const result = await db.ThirdPartyCompany.create(dataQuery);
+    });
     delete result.dataValues.createdBy;
     // ! Front necesita la variable de geolocation?? 
     delete result.dataValues.geolocation;
@@ -116,21 +114,6 @@ exports.postEdit = async (req, res, next) => {
           message: "The assigned category does not exist.",
         };
 
-    const dataQuery = {
-      id,
-      name,
-      nit,
-      categoryId,
-      description,
-      phone: `+57${phone}`,
-      siteUri,
-      address,
-      imageUri,
-      lat,
-      lon,
-      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
-    };
-
     // Validate that the company belongs to the user
     const companyInDb = await db.ThirdPartyCompany.findOne({
       where: {
@@ -149,9 +132,21 @@ exports.postEdit = async (req, res, next) => {
 
     // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
 
-    const resultUpdate = await companyInDb.update(dataQuery);
+    const resultUpdate = await companyInDb.update({
+      id,
+      name,
+      nit,
+      categoryId,
+      description,
+      phone: `+57${phone}`,
+      siteUri,
+      address,
+      imageUri,
+      lat,
+      lon,
+      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+    });
     delete resultUpdate.dataValues.createdBy;
-    // ! Front necesita la variable de geolocation??
     delete resultUpdate.dataValues.geolocation;
     delete resultUpdate.dataValues.deletedAt;
 

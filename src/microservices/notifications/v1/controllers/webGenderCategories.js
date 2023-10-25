@@ -5,7 +5,7 @@ const validator = require("../../utils/validatorGenderCategory.js");
 /**
  * Create a gender attention lines category
  * @param {object} req - Object containing the title, description, imageUri, siteUri
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postRegister = async (req, res, next) => {
   try {
@@ -24,15 +24,13 @@ exports.postRegister = async (req, res, next) => {
     const { title, description, imageUri, siteUri } =
       await validator.vWebPostRegister(req.body);
 
-    const dataQuery = {
+    const result = await db.GenderCategory.create({
       createdBy: createdBy.id,
       title,
       description,
       imageUri,
       siteUri,
-    };
-
-    const result = await db.GenderCategory.create(dataQuery);
+    });
     delete result.dataValues.createdBy;
     delete result.dataValues.deletedAt;
     // ! Para front es necesario los timestamps?
@@ -46,7 +44,7 @@ exports.postRegister = async (req, res, next) => {
 /**
  * Update gender attention lines category
  * @param {object} req - Object containing the id, title, description, imageUri, siteUri
- * @return {object} Response contains: statuscode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (category object updated) if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEdit = async (req, res, next) => {
   try {
@@ -65,14 +63,6 @@ exports.postEdit = async (req, res, next) => {
     const { id, title, description, imageUri, siteUri } =
       await validator.vWebPostEdit(req.body);
 
-    const dataQuery = {
-      id,
-      title,
-      description,
-      imageUri,
-      siteUri,
-    };
-
     // Validate that the gender attention linesCategory belongs to the user
     const categoryInDb = await db.GenderCategory.findOne({
       where: {
@@ -89,7 +79,13 @@ exports.postEdit = async (req, res, next) => {
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    const resultUpdate = await categoryInDb.update(dataQuery);
+    const resultUpdate = await categoryInDb.update({
+      id,
+      title,
+      description,
+      imageUri,
+      siteUri,
+    });
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.deletedAt;
     // ! Para front es necesario los timestamps?
@@ -114,7 +110,7 @@ exports.postEdit = async (req, res, next) => {
 /**
  * Get all gender attention lines categories
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAll = async (req, res, next) => {
   try {
@@ -172,7 +168,7 @@ exports.getAll = async (req, res, next) => {
 
 // /**
 //  * Get gender attention lines category by id
-//  * @return {object} Response contains: statuscode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
+//  * @return {object} Response contains: statusCode (integer), json (objeto): data gender attention lines categories. Or if there's error, json (objeto): status, code, detail
 //  */
 // exports.getOneById = async (req, res, next) => {
 //   try {
@@ -198,7 +194,7 @@ exports.getAll = async (req, res, next) => {
 
 /**
  * Destroy a gender attention lines category (soft delete)
- * @return {object} Response contains: statuscode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
