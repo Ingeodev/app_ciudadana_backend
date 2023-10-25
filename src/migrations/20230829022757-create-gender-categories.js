@@ -20,7 +20,7 @@ module.exports = {
         title: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         description: {
           type: Sequelize.STRING(200),
@@ -55,7 +55,7 @@ module.exports = {
         schema: "public",
       }
     );
-    return await queryInterface.addConstraint("GenderCategories", {
+    await queryInterface.addConstraint("GenderCategories", {
       name: "fk_GenderCategories_CreatedBy",
       fields: ["createdBy"],
       type: "foreign key",
@@ -66,8 +66,16 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_genderCategories_title"
+      ON "GenderCategories"("title")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_genderCategories_title";
+    `);
     await queryInterface.removeConstraint("GenderCategories", "fk_GenderCategories_CreatedBy");
     await queryInterface.dropTable("GenderCategories");
   },
