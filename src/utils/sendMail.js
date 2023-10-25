@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const sgMail = require("@sendgrid/mail");
-const sgKey = require("../email_service_key.json");
+const sgKey = require("../config/email_service_key.json");
 sgMail.setApiKey(sgKey.api_key);
 
 /**

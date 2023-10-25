@@ -1,7 +1,7 @@
-const serviceAccount = require("../account_service_key.json");
 const adminFirebase = require("firebase-admin");
-const { POLICY_TEMPLATE, ROLE_PERMISSIONS } = require('../constants/permissionsAndPolicies')
 import { getAuth } from 'firebase-admin/auth';
+const { POLICY_TEMPLATE, ROLE_PERMISSIONS } = require('../constants/permissionsAndPolicies')
+const serviceAccount = require("../config/account_service_key.json");
 
 const appMobilityFirebase = adminFirebase.initializeApp({
   credential: adminFirebase.credential.cert(serviceAccount)

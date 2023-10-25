@@ -55,7 +55,7 @@ _meta
 .serverless
 
 # GCP STUFF
-src/email_service_key.json
+src/config/email_service_key.json
 src/config/account_service_key_*
 src/config/account_service_key.json
 
