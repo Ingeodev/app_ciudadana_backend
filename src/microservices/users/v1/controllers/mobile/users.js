@@ -7,7 +7,6 @@ const firebase = require("../../../../../utils/firebaseAdmin.js");
 const validator = require("../../../utils/validators/mobile/users.js");
 const { checkIfExists } = require("../../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../../utils/uriTransformer.js");
-// const Op = db.Sequelize.Op;
 
 const uploadsFolder = join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
 
@@ -51,6 +50,10 @@ exports.postAccountInfo = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ ...dataUser, phone});
   } catch (error) {
     // console.error("account postAccountInfo could not be created/updated: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The email has been used previously.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -132,13 +135,11 @@ exports.postAccountBaseLogin = async (req, res, next) => {
   } catch (error) {
     await transaction.rollback();
     // console.error("account full_login could not be updated: ", error);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "Document has been used previously.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }

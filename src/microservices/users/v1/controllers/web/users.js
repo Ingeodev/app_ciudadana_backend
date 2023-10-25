@@ -43,6 +43,10 @@ exports.postAccountInfo = async (req, res, next) => {
     });
   } catch (error) {
     // console.error( "account postAccountInfo could not be created/updated: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The email has been used previously.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -116,13 +120,11 @@ exports.postAccountBaseLogin = async (req, res, next) => {
   } catch (error) {
     await transaction.rollback();
     // console.error("account full_login could not be updated: ", error);    
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "Document has been used previously.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
