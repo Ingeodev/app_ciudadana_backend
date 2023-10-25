@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-const fs = require("fs/promises");
-const path = require("path");
+const { writeFile } = require("fs/promises");
+const { join, extname } = require("path");
 const { v4: uuidV4 } = require("uuid");
 const db = require("../../../../../models/index.js");
 const firebase = require("../../../../../utils/firebaseAdmin.js");
@@ -9,12 +9,12 @@ const { checkIfExists } = require("../../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../../utils/uriTransformer.js");
 // const Op = db.Sequelize.Op;
 
-const uploadsFolder = path.join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
+const uploadsFolder = join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
 
 /**
  * Create (loginPhase="notRegistered") or update (loginPhase="baseLogin") user's base information. All login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
  * @param {object} req - Object containing the name, lastName, phone, email
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountInfo = async (req, res, next) => {
   try {
@@ -58,7 +58,7 @@ exports.postAccountInfo = async (req, res, next) => {
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="baseLogin"
  * @param {object} req - Object containing: documentTypeId, document, address, serviceReceiptUri
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountBaseLogin = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
@@ -102,13 +102,13 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     // const folder = "uploads/users/mobile/public_service_receipt";
     // const folder = "uploads";
     const endpoint = "mobileUsersPublicServiceReceipt";
-    const uploadDir = path.join(uploadsFolder, endpoint);
-    const filename = uuidV4() + path.extname(pdfFile.originalname);
+    const uploadDir = join(uploadsFolder, endpoint);
+    const filename = uuidV4() + extname(pdfFile.originalname);
     const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
 
-    const filepath = path.join(uploadDir, filename);
+    const filepath = join(uploadDir, filename);
     await checkIfExists(uploadDir, true);
-    await fs.writeFile(filepath, pdfFile.buffer);
+    await writeFile(filepath, pdfFile.buffer);
 
     const resultUpdate = await userInDb.update(
       {
@@ -120,13 +120,12 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     );
 
     // notify the administrator
-    const dataNotif = {
+    await db.AdminNotification.create({
       type: "user-inVerification",
       referenceId: resultUpdate.id,
       tableName: "Users",
       message: "",
-    };
-    await db.AdminNotification.create(dataNotif);
+    });
     await transaction.commit();
 
     return res.status(StatusCodes.OK).json({ ...dataUser, file: imageUri });
@@ -147,7 +146,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
 
 /**
  * Gets the user information and the loginPhase
- * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountInfo = async (req, res, next) => {
   try {
@@ -198,7 +197,7 @@ exports.getAccountInfo = async (req, res, next) => {
 
 /**
  * Gets the user loginPhase
- * @return {object} Response contains: statuscode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data. Or if there's error, json (objeto): status, code, detail
  */
 exports.getAccountLoginPhase = async (req, res, next) => {
   try {
@@ -241,7 +240,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="fullLogin"
  * @param {object} req - Object containing: name, lastName, phone, address
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postAccountFullLogin = async (req, res, next) => {
   try {

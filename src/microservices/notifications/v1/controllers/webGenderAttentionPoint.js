@@ -1,12 +1,12 @@
 const { StatusCodes } = require('http-status-codes');
-const { Sequelize } = require("sequelize");
+const { literal } = require("sequelize");
 const db = require('../../../../models');
 const validator = require('../../utils/validatorGenderAttentionPoint');
 
 /**
  * Create an attention point of gender equity 
  * @param {object} req - Object containing the name, description, imageUri, phone, color, address, iconMap, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 const postRegister = async (req, res, next) => {
   try {
@@ -30,7 +30,7 @@ const postRegister = async (req, res, next) => {
       color,
       address,
       iconMap,
-      geolocation: Sequelize.literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
+      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
       createdBy: webUser.id,
     });
     const data = {
@@ -50,7 +50,7 @@ const postRegister = async (req, res, next) => {
 /**
  * Update an attention point of gender equity
  * @param {object} req - Object containing the id, name, description, imageUri, phone, color, address, iconMap, lat, lon
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 const postEdit = async (req, res, next) => {
   try {
@@ -65,7 +65,7 @@ const postEdit = async (req, res, next) => {
       };
     delete update.id;
     if (update.lat != null) {
-      update.geolocation = Sequelize.literal(`ST_GeomFromText('POINT(${update.lon} ${update.lat})')`);
+      update.geolocation = literal(`ST_GeomFromText('POINT(${update.lon} ${update.lat})')`);
       lat = update.lat;
       lon = update.lon;
       delete update.lat;
@@ -96,7 +96,7 @@ const postEdit = async (req, res, next) => {
 /**
  * Destroy (Soft delete) an attention point of gender equity
  * @param {integer} req.body.id - id of attention point of gender equity
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
  */
 const postDelete = async (req, res, next) => {
   try {
@@ -119,7 +119,7 @@ const postDelete = async (req, res, next) => {
 /**
  * Retrieve only one gender attention point by ID
  * @param {integer} req.params.id - id of attention point of gender equity
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention point. Or if there's error, json (objeto): status, code, detail
  */
 const getOneGenderAttentionPoint = async (req, res, next) => {
   try {
@@ -150,7 +150,7 @@ const getOneGenderAttentionPoint = async (req, res, next) => {
 /**
  * Get all attention points of gender equity
  * @param {object} req.query - Object containing the number and size
- * @return {object} Response contains: statuscode (integer), json (objeto): data attention points. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data attention points. Or if there's error, json (objeto): status, code, detail
  */
 const getListAll = async (req, res, next) => {
   try {

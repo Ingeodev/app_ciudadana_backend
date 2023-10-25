@@ -726,18 +726,19 @@ exports.postUploadXlsx = async (req, res, next) => {
 
         try {
           if (routeInDb === null) {
-            // Create route in db
-            const queryRoute = {
-              createdBy: createdBy.id,
-              origin: originInDb.dataValues.id,
-              destination: destinationInDb.dataValues.id,
-              duration,
-              companyId,
-            };
-
-            routeInDb = await db.TransportRoute.create(queryRoute, {
-              transaction,
-            });
+            // Create route in db           
+            routeInDb = await db.TransportRoute.create(
+              {
+                createdBy: createdBy.id,
+                origin: originInDb.dataValues.id,
+                destination: destinationInDb.dataValues.id,
+                duration,
+                companyId,
+              },
+              {
+                transaction,
+              }
+            );
 
             idRouteInDb = routeInDb.dataValues.id;
             msgSuccess += "Ruta creada, ";
@@ -784,14 +785,12 @@ exports.postUploadXlsx = async (req, res, next) => {
         try {
           if (timetableInDb === null) {
             // Create route in db
-            const queryRoute = {
-              date,
-              routeId: idRouteInDb,
-            };
-
-            timetableInDb = await db.RouteTimetable.create(queryRoute, {
-              transaction,
-            });
+            timetableInDb = await db.RouteTimetable.create(
+              { date, routeId: idRouteInDb },
+              {
+                transaction,
+              }
+            );
             msgSuccess += "Fecha creada, ";
           } else {
             msgSuccess += "Fecha no creada, ";
@@ -822,15 +821,12 @@ exports.postUploadXlsx = async (req, res, next) => {
         try {
           if (hourInDb === null) {
             // Create route in db
-            const queryRoute = {
-              hour,
-              tariff,
-              timetableId: timetableInDb.dataValues.id,
-            };
-
-            hourInDb = await db.RouteTimetableHourTariff.create(queryRoute, {
-              transaction,
-            });
+            hourInDb = await db.RouteTimetableHourTariff.create(
+              { hour, tariff, timetableId: timetableInDb.dataValues.id },
+              {
+                transaction,
+              }
+            );
 
             msgSuccess += "Hora y Tarifa creadas";
           } else {
