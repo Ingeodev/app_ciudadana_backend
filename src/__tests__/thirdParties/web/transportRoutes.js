@@ -640,7 +640,7 @@ describe("WEB Transport Routes configuration API points: ", () => {
   });
 
   describe("GET /route/ ", () => {
-    test("Should respond with status 200 and a list of objects containing the two transport routes.", async () => {
+    test("Should respond with status 200 and a list of objects containing the transport routes.", async () => {
       const response0 = await request(usedHost)
         .get(`/${testCompany0.id}`)
         .set(requestHeaders)

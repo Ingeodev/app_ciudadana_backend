@@ -34,13 +34,11 @@ exports.postRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
+    const result = await db.RouteTimetableHourTariff.create({
       hour,
       tariff,
       timetableId,
-    };
-
-    const result = await db.RouteTimetableHourTariff.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     result.dataValues.hour =result.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
@@ -91,11 +89,6 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      hour,
-      tariff,
-    };
-
     const timetableInDb = await db.RouteTimetableHourTariff.findByPk(id);
 
     if (timetableInDb === null) {
@@ -105,7 +98,7 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await timetableInDb.update(dataQuery);
+    const resultUpdate = await timetableInDb.update({ hour, tariff });
     delete resultUpdate.dataValues.deletedAt;
     resultUpdate.dataValues.hour = resultUpdate.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.OK).json({

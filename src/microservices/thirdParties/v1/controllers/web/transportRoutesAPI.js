@@ -17,18 +17,6 @@ const caliCityCode = constant.CALI_CITY_CODE;
  */
 exports.postRouteRegister = async (req, res, next) => {
   try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
-
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found.",
-        status: StatusCodes.NOT_FOUND,
-      };
-
     const { originId, destinationId, companyId, duration } =
       await validatorRoute.vWebPostRegister({
         originId: req.body.originId,
@@ -93,23 +81,24 @@ exports.postRouteRegister = async (req, res, next) => {
         // status: StatusCodes.FORBIDDEN,
       };
 
-    const dataQuery = {
+    let result = await db.TransportRoute.create({
       origin: originInDb.dataValues.id,
       destination: destinationInDb.dataValues.id,
       companyId,
       duration: formathhmm.hhmmToSeconds(duration),
-      createdBy: createdBy.id,
-    };
-
-    let result = await db.TransportRoute.create(dataQuery);
+      createdBy: res.locals.apiCreatedBy,
+    });
     delete result.dataValues.deletedAt;
     delete result.dataValues.createdBy;
-    result.dataValues.duration = formathhmm.secondsToHhmm(
-      result.dataValues.duration
-    );
+    delete result.dataValues.companyId;
+    result.dataValues.duration = formathhmm.secondsToHhmm(result.dataValues.duration);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
-    // console.error("The transport route could not be created: ", error.message);
+    // console.error("The transport route could not be created: ", JSON.stringify(error));
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "There is a similar transport route that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -121,18 +110,6 @@ exports.postRouteRegister = async (req, res, next) => {
  */
 exports.postRouteEdit = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
-
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found.",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
-
     const { id, originId, destinationId, companyId, duration } =
       await validatorRoute.vWebPostEdit({
         id: req.body.id,
@@ -223,20 +200,17 @@ exports.postRouteEdit = async (req, res, next) => {
     });
     delete resultUpdate.dataValues.deletedAt;
     delete resultUpdate.dataValues.createdBy;
-    resultUpdate.dataValues.duration = formathhmm.secondsToHhmm(
-      resultUpdate.dataValues.duration
-    );
+    delete resultUpdate.dataValues.companyId;
+    resultUpdate.dataValues.duration = formathhmm.secondsToHhmm(resultUpdate.dataValues.duration);
 
     return res.status(StatusCodes.OK).json({ meta: null, data: resultUpdate });
   } catch (error) {
     // console.error("ThirdParty categories could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "There is a similar transport route that has been previously created.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -249,18 +223,6 @@ exports.postRouteEdit = async (req, res, next) => {
  */
 exports.postRouteDelete = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
-
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found.",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
-
     const { id, companyId } = await validatorRoute.vWebPostDelete({
       id: req.body.id,
       companyId: res.locals.apiTransportCompanyId,
@@ -280,7 +242,6 @@ exports.postRouteDelete = async (req, res, next) => {
       throw {
         message: "The transport company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.FORBIDDEN,
       };
 
     // Validate that the route belongs to the transport company
@@ -289,14 +250,6 @@ exports.postRouteDelete = async (req, res, next) => {
         id,
         companyId: companyInDb.id,
       },
-      // // ! Es necesario borrar primero los horarios para borrar las rutas?
-      // include: [
-      //   {
-      //     model: db.RouteTimetable,
-      //     attributes: ["id"],
-      //     required: false,
-      //   },
-      // ],
       attributes: ["id"],
       paranoid: true,
     });
@@ -312,7 +265,7 @@ exports.postRouteDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id, companyId },
+      data: { id },
     });
   } catch (error) {
     // console.error("ThirdParty categories could not be deleted: ", error.message);
@@ -327,18 +280,6 @@ exports.postRouteDelete = async (req, res, next) => {
  */
 exports.getRouteAll = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
-
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
-
     const objPage = await validatorRoute.vWebGetListRoutes({
       companyId: res.locals.apiTransportCompanyId,
       number: req.query.page ? parseInt(req.query.page.number) : null,
@@ -382,6 +323,7 @@ exports.getRouteAll = async (req, res, next) => {
       delete companyData.originName;
       const tDestinationName = companyData.destinationName.city;
       delete companyData.destinationName;
+      delete companyData.companyId;
       companyData.duration = formathhmm.secondsToHhmm(companyData.duration);
 
       return {
@@ -414,18 +356,6 @@ exports.getRouteAll = async (req, res, next) => {
  */
 exports.getRouteItinerary = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
-
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
-
     const objPage = await validatorRoute.vWebGetItinerary({
       routeId: req.query.routeId ? parseInt(req.query.routeId) : null,
       // number: req.query.page ? parseInt(req.query.page.number) : null,
@@ -459,8 +389,6 @@ exports.getRouteItinerary = async (req, res, next) => {
         "destination",
         "companyId",
         "duration",
-        // ["imageUri", "image"],
-        // [Sequelize.col("imageUri"), "image"],
       ],
       order: [
         [db.RouteTimetable, "date", "ASC"],
@@ -473,7 +401,8 @@ exports.getRouteItinerary = async (req, res, next) => {
         message: "Route could not be retrieved",
         status: StatusCodes.NOT_FOUND,
       };
-
+    
+    delete routeInDb.companyId;
     routeInDb.duration = formathhmm.secondsToHhmm(routeInDb.duration);
     routeInDb.RouteTimetables.forEach((timetable) => {
       if (timetable.RouteTimetableHourTariffs) {
@@ -497,405 +426,6 @@ exports.getRouteItinerary = async (req, res, next) => {
   }
 };
 
-/**
- * Upload an excel file that will create/update transport routes in the database. This use "Plantilla_Registro_Rutas_de_Transporte.xlsx". With: originCode, destinationCode, duration, date, hour, tariff
- * @return {object} Response contains: statusCode (integer), json (objeto): meta n data (array of successful and unsuccessful rows). Or if there's error, json (objeto): status, code, detail
- */
-exports.postRouteUploadXlsx = async (req, res, next) => {
-  try {
-    // ! Pendiente: Validar permisos del usuario
-    const createdBy = await db.User.findOne({
-      where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-      attributes: ["id"],
-    });
-
-    if (createdBy == null || createdBy.id == null)
-      throw {
-        message: "User not found",
-        status: StatusCodes.NOT_FOUND,
-      };
-
-    const xlsxFile = await validatorRoute.vMulterMemorySingleItemSchema(req.file);
-    const { companyId } = await validatorRoute.vWebPostUploadXlsxRoutes({
-      companyId: res.locals.apiTransportCompanyId
-    });
-
-    // Verify if the transportation company exists
-    const companyInDb = await db.TransportCompany.findOne({
-      // // ! Pendiente: Validar permisos del usuario
-      where: {
-        // createdBy: createdBy.id,
-        id: companyId,
-      },
-      attributes: ["id", "name"],
-    });
-
-    if (companyInDb === null) {
-      throw {
-        message: "Transport company not found",
-        status: StatusCodes.NOT_FOUND,
-      };
-    }
-
-    const contents = parse(xlsxFile.buffer);
-    let success = [];
-    let errors = [];
-
-    // Only one sheet is allowed in the xls
-    const namePages = await validatorRoute.vRExcelPagesSchema(contents);
-
-    // for (let iPage = 0; iPage < namePages.length; iPage++) {
-    // Validate column names
-    // await validatorRoute.vRExcelHeaderSchema({ header: contents[iPage].data[0] });
-    // }
-    const iPage = 0;
-    let endRow = contents[iPage].data.length;
-
-    // Validation of the first row of each sheet - name of the columns
-
-    for (let row = 1; row < contents[iPage].data.length; row++) {
-      let durationUpdated = 1;
-      let msgSuccess = "";
-      let item = contents[iPage].data[row].slice(0, 6).toString();
-      const transaction = await db.sequelize.transaction();
-
-      // Check if there are no more data - check origin, destination, n date
-      try {
-        if (
-          (contents[iPage].data[row][2] === "" &&
-            contents[iPage].data[row][3] === "" &&
-            contents[iPage].data[row][4] === "") ||
-          (contents[iPage].data[row][0] === null &&
-            contents[iPage].data[row][1] === null &&
-            contents[iPage].data[row][3] === null) ||
-          (contents[iPage].data[row][0] === undefined &&
-            contents[iPage].data[row][1] === undefined &&
-            contents[iPage].data[row][3] === undefined)
-        ) {
-          endRow = row;
-          await transaction.rollback();
-          break;
-        }
-
-        let originCode = null,
-          destinationCode = null,
-          duration = null,
-          date = null,
-          tariff = null,
-          hour = null;
-
-        try {
-          ({ originCode, destinationCode, duration, date, hour, tariff } =
-            await validatorRoute.vRExcelRouteSchema({
-              originCode: parseInt(contents[iPage].data[row][0]),
-              destinationCode: parseInt(contents[iPage].data[row][1]),
-              duration: contents[iPage].data[row][2],
-              date: contents[iPage].data[row][3],
-              hour: contents[iPage].data[row][4],
-              tariff: parseInt(contents[iPage].data[row][5]),
-            }));
-          duration = formathhmm.hhmmToSeconds(duration);
-        } catch (error) {
-          errors.push(
-            `Fila ${row + 1} con campos [${item}]. ${error.message}.`
-          );
-          await transaction.rollback();
-          continue;
-        }
-
-        // TODO: Only routes to and from Cali, Valle del Cauca
-        if (originCode !== caliCityCode && destinationCode !== caliCityCode) {
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Solo se permiten rutas desde y hacia Cali, Valle del Cauca.`
-          );
-          await transaction.rollback();
-          continue;
-        }
-        if (originCode === destinationCode) {
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. El origen y el destino son los mismos.`
-          );
-          await transaction.rollback();
-          continue;
-        }
-
-        // -------------------------- Search the origin and destination in the db
-        const originInDb = await db.City.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: { cityCode: originCode },
-          attributes: ["id", "city", "state", "cityCode"],
-        });
-
-        if (originInDb === null) {
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Código de municipio de origen (${originCode}) no encontrado.`
-          );
-          await transaction.rollback();
-          continue;
-        }
-
-        const destinationInDb = await db.City.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: { cityCode: destinationCode },
-          attributes: ["id", "city", "state", "cityCode"],
-        });
-
-        if (destinationInDb === null) {
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Código de municipio de destino (${destinationCode}) no encontrado.`
-          );
-          await transaction.rollback();
-          continue;
-        }
-
-        // -------------------------- Check if the route exists
-        let routeInDb = null;
-        let tempRouteInDb = null;
-        let idRouteInDb = 0;
-        routeInDb = await db.TransportRoute.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: {
-            origin: originInDb.dataValues.id,
-            destination: destinationInDb.dataValues.id,
-            companyId,
-          },
-          attributes: ["id", "duration"],
-          // TODO: This means that the deleted routes will not be revived.
-          paranoid: true,
-        });
-
-        try {
-          if (routeInDb === null) {
-            // Create route in db
-            const queryRoute = {
-              createdBy: createdBy.id,
-              origin: originInDb.dataValues.id,
-              destination: destinationInDb.dataValues.id,
-              duration,
-              companyId,
-            };
-
-            routeInDb = await db.TransportRoute.create(queryRoute, {
-              transaction,
-            });
-
-            idRouteInDb = routeInDb.dataValues.id;
-            msgSuccess += "Ruta creada, ";
-          } else {
-            if (routeInDb.dataValues.duration !== duration) {
-              tempRouteInDb = await routeInDb.update(
-                { duration },
-                {
-                  transaction,
-                }
-              );
-              idRouteInDb = tempRouteInDb.dataValues.id;
-              msgSuccess += "La duración de la ruta actualizada, ";
-              durationUpdated = 0;
-            } else {
-              idRouteInDb = routeInDb.dataValues.id;
-              msgSuccess += "La duración de la ruta no actualizada, ";
-            }
-          }
-        } catch (error) {
-          await transaction.rollback();
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Error relacionado con la ruta - origen (${originCode}-${
-              originInDb.dataValues.city
-            }, ${originInDb.dataValues.state}), destino (${destinationCode}-${
-              destinationInDb.dataValues.city
-            }, ${destinationInDb.dataValues.state}).`
-          );
-          continue;
-        }
-
-        // -------------------------- Check if the route timetable (date n routeId) exists
-        let timetableInDb = null;
-        timetableInDb = await db.RouteTimetable.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: {
-            date,
-            routeId: idRouteInDb,
-          },
-          attributes: ["id"],
-          // TODO: This means that the deleted routes will not be revived.
-          paranoid: true,
-        });
-
-        try {
-          if (timetableInDb === null) {
-            // Create route in db
-            const queryRoute = {
-              date,
-              routeId: idRouteInDb,
-            };
-
-            timetableInDb = await db.RouteTimetable.create(queryRoute, {
-              transaction,
-            });
-            msgSuccess += "Fecha creada, ";
-          } else {
-            msgSuccess += "Fecha no creada, ";
-          }
-        } catch (error) {
-          await transaction.rollback();
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Error relacionado con la fecha (${date}).`
-          );
-          continue;
-        }
-
-        //--------------------------  Check if the route timetable (hour n tariff) exists
-        let hourInDb = null;
-        hourInDb = await db.RouteTimetableHourTariff.findOne({
-          // // ! Pendiente: Validar permisos del usuario
-          where: {
-            hour,
-            timetableId: timetableInDb.dataValues.id,
-          },
-          attributes: ["id", "tariff"],
-          // TODO: This means that the deleted routes will not be revived.
-          paranoid: true,
-        });
-
-        try {
-          if (hourInDb === null) {
-            // Create route in db
-            const queryRoute = {
-              hour,
-              tariff,
-              timetableId: timetableInDb.dataValues.id,
-            };
-
-            hourInDb = await db.RouteTimetableHourTariff.create(queryRoute, {
-              transaction,
-            });
-
-            msgSuccess += "Hora y Tarifa creadas";
-          } else {
-            if (String(hourInDb.dataValues.tariff) === String(tariff)) {
-              errors.push(
-                `Fila ${
-                  row + 1
-                } con campos [${item}]. La hora (${hour}) y tarifa (${tariff}) existen.`
-              );
-
-              if (durationUpdated === 0) {
-                await transaction.commit();
-                msgSuccess += "La tarifa de la hora no actualizada";
-                success.push(
-                  `Fila ${row + 1} con campos [${item}]. ${msgSuccess}.`
-                );
-                continue;
-              }
-              await transaction.rollback();
-              continue;
-            }
-
-            await hourInDb.update(
-              { tariff },
-              {
-                transaction,
-              }
-            );
-            msgSuccess += "La tarifa de la hora actualizada";
-          }
-          await transaction.commit();
-          success.push(`Fila ${row + 1} con campos [${item}]. ${msgSuccess}.`);
-        } catch (error) {
-          await transaction.rollback();
-          errors.push(
-            `Fila ${
-              row + 1
-            } con campos [${item}]. Error relacionado con la hora (${hour}) y tarifa (${tariff}).`
-          );
-          continue;
-        }
-        // -------------------------- End Row
-      } catch (error) {
-        await transaction.rollback();
-        errors.push(
-          `Fila ${row + 1} con campos [${item}]. Error en el servidor.`
-        );
-        // console.log("error.message");
-        // console.log(JSON.stringify(error));
-        continue;
-      }
-    } // End for - End Excel rows
-
-    // Create/Add route timetable
-    // const routesInDb = await db.RouteTimetable.bulkCreate(routesTimetables, {
-    //   fields: ["id", "date", "startTime", "routeId", "tariff", "duration"],
-    //   updateOnDuplicate: [
-    //     "startTime",
-    //     "tariff",
-    //     "duration",
-    //     "updatedAt",
-    //     "deletedAt",
-    //   ],
-    //   validate: true,
-    //   transaction,
-    // });
-
-    // const returnRoutes = routesInDb.map((obj) => {
-    //   return { ...obj.dataValues, deletedAt: undefined };
-    // });
-
-    let resJSON = {
-      meta: {
-        page: 1,
-        // pageSize: resJSON.routes.length,
-        // totalRecords: resJSON.routes.length,
-        totalPages: 1,
-        companyId,
-        companyName: companyInDb.dataValues.name,
-        numRows: endRow - 1,
-        numErrors: errors.length,
-        numSuccess: success.length,
-        // lastRowProcessedOfFile: endRow,
-      },
-      data: {
-        success,
-        errors,
-      },
-    };
-    return res.status(StatusCodes.CREATED).json(resJSON);
-  } catch (error) {
-    return next(error);
-  }
-};
-
-/**
- * Download the template to create new transport routes.
- * @return {object} Response contains: statusCode (integer), file. Or if there's error, json (objeto): status, code, detail
- */
-exports.getRouteDownloadXlsxTemplate = async (req, res, next) => {
-  try {
-    const downloadPath = resolve(
-      join(".", "static", "Plantilla_Registro_Rutas_de_Transporte.xlsx")
-    );
-    return res.status(StatusCodes.OK).sendFile(downloadPath);
-  } catch (error) {
-    console.error(error);
-    return next({
-      status: StatusCodes.NOT_FOUND,
-      message: "The excel template has not been loaded.",
-    });
-  }
-};
-
 // ---------------------------------- Dates ---------------------------------------------
 
 /**
@@ -908,7 +438,7 @@ exports.postDateRegister = async (req, res, next) => {
     const { date, routeId, companyId } = await validatorDate.vWebPostRegister({
       date: req.body.date,
       routeId: req.body.routeId,
-      companyId: req.locals.apiTransportCompanyId,
+      companyId: res.locals.apiTransportCompanyId,
     });
 
     // Verify whether the route belongs to the companyId
@@ -930,17 +460,16 @@ exports.postDateRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      date,
-      routeId,
-    };
-
-    const result = await db.RouteTimetable.create(dataQuery);
+    const result = await db.RouteTimetable.create({ date, routeId });
     delete result.dataValues.deletedAt;
     result.dataValues.day = new Date(date).getDay();
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
-    // console.error("Route timetable could not be created: ", error.message);
+    // console.error("Route timetable could not be created: ", JSON.stringify(error));
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The transport route has been assigned that date.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
@@ -980,12 +509,10 @@ exports.postDateRegisterWithHour = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      date,
-      routeId,
-    };
-
-    let result = await db.RouteTimetable.create(dataQuery, { transaction });
+    let result = await db.RouteTimetable.create(
+      { date, routeId },
+      { transaction }
+    );
     delete result.dataValues.deletedAt;
     result.dataValues.day = new Date(date).getDay();
 
@@ -1015,6 +542,10 @@ exports.postDateRegisterWithHour = async (req, res, next) => {
   } catch (error) {
     // console.error("Route timetable could not be created: ", error.message);
     await transaction.rollback();
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The transport route has been assigned that date.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
@@ -1052,10 +583,6 @@ exports.postDateEdit = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      date,
-    };
-
     const timetableInDb = await db.RouteTimetable.findOne({
       where: {
         id,
@@ -1070,7 +597,7 @@ exports.postDateEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await timetableInDb.update(dataQuery);
+    const resultUpdate = await timetableInDb.update({ date });
     delete resultUpdate.dataValues.deletedAt;
     resultUpdate.dataValues.day = new Date(date).getDay();
     return res.status(StatusCodes.OK).json({
@@ -1079,13 +606,11 @@ exports.postDateEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("Route timetable could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "The transport route has been assigned that date";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -1212,7 +737,7 @@ exports.postDateDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id, routeId, companyId },
+      data: { id, routeId },
     });
   } catch (error) {
     // console.error("Route timetable could not be deleted: ", error.message);
@@ -1261,18 +786,20 @@ exports.postHourRegister = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
+    const result = await db.RouteTimetableHourTariff.create({
       hour,
       tariff,
       timetableId,
-    };
-
-    const result = await db.RouteTimetableHourTariff.create(dataQuery);
+    });
     delete result.dataValues.deletedAt;
     result.dataValues.hour =result.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("Route timetable could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "The date (of transport route) has been assigned that hour/tariff.";
+      error.status = StatusCodes.BAD_REQUEST;
+    }
     return next(error);
   }
 };
@@ -1323,11 +850,6 @@ exports.postHourEdit = async (req, res, next) => {
       };
     }
 
-    const dataQuery = {
-      hour,
-      tariff,
-    };
-
     const timetableInDb = await db.RouteTimetableHourTariff.findByPk(id);
 
     if (timetableInDb === null) {
@@ -1337,7 +859,7 @@ exports.postHourEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await timetableInDb.update(dataQuery);
+    const resultUpdate = await timetableInDb.update({ hour, tariff });
     delete resultUpdate.dataValues.deletedAt;
     resultUpdate.dataValues.hour = resultUpdate.dataValues.hour.substring(0, 5);
     return res.status(StatusCodes.OK).json({
@@ -1346,13 +868,11 @@ exports.postHourEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("Route timetable could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "The date (of transport route) has been assigned that hour/tariff.";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -1502,10 +1022,10 @@ exports.postHourDelete = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id, timetableId, companyId, routeId },
+      data: { id, timetableId, routeId },
     });
   } catch (error) {
-    // console.error("Hour n tariff for a route timetabe could not be deleted: ", error.message);
+    // console.error("Hour n tariff for a route timetable could not be deleted: ", error.message);
     return next(error);
   }
 };
