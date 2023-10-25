@@ -271,7 +271,7 @@ exports.postAddRole = async (req, res, next) => {
     const role = "super_master_user";
     await firebase.addCustomClaim(clientId, role);
 
-    await adminInDb.update(roleId);
+    await adminInDb.update({ roleId });
 
     return res
       .status(StatusCodes.CREATED)
