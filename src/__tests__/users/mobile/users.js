@@ -1,8 +1,5 @@
 const request = require("supertest");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/web/v1/users`;
-// Local
 const usedHostWeb = `${global.usersMicroserviceLocalHost}/api/web/v1/users`;
 const usedHost = `${global.usersMicroserviceLocalHost}/api/mobile/v1/users`;
 describe("Mobile - Users management API points: ", () => {

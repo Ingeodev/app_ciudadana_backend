@@ -17,7 +17,7 @@ describe("Mobile - Reports management API points: ", () => {
     description: "Ignorar reporte de prueba ",
     categoryId: null,
     userId: 6,
-    imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     lat: 3.347622,
     lon: -76.530775
   };
@@ -66,7 +66,7 @@ describe("Mobile - Reports management API points: ", () => {
       .set(requestHeaders)
       .send({
         name: "Reportes de Prueba",
-        imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         color: "#002955",
       });
     const securityCategoryId = securityCategoryResponse.body.data.id;
@@ -87,22 +87,6 @@ describe("Mobile - Reports management API points: ", () => {
 
   describe("POST /security/reports ", () => {
     test("should respond with status 201 and the new object (data) after creating a new attention line", async () => {
-      //   {
-      //     "meta": null,
-      //     "data": {
-      //         "id": 3,
-      //         "title": "report title 3",
-      //         "description": "report description 3",
-      //         "securityCategoryId": 11,
-      //         "userId": 6,
-      //         "imageUri": "http://image/uri_3.jpg",
-      //         "lat": 3.347622,
-      //         "lon": -76.530775,
-      //         "updatedAt": "2023-08-17T20:31:38.675Z",
-      //         "createdAt": "2023-08-17T20:31:38.675Z",
-      //         "deletedAt": null
-      //     }
-      // }
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)

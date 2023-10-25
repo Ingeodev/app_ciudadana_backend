@@ -17,15 +17,15 @@ describe("All Tourism Categories API points: ", () => {
     const testTourCat0 = {
         name: "Sample Tourism Category 1",
         color: "#AAFFBB",
-        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     };
 
     const testTourCat1 = {
         name: "Sample Tourism Category 2",
         color: "#123456",
-        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f4.png",
-        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f4.png",
+        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     };
 
     const editPoint0 = {
@@ -34,8 +34,8 @@ describe("All Tourism Categories API points: ", () => {
     };
 
     const editPoint1 = {
-        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f7.png",
-        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f7.png",
+        icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     };
 
     const mobileResponseFormat = {

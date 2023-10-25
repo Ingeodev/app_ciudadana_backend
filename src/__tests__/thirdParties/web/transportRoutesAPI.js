@@ -48,8 +48,8 @@ describe("Web API - Tourism Services management API points: ", () => {
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
     description: "test description",
     phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    imageUri: `${global.fileManagementMicroserviceOnlineHost}/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png`,
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   describe("1. Get the apiKey of one (test) transport company. ", () => {

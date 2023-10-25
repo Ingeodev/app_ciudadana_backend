@@ -10,12 +10,12 @@ describe("Advertisement management API points: ", () => {
     };
 
     const testAdvertisement0 = {
-        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f1.png',
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         siteUri: 'http://test.site.url',
     };
 
     const testAdvertisement1 = {
-        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f2.png',
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         siteUri: 'https://test.site.url/second',
         categoryId: 1,
     };
@@ -27,7 +27,7 @@ describe("Advertisement management API points: ", () => {
     };
 
     const editAdvertisement1 = {
-        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f7.png',
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         categoryId: null,
     };
 
@@ -46,8 +46,8 @@ describe("Advertisement management API points: ", () => {
                 route: "Test Service Adv",
                 name: "Test Service Adv",
                 subtitle: "Test Service Adv",
-                imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
-                icon: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+                imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+                icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
                 accessLevel: "Test Service Adv",
             });
         const categoryId = mobileServicesResponse.body.data.id;

@@ -15,29 +15,29 @@ describe("Web - Third Party Categories management API points: ", () => {
 
   const testCategory0 = {
     name: generateAlphanumeric(),
-    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#DB85D6",
   };
 
   const testCategory1 = {
     name: generateAlphanumeric(),
-    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#E40F81",
   };
 
   const editCategory0 = {
     name: generateAlphanumeric(),
-    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#805cf7",
   };
 
   const editCategory1 = {
     name: generateAlphanumeric(),
-    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#E40F81",
   };
 

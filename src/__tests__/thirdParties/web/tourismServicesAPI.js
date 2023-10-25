@@ -26,8 +26,8 @@ describe("Web API - Tourism Services management API points: ", () => {
   const testTourCat0 = {
     name: generateAlphanumeric(),
     color: "#AAFFBB",
-    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
-    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+    icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
   
   let testCompany0 = undefined;
@@ -95,9 +95,9 @@ describe("Web API - Tourism Services management API points: ", () => {
         categoryId: testTourCat0.id,
         description: "test description",
         phone: "3122334455",
-        siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+        siteUri: 'http://test.site.url',
         address: "Calle 70 norte #17N-99",
-        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         lat: latCali,
         lon: lonCali,
       };

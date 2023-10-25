@@ -27,7 +27,7 @@ describe("WEB Alert configuration API points: ", () => {
         title: "Prueba: Ignorar",
         message: "Esta es una prueba automática, por favor ignórela.",
         siteUri: "https://www.cali.gov.co/",
-        imageUri: "https://www.cali.gov.co/info/principal/media/bloque210342.png",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         push: true,
         sms: false,
         expiresAt: new Date(Date.now() + (1000 * 60)).toUTCString(),

@@ -20,7 +20,7 @@ describe("All Security Attention Point API points: ", () => {
         phone: "3001234567",
         color: "#AAFFBB",
         address: "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
-        imageUri: "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         lat: 3.4134890206134827,
         lon: -76.69838145823707,
     };
@@ -31,14 +31,14 @@ describe("All Security Attention Point API points: ", () => {
         phone: "3001234568",
         color: "#123456",
         address: "Cl. 11 #36-6, Olimpo, Cali, Valle del Cauca",
-        imageUri: "https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f4.png",
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         lat: 3.4134890206134825,
         lon: -76.69838145823705,
     };
 
     const editPoint0 = {
         description: "Edited example security attention Point",
-        imageUri: 'https://file-management-cmiesjcqoq-uc.a.run.app/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-abcd-11bc0d1457f0.png',
+        imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         color: "#CCBBAA",
         phone: "5001234568",
     };

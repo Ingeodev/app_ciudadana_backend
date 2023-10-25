@@ -21,8 +21,8 @@ describe("Web - Transport Companies management API points: ", () => {
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-1`,
     description: "test description",
     phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   const testCompany1 = {
@@ -30,8 +30,8 @@ describe("Web - Transport Companies management API points: ", () => {
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-2`,
     description: "test description",
     phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   const editCompany0 = {
@@ -39,8 +39,8 @@ describe("Web - Transport Companies management API points: ", () => {
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-3`,
     description: "test description 1 edit",
     phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   const editCompany1 = {
@@ -48,8 +48,8 @@ describe("Web - Transport Companies management API points: ", () => {
     nit: `${Math.floor(Math.random() * (max - min + 1)) + min}-4`,
     description: "test description 2 edit",
     phone: "3122334455",
-    siteUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png"
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   beforeAll(async () => {

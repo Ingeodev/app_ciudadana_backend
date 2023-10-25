@@ -12,7 +12,7 @@ describe("Web - Security management API points: ", () => {
   const testCategory0 = {
     name: uuidV4(),
     phone: "testPhone",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url",
     address: "testAdress",
   };
@@ -20,7 +20,7 @@ describe("Web - Security management API points: ", () => {
   const testCategory1 = {
     name: uuidV4(),
     phone: "testPhone",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url",
     address: "testAdress",
   };
@@ -28,7 +28,7 @@ describe("Web - Security management API points: ", () => {
   const editCategory0 = {
     name: uuidV4(),
     phone: "testPhone updated",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png/updated",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url/updated",
     address: "testAddress updated",
   };
@@ -36,7 +36,7 @@ describe("Web - Security management API points: ", () => {
   const editCategory1 = {
     name: uuidV4(),
     phone: "testPhone updated",
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png/updated",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url/updated",
     address: "testAddress updated",
   };

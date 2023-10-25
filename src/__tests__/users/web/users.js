@@ -23,8 +23,7 @@ describe("Web - Users management API points: ", () => {
     documentTypeId: "6",
     document: "7659373893",
     address: "testDireccion",
-    serviceReceiptUri:
-      "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+    serviceReceiptUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
   };
 
   const editUser0FullLogin = {

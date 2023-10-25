@@ -15,13 +15,13 @@ describe("Web - Security Categories management API points: ", () => {
 
   const testCategory0 = {
     name: uuidV4(),
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#E40F81",
   };
 
   const testCategory1 = {
     name: uuidV4(),
-    imageUri: "gs://documentainotery.appspot.com/NicePng_nioh-png_1825374.png",
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#002955",
   };
 
