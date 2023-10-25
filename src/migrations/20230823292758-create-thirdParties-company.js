@@ -20,12 +20,12 @@ module.exports = {
         name: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         nit: {
           type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         categoryId: {
           type: Sequelize.INTEGER,
@@ -75,17 +75,14 @@ module.exports = {
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
-          // type: Sequelize.DATE
         },
         updatedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
         deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
       },
       {
@@ -104,7 +101,7 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
-    return await queryInterface.addConstraint("ThirdPartyCompanies", {
+    await queryInterface.addConstraint("ThirdPartyCompanies", {
       name: "fk_ThirdPartyCompanies_CategoryId",
       fields: ["categoryId"],
       type: "foreign key",
@@ -115,8 +112,24 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_thirdPartyCompanies_name"
+      ON "ThirdPartyCompanies"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_thirdPartyCompanies_nit"
+      ON "ThirdPartyCompanies"("nit")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_thirdPartyCompanies_nit";
+    `);
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_thirdPartyCompanies_name";
+    `);
     await queryInterface.removeConstraint("ThirdPartyCompanies", "fk_ThirdPartyCompanies_CategoryId");
     await queryInterface.removeConstraint("ThirdPartyCompanies", "fk_ThirdPartyCompanies_CreatedBy");
     await queryInterface.dropTable("ThirdPartyCompanies");
