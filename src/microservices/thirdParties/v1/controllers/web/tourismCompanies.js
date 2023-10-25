@@ -106,6 +106,10 @@ exports.postCreateApiKey = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("company could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "Please try again.";
+      error.status = StatusCodes.INTERNAL_SERVER_ERROR;
+    } 
     return next(error);
   }
 };
