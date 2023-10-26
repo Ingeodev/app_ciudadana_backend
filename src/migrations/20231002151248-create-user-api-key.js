@@ -48,7 +48,7 @@ module.exports = {
         key: {
           type: Sequelize.TEXT,
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         expirationAt: {
           type: Sequelize.DATEONLY,
@@ -72,13 +72,21 @@ module.exports = {
         schema: "public",
       }
     );
-    return await queryInterface.sequelize.query(`
+    await queryInterface.sequelize.query(`
       CREATE UNIQUE INDEX "idx_unique_userApiKey"
       ON "UserApiKeys"("createdBy", "tourismCompanyId", "transportCompanyId")
       WHERE "deletedAt" IS NULL;
     `);
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_userApiKey_key"
+      ON "UserApiKeys"("key")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_userApiKey_key";
+    `);
     await queryInterface.sequelize.query(`
       DROP INDEX IF EXISTS "idx_unique_userApiKey";
     `);

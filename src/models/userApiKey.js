@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       key: {
         type: DataTypes.TEXT,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       expirationAt: {
         type: DataTypes.DATEONLY,
@@ -80,7 +80,12 @@ module.exports = (sequelize, DataTypes) => {
           name: "idx_unique_userApiKey",
           unique: true,
           fields: ["createdBy", "tourismCompanyId", "transportCompanyId"],
-        }
+        },
+        {
+          name: "idx_unique_userApiKey_key",
+          unique: true,
+          fields: ["key"],
+        },
       ],
     }
   );
