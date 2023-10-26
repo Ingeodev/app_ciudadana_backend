@@ -17,12 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       code: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       active: {
         type: DataTypes.BOOLEAN,
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "SocialNetworkType",
-      tableName: "SocialNetworkType",
+      tableName: "SocialNetworkTypes",
       schema: "public",
       paranoid: true,
       timestamps: true,

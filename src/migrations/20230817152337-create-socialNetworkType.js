@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "SocialNetworkType",
+      "SocialNetworkTypes",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -21,7 +21,7 @@ module.exports = {
         name: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         active: {
           type: Sequelize.BOOLEAN,
@@ -45,13 +45,29 @@ module.exports = {
         },
       },
       {
-        tableName: "SocialNetworkType",
+        tableName: "SocialNetworkTypes",
         schema: "public",
       }
     );
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_socialNetworkType_code"
+      ON "SocialNetworkTypes"("code")
+      WHERE "deletedAt" IS NULL;
+    `);
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_socialNetworkType_name"
+      ON "SocialNetworkTypes"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("SocialNetworkType");
+  async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_socialNetworkType_name";
+    `);
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_socialNetworkType_code";
+    `);
+    await queryInterface.dropTable("SocialNetworkTypes");
   }
 };
