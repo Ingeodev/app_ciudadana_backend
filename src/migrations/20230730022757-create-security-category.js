@@ -55,6 +55,9 @@ module.exports = {
     `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_securityCategory_name";
+    `);
     await queryInterface.dropTable("SecurityCategories");
   },
 };
