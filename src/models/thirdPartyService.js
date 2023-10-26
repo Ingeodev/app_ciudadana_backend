@@ -30,12 +30,10 @@ module.exports = (sequelize, DataTypes) => {
       service: {
         type: DataTypes.STRING,
         allowNull: false,
-        // unique: true,
       },
       companyId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        // unique: false,
       },
     },
     {
