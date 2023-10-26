@@ -49,6 +49,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_roles_name",
+          unique: true,
+          fields: ["name"],
+        }
+      ],
     }
   );
   return Role;

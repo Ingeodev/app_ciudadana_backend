@@ -112,6 +112,18 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_thirdPartyCompanies_nit",
+          unique: true,
+          fields: ["nit"],
+        },
+        {
+          name: "idx_unique_thirdPartyCompanies_name",
+          unique: true,
+          fields: ["name"],
+        },
+      ],
       hooks: {
         beforeCreate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);

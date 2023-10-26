@@ -52,6 +52,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_date_routeId",
+          unique: true,
+          fields: ["date", "routeId"],
+        }
+      ],
     }
   );
   return RouteTimetable;

@@ -75,6 +75,13 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "UserApiKey",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_userApiKey",
+          unique: true,
+          fields: ["createdBy", "tourismCompanyId", "transportCompanyId"],
+        }
+      ],
     }
   );
   return UserApiKey;

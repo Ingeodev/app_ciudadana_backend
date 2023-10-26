@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       indexes: [
         {
+          name: "idx_unique_thirdPartyCompanyId_service",
           unique: true,
           fields: ["companyId", "service"],
         },

@@ -50,6 +50,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_hour_timetableId",
+          unique: true,
+          fields: ["hour", "timetableId"],
+        }
+      ],
     }
   );
   return RouteTimetableHourTariff;

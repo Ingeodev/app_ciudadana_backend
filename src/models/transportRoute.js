@@ -96,20 +96,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
-      // hooks: {
-      //   // It also eliminates the services that the company has
-      //   beforeDestroy: async (company, options) => {
-      //     try {
-      //       await company.getThirdPartyServices().then((services) => {
-      //         services.forEach(async (service) => {
-      //           await service.destroy({ force: false }); // Here, force: false, makes it a soft-delete.
-      //         });
-      //       });
-      //     } catch (error) {
-      //       throw new Error("Error deleting company services");
-      //     }
-      //   },
-      // },
+      indexes: [
+        {
+          name: "idx_unique_origin_destination_companyId",
+          unique: true,
+          fields: ["origin", "destination", "companyId"],
+        }
+      ],
     }
   );
   return TransportRoute;

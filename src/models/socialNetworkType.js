@@ -37,6 +37,18 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_socialNetworkType_code",
+          unique: true,
+          fields: ["code"],
+        },
+        {
+          name: "idx_unique_socialNetworkType_name",
+          unique: true,
+          fields: ["name"],
+        },
+      ],
     }
   );
   return SocialNetworkType;

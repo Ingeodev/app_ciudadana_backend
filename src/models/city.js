@@ -61,6 +61,18 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_cityCode",
+          unique: true,
+          fields: ["cityCode"],
+        },
+        {
+          name: "idx_unique_city_state",
+          unique: true,
+          fields: ["city", "state"],
+        },
+      ],
     }
   );
   return City;

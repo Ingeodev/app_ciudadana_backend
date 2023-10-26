@@ -49,6 +49,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      // indexes: [
+      //   {
+      //     name: "idx_unique_reportStatues",
+      //     unique: true,
+      //     fields: ["reportId", "status"],
+      //   },
+      // ],
     }
   );
   return ReportStatus;
