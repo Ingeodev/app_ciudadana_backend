@@ -15,7 +15,7 @@ module.exports = {
         name: {
           type: Sequelize.STRING(128),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         phone: {
           type: Sequelize.STRING,
@@ -55,8 +55,16 @@ module.exports = {
         schema: "public",
       }
     );
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_securities"
+      ON "Securities"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_securities";
+    `);
     await queryInterface.dropTable("Securities");
   },
 };
