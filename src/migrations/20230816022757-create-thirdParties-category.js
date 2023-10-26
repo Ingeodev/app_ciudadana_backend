@@ -15,7 +15,7 @@ module.exports = {
         name: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         icon: {
           type: Sequelize.STRING,
@@ -53,8 +53,16 @@ module.exports = {
         schema: "public",
       }
     );
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_thiPartyCategories_name"
+      ON "ThirdPartyCategories"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_thiPartyCategories_name";
+    `);
     await queryInterface.dropTable("ThirdPartyCategories");
   },
 };
