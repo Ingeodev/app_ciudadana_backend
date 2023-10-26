@@ -29,12 +29,12 @@ module.exports = (sequelize, DataTypes) => {
       code: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       active: {
         type: DataTypes.BOOLEAN,
@@ -49,6 +49,18 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_documentType_code",
+          unique: true,
+          fields: ["code"],
+        },
+        {
+          name: "idx_unique_documentType_name",
+          unique: true,
+          fields: ["name"],
+        },
+      ],
     }
   );
   return DocumentType;

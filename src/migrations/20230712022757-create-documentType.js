@@ -15,12 +15,12 @@ module.exports = {
         code: {
           type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         name: {
           type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         active: {
           type: Sequelize.BOOLEAN,
@@ -45,8 +45,24 @@ module.exports = {
         schema: "public",
       }
     );
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_documentType_code"
+      ON "DocumentTypes"("code")
+      WHERE "deletedAt" IS NULL;
+    `);
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_documentType_name"
+      ON "DocumentTypes"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_documentType_name";
+    `);
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_documentType_code";
+    `);
     await queryInterface.dropTable("DocumentTypes");
   },
 };
