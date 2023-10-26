@@ -15,27 +15,24 @@ module.exports = {
         service: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          // unique: true,
+          unique: false,
         },
         companyId: {
           type: Sequelize.INTEGER,
           allowNull: false,
-          // unique: false,
+          unique: false,
         },
         createdAt: {
           type: "TIMESTAMP",
           allowNull: false,
-          // type: Sequelize.DATE
         },
         updatedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
         deletedAt: {
           type: "TIMESTAMP",
           allowNull: true,
-          // type: Sequelize.DATE
         },
       },
       {
