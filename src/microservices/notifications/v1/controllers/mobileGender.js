@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { Sequelize } = require("sequelize");
+const { fn, col } = require("sequelize");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorGenderAttentionPoint.js");
 
@@ -9,45 +9,34 @@ const validator = require("../../utils/validatorGenderAttentionPoint.js");
  */
 exports.getCategoriesnAttentionLines = async (req, res, next) => {
   try {
-    // ! Por el momento, las categorias se pueden obtener sin importar si es de su creador o no.
-    // // ! Pendiente: Validar permisos del usuario
-
     // --------------- Gender categories ----------------------------
     const categInDb = await db.GenderCategory.findAndCountAll({
       // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
       attributes: [
         "id",
         "title",
         "description",
-        [Sequelize.col("imageUri"), "image"],
-        [Sequelize.col("siteUri"), "url"],
+        [col("imageUri"), "image"],
+        [col("siteUri"), "url"],
       ],
 
-      // limit: objPage.size,
-      // offset: (objPage.number - 1) * objPage.size,
-      order: [["title", "ASC"]], // Sort by date of creation in descending order
+      order: [["title", "ASC"]],
     });
 
-    // const totalPages = Math.ceil(categInDb.count / objPage.size);
 
     // --------------- Gender Attention Lines ----------------------------
     const attenLInDb = await db.GenderAttentionLine.findAndCountAll({
-      // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
       attributes: [
         "name",
         "phone",
         "address",
-        [Sequelize.col("imageUri"), "image"],
+        [col("imageUri"), "image"],
       ],
-      // limit: objPage.size,
-      // offset: (objPage.number - 1) * objPage.size,
-      order: [["name", "ASC"]], // Sort by date of creation in descending order
+      order: [["name", "ASC"]],
     });
 
     const transformedLines = attenLInDb.rows.map((line) => {
-      const lineData = line.get({ plain: true }); // Convert Sequelize instance to simple object
+      const lineData = line.get({ plain: true });
       if (lineData.phone != null) {
         lineData.phone = String(lineData.phone).replace("+57", "");
       }
@@ -73,18 +62,6 @@ exports.getCategoriesnAttentionLines = async (req, res, next) => {
  */
 exports.getAttentionPoints = async (req, res, next) => {
   try {
-    // // ! Pendiente: Validar permisos del usuario
-    // const createdBy = await db.User.findOne({
-    //   where: { disabled: false, userMobile: false, clientId: res.locals.uid },
-    //   attributes: ["id"],
-    // });
-
-    // if (createdBy == null || createdBy.id == null)
-    //   throw {
-    //     message: "User not found",
-    //     status: StatusCodes.NOT_FOUND,
-    //   };
-
     const objPage = await validator.vMobileMGetListAll({
       lat: req.query.lat,
       lon: req.query.lon,
@@ -95,16 +72,14 @@ exports.getAttentionPoints = async (req, res, next) => {
     let order = [["name", "ASC"]];
     if (objPage.lat != null && objPage.lon != null) {
       order = [[
-        Sequelize.fn("ST_Distance",
-          Sequelize.col('geolocation'),
-          Sequelize.fn("ST_MakePoint", objPage.lon, objPage.lat)
+        fn("ST_Distance",
+          col('geolocation'),
+          fn("ST_MakePoint", objPage.lon, objPage.lat)
         ),
         "ASC"]];
     }
 
     const pointsInDb = await db.GenderAttentionPoint.findAndCountAll({
-      // // ! Pendiente: Validar permisos del usuario
-      // where: { createdBy: createdBy.id },
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order,
@@ -116,25 +91,13 @@ exports.getAttentionPoints = async (req, res, next) => {
         "description",
         "address",
         "phone",
-        // ["imageUri", "image"],
-        [Sequelize.col("imageUri"), "image"],
+        [col("imageUri"), "image"],
         "geolocation"
       ],
     });
 
-    // if (pointsInDb.count <= 0)
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "There are not gender attention points registered",
-    //   };
-    // if (pointsInDb.rows.length <= 0)
-    //   throw {
-    //     status: StatusCodes.BAD_REQUEST,
-    //     message: '"page.number" is too large for the number of possible pages',
-    //   };
-
     const transformedPoints = pointsInDb.rows.map((point) => {
-      const pointData = point.get({ plain: true }); // Convert Sequelize instance to simple object
+      const pointData = point.get({ plain: true });
       if (pointData.phone != null) {
         pointData.phone = String(pointData.phone).replace("+57", "");
       }

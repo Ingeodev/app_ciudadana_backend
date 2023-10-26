@@ -1,8 +1,5 @@
 const request = require("supertest");
 
-// Deployed
-// const usedHost = `${global.usersMicroserviceOnlineHost}/api/mobile/v1/users/categories`;
-// Local
 const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/gender`;
 
 describe("Mobile - Gender equality management API points: ", () => {
@@ -25,19 +22,11 @@ describe("Mobile - Gender equality management API points: ", () => {
   describe("GET /gender ", () => {
     test("should respond with status 200 and a list of gender equality attention lines and categories", async () => {
       const response0 = await request(usedHost).get("/").set(requestHeaders);
-      // .query({ page: { number: 1, size: 2 }, lat, lon });
       expect(response0.statusCode).toBe(200);
-      // expect(response0.body).toEqual(expect.any(Array));
-      // expect(response0.body.length).toBe(2);
       expect(response0.body).toHaveProperty("info");
       expect(response0.body).toHaveProperty("genderLines");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost)
         .get("/");
