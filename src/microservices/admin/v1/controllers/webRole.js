@@ -23,6 +23,10 @@ exports.postRegister = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
     // console.error("Role could not be created: ", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      error.message = "Name must be unique";
+      error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
@@ -62,13 +66,11 @@ exports.postEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("Role could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = "Name must be unique";
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -90,9 +92,14 @@ exports.getAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["name", "ASC"]],
-      attributes: {
-        exclude: ["deletedAt"],
-      },
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "permission",
+        "createdAt",
+        "updatedAt",
+      ],
     });
 
     let message = undefined;
@@ -234,18 +241,17 @@ exports.getUsersByRoleId = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["name", "ASC"]],
-      attributes: {
-        exclude: [
-          "deletedAt",
-          "serviceReceiptUri",
-          "pushDeviceToken",
-          "emailVerified",
-          "clientId",
-          "documentTypeId",
-          "document",
-          "loginPhase",
-        ],
-      },
+      attributes: [
+        "id",
+        "roleId",
+        "name",
+        "lastName",
+        "email",
+        "disabled",
+        "userMobile",
+        "createdAt",
+        "updatedAt",
+      ],
     });
 
     let message = undefined;
@@ -300,9 +306,14 @@ exports.getRole = async (req, res, next) => {
         // // ! Pendiente: Validar permisos del usuario
         // createdBy: createdBy.id,
       },
-      attributes: {
-        exclude: ["deletedAt"],
-      },
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "permission",
+        "createdAt",
+        "updatedAt"
+      ]
     });
 
     if (roleInDb == null)
