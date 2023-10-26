@@ -51,6 +51,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_securityCategory_name",
+          unique: true,
+          fields: ["name"],
+        },
+      ],
       hooks: {
         beforeCreate: (obj, options) => {
           obj.iconMap = transformReceivedUriToSave(obj.iconMap);

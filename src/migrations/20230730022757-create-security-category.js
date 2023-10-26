@@ -15,7 +15,7 @@ module.exports = {
         name: {
           type: Sequelize.STRING(50),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         iconMap: {
           type: Sequelize.STRING,
@@ -48,6 +48,11 @@ module.exports = {
         schema: "public",
       }
     );
+    return await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_securityCategory_name"
+      ON "SecurityCategories"("name")
+      WHERE "deletedAt" IS NULL;
+    `);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("SecurityCategories");
