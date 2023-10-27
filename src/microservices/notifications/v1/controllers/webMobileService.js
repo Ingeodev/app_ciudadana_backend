@@ -85,12 +85,31 @@ const changeStatusMobileService = async (req, res, next) => {
 const deleteMobileService = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const MobileService = await db.MobileService.findByPk(id);
-    if (MobileService == null)
+    const MobileService = await db.MobileService.findByPk(id, {
+      include: [
+        {
+          model: db.Advertisement,
+          attributes: ["id"],
+          required: false,
+        },
+      ],
+      attributes: ["id"],
+      paranoid: true,
+    });
+    
+    if (MobileService === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
-        message: `The requested MobileService with id ${id} has already been deleted.`
+        message: `The requested MobileService with id ${id} has already been deleted.`,
       };
+    }
+
+    if (MobileService.Advertisements != 0)
+      throw {
+        status: StatusCodes.UNPROCESSABLE_ENTITY,
+        message: `The mobile service has active records associated.`,
+      };
+    
     await MobileService.destroy();
     return res.status(StatusCodes.OK).json({
       data: { id }
