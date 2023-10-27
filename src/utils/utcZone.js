@@ -18,19 +18,14 @@ const dateHourWithOffset = () => {
  * Get the current date (yyyy-mm-dd) in timestamp format with the offset corresponding to the time zone.
  * @returns The current date
  */
-const dateWithOffset = () => {
-  const currentDate = new Date();
-  const currentTime = currentDate.getTime();
-  currentDate.setTime(currentTime + UTC_OFFSET_MILLISECONDS);
-  const date = String(currentDate.toISOString()).split("T")[0];
+const onlyDateWithOffset = () => {
+  const date = String(dateHourWithOffset().toISOString()).split("T")[0];
   return date;
 };
-
-
 
 module.exports = {
   UTC_OFFSET_MILLISECONDS,
   UTC_ZONE,
   dateHourWithOffset,
-  dateWithOffset,
+  onlyDateWithOffset,
 };

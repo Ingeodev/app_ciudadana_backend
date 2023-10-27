@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-const { UTC_OFFSET_MILLISECONDS } = require("../../../../../config/utc_zone.json");
+const { dateHourWithOffset } = require("../../../../../utils/utcZone");
 
 // ------------ Functions and constants - Excel
 // const dayInMilliseconds = 24 * 60 * 60 * 1000;
@@ -189,9 +189,6 @@ const excelRouteSchema = joi.object({
     .required()
     .pattern(/^(\d{4})-(\d{2})-(\d{2})$/)
     .custom((value, helpers) => {
-      const currentDate = new Date();
-      const currentTime = currentDate.getTime();
-      currentDate.setTime(currentTime + UTC_OFFSET_MILLISECONDS);
       const inputDate = new Date(
         Date.UTC(
           parseInt(value.split("-")[0]),
@@ -199,13 +196,13 @@ const excelRouteSchema = joi.object({
           parseInt(value.split("-")[2])
         )
       );
-      inputDate.setUTCHours(currentDate.getUTCHours());
-      inputDate.setUTCMinutes(currentDate.getUTCMinutes());
-      inputDate.setUTCSeconds(currentDate.getUTCSeconds());
-      inputDate.setUTCMilliseconds(currentDate.getUTCMilliseconds());
+      inputDate.setUTCHours(dateHourWithOffset().getUTCHours());
+      inputDate.setUTCMinutes(dateHourWithOffset().getUTCMinutes());
+      inputDate.setUTCSeconds(dateHourWithOffset().getUTCSeconds());
+      inputDate.setUTCMilliseconds(dateHourWithOffset().getUTCMilliseconds());
 
       // We check if the date is invalid or in the past.
-      if (inputDate < currentDate) {
+      if (inputDate < dateHourWithOffset()) {
         return helpers.error("any.invalid");
       }
       return value; // Return date if valid

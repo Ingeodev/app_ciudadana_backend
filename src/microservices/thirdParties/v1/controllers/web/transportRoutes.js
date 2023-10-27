@@ -6,6 +6,7 @@ const { parse } = require("node-xlsx");
 const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/transportRoutes.js");
 const formathhmm = require("../../../utils/formatHH_MM.js")
+const { onlyDateWithOffset } = require("../../../../../utils/utcZone.js");
 const constant = require("../../../constant.json");
 const caliCityCode = constant.CALI_CITY_CODE;
 const templateRoutesXlsx = constant.TEMPLATE_TRANSPORT_ROUTES;
@@ -497,7 +498,7 @@ exports.getItinerary = async (req, res, next) => {
       include: [
         {
           model: db.RouteTimetable,
-          where: { date: { [Op.gte]: new Date() } },
+          where: { date: { [Op.gte]: onlyDateWithOffset() } },
           include: [
             {
               model: db.RouteTimetableHourTariff,

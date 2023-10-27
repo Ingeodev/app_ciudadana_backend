@@ -7,6 +7,7 @@ const validatorRoute = require("../../../utils/validators/web/transportRoutes.js
 const validatorDate = require("../../../utils/validators/web/routeTimetables.js");
 const validatorHour = require("../../../utils/validators/web/routeTimetablesHourTariff.js");
 const formathhmm = require("../../../utils/formatHH_MM.js");
+const { onlyDateWithOffset } = require("../../../../../utils/utcZone.js");
 const constant = require("../../../constant.json");
 const caliCityCode = constant.CALI_CITY_CODE;
 
@@ -371,7 +372,7 @@ exports.getRouteItinerary = async (req, res, next) => {
       include: [
         {
           model: db.RouteTimetable,
-          where: { date: { [Op.gte]: new Date() } },
+          where: { date: { [Op.gte]: onlyDateWithOffset() } },
           include: [
             {
               model: db.RouteTimetableHourTariff,

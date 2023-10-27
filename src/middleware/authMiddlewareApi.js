@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const { Op } = require("sequelize");
 const db = require("../models/index.js");
-const { dateWithOffset } = require("../utils/utcZone.js");
+const { onlyDateWithOffset } = require("../utils/utcZone.js");
 
 const apiKeySchema = joi
   .object({
@@ -47,7 +47,7 @@ const authMiddleware = async (req, res, next) => {
     const apiInDb = await db.UserApiKey.findOne({
       where: {
         key: apiKey,
-        expirationAt: { [Op.gte]: dateWithOffset() },
+        expirationAt: { [Op.gte]: onlyDateWithOffset() },
       },
       paranoid: true,
     });
