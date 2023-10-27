@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../../../config/utc_zone.json");
 
 // ------------ Functions and constants - Excel
 // const dayInMilliseconds = 24 * 60 * 60 * 1000;

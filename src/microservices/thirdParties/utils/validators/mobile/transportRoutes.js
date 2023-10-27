@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../../../config/utc_zone.json");
 
 const getRoutesSchema = joi.object({
   city: joi.number().integer().greater(0).invalid(0).required(),

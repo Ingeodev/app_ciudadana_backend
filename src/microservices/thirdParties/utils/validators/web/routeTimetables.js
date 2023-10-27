@@ -1,8 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
-const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../../../config/utc_zone.json");
 
-// .greater(new Date().toISOString().split("T")[0])
 const registerSchema = joi.object({
   date: joi.string().required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)

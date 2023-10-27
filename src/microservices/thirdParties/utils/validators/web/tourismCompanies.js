@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const polygonCali = require("../../../../../utils/polygonCali.js");
-const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../../../config/utc_zone.json");
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
