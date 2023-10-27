@@ -30,10 +30,10 @@ describe("WEB Cities configuration API points: ", () => {
   const powerpoint = path.join(filesPath, "PowerPoint.pptx");
   const word = path.join(filesPath, "Word.docx");
 
-  const min1 = 9920;
-  const max1 = 9950;
-  const min2 = 9951;
-  const max2 = 9999;
+  const min1 = 1000000;
+  const max1 = 2000000;
+  const min2 = 3000000;
+  const max2 = 4000000;
   let citiesIdExcel = [];
 
   const testCity0 = {
@@ -60,14 +60,15 @@ describe("WEB Cities configuration API points: ", () => {
     state: "TEST",
   };
 
-  beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
-      .post("/accounts:signInWithPassword")
-      .query({ key: global.firebaseKey })
-      .send(global.firebaseTestWebUserLogin);
-    requestHeaders.Authorization += firebaseAuth.body.idToken;
+  describe("Firebase - Get token ", () => {
+    test("Should respond with status 200 and the firebase token .", async () => {
+      const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
+        .post("/accounts:signInWithPassword")
+        .query({ key: global.firebaseKey })
+        .send(global.firebaseTestWebUserLogin);
+      expect(firebaseAuth.statusCode).toBe(200);
+      requestHeaders.Authorization += firebaseAuth.body.idToken;
+    });
   });
 
   // afterAll(async () => {

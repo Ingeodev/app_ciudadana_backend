@@ -72,12 +72,11 @@ describe("Web API - Tourism Services management API points: ", () => {
   describe("Get the apiKey of one (test) tourism company. ", () => {
     test("Should respond with status 201 and the new object (data) after creating a new category/company.", async () => {
       // 
-      const firebaseAuth = await request(
-        "https://identitytoolkit.googleapis.com/v1"
-      )
+      const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
         .post("/accounts:signInWithPassword")
         .query({ key: global.firebaseKey })
         .send(global.firebaseTestWebUserLogin);
+      expect(firebaseAuth.statusCode).toBe(200);
       requestHeadersFirebase.Authorization += firebaseAuth.body.idToken;
 
       // Create a test tourism category

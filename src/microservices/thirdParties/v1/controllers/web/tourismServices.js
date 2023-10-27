@@ -3,13 +3,13 @@ const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/web/tourismServices.js");
 
 /**
- * Checks whether an TourismService ID exists and refers to an existing category.
- * @param {number} companyId The ID of an TourismService, or ``null``.
- * @returns {boolean} `true` if the `categoryId` is `null` or exists in the TourismService table. ``false`` otherwise.
+ * Checks whether an TourismCompany ID exists and refers to an existing category.
+ * @param {number} companyId The ID of an TourismCompany, or ``null``.
+ * @returns {boolean} `true` if the `categoryId` is `null` or exists in the TourismCompany table. ``false`` otherwise.
  */
 const checkCompanyExists = async (companyId) => {
   if (companyId != null) {
-    const companyInDb = await db.TourismService.findByPk(companyId, { attributes: ['id'], paranoid: true });
+    const companyInDb = await db.TourismCompany.findByPk(companyId, { attributes: ['id'], paranoid: true });
     if (companyInDb == null)
       return false;
   }

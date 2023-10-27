@@ -41,14 +41,15 @@ describe("Web - Third Party Categories management API points: ", () => {
     color: "#E40F81",
   };
 
-  beforeAll(async () => {
-    const firebaseAuth = await request(
-      "https://identitytoolkit.googleapis.com/v1"
-    )
-      .post("/accounts:signInWithPassword")
-      .query({ key: global.firebaseKey })
-      .send(global.firebaseTestWebUserLogin);
-    requestHeaders.Authorization += firebaseAuth.body.idToken;
+  describe("Firebase - Get token ", () => {
+    test("Should respond with status 200 and the firebase token .", async () => {
+      const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
+        .post("/accounts:signInWithPassword")
+        .query({ key: global.firebaseKey })
+        .send(global.firebaseTestWebUserLogin);
+      expect(firebaseAuth.statusCode).toBe(200);
+      requestHeaders.Authorization += firebaseAuth.body.idToken;
+    });
   });
 
   describe("POST /categories/ ", () => {

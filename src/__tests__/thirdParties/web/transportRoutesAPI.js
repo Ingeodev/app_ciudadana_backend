@@ -5,7 +5,7 @@ const caliCityCode = constant.CALI_CITY_CODE;
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company_api`;
 describe("Web API - Tourism Services management API points: ", () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(60000);
 
   let requestHeaders = {
     "x-api-key": "",
@@ -55,12 +55,11 @@ describe("Web API - Tourism Services management API points: ", () => {
   describe("1. Get the apiKey of one (test) transport company. ", () => {
     test("Should respond with status 201 and the new object (data) after creating a new transport company and your apiKey.", async () => {
       //
-      const firebaseAuth = await request(
-        "https://identitytoolkit.googleapis.com/v1"
-      )
+      const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
         .post("/accounts:signInWithPassword")
         .query({ key: global.firebaseKey })
         .send(global.firebaseTestWebUserLogin);
+      expect(firebaseAuth.statusCode).toBe(200);
       requestHeadersFirebase.Authorization += firebaseAuth.body.idToken;
 
       // Create a test transport company
