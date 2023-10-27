@@ -416,20 +416,16 @@ exports.getOneById = async (req, res, next) => {
 };
 
 /**
- * Delete an admin
- * @return {object} Response contains: statusCode (integer), json (objeto): data admin. Or if there's error, json (objeto): status, code, detail
+ * Delete an web or mobile user 
+ * @param {integer} req.body.id - user Id
+ * @return {object} Response contains: statusCode (integer), json (objeto): user Id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
   try {
     const { id } = await validator.vWebPostDelete(req.body);
-    const adminInDb = await db.User.findOne({
-      where: {
-        id,
-        userMobile: false
-      }
-    });
+    const userInDb = await db.User.findByPk(id);
 
-    if (adminInDb === null) {
+    if (userInDb === null) {
       throw {
         status: StatusCodes.NOT_FOUND,
         message: `The user does not exist`,
@@ -437,11 +433,10 @@ exports.postDelete = async (req, res, next) => {
     }
 
     // ! Pendiente: Verificar que el usuario admin no este siendo usado (fk) en otras tablas
-    await adminInDb.destroy();
+    // ! Pendiente: Ó realizar la eliminación en cascada
+    await userInDb.destroy();
 
-    return res
-      .status(StatusCodes.OK)
-      .send({ meta: null, data: { id } });
+    return res.status(StatusCodes.OK).send({ meta: null, data: { id } });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
     return next(error);
