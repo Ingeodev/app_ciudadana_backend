@@ -60,14 +60,14 @@ const authMiddleware = async (req, res, next) => {
 
     // Verify that the company is not deleted
     let categoryExists = null;
-    if (!isNaN(apiInDb.tourismCompanyId)) {
+    if (!isNaN(apiInDb.tourismCompanyId) && apiInDb.transportCompanyId === null) {
       categoryExists = await db.TourismCompany.findByPk(
         apiInDb.tourismCompanyId,
         { attributes: ["id"], paranoid: true }
       );
     }
 
-    if (!isNaN(apiInDb.transportCompanyId)) {
+    if (!isNaN(apiInDb.transportCompanyId) && apiInDb.tourismCompanyId === null) {
       categoryExists = await db.TransportCompany.findByPk(
         apiInDb.transportCompanyId,
         { attributes: ["id"], paranoid: true }
