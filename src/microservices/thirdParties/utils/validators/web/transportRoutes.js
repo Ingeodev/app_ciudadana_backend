@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
 
 // ------------ Functions and constants - Excel
 // const dayInMilliseconds = 24 * 60 * 60 * 1000;
@@ -189,10 +190,22 @@ const excelRouteSchema = joi.object({
     .pattern(/^(\d{4})-(\d{2})-(\d{2})$/)
     .custom((value, helpers) => {
       const currentDate = new Date();
-      const inputDate = new Date(value);
+      const currentTime = currentDate.getTime();
+      currentDate.setTime(currentTime + UTC_OFFSET_MILLISECONDS);
+      const inputDate = new Date(
+        Date.UTC(
+          parseInt(value.split("-")[0]),
+          parseInt(value.split("-")[1]) - 1, // Los meses en JavaScript van de 0 a 11
+          parseInt(value.split("-")[2])
+        )
+      );
+      inputDate.setUTCHours(currentDate.getUTCHours());
+      inputDate.setUTCMinutes(currentDate.getUTCMinutes());
+      inputDate.setUTCSeconds(currentDate.getUTCSeconds());
+      inputDate.setUTCMilliseconds(currentDate.getUTCMilliseconds());
 
       // We check if the date is invalid or in the past.
-      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+      if (inputDate < currentDate) {
         return helpers.error("any.invalid");
       }
       return value; // Return date if valid
@@ -240,7 +253,11 @@ const excelRouteSchema = joi.object({
       });
       return errors;
     }),
-  tariff: joi.number().integer().min(0).required()
+  tariff: joi
+    .number()
+    .integer()
+    .min(0)
+    .required()
     .error((errors) => {
       errors.forEach((err) => {
         switch (err.code) {
@@ -264,83 +281,6 @@ const excelRouteSchema = joi.object({
       return errors;
     }),
 });
-
-// * Validation for a date in excel format, i.e. in numbers
-// date: joi
-//   .number()
-//   .required()
-//   .integer()
-//   .min(convertJSDatetoExcelSerial(new Date()))
-//   .custom((value, helpers) => {
-//     const date = convertSerialDateToJSDate(value);
-//     if (isNaN(date)) {
-//       return helpers.error("any.invalid");
-//     }
-//     const y = date.getFullYear();
-//     const m = String(date.getMonth() + 1).padStart(2, "0");
-//     const d = String(date.getDate()).padStart(2, "0");
-//     return `${y}-${m}-${d}`;
-//   }, "Date Transformation from Excel Serial")
-//   .error((errors) => {
-//     for (let error of errors) {
-//       // const label = error.local?.label || "value";
-//       switch (error.code) {
-//         case "number.base":
-//           error.message = `"Fecha" must be a number.`;
-//           break;
-//         case "any.required":
-//           error.message = `"Fecha" is required.`;
-//           break;
-//         case "number.integer":
-//           error.message = `"Fecha" must be an integer.`;
-//           break;
-//         case "number.min":
-//           error.message = `"Fecha" should not be in the past.`;
-//           break;
-//         case "any.invalid":
-//           error.message = `"Fecha" contains an invalid date.`;
-//           break;
-//         default:
-//           error.message = `"Fecha" has an invalid value.`;
-//           break;
-//       }
-//     }
-//     return errors;
-//   }),
-
-// * Validacion de array de horas [hh:mm, hh:mm, ...]
-// startTime: joi.string().required()
-//   .pattern(new RegExp(`^${timePattern.source}(,\\s?${timePattern.source})*$`))
-//   .custom((value, helpers) => {
-//     // Convert the string "hh:mm, hh:mm, ..." to an array ["hh:mm", "hh:mm", ...].
-//     const times = value.split(",").map((time) => time.trim());
-
-//     if (new Set(times).size !== times.length) {
-//       // If there are duplicate hours, return an error
-//       return helpers.error("any.invalid");
-//     }
-//     return times; // Return the resulting array
-//   }, "Time Splitting and Deduplication")
-//   .error((errors) => {
-//     for (let error of errors) {
-//       // const label = error.local?.label || "value";
-//       switch (error.code) {
-//         case "string.pattern.base":
-//           error.message = `"Horas" must be in the format "hh:mm, hh:mm, ...`;
-//           break;
-//         case "any.required":
-//           error.message = `"Horas" is required.`;
-//           break;
-//         case "any.invalid":
-//           error.message = `"Horas" contains duplicate times.`;
-//           break;
-//         default:
-//           error.message = `"Horas" has an invalid value.`;
-//           break;
-//       }
-//     }
-//     return errors;
-//   }),
 
 // ---------- Excel - End -----------------------
 

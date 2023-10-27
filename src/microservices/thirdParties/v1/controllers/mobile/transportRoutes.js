@@ -16,8 +16,6 @@ exports.getTransportRoutes = async (req, res, next) => {
     const { city: idCity, date } = await validator.vMobileGetTransportRoutes({
       city: req.query.city,
       date: req.query.date,
-      // number: req.query.page ? parseInt(req.query.page.number) : 1,
-      // size: req.query.page ? parseInt(req.query.page.size) : 100,
     });
 
     const cities = await db.City.findAll({

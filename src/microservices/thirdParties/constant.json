@@ -1,4 +1,6 @@
 {
   "CALI_CITY_CODE": 76001,
-  "TEMPLATE_TRANSPORT_ROUTES": "Plantilla_Registro_Rutas_de_Transporte.xlsx"
+  "TEMPLATE_TRANSPORT_ROUTES": "Plantilla_Registro_Rutas_de_Transporte.xlsx",
+  "UTC_ZONE": -5,
+  "UTC_OFFSET_MILLISECONDS": -18000000
 }

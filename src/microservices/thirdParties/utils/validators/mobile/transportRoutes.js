@@ -1,18 +1,29 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
+const { UTC_OFFSET_MILLISECONDS } = require("../../../constant.json");
 
 const getRoutesSchema = joi.object({
-  // number: joi.number().integer().greater(0),
-  // size: joi.number().integer().greater(0),
   city: joi.number().integer().greater(0).invalid(0).required(),
   date: joi.string().required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
     .custom((value, helpers) => {
       const currentDate = new Date();
-      const inputDate = new Date(value);
+      const currentTime = currentDate.getTime();
+      currentDate.setTime(currentTime + UTC_OFFSET_MILLISECONDS);
+      const inputDate = new Date(
+        Date.UTC(
+          parseInt(value.split("-")[0]),
+          parseInt(value.split("-")[1]) - 1, // JavaScript months range from 0 to 11
+          parseInt(value.split("-")[2])
+        )
+      );
+      inputDate.setUTCHours(currentDate.getUTCHours());
+      inputDate.setUTCMinutes(currentDate.getUTCMinutes());
+      inputDate.setUTCSeconds(currentDate.getUTCSeconds());
+      inputDate.setUTCMilliseconds(currentDate.getUTCMilliseconds());
 
       // We check if the date is invalid or in the past.
-      if (isNaN(inputDate.getTime()) || inputDate < currentDate) {
+      if (inputDate < currentDate) {
         return helpers.error("array.greaterThan");
       }
       return value; // Return date if valid
