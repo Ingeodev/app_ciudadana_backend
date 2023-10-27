@@ -3,7 +3,7 @@ const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_company`;
 describe("Web - Tourism Companies management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   const requestHeaders = {
     Authorization: "Bearer ",

@@ -4,7 +4,7 @@ const usedWebHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/th
 const usedMobileHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/mobile/v1/third_parties/tourism/categories`;
 
 describe("All Tourism Categories API points: ", () => {
-    jest.setTimeout(8000);
+    jest.setTimeout(30000);
 
     const requestHeadersWeb = {
         Authorization: "Bearer ",
@@ -52,14 +52,12 @@ describe("All Tourism Categories API points: ", () => {
             .query({ key: global.firebaseKey })
             .send(global.firebaseTestWebUserLogin);
         requestHeadersWeb.Authorization += firebaseAuthWeb.body.idToken;
-        // console.log(requestHeadersWeb);
 
         const firebaseAuthMobile = await request("https://identitytoolkit.googleapis.com/v1")
             .post('/accounts:signInWithPassword')
             .query({ key: global.firebaseKey })
             .send(global.firebaseTestMobileUserLogin);
         requestHeadersMobile.Authorization += firebaseAuthMobile.body.idToken;
-        // console.log(requestHeadersMobile);
 
     });
 

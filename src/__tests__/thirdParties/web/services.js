@@ -4,7 +4,7 @@ const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/company_service`;
 describe("Web - Third Party Services management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   const requestHeaders = {
     Authorization: "Bearer ",

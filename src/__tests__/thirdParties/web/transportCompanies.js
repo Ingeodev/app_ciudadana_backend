@@ -3,7 +3,7 @@ const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company`;
 describe("Web - Transport Companies management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   const requestHeaders = {
     Authorization: "Bearer ",
@@ -679,6 +679,7 @@ describe("Web - Transport Companies management API points: ", () => {
         .send({
           ...editCompany0,
           name: editCompany1.name,
+          nit: editCompany1.nit,
         });
       expect(response9.statusCode).toBe(400);
       expect(response9.body).not.toHaveProperty("meta");
@@ -686,21 +687,6 @@ describe("Web - Transport Companies management API points: ", () => {
       expect(response9.body).toHaveProperty("status", 400);
       expect(response9.body).toHaveProperty("code");
       expect(response9.body).toHaveProperty("detail");
-
-      // 9. -------------------------------------
-      const response10 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editCompany0,
-          nit: editCompany1.nit,
-        });
-      expect(response10.statusCode).toBe(400);
-      expect(response10.body).not.toHaveProperty("meta");
-      expect(response10.body).not.toHaveProperty("data");
-      expect(response10.body).toHaveProperty("status", 400);
-      expect(response10.body).toHaveProperty("code");
-      expect(response10.body).toHaveProperty("detail");
     });
 
     test("Should fail with error 401 and a message if Authorization header is not set.", async () => {

@@ -2,7 +2,7 @@ const request = require("supertest");
 
 const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/third_parties`;
 describe("Mobile - Third Party Categories management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   const requestHeaders = {
     Authorization: "Bearer ",

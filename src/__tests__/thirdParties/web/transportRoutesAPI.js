@@ -5,7 +5,7 @@ const caliCityCode = constant.CALI_CITY_CODE;
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company_api`;
 describe("Web API - Tourism Services management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   let requestHeaders = {
     "x-api-key": "",

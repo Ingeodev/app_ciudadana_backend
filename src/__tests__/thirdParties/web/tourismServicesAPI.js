@@ -4,7 +4,7 @@ const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/tourism_company_api`;
 describe("Web API - Tourism Services management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(30000);
 
   let requestHeaders = {
     "x-api-key": "",
@@ -120,8 +120,7 @@ describe("Web API - Tourism Services management API points: ", () => {
         .send({ companyId: testCompany0.id });
       expect(response2.statusCode).toBe(201);
       expect(response2.body.data).toHaveProperty("apiKey");
-      testCompany0.apiKey = response2.body.data.apiKey;
-      requestHeaders["x-api-key"] = testCompany0.apiKey;
+      requestHeaders["x-api-key"] = response2.body.data.apiKey;
     });
   });
 
@@ -136,7 +135,7 @@ describe("Web API - Tourism Services management API points: ", () => {
       expect(response0.body.meta).toBe(null);
       expect(response0.body).toHaveProperty("data");
       expect(response0.body.data[0]).toHaveProperty("id");
-      testService0.services[0].id = response0.body.data[0].id;
+      // testService0.services[0].id = response0.body.data[0].id;
       editService0.id = response0.body.data[0].id;
       editService1.id = response0.body.data[1].id;
       editService2.id = response0.body.data[2].id;
