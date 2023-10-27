@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const { Op } = require("sequelize");
 const db = require("../models/index.js");
-const { UTC_OFFSET_MILLISECONDS } = require("../config/utc_zone.json");
+const { dateWithOffset } = require("../utils/utcZone.js");
 
 const apiKeySchema = joi
   .object({
@@ -44,14 +44,10 @@ const authMiddleware = async (req, res, next) => {
       apiKey: req.headers["x-api-key"],
     });
 
-    const currentDate = new Date();
-    const currentTime = currentDate.getTime();
-    currentDate.setTime(currentTime + UTC_OFFSET_MILLISECONDS);
-
     const apiInDb = await db.UserApiKey.findOne({
       where: {
         key: apiKey,
-        expirationAt: { [Op.gte]: String(currentDate.toISOString()).split("T")[0] },
+        expirationAt: { [Op.gte]: dateWithOffset() },
       },
       paranoid: true,
     });
