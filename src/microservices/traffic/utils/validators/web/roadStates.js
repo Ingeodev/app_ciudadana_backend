@@ -15,7 +15,7 @@ const coordinate = joi.array().length(2).items(
 const registerSchema = joi.object({
   title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  startDate: joi.date().greater('now').required(),
+  startDate: joi.date().required(),
   endDate: joi.date().greater(joi.ref('startDate')).required(),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
