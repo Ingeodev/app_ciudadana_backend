@@ -14,7 +14,7 @@ const dateHourWithOffset = () => {
   return date;
 };
 
-/**
+/** 
  * Get the current date (yyyy-mm-dd) in timestamp format with the offset corresponding to the time zone.
  * @returns The current date
  */
