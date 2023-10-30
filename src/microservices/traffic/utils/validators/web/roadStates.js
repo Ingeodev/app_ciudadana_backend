@@ -39,7 +39,7 @@ const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
   title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  startDate: joi.date().greater('now'),
+  startDate: joi.date(),
   endDate: joi.date().greater(joi.ref('startDate')),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
@@ -56,7 +56,7 @@ const editSchema = joi.object({
             )
         })
     })
-}).and('typeCoordinates', 'coordinates');
+}).and('typeCoordinates', 'coordinates').with('endDate', 'startDate');
 
 const getProfile = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
