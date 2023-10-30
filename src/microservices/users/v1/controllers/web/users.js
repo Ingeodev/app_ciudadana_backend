@@ -372,6 +372,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
         "serviceReceiptUri",
         "loginPhase",
         "pushDeviceToken",
+        "createdAt",
       ];
     }
 
