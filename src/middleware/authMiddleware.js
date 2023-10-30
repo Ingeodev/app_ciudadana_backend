@@ -29,6 +29,26 @@ const authMiddleware = async (req, res, next) => {
 
     const token = split[1]
     const decodedToken = await appFirebase.auth().verifyIdToken(token);
+
+    // Verify that the user is not deleted
+    let userInDb = null;
+    if (decodedToken.user_id !== null) {
+      userInDb = await db.User.findOne({
+        where: {
+          clientId: decodedToken.user_id,
+          disabled: false
+        },
+        attributes: ["id", "clientId"],
+        paranoid: true,
+      });
+    }
+
+    if (userInDb === null)
+      throw {
+        message: "User not found.",
+        status: StatusCodes.UNAUTHORIZED,
+      };
+
     res.locals = {
       ...res.locals,
       uid: decodedToken.user_id,
