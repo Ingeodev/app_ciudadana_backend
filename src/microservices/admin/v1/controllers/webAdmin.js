@@ -312,13 +312,11 @@ exports.postEdit = async (req, res, next) => {
     });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
-    if (
-      error &&
-      error.errors &&
-      error.errors.length > 0 &&
-      error.errors[0].message
-    ) {
-      error.message = error.errors[0].message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = `The document number you are trying to update already exists in our records. Please use another one.`;
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
     }
     return next(error);
   }
