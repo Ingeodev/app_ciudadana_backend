@@ -1,33 +1,35 @@
 const adminFirebase = require("firebase-admin");
 const { StatusCodes } = require("http-status-codes");
+const db = require("../models/index");
 
 const serviceAccount = require("../config/account_service_key.json");
 
 const appFirebase = adminFirebase.initializeApp({
-  credential: adminFirebase.credential.cert(serviceAccount)
+  credential: adminFirebase.credential.cert(serviceAccount),
 });
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const { authorization } = req.headers
+    const { authorization } = req.headers;
     if (!authorization)
       throw {
         status: StatusCodes.UNAUTHORIZED,
         message: "Missing header Authorization",
       };
-    if (!authorization.startsWith('Bearer'))
+    if (!authorization.startsWith("Bearer"))
       throw {
         status: StatusCodes.UNAUTHORIZED,
         message: "An authorization token starting with 'Bearer' is expected",
       };
-    const split = authorization.split('Bearer ')
+    const split = authorization.split("Bearer ");
     if (split.length !== 2)
       throw {
         status: StatusCodes.UNAUTHORIZED,
-        message: "Authorization header is not in the expected format. It should be 'Bearer [token]'",
+        message:
+          "Authorization header is not in the expected format. It should be 'Bearer [token]'",
       };
 
-    const token = split[1]
+    const token = split[1];
     const decodedToken = await appFirebase.auth().verifyIdToken(token);
 
     // Verify that the user is not deleted
@@ -36,7 +38,7 @@ const authMiddleware = async (req, res, next) => {
       userInDb = await db.User.findOne({
         where: {
           clientId: decodedToken.user_id,
-          disabled: false
+          disabled: false,
         },
         attributes: ["id", "clientId"],
         paranoid: true,
@@ -57,8 +59,7 @@ const authMiddleware = async (req, res, next) => {
     };
     return next();
   } catch (error) {
-    if (error.code)
-      error.status = StatusCodes.UNAUTHORIZED;
+    if (error.code) error.status = StatusCodes.UNAUTHORIZED;
     return next(error);
   }
 };
@@ -66,15 +67,15 @@ const authMiddleware = async (req, res, next) => {
 const checkActionsMatching = (policies, allowedAction) => {
   const validatedActions = policies.filter((policy) => {
     const foundActions = policy.actions.filter((action) => {
-      return action === allowedAction
-    })
-    return foundActions.length > 0
+      return action === allowedAction;
+    });
+    return foundActions.length > 0;
   });
 
   if (validatedActions.length > 0) {
-    return { allowed: true, scope: validatedActions[0].resource}
+    return { allowed: true, scope: validatedActions[0].resource };
   } else {
-    return { allowed: false, scope: null}
+    return { allowed: false, scope: null };
   }
 };
 
@@ -86,7 +87,7 @@ const checkActions = (allowedAction) => {
       console.log("registered policies", policies);
       const actionValidation = checkActionsMatching(policies, allowedAction);
       if (actionValidation.allowed) {
-        res.scope = actionValidation.resource
+        res.scope = actionValidation.resource;
         return next();
       }
       throw {
@@ -103,8 +104,7 @@ const hasPermissions = (params) => {
   try {
     return (req, res, next) => {
       const tokenRole = res.locals.role;
-      if (params.role === tokenRole)
-        return next();
+      if (params.role === tokenRole) return next();
       throw {
         status: StatusCodes.FORBIDDEN,
         message: "Your role has no access to the requested resource",
