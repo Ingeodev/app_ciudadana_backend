@@ -34,6 +34,16 @@ const editSchema = joi.object({
   document: joi.string().trim().alphanum().empty("").invalid(" "),
 });
 
+const editMobileUserSchema = joi.object({
+  id: joi.number().integer().greater(0).invalid(0).required(),
+  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  documentTypeId: joi.number().integer().greater(0),
+  document: joi.string().trim().alphanum().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" "),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
+});
+
 const getAllSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),
@@ -85,6 +95,9 @@ module.exports = {
   },
   vWebPostEdit: async (inputData) => {
     return await use_validator_on_data(editSchema, inputData);
+  },
+  vWebPostEditMobileUser: async (inputData) => {
+    return await use_validator_on_data(editMobileUserSchema, inputData);
   },
   vWebGetAll: async (inputData) => {
     return await use_validator_on_data(getAllSchema, inputData);

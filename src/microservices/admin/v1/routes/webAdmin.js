@@ -30,6 +30,12 @@ router.post(
   adminController.postEdit
 );
 
+router.post(
+  "/edit/mobile_user",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.postEditMobileUser
+);
+
 // ! Pendiente: Diferenciar el usuario admin por rol
 router.post(
   "/delete",

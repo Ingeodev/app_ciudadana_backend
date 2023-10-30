@@ -291,7 +291,12 @@ exports.postEdit = async (req, res, next) => {
     const { id, name, lastName, documentTypeId, document } =
       await validator.vWebPostEdit(req.body);
 
-    const adminInDb = await db.User.findByPk(id);
+    const adminInDb = await db.User.findOne({
+      where: {
+        id,
+        userMobile: false
+      },
+    });
 
     if (adminInDb === null) {
       throw {
@@ -309,6 +314,54 @@ exports.postEdit = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({
       meta: null,
       data: { id, name, lastName, documentTypeId, document },
+    });
+  } catch (error) {
+    // console.error("admin could not be updated: ", error.message);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = `The document number you are trying to update already exists in our records. Please use another one.`;
+      error.status = StatusCodes.BAD_REQUEST;
+    } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
+        error.message = error.errors[0].message;
+    }
+    return next(error);
+  }
+};
+
+/**
+ * Update a mobile user
+ * @param {object} req.body - Object containing the id, name, lastName, documentTypeId, document, address, phone
+ * @return {object} Response contains: statusCode (integer), json (objeto): data mobile user, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postEditMobileUser = async (req, res, next) => {
+  try {
+    const { id, name, lastName, documentTypeId, document, address, phone } =
+      await validator.vWebPostEditMobileUser(req.body);
+
+    const userInDb = await db.User.findOne({
+      where: {
+        id,
+        userMobile: true,
+      },
+    });
+
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user does not exist`,
+      };
+    }
+
+    await userInDb.update({
+      name,
+      lastName,
+      documentTypeId,
+      document,
+      address,
+      phone: `+57${phone}`,
+    });
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { id, name, lastName, documentTypeId, document, address, phone: `+57${phone}` },
     });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
