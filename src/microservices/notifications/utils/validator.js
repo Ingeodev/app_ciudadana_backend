@@ -75,6 +75,11 @@ const getAlertsListAllSchema = joi.object({
   size: joi.number().integer().greater(0).required(),
 });
 
+const getPublicitySchema = joi.object({
+  number: joi.number().integer().greater(0).required(),
+  size: joi.number().integer().greater(0).required(),
+});
+
 const registerPushSchema = joi.object({
   deviceToken: joi.string().trim().min(5).required(),
 });
@@ -188,6 +193,9 @@ module.exports = {
   },
   vGetAlertsListAll: async (inputData) => {
     return await use_validator_on_data(getAlertsListAllSchema, inputData);
+  },
+  vGetPublicityAll: async (inputData) => {
+    return await use_validator_on_data(getPublicitySchema, inputData);
   },
   validateDependenciesExcelContentsSchema: async (inputData) => {
     return await use_validator_on_data(dependenciesExcelContentsSchema, inputData);
