@@ -54,7 +54,7 @@ function generateSecureRandomString(length) {
 
 /**
  * Send the invitation email along with the credentials
- * @param {object} req - Object containing name, lastName, email, documentTypeId, document
+ * @param {object} req - Object containing dataUser (email, displayName, password), tokenEmailVerified, clientId
  * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId) {
@@ -200,6 +200,10 @@ exports.postRegister = async (req, res, next) => {
       });
   } catch (error) {
     await transaction.rollback();
+    if (error.name === 'SequelizeUniqueConstraintError' && error.fields && error.fields.name) {
+        error.message = "Email or document/documentType has been used previously.";
+        error.status = StatusCodes.BAD_REQUEST;
+    } 
     return next(error);
   }
 };
