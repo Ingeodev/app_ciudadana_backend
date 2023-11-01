@@ -3,7 +3,11 @@ const { StatusCodes } = require('http-status-codes');
 const db = require('../../../../models');
 const validator = require('../../utils/validator');
 
-// Create an security attention point.
+/**
+ * Create an security attention point.
+ * @param {object} req.body - Object containing the name, description, phone, color, address, imageUri, lat (latitude), and lon (longitude)
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
 const postCreateSecurityAttentionPoint = async (req, res, next) => {
     try {
         const { name, description, phone, color, address, imageUri, lat, lon } =
@@ -25,7 +29,7 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
         const createdBy = webUser.id;
 
         const createdSAP = await db.SecurityAttentionPoint.create({
-            name, description, phone, color, address, imageUri, geolocation, createdBy,
+            name, description, phone: `+57${phone}`, color, address, imageUri, geolocation, createdBy,
         });
         const data = {
             ...createdSAP.dataValues, deletedAt: undefined, geolocation: undefined,
@@ -42,7 +46,11 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
     }
 };
 
-// Edit an security attention point.
+/**
+ * Edit an security attention point.
+ * @param {object} req.body - Object containing the id, name, description, phone, color, address, imageUri, lat (latitude), and lon (longitude)
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ */
 const postEditSecurityAttentionPoint = async (req, res, next) => {
     try {
         const update = await validator.validateSecurityAttentionPointUpdateSchema(req.body);
@@ -61,6 +69,10 @@ const postEditSecurityAttentionPoint = async (req, res, next) => {
             delete update.lat;
             delete update.lon;
         }
+        if (!isNaN(update.phone)) {
+          update.phone = `+57${update.phone}`;
+        }
+
         const updatedPoint = await existingPoint.update(update);
         const data = {
             ...updatedPoint.dataValues, deletedAt: undefined, geolocation: undefined,

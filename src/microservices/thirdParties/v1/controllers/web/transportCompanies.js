@@ -207,43 +207,23 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const {
-      id,
-      name,
-      description,
-      imageUri,
-      nit,
-      phone,
-      siteUri,
-    } = await validator.vWebPostEdit(req.body);
+    const update = await validator.vWebPostEdit(req.body);
 
     // Validate that the company belongs to the user
-    const companyInDb = await db.TransportCompany.findOne({
-      where: {
-        id,
-        // // ! Pendiente: Validar permisos del usuario
-        // createdBy: createdBy.id,
-      },
-    });
+    const companyInDb = await db.TransportCompany.findByPk(update.id);
+    delete update.id;
 
     if (companyInDb == null)
       throw {
         message: "Transport company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
+    if (!isNaN(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
 
-    const resultUpdate = await companyInDb.update({
-      id,
-      name,
-      description,
-      imageUri,
-      nit,
-      phone: `+57${phone}`,
-      siteUri,
-    });
+    const resultUpdate = await companyInDb.update(update);
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.deletedAt;
 

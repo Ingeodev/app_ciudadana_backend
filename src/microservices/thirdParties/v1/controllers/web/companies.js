@@ -93,59 +93,39 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const {
-      id,
-      name,
-      nit,
-      categoryId,
-      description,
-      phone,
-      siteUri,
-      address,
-      imageUri,
-      lat,
-      lon,
-    } = await validator.vWebPostEdit(req.body);
+    const update = await validator.vWebPostEdit(req.body);
 
-    if (!isNaN(categoryId))
-      if (!(await checkCategoryExists(categoryId)))
+    if (!isNaN(update.categoryId))
+      if (!(await checkCategoryExists(update.categoryId)))
         throw {
           status: StatusCodes.NOT_FOUND,
           message: "The assigned category does not exist.",
         };
 
     // Validate that the company belongs to the user
-    const companyInDb = await db.ThirdPartyCompany.findOne({
-      where: {
-        id,
-        // // ! Pendiente: Validar permisos del usuario
-        // createdBy: createdBy.id,
-      },
-    });
+    const companyInDb = await db.ThirdPartyCompany.findByPk(update.id);
 
     if (companyInDb == null)
       throw {
         message: "Company not found",
         status: StatusCodes.NOT_FOUND,
-        // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
 
-    // const companyInDb = await db.ThirdPartyCategory.findByPk(id);
+    delete update.id;
+    if (update.lat != null) {
+      update.geolocation = {
+        type: "Point",
+        coordinates: [update.lon, update.lat],
+      };
+      //  delete update.lat;
+      //  delete update.lon;
+    }
+    delete update.id;
+    if (!isNaN(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
 
-    const resultUpdate = await companyInDb.update({
-      id,
-      name,
-      nit,
-      categoryId,
-      description,
-      phone: `+57${phone}`,
-      siteUri,
-      address,
-      imageUri,
-      lat,
-      lon,
-      geolocation: literal(`ST_GeomFromText('POINT(${lon} ${lat})')`),
-    });
+    const resultUpdate = await companyInDb.update(update);
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.geolocation;
     delete resultUpdate.dataValues.deletedAt;

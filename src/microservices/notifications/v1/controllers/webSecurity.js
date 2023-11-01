@@ -39,10 +39,10 @@ exports.postRegister = async (req, res, next) => {
  */
 exports.postEdit = async (req, res, next) => {
   try {
-    const { id, name, phone, imageUri, address } =
-      await validator.vWebPostUpdate(req.body);
+    const update = await validator.vWebPostUpdate(req.body);
 
-    const attLInDb = await db.Security.findByPk(id);
+    const attLInDb = await db.Security.findByPk(update.id);
+    delete update.id;
 
     if (attLInDb === null) {
       throw {
@@ -51,13 +51,11 @@ exports.postEdit = async (req, res, next) => {
       };
     }
 
-    const resultUpdate = await attLInDb.update({
-      id,
-      name,
-      phone: `+57${phone}`,
-      imageUri,
-      address,
-    });
+    if (!isNaN(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
+
+    const resultUpdate = await attLInDb.update(update);
 
     return res.status(StatusCodes.OK).json({
       meta: null,

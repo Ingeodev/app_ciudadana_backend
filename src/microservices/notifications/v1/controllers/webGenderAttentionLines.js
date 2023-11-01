@@ -64,17 +64,11 @@ exports.postEdit = async (req, res, next) => {
     //     status: StatusCodes.NOT_FOUND,
     //   };
 
-    const { id, name, phone, address, imageUri } =
-      await validator.vWebPostUpdate(req.body);
+    const update = await validator.vWebPostUpdate(req.body);
 
     // Validate that the gender attention line belongs to the user
-    const attLInDb = await db.GenderAttentionLine.findOne({
-      where: {
-        id,
-        // // ! Pendiente: Validar permisos del usuario
-        // createdBy: createdBy.id,
-      },
-    });
+    const attLInDb = await db.GenderAttentionLine.findByPk(update.id);
+    delete update.id;
 
     if (attLInDb == null)
       throw {
@@ -82,14 +76,12 @@ exports.postEdit = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
         // status: StatusCodes.UNPROCESSABLE_ENTITY,
       };
+    
+    if (!isNaN(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
 
-    const resultUpdate = await attLInDb.update({
-      id,
-      name,
-      phone: `+57${phone}`,
-      imageUri,
-      address,
-    });
+    const resultUpdate = await attLInDb.update(update);
     delete resultUpdate.dataValues.createdBy;
     delete resultUpdate.dataValues.deletedAt;
 
@@ -108,7 +100,6 @@ exports.postEdit = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 /**
  * Get all attention lines of gender equity

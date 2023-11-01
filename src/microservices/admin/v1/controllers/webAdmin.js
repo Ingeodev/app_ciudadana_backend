@@ -334,15 +334,15 @@ exports.postEdit = async (req, res, next) => {
  */
 exports.postEditMobileUser = async (req, res, next) => {
   try {
-    const { id, name, lastName, documentTypeId, document, address, phone } =
-      await validator.vWebPostEditMobileUser(req.body);
+    const update = await validator.vWebPostEditMobileUser(req.body);
 
     const userInDb = await db.User.findOne({
       where: {
-        id,
+        id: update.id,
         userMobile: true,
       },
     });
+    delete update.id;
 
     if (userInDb === null) {
       throw {
@@ -351,17 +351,17 @@ exports.postEditMobileUser = async (req, res, next) => {
       };
     }
 
-    await userInDb.update({
-      name,
-      lastName,
-      documentTypeId,
-      document,
-      address,
-      phone: `+57${phone}`,
-    });
+    if (!isNaN(update.phone)) {
+      update.phone = `+57${update.phone}`;
+    }
+
+    const resUpdate = await userInDb.update(update);
     return res.status(StatusCodes.OK).json({
       meta: null,
-      data: { id, name, lastName, documentTypeId, document, address, phone: `+57${phone}` },
+      data: {
+        ...update,
+        id: resUpdate.dataValues.id,
+      },
     });
   } catch (error) {
     // console.error("admin could not be updated: ", error.message);
