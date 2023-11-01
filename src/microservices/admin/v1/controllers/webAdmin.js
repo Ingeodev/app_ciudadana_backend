@@ -485,6 +485,9 @@ exports.postDelete = async (req, res, next) => {
 
     // ! Pendiente: Verificar que el usuario admin no este siendo usado (fk) en otras tablas
     // ! Pendiente: Ó realizar la eliminación en cascada
+    if (userInDb.dataValues.userMobile === true) {
+      await userInDb.update({ loginPhase: "notRegistered" });
+    }
     await userInDb.destroy();
 
     return res.status(StatusCodes.OK).send({ meta: null, data: { id } });
