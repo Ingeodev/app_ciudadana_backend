@@ -23,23 +23,30 @@ const getSecurityAttentionPoints = async (req, res, next) => {
             unique: true,
             paranoid: true,
             order,
-            attributes: {
-                exclude: ["deletedAt"],
-            },
+            attributes: [
+                "id",
+                "name",
+                "description",
+                "color",
+                "address",
+                "imageUri",
+                "geolocation",
+                "phone"
+            ],
         });
 
         const data = allPoints.map(row => {
             const mappedObject = {
-                id: row.dataValues.id,
-                name: row.dataValues.name,
-                color: formatColorOutputForMobile(row.dataValues.color),
-                iconMap: row.dataValues.imageUri,
-                description: row.dataValues.description,
-                address: row.dataValues.address,
-                phone: row.dataValues.phone,
-                image: row.dataValues.imageUri,
-                lat: row.dataValues.geolocation.coordinates[1],
-                lon: row.dataValues.geolocation.coordinates[0],
+              id: row.dataValues.id,
+              name: row.dataValues.name,
+              color: formatColorOutputForMobile(row.dataValues.color),
+              iconMap: row.dataValues.imageUri,
+              description: row.dataValues.description,
+              address: row.dataValues.address,
+              phone: String(row.dataValues.phone).replace("+57", ""),
+              image: row.dataValues.imageUri,
+              lat: row.dataValues.geolocation.coordinates[1],
+              lon: row.dataValues.geolocation.coordinates[0],
             };
             return mappedObject;
         });
