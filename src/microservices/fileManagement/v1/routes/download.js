@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const authorization = require("../../../../middleware/authMiddleware");
+const { authMiddleware } = require("../../../../middleware/authMiddleware");
 const downloadController = require("../controllers/download");
 
 router.get(
@@ -9,7 +9,7 @@ router.get(
   downloadController.downloadFile
 );
 
-router.use(authorization.authMiddleware);
+router.use(authMiddleware);
 
 router.get(
   "/secure/:folder/:fileName",

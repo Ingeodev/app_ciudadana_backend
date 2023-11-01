@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const authorization = require("../../../../middleware/authMiddleware");
+const { authMiddleware } = require("../../../../middleware/authMiddleware");
 const { uploadSingleExcel } = require('../../../../middleware/uploadMiddleware');
 
 const advertisingController = require('../controllers/webAdvertisement');
@@ -21,7 +21,7 @@ const genderAttPointC = require("../controllers/webGenderAttentionPoint");
 const baseController = require("../controllers/webBase.js");
 
 // TODO: require WEB authentication for every point (CHECK hasPermissions)
-router.use(authorization.authMiddleware);
+router.use(authMiddleware);
 
 router.post(
   "/validate_lat_lon",

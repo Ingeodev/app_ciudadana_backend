@@ -1,0 +1,31 @@
+const { Router } = require("express");
+const router = Router();
+const { hasPermissions, authMiddleware } = require("../../../../middleware/authMiddleware.js");
+const webCategories = require("./webCategories.js");
+const webTourismCategories = require("./webTourismCategories.js");
+const webTourismComp = require("./webTourismCompanies.js");
+const webTourismServ = require("./webTourismServices.js");
+const webCompanies = require("./webCompanies.js");
+const webCompServices = require("./webCompanyServices.js");
+const webRouteDate = require("./webRouteTimetableDate.js");
+const webRouteHourTariff = require("./webRouteTimetableHour.js");
+const webTranspRoutes = require("./webTransportRoutes.js");
+const webTranspCompanies = require("./webTransportCompanies.js");
+const webCities = require("./webCities.js");
+const webBase = require("./webBase.js");
+router.use(authMiddleware);
+
+router.use("", webBase);
+router.use("/city", webCities);
+router.use("/categories", webCategories);
+router.use("/tourism_categories", webTourismCategories);
+router.use("/tourism_company", webTourismComp);
+router.use("/tourism_service", webTourismServ);
+router.use("/company", webCompanies);
+router.use("/company_service", webCompServices);
+router.use("/transport_company/route/date", webRouteDate);
+router.use("/transport_company/route/hour", webRouteHourTariff);
+router.use("/transport_company/route", webTranspRoutes);
+router.use("/transport_company", webTranspCompanies);
+
+module.exports = router;

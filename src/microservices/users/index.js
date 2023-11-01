@@ -3,7 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { StatusCodes } = require("http-status-codes");
-const { authMiddleware }= require('../../middleware/authMiddleware.js');
 const webRouter = require("./v1/routes/web.js");
 const mobileRouter = require("./v1/routes/mobile.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
@@ -17,8 +16,6 @@ app.use(cors());
 app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });
-
-app.use(authMiddleware);
 
 //#region Web-oriented end-points
 app.use('/api/web/v1/users', webRouter);

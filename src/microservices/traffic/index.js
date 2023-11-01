@@ -3,11 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { StatusCodes } = require("http-status-codes");
-const { authMiddleware } = require('../../middleware/authMiddleware.js');
 const mobileRouter = require("./v1/routes/mobile.js");
-const webBase = require("./v1/routes/webBase.js");
-const webRoadState = require("./v1/routes/webRoadStates.js");
-const webTrafficNotification = require("./v1/routes/webTrafficNotification.js");
+const webRouter = require("./v1/routes/web.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
 const app = express();
@@ -20,12 +17,8 @@ app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
 });
 
-
-app.use(authMiddleware);
 //#region Web-oriented end-points
-app.use("/api/web/v1/traffic", webBase);
-app.use("/api/web/v1/traffic/road_state", webRoadState);
-app.use("/api/web/v1/traffic/traffic_notification", webTrafficNotification);
+app.use("/api/web/v1/traffic", webRouter);
 //#endRegion
 
 //#region Mobile-oriented end-points

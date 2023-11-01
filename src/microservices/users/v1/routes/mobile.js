@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const { hasPermissions , authMiddlewareMobile} = require("../../../../middleware/authMiddleware.js");
 const usersMobile = require("../controllers/mobile/users.js");
 const documentTypes = require("../controllers/mobile/documentTypes.js");
 const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
+router.use(authMiddlewareMobile);
 
 // * ------------------ Endpoints - appMobile -----------------------------
 router.post(

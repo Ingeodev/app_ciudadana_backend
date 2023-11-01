@@ -3,22 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { StatusCodes } = require("http-status-codes");
-const { authMiddleware } = require('../../middleware/authMiddleware.js');
-const webCategories = require("./v1/routes/webCategories.js");
 const webTourismAPI = require("./v1/routes/webTourismServicesAPI.js");
 const webRoutesAPI = require("./v1/routes/webTransportRoutesAPI.js");
-const webTourismCategories = require("./v1/routes/webTourismCategories.js");
-const webTourismComp = require("./v1/routes/webTourismCompanies.js");
-const webTourismServ = require("./v1/routes/webTourismServices.js");
-const webCompanies = require("./v1/routes/webCompanies.js");
-const webCompServices = require("./v1/routes/webCompanyServices.js");
-const webRouteDate = require("./v1/routes/webRouteTimetableDate.js");
-const webRouteHourTariff = require("./v1/routes/webRouteTimetableHour.js");
-const webTranspRoutes = require("./v1/routes/webTransportRoutes.js");
-const webTranspCompanies = require("./v1/routes/webTransportCompanies.js");
-const webCities = require("./v1/routes/webCities.js");
 const mobileRouter = require("./v1/routes/mobile.js");
-const webBase = require("./v1/routes/webBase.js");
+const webRouter = require("./v1/routes/web.js");
 const errorHandler = require("../../middleware/errorMiddleware.js");
 
 const app = express();
@@ -34,20 +22,8 @@ app.get("/health", function (req, res) {
 app.use("/api/web/v1/third_parties/tourism_company_api", webTourismAPI);
 app.use("/api/web/v1/third_parties/transport_company_api", webRoutesAPI);
 
-app.use(authMiddleware);
 //#region Web-oriented end-points
-app.use("/api/web/v1/third_parties", webBase);
-app.use("/api/web/v1/third_parties/city", webCities);
-app.use("/api/web/v1/third_parties/categories", webCategories);
-app.use("/api/web/v1/third_parties/tourism_categories", webTourismCategories);
-app.use("/api/web/v1/third_parties/tourism_company", webTourismComp);
-app.use("/api/web/v1/third_parties/tourism_service", webTourismServ);
-app.use("/api/web/v1/third_parties/company", webCompanies);
-app.use("/api/web/v1/third_parties/company_service", webCompServices);
-app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
-app.use("/api/web/v1/third_parties/transport_company/route/hour", webRouteHourTariff);
-app.use("/api/web/v1/third_parties/transport_company/route", webTranspRoutes);
-app.use("/api/web/v1/third_parties/transport_company", webTranspCompanies);
+app.use("/api/web/v1/third_parties", webRouter);
 //#endregion
 
 //#region Mobile-oriented end-points

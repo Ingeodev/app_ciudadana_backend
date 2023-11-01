@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const authorization = require("../../../../middleware/authMiddleware");
+const { authMiddlewareMobile } = require("../../../../middleware/authMiddleware");
 const publicityController = require('../controllers/mobilePublicity');
 const securityController = require("../controllers/mobileSecurity");
 const attentionController = require("../controllers/mobileAttentionLines");
@@ -15,7 +15,7 @@ const securityAttentionPointsController = require("../controllers/mobileSecurity
 const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
-router.use(authorization.authMiddleware);
+router.use(authMiddlewareMobile);
 
 //#region Publicity end-points
 // Retrieve the advertisements that have no category attached.

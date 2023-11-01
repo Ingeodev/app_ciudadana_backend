@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const { hasPermissions, authMiddleware } = require("../../../../middleware/authMiddleware.js");
 const usersWeb = require("../controllers/web/users.js");
 const documentTypes = require("../controllers/web/documentTypes.js");
 const baseController = require("../controllers/web/base.js");
+router.use(authMiddleware);
 
 router.post(
   "/validate_lat_lon",

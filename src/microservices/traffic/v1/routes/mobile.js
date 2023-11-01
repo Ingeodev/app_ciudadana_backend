@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const { hasPermissions, authMiddlewareMobile } = require("../../../../middleware/authMiddleware.js");
 const roadStatesController = require("../controllers/mobile/roadStates.js");
+router.use(authMiddlewareMobile);
 
 // --------------------- Road States ----------------------------
 //#region Road States end-points
