@@ -103,14 +103,13 @@ const authMiddlewareMobile = async (req, res, next) => {
             message: "User not found.",
             status: StatusCodes.UNAUTHORIZED,
           };
-        
-        res.locals = {
-          ...res.locals,
-          uid: decodedToken.user_id,
-          role: decodedToken.role,
-          // emailVerified: decodedToken.email_verified,
-        };
       }
+      res.locals = {
+        ...res.locals,
+        uid: decodedToken.user_id,
+        role: decodedToken.role,
+        // emailVerified: decodedToken.email_verified,
+      };
     }
     return next();
   } catch (error) {
