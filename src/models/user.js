@@ -91,12 +91,12 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      // User.belongsTo(models.DocumentType, {
-      //   foreignKey: {
-      //     name: "documentTypeId",
-      //     allowNull: true,
-      //   },
-      // });
+      User.belongsTo(models.DocumentType, {
+        foreignKey: {
+          name: "documentTypeId",
+          allowNull: true,
+        },
+      });
 
       User.belongsTo(models.Role, {
         foreignKey: {
@@ -180,15 +180,14 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       documentTypeId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       document: {
         type: DataTypes.STRING,
         allowNull: true,
-        // ! unique: true? Diversidad de tipos de documentos
-        unique: true,
+        unique: false,
       },
       phone: {
         type: DataTypes.STRING,
@@ -233,6 +232,13 @@ module.exports = (sequelize, DataTypes) => {
       schema: "public",
       paranoid: true,
       timestamps: true,
+      indexes: [
+        {
+          name: "idx_unique_users_document",
+          unique: true,
+          fields: ["document", "documentTypeId"],
+        },
+      ],
       hooks: {
         beforeCreate: (obj, options) => {
           obj.serviceReceiptUri = transformReceivedUriToSave(

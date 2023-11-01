@@ -34,14 +34,14 @@ module.exports = {
           unique: true,
         },
         documentTypeId: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.INTEGER,
           allowNull: true,
           unique: false,
         },
         document: {
           type: Sequelize.STRING(50),
           allowNull: true,
-          unique: true,
+          unique: false,
         },
         phone: {
           type: Sequelize.STRING(50),
@@ -91,18 +91,7 @@ module.exports = {
         schema: "public",
       }
     );
-    // await queryInterface.addConstraint("Users", {
-    //   name: "fk_Users_DocumentTypes",
-    //   fields: ["documentTypeId"],
-    //   type: "foreign key",
-    //   references: {
-    //     table: "DocumentTypes",
-    //     field: "id",
-    //   },
-    //   onDelete: "RESTRICT",
-    //   onUpdate: "cascade",
-    // });
-    return await queryInterface.addConstraint("Users", {
+    await queryInterface.addConstraint("Users", {
       name: "fk_users_roles",
       fields: ["roleId"],
       type: "foreign key",
@@ -113,10 +102,29 @@ module.exports = {
       onDelete: "RESTRICT",
       onUpdate: "cascade",
     });
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_unique_users_document"
+      ON "Users"("document", "documentTypeId")
+      WHERE "deletedAt" IS NULL;
+    `);
+    return await queryInterface.addConstraint("Users", {
+      name: "fk_Users_DocumentTypes",
+      fields: ["documentTypeId"],
+      type: "foreign key",
+      references: {
+        table: "DocumentTypes",
+        field: "id",
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "cascade",
+    });
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("Users", "fk_Users_DocumentTypes");
+    await queryInterface.sequelize.query(`
+      DROP INDEX IF EXISTS "idx_unique_users_document";
+    `);
     await queryInterface.removeConstraint("Users", "fk_users_roles");
-    // await queryInterface.removeConstraint("Users", "fk_Users_DocumentTypes");
     await queryInterface.dropTable("Users");
   },
 };
