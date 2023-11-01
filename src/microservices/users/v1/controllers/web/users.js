@@ -331,18 +331,18 @@ exports.getUsersListByDevice = async (req, res, next) => {
     let isMobileUser = false;
 
     if (objPage.webUser) {
-      (include = [
-        // {
-        //   model: db.DocumentType,
-        //   attributes: [],
-        //   required: false,
-        // },
+      include = [
+        {
+          model: db.DocumentType,
+          attributes: [],
+          required: false,
+        },
         {
           model: db.Role,
           attributes: [],
           required: false,
         },
-      ]),
+      ];
 
       attributes = [
         "id",
@@ -352,7 +352,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
         "email",
         "documentTypeId",
         "document",
-        // [col('"DocumentType"."name"'), "DocumentTypeName"],
+        [col('"DocumentType"."name"'), "DocumentTypeName"],
         "disabled",
         "createdAt",
         "roleId",
@@ -361,12 +361,22 @@ exports.getUsersListByDevice = async (req, res, next) => {
       ];
     } else {
       isMobileUser = true;
+      include = [
+        {
+          model: db.DocumentType,
+          attributes: [],
+          required: false,
+        }
+      ];
       attributes = [
         "id",
         "clientId",
         "name",
         "lastName",
         "email",
+        "documentTypeId",
+        "document",
+        [col('"DocumentType"."name"'), "DocumentTypeName"],
         "phone",
         "address",
         "serviceReceiptUri",
@@ -391,13 +401,6 @@ exports.getUsersListByDevice = async (req, res, next) => {
     if (usersInDb.count <= 0) message = "There are no Users registered";
     if (usersInDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
-
-    // Additional processing to remove the object from documentType
-    // const adjustedUsers = usersInDb.rows.map((user) => {
-    //   const userData = user.toJSON(); // Converts the Sequelize model to a regular object
-    //   delete userData.DocumentType; // Removes the DocumentType property
-    //   return userData;
-    // });
 
     const responseCustom = {
       meta: {
