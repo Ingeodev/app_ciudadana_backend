@@ -4,6 +4,7 @@ const { appFirebase, adminFirebase } = require("../middleware/authMiddleware.js"
 exports.createUser = async (data) => {
   try {
     let uid = null;
+    let wasCreated = false;
 
     try {
       const userData = await appFirebase.auth().getUserByEmail(data.email);
@@ -24,6 +25,7 @@ exports.createUser = async (data) => {
         emailVerified: false,
       });
       uid = userCreatedData.uid;
+      wasCreated = true;
     } else {
       // Update passwd
       const resUpdate = await appFirebase.auth().updateUser(uid, {
@@ -50,11 +52,32 @@ exports.createUser = async (data) => {
         code: "Internal Server Error",
       };
     }
-    return { uid };
+    return { uid, wasCreated };
   } catch (error) {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
       detail: `Error creating user: ${error.message}`,
+      code: "Internal Server Error",
+    };
+  }
+};
+
+exports.deleteUser = async (uid) => {
+  try {
+    const resultUpdate = await appFirebase.auth().deleteUser(uid);
+
+    if (resultUpdate !== null) {
+      return {
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        detail: `Error deleting user`,
+        code: "Internal Server Error",
+      };
+    }
+    return true;
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      detail: `Error deleting user: ${error.message}`,
       code: "Internal Server Error",
     };
   }

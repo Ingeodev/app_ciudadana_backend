@@ -2,7 +2,13 @@ const { StatusCodes } = require("http-status-codes");
 const { randomInt } = require("crypto");
 const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
-const firebase = require("../../../../utils/firebaseAdmin.js");
+const {
+  createUser,
+  deleteUser,
+  addCustomClaim,
+  generateLinkPasswordReset,
+  setPasswd,
+} = require("../../../../utils/firebaseAdmin.js");
 const validator = require("../../utils/adminsValidator.js");
 const mailService = require("../../../../utils/sendMail.js");
 const msURLS = require("../../../../config/microservices_urls.json");
@@ -108,9 +114,24 @@ async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId
  */
 exports.postRegister = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
+  let wasCreated = false;
   try {
     const { name, lastName, email, documentTypeId, document } =
       await validator.vWebPostRegister(req.body);
+    
+    const findUserInDb = await db.User.findOne({
+      where: {
+        email
+      },
+      paranoid: true
+    });
+
+    if (findUserInDb !== null) {
+      throw {
+        status: StatusCodes.BAD_REQUEST,
+        message: `Email has been used previously.`,
+      };
+    }
 
     const tokenEmailVerified = generateSecureRandomString(100);
     if (tokenEmailVerified.status) {
@@ -135,14 +156,14 @@ exports.postRegister = async (req, res, next) => {
       email,
     };
 
-    const resCreate = await firebase.createUser(dataUser);
+    const resCreate = await createUser(dataUser);
     if (resCreate.status) {
       throw {
         status: resCreate.status,
         message: resCreate.detail,
       };
     }
-
+    wasCreated = resCreate.wasCreated;
     const userInDb = await db.User.create(
       {
         clientId: resCreate.uid,
@@ -182,16 +203,6 @@ exports.postRegister = async (req, res, next) => {
       };
     }
     await transaction.commit();
-    delete userInDb.dataValues.tokenEmailVerified;
-    delete userInDb.dataValues.passwdReset;
-    delete userInDb.dataValues.phone;
-    delete userInDb.dataValues.address;
-    delete userInDb.dataValues.serviceReceiptUri;
-    delete userInDb.dataValues.loginPhase;
-    delete userInDb.dataValues.pushDeviceToken;
-    delete userInDb.dataValues.roleId;
-    delete userInDb.dataValues.userMobile;
-    delete userInDb.dataValues.disabled;
     return res
       .status(StatusCodes.CREATED)
       .json({
@@ -200,10 +211,13 @@ exports.postRegister = async (req, res, next) => {
       });
   } catch (error) {
     await transaction.rollback();
-    if (error.name === 'SequelizeUniqueConstraintError' && error.fields && error.fields.name) {
-        error.message = "Email or document/documentType has been used previously.";
+    if (wasCreated) {
+      await deleteUser(uid);
+    }
+    if (error.name === 'SequelizeUniqueConstraintError') {
+        error.message = "Document and documentType has been used previously.";
         error.status = StatusCodes.BAD_REQUEST;
-    } 
+    }
     return next(error);
   }
 };
@@ -238,7 +252,7 @@ exports.postSetPasswd = async (req, res, next) => {
     
     await userInDb.update({ passwdReset: false }, { transaction });
 
-    const resUpdate = await firebase.setPasswd(clientId, passwd);
+    const resUpdate = await setPasswd(clientId, passwd);
     if (resUpdate.status) {
       throw {
         status: resCreate.status,
@@ -273,7 +287,7 @@ exports.postAddRole = async (req, res, next) => {
 
     // ! Pendiente: Consultar la tabla roles
     const role = "super_master_user";
-    await firebase.addCustomClaim(clientId, role);
+    await addCustomClaim(clientId, role);
 
     await adminInDb.update({ roleId });
 
@@ -517,7 +531,7 @@ exports.postSendMailResetPasswd = async (req, res, next) => {
         message: `The requested user with id ${update.id} does not exist.`,
       };
 
-    const link = await firebase.generateLinkPasswordReset(adminInDb.email);
+    const link = await generateLinkPasswordReset(adminInDb.email);
     return res.status(StatusCodes.CREATED).json({ meta: null, data: link });
     // .json({ meta: null, data: {email: adminInDb.email} });
   } catch (error) {
