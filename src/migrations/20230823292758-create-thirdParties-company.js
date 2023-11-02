@@ -38,7 +38,7 @@ module.exports = {
           unique: false,
         },
         phone: {
-          type: Sequelize.STRING(50),
+          type: Sequelize.STRING(15),
           allowNull: false,
           unique: false,
         },

@@ -11,12 +11,12 @@ module.exports = {
         unique: true,
       },
       phone: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(15),
         allowNull: false,
         unique: false,
       },
       whatsapp: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(15),
         allowNull: false,
         unique: false,
       },

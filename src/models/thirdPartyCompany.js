@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },

@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
           name: "idx_unique_genderAttentionLines_name",
           unique: true,
           fields: ["name"],
-        }
+        },
       ],
       hooks: {
         beforeCreate: (obj, options) => {

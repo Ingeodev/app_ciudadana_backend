@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
@@ -114,7 +114,9 @@ module.exports = (sequelize, DataTypes) => {
           } else if (result) {
             // If the result is a single record
             result.dataValues.iconMap = transformSavedUriToSend(result.iconMap);
-            result.dataValues.imageUri = transformSavedUriToSend(result.imageUri);
+            result.dataValues.imageUri = transformSavedUriToSend(
+              result.imageUri
+            );
             if (result.image || result.dataValues.image) {
               result.dataValues.image = transformSavedUriToSend(
                 result.dataValues.image

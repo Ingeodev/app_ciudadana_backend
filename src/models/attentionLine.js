@@ -21,12 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       whatsapp: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
