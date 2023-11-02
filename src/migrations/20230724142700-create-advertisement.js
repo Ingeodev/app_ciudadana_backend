@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       siteUri: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       categoryId: {
         type: Sequelize.INTEGER,

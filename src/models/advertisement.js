@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       imageUri: DataTypes.STRING,
       imageMobileUri: DataTypes.STRING,
-      siteUri: DataTypes.STRING,
+      siteUri: DataTypes.TEXT,
       categoryId: DataTypes.INTEGER,
       active: {
         type: DataTypes.BOOLEAN,
@@ -61,7 +61,9 @@ module.exports = (sequelize, DataTypes) => {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
-              obj.dataValues.imageMobileUri = transformSavedUriToSend(obj.imageMobileUri);
+              obj.dataValues.imageMobileUri = transformSavedUriToSend(
+                obj.imageMobileUri
+              );
               if (obj.image || obj.dataValues.image) {
                 obj.dataValues.image = transformSavedUriToSend(
                   obj.dataValues.image

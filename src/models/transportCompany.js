@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       siteUri: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
           name: "idx_unique_transportCompany",
           unique: true,
           fields: ["name", "nit"],
-        }
+        },
       ],
       hooks: {
         beforeCreate: (obj, options) => {

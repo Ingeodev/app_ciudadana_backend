@@ -43,7 +43,7 @@ module.exports = {
           unique: false,
         },
         siteUri: {
-          type: Sequelize.STRING,
+          type: Sequelize.TEXT,
           allowNull: true,
           unique: false,
         },

@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       url: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },

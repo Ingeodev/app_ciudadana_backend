@@ -19,7 +19,7 @@ module.exports = {
           unique: false,
         },
         url: {
-          type: Sequelize.STRING(150),
+          type: Sequelize.TEXT,
           allowNull: false,
           unique: false,
         },

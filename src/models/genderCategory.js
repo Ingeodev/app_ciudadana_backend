@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       siteUri: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
         unique: false,
       },
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
           name: "idx_unique_genderCategories_title",
           unique: true,
           fields: ["title"],
-        }
+        },
       ],
       hooks: {
         beforeCreate: (obj, options) => {
