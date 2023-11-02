@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const db = require("../../../../../models");
+const db = require("../../../../../models/index.js");
 const validator = require("../../../utils/validators/mobile/taxis");
 
 //#region Mock data sample

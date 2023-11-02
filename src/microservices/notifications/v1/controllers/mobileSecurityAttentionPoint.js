@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const { Sequelize } = require("sequelize");
 
-const db = require('../../../../models');
+const db = require('../../../../models/index.js');
 const validator = require('../../utils/validator');
 const { formatColorOutputForMobile } = require('../../../../utils/mobileColorFormatter');
 

@@ -3,7 +3,7 @@ const path = require('path');
 const { StatusCodes } = require('http-status-codes');
 const xlsx = require('node-xlsx');
 
-const db = require('../../../../models');
+const db = require('../../../../models/index.js');
 const validator = require('../../utils/validator');
 
 // Upload an excel file that will replace all existing dependencies in the database.

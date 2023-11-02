@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { Op } = require('sequelize');
-const db = require('../../../../models');
+const db = require('../../../../models/index.js');
 const validator = require('../../utils/schemaValidator');
 
 /**

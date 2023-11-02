@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const { Op, col } = require("sequelize");
 const { ne, eq } = Op;
-const db = require("../../../../models");
+const db = require("../../../../models/index.js");
 const validator = require("../../utils/validator.js");
 /**
  * Retrieve the advertisements that have no category attached.
