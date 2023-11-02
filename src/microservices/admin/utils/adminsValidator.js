@@ -41,7 +41,7 @@ const editMobileUserSchema = joi.object({
   documentTypeId: joi.number().integer().greater(0),
   document: joi.string().trim().alphanum().empty("").invalid(" "),
   address: joi.string().trim().empty("").invalid(" "),
-  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String'),
+  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
 });
 
 const getAllSchema = joi.object({

@@ -108,7 +108,7 @@ const multerMemorySingleItemSchema = joi.object({
 const securityAttentionPointCreationSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  phone: numeric_string.min(10).max(15).required(),
+  phone: numeric_string.length(10).required(),
   color: hex_color_string.required(),
   address: joi.string().trim().empty("").invalid(" ").required(),
   imageUri: uri_string.required(),
@@ -120,7 +120,7 @@ const securityAttentionPointUpdateSchema = joi.object({
   id: non_negative_integer.required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  phone: numeric_string.min(10).max(15),
+  phone: numeric_string.length(10),
   color: hex_color_string,
   address: joi.string().trim().empty("").invalid(" "),
   imageUri: uri_string,
