@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { randomInt } = require("crypto");
-const { Op } = require("sequelize");
+const { Op, col } = require("sequelize");
 const db = require("../../../../models/index.js");
 const {
   createUser,
@@ -456,18 +456,27 @@ exports.getOneById = async (req, res, next) => {
       id: req.params.id ? parseInt(req.params.id) : null,
     });
 
-    const adminInDb = await db.User.findByPk(id, {
-      attributes: {
-        exclude: [
-          "tokenEmailVerified",
-          "passwdReset",
-          "serviceReceiptUri",
-          "loginPhase",
-          "pushDeviceToken",
-          "userMobile",
-          "deletedAt",
-        ],
+    const adminInDb = await db.User.findOne({
+      where: {
+        id,
+        userMobile: false
       },
+      include: [
+        {
+          model: db.DocumentType,
+          attributes: [],
+          required: false,
+        },
+      ],
+      attributes: [
+        "name",
+        "lastName",
+        "email",
+        "document",
+        "documentTypeId",
+        [col('"DocumentType"."name"'), "DocumentTypeName"],
+      ],
+      paranoid: true
     });
 
     if (adminInDb === null) {
