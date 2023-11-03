@@ -13,7 +13,45 @@ const app = express();
 
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+
+const corsOptions = {
+  origin: "*",
+  allowedHeaders: [
+    "Origin",
+    "Accept",
+    "Accept-Version",
+    "Content-Length",
+    "Content-MD5",
+    "Content-Type",
+    "Date",
+    "X-Api-Version",
+    "X-Response-Time",
+    "X-PINGOTHER",
+    "X-CSRF-Token",
+    "Authorization",
+  ],
+  methods: "*",
+  exposedHeaders: ["X-Api-Version", "X-Request-Id", "X-Response-Time"],
+  maxAge: 1000,
+  preflightContinue: false, // It is the default value.
+  optionsSuccessStatus: 204, // It is the default value.
+};
+app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  next();
+});
+
+// const allowCrossDomain = function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
+//   res.setHeader('Access-Control-Allow-Methods', '*');
+//   res.setHeader('Access-Control-Expose-Headers', 'X-Api-Version, X-Request-Id, X-Response-Time');
+//   res.setHeader('Access-Control-Max-Age', '1000');
+//   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+//   next();
+// }
+// app.use(allowCrossDomain);
 
 app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
