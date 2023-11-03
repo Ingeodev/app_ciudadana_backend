@@ -1,6 +1,7 @@
 # FROM public.ecr.aws/amazonlinux/amazonlinux:2
 # ENV NODE_VERSION=16.19.1
-FROM node:18
+# FROM node:18
+FROM node:18.8.0-alpine
 ENV PATH=/usr/local/bin:$PATH \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
