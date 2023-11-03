@@ -346,7 +346,6 @@ exports.getUsersListByDevice = async (req, res, next) => {
 
       attributes = [
         "id",
-        "clientId",
         "name",
         "lastName",
         "email",
@@ -370,7 +369,6 @@ exports.getUsersListByDevice = async (req, res, next) => {
       ];
       attributes = [
         "id",
-        "clientId",
         "name",
         "lastName",
         "email",
