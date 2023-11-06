@@ -37,23 +37,17 @@ COPY src/models /src/models/
 COPY src/config /src/config/
 COPY src/constants /src/constants/
 COPY src/utils /src/utils/
-# COPY workspace/config/account_service_key.json /src/config
-# COPY workspace/config/config.json /src/config
-COPY src/config/account_service_key.json /src/config
-COPY src/config/config.json /src/config
+COPY workspace/config/account_service_key.json /src/config
+COPY workspace/secrets/notification_secrets.json /src/microservices/notifications/secrets.json
+COPY workspace/config/config.json /src/config
+# COPY src/config/account_service_key.json /src/config
+# COPY src/config/config.json /src/config
 
 RUN npm install --production
 
-# Use tini to manage zombie processes and signal forwarding
-# https://github.com/krallin/tini
-# ENTRYPOINT ["/usr/bin/tini", "--"]
-# ENTRYPOINT ["/sbin/tini", "--"]
+# WORKDIR /src/microservices/notifications
+# CMD ["node", "./index.js"]
 
 WORKDIR /src/microservices/notifications
-# Ensure the script is executable
-# RUN chmod +x gcsfuse_run.sh
-
-# CMD ["src/microservices/notifications/gcsfuse_run.sh"]
-# [END cloudrun_fuse_dockerfile]
-CMD ["node", "./index.js"]
-
+RUN chmod +x gcsfuse_run.sh
+CMD ["/src/microservices/notifications/gcsfuse_run.sh"]
