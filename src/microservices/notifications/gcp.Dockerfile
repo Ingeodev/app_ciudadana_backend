@@ -1,30 +1,33 @@
-FROM golang:1.21.3-alpine as builder
+FROM node:18-alpine3.18
+RUN apk update && apk add --no-cache gnupg ca-certificates
+RUN apk add --no-cache --virtual .build-deps bash gcc musl-dev openssl go && update-ca-certificates
 
-RUN apk add git
+# download go tar
+WORKDIR /usr/local
+RUN wget -O go.tar.gz https://go.dev/dl/go1.21.3.src.tar.gz 
+RUN tar -C /usr/local -xzf go.tar.gz 
+# compile code
+RUN cd /usr/local/go/src && chmod +x make.bash && ./make.bash
+ENV PATH=$PATH:/usr/local/go/bin
+RUN rm -rf /usr/local/go.tar.gz
+RUN apk del .build-deps go
+RUN go version
 
-ARG GCSFUSE_REPO="/run/gcsfuse/"
-ADD . ${GCSFUSE_REPO}
-WORKDIR ${GCSFUSE_REPO}
-RUN go install ./tools/build_gcsfuse
-RUN build_gcsfuse . /tmp $(git log -1 --format=format:"%H")
+ENV GOPATH /usr/local/go
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
+WORKDIR $GOPATH
 
-FROM alpine:3.13
+# Compile gcsfuse - option 1
+RUN go install github.com/googlecloudplatform/gcsfuse@master
 
-RUN apk add --update --no-cache bash ca-certificates fuse
+RUN apk add --update --no-cache fuse
 
-COPY --from=builder /tmp/bin/gcsfuse /usr/local/bin/gcsfuse
-COPY --from=builder /tmp/sbin/mount.gcsfuse /usr/sbin/mount.gcsfuse
-ENTRYPOINT ["gcsfuse", "-o", "allow_other", "--foreground", "--implicit-dirs", "/gcs"]
-
-FROM node:18.8.0-alpine
 ENV PATH=/usr/local/bin:$PATH \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
     WEB_CONCURRENCY=2
 
 EXPOSE 3000
-
-RUN apk update && apk add --no-cache gnupg
 
 ENV MNT_DIR /src/uploads
 
@@ -40,13 +43,8 @@ COPY src/utils /src/utils/
 COPY workspace/config/account_service_key.json /src/config
 COPY workspace/secrets/notification_secrets.json /src/microservices/notifications/secrets.json
 COPY workspace/config/config.json /src/config
-# COPY src/config/account_service_key.json /src/config
-# COPY src/config/config.json /src/config
 
 RUN npm install --production
-
-# WORKDIR /src/microservices/notifications
-# CMD ["node", "./index.js"]
 
 WORKDIR /src/microservices/notifications
 RUN chmod +x gcsfuse_run.sh
