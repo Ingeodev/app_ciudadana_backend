@@ -1,6 +1,22 @@
-# FROM public.ecr.aws/amazonlinux/amazonlinux:2
-# ENV NODE_VERSION=16.19.1
-FROM node:18
+FROM golang:1.21.3-alpine as builder
+
+RUN apk add git
+
+ARG GCSFUSE_REPO="/run/gcsfuse/"
+ADD . ${GCSFUSE_REPO}
+WORKDIR ${GCSFUSE_REPO}
+RUN go install ./tools/build_gcsfuse
+RUN build_gcsfuse . /tmp $(git log -1 --format=format:"%H")
+
+FROM alpine:3.13
+
+RUN apk add --update --no-cache bash ca-certificates fuse
+
+COPY --from=builder /tmp/bin/gcsfuse /usr/local/bin/gcsfuse
+COPY --from=builder /tmp/sbin/mount.gcsfuse /usr/sbin/mount.gcsfuse
+ENTRYPOINT ["gcsfuse", "-o", "allow_other", "--foreground", "--implicit-dirs", "/gcs"]
+
+FROM node:18.8.0-alpine
 ENV PATH=/usr/local/bin:$PATH \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
@@ -8,37 +24,8 @@ ENV PATH=/usr/local/bin:$PATH \
 
 EXPOSE 3000
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg \
-    lsb-release \
-    tini && \
-    gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
-    echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
-    tee /etc/apt/sources.list.d/gcsfuse.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
-    apt-key add - && \
-    apt-get update && \
-    # apt-get install -y gcsfuse && \
-    apt-get clean
+RUN apk update && apk add --no-cache gnupg
 
-# workaround
-ENV GCSFUSE_VERSION=1.2.0
-RUN apt-get update -y && \
-    curl -LJO "https://github.com/GoogleCloudPlatform/gcsfuse/releases/download/v${GCSFUSE_VERSION}/gcsfuse_${GCSFUSE_VERSION}_amd64.deb" && \
-    apt-get -y install fuse && \
-    apt-get clean && \
-    dpkg -i "gcsfuse_${GCSFUSE_VERSION}_amd64.deb"
-
-
-# RUN yum update -y \
-#    && yum install -y curl \
-#    && yum install -y tar
-
-# RUN curl -sL https://rpm.nodesource.com/setup_16.x | bash \
-#     && yum install -y nodejs
-# RUN node --version
-# RUN npm --version
 ENV MNT_DIR /src/uploads
 
 WORKDIR /src
@@ -50,19 +37,23 @@ COPY src/models /src/models/
 COPY src/config /src/config/
 COPY src/constants /src/constants/
 COPY src/utils /src/utils/
-COPY workspace/config/account_service_key.json /src/config
-COPY workspace/secrets/notification_secrets.json /src/microservices/notifications/secrets.json
-COPY workspace/config/config.json /src/config
+# COPY workspace/config/account_service_key.json /src/config
+# COPY workspace/config/config.json /src/config
+COPY src/config/account_service_key.json /src/config
+COPY src/config/config.json /src/config
 
 RUN npm install --production
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+# ENTRYPOINT ["/usr/bin/tini", "--"]
+# ENTRYPOINT ["/sbin/tini", "--"]
 
 WORKDIR /src/microservices/notifications
 # Ensure the script is executable
-RUN chmod +x gcsfuse_run.sh
+# RUN chmod +x gcsfuse_run.sh
 
-CMD ["/src/microservices/notifications/gcsfuse_run.sh"]
+# CMD ["src/microservices/notifications/gcsfuse_run.sh"]
 # [END cloudrun_fuse_dockerfile]
+CMD ["node", "./index.js"]
+
