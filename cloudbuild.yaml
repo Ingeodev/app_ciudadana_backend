@@ -20,7 +20,7 @@ steps:
   args: [ "-c", "cd workspace && ls" ]
 # admin microservice
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/gcp.Dockerfile', '.']
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest', '-f', 'src/microservices/admin/Dockerfile', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-admin/admin:latest']
 # users microservice
@@ -40,12 +40,12 @@ steps:
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-notifications/notifications:latest']
 # third parties
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest', '-f', 'src/microservices/thirdParties/gcp.Dockerfile', '.']
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest', '-f', 'src/microservices/thirdParties/Dockerfile', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-third-parties/third-parties:latest']
 # traffic 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/gcp.Dockerfile', '.']
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/Dockerfile', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-east1-docker.pkg.dev/cali-mobility/cali-mobility-traffic/traffic:latest']
 # deployments

@@ -1,6 +1,27 @@
-# FROM public.ecr.aws/amazonlinux/amazonlinux:2
-# ENV NODE_VERSION=16.19.1
-FROM node:18
+FROM node:18-alpine3.18
+RUN apk update && apk add --no-cache gnupg ca-certificates
+RUN apk add --no-cache --virtual .build-deps bash gcc musl-dev openssl go && update-ca-certificates
+
+# download go tar
+WORKDIR /usr/local
+RUN wget -O go.tar.gz https://go.dev/dl/go1.21.3.src.tar.gz 
+RUN tar -C /usr/local -xzf go.tar.gz 
+# compile code
+RUN cd /usr/local/go/src && chmod +x make.bash && ./make.bash
+ENV PATH=$PATH:/usr/local/go/bin
+RUN rm -rf /usr/local/go.tar.gz
+RUN apk del .build-deps go
+RUN go version
+
+ENV GOPATH /usr/local/go
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
+WORKDIR $GOPATH
+
+# Compile gcsfuse - option 1
+RUN go install github.com/googlecloudplatform/gcsfuse@master
+
+RUN apk add --update --no-cache fuse tini
+
 ENV PATH=/usr/local/bin:$PATH \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
@@ -8,37 +29,6 @@ ENV PATH=/usr/local/bin:$PATH \
 
 EXPOSE 3000
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg \
-    lsb-release \
-    tini && \
-    gcsFuseRepo=gcsfuse-`lsb_release -c -s` && \
-    echo "deb http://packages.cloud.google.com/apt $gcsFuseRepo main" | \
-    tee /etc/apt/sources.list.d/gcsfuse.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
-    apt-key add - && \
-    apt-get update && \
-    # apt-get install -y gcsfuse && \
-    apt-get clean
-
-# workaround
-ENV GCSFUSE_VERSION=1.2.0
-RUN apt-get update -y && \
-    curl -LJO "https://github.com/GoogleCloudPlatform/gcsfuse/releases/download/v${GCSFUSE_VERSION}/gcsfuse_${GCSFUSE_VERSION}_amd64.deb" && \
-    apt-get -y install fuse && \
-    apt-get clean && \
-    dpkg -i "gcsfuse_${GCSFUSE_VERSION}_amd64.deb"
-
-
-# RUN yum update -y \
-#    && yum install -y curl \
-#    && yum install -y tar
-
-# RUN curl -sL https://rpm.nodesource.com/setup_16.x | bash \
-#     && yum install -y nodejs
-# RUN node --version
-# RUN npm --version
 ENV MNT_DIR /src/uploads
 
 WORKDIR /src
@@ -57,7 +47,7 @@ RUN npm install --production
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 WORKDIR /src/microservices/fileManagement
 # Ensure the script is executable
