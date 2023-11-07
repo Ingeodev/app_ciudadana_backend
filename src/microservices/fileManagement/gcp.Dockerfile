@@ -47,7 +47,7 @@ RUN npm install --production
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
-ENTRYPOINT ["/sbin/tini", "--"]
+# ENTRYPOINT ["/sbin/tini", "--"]
 
 WORKDIR /src/microservices/fileManagement
 # Ensure the script is executable
