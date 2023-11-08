@@ -499,6 +499,7 @@ exports.getOneById = async (req, res, next) => {
  * @return {object} Response contains: statusCode (integer), json (objeto): user Id. Or if there's error, json (objeto): status, code, detail
  */
 exports.postDelete = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { id } = await validator.vWebPostDelete(req.body);
     const userInDb = await db.User.findByPk(id);
@@ -510,16 +511,15 @@ exports.postDelete = async (req, res, next) => {
       };
     }
 
-    // ! Pendiente: Verificar que el usuario admin no este siendo usado (fk) en otras tablas
-    // ! Pendiente: Ó realizar la eliminación en cascada
     if (userInDb.dataValues.userMobile === true) {
-      await userInDb.update({ loginPhase: "notRegistered" });
+      await userInDb.update({ loginPhase: "notRegistered" }, { transaction });
     }
-    await userInDb.destroy();
-
+    await userInDb.destroy({ transaction });
+    await transaction.commit();
     return res.status(StatusCodes.OK).send({ meta: null, data: { id } });
   } catch (error) {
-    // console.error("admin could not be updated: ", error.message);
+    await transaction.rollback();
+    // console.error("admin could not be deleted: ", error.message);
     return next(error);
   }
 };
