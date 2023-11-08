@@ -40,7 +40,7 @@ const editMobileUserSchema = joi.object({
   lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   documentTypeId: joi.number().integer().greater(0),
   document: joi.string().trim().alphanum().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" ").max(255),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
 });
 

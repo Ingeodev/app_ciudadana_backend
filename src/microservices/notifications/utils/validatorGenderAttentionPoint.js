@@ -10,7 +10,7 @@ const postRegisterchema = joi.object({
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
-  address: joi.string().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").max(255).required(),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
@@ -28,7 +28,7 @@ const postUpdatechema = joi.object({
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
-  address: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" ").max(255),
   iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).when('address', {
     is: joi.exist(),

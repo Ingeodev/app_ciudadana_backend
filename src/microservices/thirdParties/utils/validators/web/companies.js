@@ -11,7 +11,7 @@ const registerSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").max(255).required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
@@ -32,7 +32,7 @@ const editSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
   siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" ").max(255),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
   lat: joi.number().min(-90).max(90).when('address', {
     is: joi.exist(),

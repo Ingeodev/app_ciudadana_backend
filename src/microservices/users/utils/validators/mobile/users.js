@@ -16,14 +16,14 @@ const postAccountInfoSchema = joi.object({
 const postAccountFullLoginSchema = joi.object({
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().empty("").invalid(" ").required(),
-  address: joi.string().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").max(255).required(),
 });
 
 const postAccountUpdateUserSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
-  address: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" ").max(255),
 });
 
 const vFileSchema = joi.object({

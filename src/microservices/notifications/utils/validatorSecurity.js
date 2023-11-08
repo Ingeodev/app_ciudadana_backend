@@ -6,7 +6,7 @@ const postRegisterchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  address: joi.string().trim().empty("").invalid(" ").required(),
+  address: joi.string().trim().empty("").invalid(" ").max(255).required(),
 });
 
 const postUpdatechema = joi.object({
@@ -14,7 +14,7 @@ const postUpdatechema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
   imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  address: joi.string().trim().empty("").invalid(" "),
+  address: joi.string().trim().empty("").invalid(" ").max(255),
 });
 
 const getListAllSchema = joi.object({
