@@ -114,7 +114,8 @@ const securityAttentionPointCreationSchema = joi.object({
   phone: numeric_string.length(10).required(),
   color: hex_color_string.required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
-  imageUri: uri_string.required(),
+  imageUri: uri_string,
+  iconMap: uri_string,
   lat: latitude_number.required(),
   lon: longitude_number.required(),
 }).custom(isInCaliCustomJoiValidator);
@@ -127,9 +128,10 @@ const securityAttentionPointUpdateSchema = joi.object({
   color: hex_color_string,
   address: joi.string().trim().empty("").invalid(" ").max(255),
   imageUri: uri_string,
+  iconMap: uri_string,
   lat: latitude_number,
   lon: longitude_number,
-}).or('name', 'description', 'phone', 'color', 'address', 'imageUri', 'lat', 'lon')
+}).or('name', 'description', 'phone', 'color', 'address', 'imageUri', 'iconMap', 'lat', 'lon')
   .and('lat', 'lon')
   .custom(isInCaliCustomJoiValidator);
 

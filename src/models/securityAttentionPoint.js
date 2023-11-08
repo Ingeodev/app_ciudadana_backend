@@ -43,7 +43,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      imageUri: DataTypes.STRING,
+      imageUri: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      iconMap: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       geolocation: DataTypes.GEOMETRY,
     },
     {
@@ -55,37 +62,37 @@ module.exports = (sequelize, DataTypes) => {
       hooks: {
         beforeCreate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
         },
         beforeUpdate: (obj, options) => {
           obj.imageUri = transformReceivedUriToSave(obj.imageUri);
+          obj.iconMap = transformReceivedUriToSave(obj.iconMap);
         },
         afterCreate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
         },
         afterUpdate: (obj, options) => {
           obj.imageUri = transformSavedUriToSend(obj.imageUri);
+          obj.iconMap = transformSavedUriToSend(obj.iconMap);
         },
         afterFind: (result, options) => {
           if (Array.isArray(result)) {
             // If the result is an array (multiple records)
             result.forEach((obj) => {
               obj.dataValues.imageUri = transformSavedUriToSend(obj.imageUri);
+              obj.dataValues.iconMap = transformSavedUriToSend(obj.iconMap);
               if (obj.image || obj.dataValues.image) {
-                obj.dataValues.image = transformSavedUriToSend(
-                  obj.dataValues.image
-                );
+                obj.dataValues.image = transformSavedUriToSend(obj.dataValues.image);
                 delete obj.dataValues.imageUri;
               }
             });
           } else if (result) {
             // If the result is a single record
-            result.dataValues.imageUri = transformSavedUriToSend(
-              result.imageUri
-            );
+            result.dataValues.iconMap = transformSavedUriToSend(result.iconMap);
+            result.dataValues.imageUri = transformSavedUriToSend(result.imageUri);
             if (result.image || result.dataValues.image) {
-              result.dataValues.image = transformSavedUriToSend(
-                result.dataValues.image
-              );
+              result.dataValues.image = transformSavedUriToSend(result.dataValues.image);
               delete result.dataValues.imageUri;
             }
           }
