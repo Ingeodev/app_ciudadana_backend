@@ -148,17 +148,35 @@ exports.getAccountInfo = async (req, res, next) => {
     const userInDb = await db.User.findOne({
       limit: 1,
       where: { clientId },
-      include: [{
+      include: [
+        {
           model: db.Role,
           attributes: [],
           required: false,
-      }],
-      attributes: {
-          exclude: ["deletedAt"],
-          include: [
-              [col('"Role"."name"'), 'roleName'],
-          ],
-      },
+        },
+        {
+          model: db.DocumentType,
+          attributes: [],
+          required: false,
+        },
+      ],
+      attributes: [
+        "id",
+        "roleId",
+        [col('"Role"."name"'), "roleName"],
+        "name",
+        "lastName",
+        "email",
+        "emailVerified",
+        "passwdReset",
+        "documentTypeId",
+        [col('"DocumentType"."name"'), "DocumentTypeName"],
+        "document",
+        "phone",
+        "address",
+        "createdAt",
+        "updatedAt",
+      ],
     });
 
     const UserInFirebase = await firebase.getUserByClientId(clientId);
