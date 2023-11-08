@@ -131,9 +131,15 @@ exports.getListAll = async (req, res, next) => {
       limit: objPage.size,
       offset: (objPage.number - 1) * objPage.size,
       order: [["createdAt", "DESC"]], // Sort by date of creation in descending order
-      attributes: {
-        exclude: ["createdBy", "deletedAt"],
-      },
+      attributes: [
+        "id",
+        "name",
+        "phone",
+        "address",
+        "imageUri",
+        "createdAt",
+        "updatedAt",
+      ],
     });
     let message = undefined;
     if (attLinesInDb.count <= 0)
