@@ -13,7 +13,33 @@ const webAdminFree = require("./v1/routes/webAdminFree.js");
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  allowedHeaders: [
+    "Origin",
+    "Accept",
+    "Accept-Version",
+    "Content-Length",
+    "Content-MD5",
+    "Content-Type",
+    "Date",
+    "X-Api-Version",
+    "X-Response-Time",
+    "X-PINGOTHER",
+    "X-CSRF-Token",
+    "Authorization",
+  ],
+  methods: "*",
+  exposedHeaders: ["X-Api-Version", "X-Request-Id", "X-Response-Time"],
+  maxAge: 1000,
+  preflightContinue: false, // It is the default value.
+  optionsSuccessStatus: 204, // It is the default value.
+};
+app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  next();
+});
 
 app.get("/health", function (req, res) {
   res.json({ msg: "everything seems to be ok" });
