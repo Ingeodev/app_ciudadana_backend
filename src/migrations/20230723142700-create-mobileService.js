@@ -29,12 +29,12 @@ module.exports = {
           unique: false,
         },
         imageUri: {
-          type: Sequelize.STRING(150),
+          type: Sequelize.STRING(255),
           allowNull: false,
           unique: false,
         },
         icon: {
-          type: Sequelize.STRING(150),
+          type: Sequelize.STRING(255),
           allowNull: false,
           unique: false,
         },
