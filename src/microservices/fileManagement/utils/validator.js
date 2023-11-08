@@ -1,7 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const joi = require('joi');
 
-// const path_string = joi.string().trim().uri({ allowRelative: true, relativeOnly: true }).disallow('..');
 const not_path_string = joi.string().trim().regex(/([\\/#?!%*:|"'`<>{}=&$+@])+|(\.\.)+/, { invert: true, name: 'Path-like string' });
 
 const saveFolderSchema = joi.object({

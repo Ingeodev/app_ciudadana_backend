@@ -1,15 +1,11 @@
 const { StatusCodes } = require('http-status-codes');
 const joi = require('joi');
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
-
 // * ------------- App Mobile --------------------------------
 const postAccountInfoSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
-  // ! HU-B1 Monday - Solo el email es requerido?. Requerido en la db o para la solicitud HTTP?
   email: joi.string().trim().email().empty("").invalid(" ").required(),
 });
 

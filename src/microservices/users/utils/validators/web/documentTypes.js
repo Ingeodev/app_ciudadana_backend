@@ -1,9 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
-
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   code: joi.string().trim().empty("").invalid(" ").required(),

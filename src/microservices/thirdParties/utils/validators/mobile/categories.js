@@ -1,9 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
-
 const getAllSchema = joi.object({
   number: joi.number().integer().greater(0).required(),
   size: joi.number().integer().greater(0).required(),

@@ -1,9 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
-
 const registerSchema = joi.object({
   city: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(100).required(),
   cityCode: joi.number().integer().greater(0).invalid(0).required(),
