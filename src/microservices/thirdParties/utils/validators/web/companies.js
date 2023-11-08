@@ -8,7 +8,7 @@ const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?)
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
+  nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
       'string.pattern.base': 'The NIT must be in the format of numbers + "-" + verification digit',
     }),
   categoryId: joi.number().integer().greater(0).invalid(0).required(),
@@ -16,7 +16,7 @@ const registerSchema = joi.object({
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
   siteUri: uri_string,
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
-  imageUri: uri_string,
+  imageUri: uri_string.required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {

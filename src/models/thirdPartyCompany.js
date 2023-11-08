@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       nit: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: false,
       },
       categoryId: {

@@ -24,7 +24,7 @@ module.exports = {
         },
         nit: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
           unique: false,
         },
         categoryId: {
