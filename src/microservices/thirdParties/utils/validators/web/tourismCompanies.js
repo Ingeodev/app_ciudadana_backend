@@ -3,6 +3,10 @@ const joi = require("joi");
 const polygonCali = require("../../../../../utils/polygonCali.js");
 const { dateHourWithOffset } = require("../../../../../utils/utcZone");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).messages({
@@ -12,8 +16,8 @@ const registerSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string.required(),
+  siteUri: uri_string,
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {
@@ -82,8 +86,8 @@ const editSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   address: joi.string().trim().empty("").invalid(" ").max(255),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
+  siteUri: uri_string,
   lat: joi.number().min(-90).max(90).when('address', {
     is: joi.exist(),
     then: joi.required()

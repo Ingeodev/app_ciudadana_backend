@@ -1,11 +1,15 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  imageUri: uri_string.required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
 });
 
@@ -13,7 +17,7 @@ const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
   address: joi.string().trim().empty("").max(255).invalid(" "),
 });
 

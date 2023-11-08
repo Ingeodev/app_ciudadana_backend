@@ -1,21 +1,22 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
 
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  icon: uri_string.required(),
+  iconMap: uri_string.required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  icon: uri_string,
+  iconMap: uri_string,
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
 });
 

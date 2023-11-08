@@ -2,6 +2,10 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const polygonCali = require("../../../../../utils/polygonCali.js");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
@@ -10,9 +14,9 @@ const registerSchema = joi.object({
   categoryId: joi.number().integer().greater(0).invalid(0).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  siteUri: uri_string,
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {
@@ -31,9 +35,9 @@ const editSchema = joi.object({
   categoryId: joi.number().integer().greater(0).invalid(0),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  siteUri: uri_string,
   address: joi.string().trim().empty("").invalid(" ").max(255),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
   lat: joi.number().min(-90).max(90).when('address', {
     is: joi.exist(),
     then: joi.required()

@@ -1,22 +1,23 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
-// const uri_string = joi.string().uri({ allowRelative: true });
-// const integer_number = joi.number().integer();
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
 
 const registerSchema = joi.object({
   title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string.required(),
+  siteUri: uri_string,
 });
 
 const editSchema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
   title: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
+  siteUri: uri_string,
 });
 
 const getAllSchema = joi.object({

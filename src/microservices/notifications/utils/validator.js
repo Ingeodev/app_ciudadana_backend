@@ -2,7 +2,10 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const { isInCaliCustomJoiValidator } = require("../../../utils/validator");
 
-const uri_string = joi.string().uri({ allowRelative: true });
+// const uri_string = joi.string().uri({ allowRelative: true });
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
 const integer_number = joi.number().integer();
 const positive_integer = integer_number.positive();
 const non_negative_integer = integer_number.min(0);

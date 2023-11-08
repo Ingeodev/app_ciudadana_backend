@@ -3,7 +3,9 @@ const joi = require("joi");
 
 const name_str = joi.string().trim().regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Spanish Name String').max(50);
 const hex_color_string = joi.string().trim().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code');
-const uri_string = joi.string().uri({ allowRelative: true });
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
 const integer_number = joi.number().integer();
 const non_negative_integer = integer_number.min(0);
 const positive_integer = integer_number.positive();

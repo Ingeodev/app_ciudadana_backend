@@ -2,16 +2,19 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const polygonCali = require("../../../utils/polygonCali.js");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
 
 // * ------------------ Web - Attention Lines -----------------
 const postRegisterchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  imageUri: uri_string.required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  iconMap: uri_string.required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
 }).custom((value, helpers) => {
@@ -25,11 +28,11 @@ const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  imageUri: uri_string,
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
   address: joi.string().trim().empty("").invalid(" ").max(255),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  iconMap: uri_string,
   lat: joi.number().min(-90).max(90).when('address', {
     is: joi.exist(),
     then: joi.required()

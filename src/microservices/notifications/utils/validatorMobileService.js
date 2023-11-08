@@ -1,13 +1,17 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 // * ------------------ Web - Mobile Services -----------------
 const postRegisterchema = joi.object({
   route: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   subtitle: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
+  imageUri: uri_string.max(255),
+  icon: uri_string.max(255),
   accessLevel: joi.string().required().trim().empty("").invalid(" ").max(50)
 });
 
@@ -16,8 +20,8 @@ const postUpdatechema = joi.object({
   route: joi.string().required().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   subtitle: joi.string().required().trim().empty("").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").max(150),
+  imageUri: uri_string.max(255),
+  icon: uri_string.max(255),
   accessLevel: joi.string().required().trim().empty("").invalid(" ").max(50)
 });
 

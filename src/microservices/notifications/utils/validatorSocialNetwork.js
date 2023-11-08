@@ -1,17 +1,21 @@
 const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 // * ------------------ Web - Social Networks -----------------
 const postRegisterchema = joi.object({
-  url: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  url: uri_string,
+  icon: uri_string,
   socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const postUpdatechema = joi.object({
   id: joi.number().integer().greater(0).invalid(0).required(),
-  url: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  icon: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  url: uri_string,
+  icon: uri_string,
   socialNetworkTypeId: joi.number().integer().greater(0).invalid(0).required(),
 });
 

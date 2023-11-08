@@ -2,6 +2,10 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const polygonCali = require("../../../../../utils/polygonCali.js");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 const coordinate = joi.array().length(2).items(
     joi.number().min(-180).max(180).required(), // lon
     joi.number().min(-90).max(90).required()    // lat
@@ -17,7 +21,7 @@ const registerSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   startDate: joi.date().required(),
   endDate: joi.date().greater(joi.ref('startDate')).required(),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
+  iconMap: uri_string.required(),
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code').required(),
   recurrence: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon').required(),
@@ -41,7 +45,7 @@ const editSchema = joi.object({
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   startDate: joi.date(),
   endDate: joi.date().greater(joi.ref('startDate')),
-  iconMap: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
+  iconMap: uri_string,
   color: joi.string().trim().empty("").invalid(" ").max(7).regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Hexadecimal Color Code'),
   recurrence: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
   typeCoordinates: joi.string().trim().empty("").valid('Point', 'LineString', 'Polygon'),

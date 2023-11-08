@@ -2,6 +2,10 @@ const { StatusCodes } = require("http-status-codes");
 const joi = require("joi");
 const { dateHourWithOffset } = require("../../../../../utils/utcZone");
 
+const uri_string = joi.string().trim().empty("").invalid(" ").regex(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/).messages({
+  'string.pattern.base': 'The siteUri must be a valid url',
+});
+
 const registerSchema = joi.object({
   name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
   nit: joi.string().trim().empty("").invalid(" ").max(50).regex(/^\d+-\d$/).required().messages({
@@ -9,8 +13,8 @@ const registerSchema = joi.object({
     }),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200).required(),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required(),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ").required()
+  siteUri: uri_string.required(),
+  imageUri: uri_string.required()
 });
 
 const editSchema = joi.object({
@@ -21,8 +25,8 @@ const editSchema = joi.object({
     }),
   description: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(200),
   phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10),
-  siteUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" "),
-  imageUri: joi.string().uri({ allowRelative: true }).trim().empty("").invalid(" ")
+  siteUri: uri_string,
+  imageUri: uri_string
 });
 
 const getProfile = joi.object({
