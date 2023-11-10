@@ -7,17 +7,12 @@ const getRoutesSchema = joi.object({
   date: joi.string().required()
     .pattern(/^\d{4}-\d{2}-\d{2}$/)
     .custom((value, helpers) => {
-      const inputDate = new Date(
-        Date.UTC(
-          parseInt(value.split("-")[0]),
-          parseInt(value.split("-")[1]) - 1, // JavaScript months range from 0 to 11
-          parseInt(value.split("-")[2])
-        )
-      );
-      inputDate.setUTCHours(dateHourWithOffset().getUTCHours());
-      inputDate.setUTCMinutes(dateHourWithOffset().getUTCMinutes());
-      inputDate.setUTCSeconds(dateHourWithOffset().getUTCSeconds());
-      inputDate.setUTCMilliseconds(dateHourWithOffset().getUTCMilliseconds());
+      let inputDate = dateHourWithOffset();
+      inputDate = inputDate.set({
+        year: value.split("-")[0],
+        month: value.split("-")[1],
+        day: value.split("-")[2],
+      });
 
       // We check if the date is invalid or in the past.
       if (inputDate < dateHourWithOffset()) {
