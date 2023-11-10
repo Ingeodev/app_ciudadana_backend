@@ -5,6 +5,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
+const { UTC_ZONE_DB } = require("../config/utc_zone.json");
+const { configureTimezoneTimestamps } = require("../utils/utcZone.js");
 const env = process.env.NODE_ENV || 'development';
 // const config = require(__dirname + '/../config/config.json')[env];
 const config = require( '../config/config.json')[env];
@@ -12,11 +14,15 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], {
+    ...config,
+    timezone: UTC_ZONE_DB,
+  });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
     ...config,
     logging: console.log,
+    timezone: UTC_ZONE_DB,
   });
 }
 
@@ -39,6 +45,7 @@ Object.keys(db).forEach( (modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
+  db[modelName].prototype.toJSON = configureTimezoneTimestamps;
 });
 
 db.sequelize = sequelize;

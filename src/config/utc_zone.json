@@ -1,4 +1,5 @@
 {
   "UTC_ZONE": -5,
+  "UTC_ZONE_DB": "America/Bogota",
   "UTC_OFFSET_MILLISECONDS": -18000000
 }

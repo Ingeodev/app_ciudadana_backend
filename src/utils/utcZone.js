@@ -1,4 +1,6 @@
-const { UTC_ZONE, UTC_OFFSET_MILLISECONDS } = require("../config/utc_zone.json");
+const moment = require("moment-timezone");
+const { StatusCodes } = require("http-status-codes");
+const { UTC_OFFSET_MILLISECONDS, UTC_ZONE_DB } = require("../config/utc_zone.json");
 // UTC_ZONE = -5              // UTC of Colombia
 // UTC_OFFSET_MILLISECONDS = -5 * 60 * 60 * 1000
 
@@ -23,9 +25,33 @@ const onlyDateWithOffset = () => {
   return date;
 };
 
+/** 
+ * Format timestamps (createdAt, updatedAt, deletedAt) with the UTC_ZONE_DB time zone.
+ * @returns attributes - table fields
+ */
+function configureTimezoneTimestamps() {
+  const attributes = { ...this.get() };
+  const timestampAttributes = ["createdAt", "updatedAt", "deletedAt"];
+  for (const attribute of timestampAttributes) {
+    try {
+      if (attributes[attribute]) {
+        attributes[attribute] = moment(attributes[attribute])
+          .tz(UTC_ZONE_DB)
+          .format();
+      }
+    } catch (error) {
+      console.error(`Error formatting ${attribute}:`, error.message);
+      throw {
+        status: StatusCodes.UNAUTHORIZED,
+        message: `Error formatting ${attribute}: ${error.message}`,
+      };
+    }
+  }
+  return attributes;
+}
+
 module.exports = {
-  UTC_OFFSET_MILLISECONDS,
-  UTC_ZONE,
   dateHourWithOffset,
   onlyDateWithOffset,
+  configureTimezoneTimestamps,
 };
