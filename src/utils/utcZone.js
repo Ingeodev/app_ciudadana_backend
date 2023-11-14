@@ -30,8 +30,8 @@ function configureTimezoneTimestamps() {
   const attributes = { ...this.get() };
   const timestampAttributes = [
     "createdAt",
-    // "updatedAt",
-    "deletedAt"
+    "updatedAt",
+    // "deletedAt"
   ];
   for (const attribute of timestampAttributes) {
     try {
