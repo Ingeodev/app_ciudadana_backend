@@ -97,4 +97,10 @@ router.post(
   usersWeb.postUsersFullLogin
 );
 
+router.post(
+  "/base_login",
+  // hasPermissions({ role: "super_master_user" }),
+  usersWeb.postUsersBaseLogin
+);
+
 module.exports = router;

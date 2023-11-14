@@ -524,3 +524,37 @@ exports.postUsersFullLogin = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * Update the users.loginPhase="inVerification" to "baseLogin"
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
+ */
+exports.postUsersBaseLogin = async (req, res, next) => {
+  try {
+    const { clientId } = await validator.vPostUsersUpdateLoginPhaseFullLogin(req.body);
+
+    const userInDb = await db.User.findOne({
+      where: {
+        clientId,
+        loginPhase: "inVerification",
+      },
+    });
+
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: `The user with clientId=${clientId} and loginPhase="inVerification" does not exist`,
+      };
+    }
+
+    await userInDb.update({ loginPhase: "baseLogin" });
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { clientId },
+    });
+  } catch (error) {
+    // console.error("user could not be updated: ", error.message);
+    return next(error);
+  }
+};
