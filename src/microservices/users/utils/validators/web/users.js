@@ -49,17 +49,13 @@ const getUsersListByDeviceSchema = joi.object({
   return obj;
 });
 
-const postUsersDeletedSchema = joi.object({
-  clientId: joi.string().trim().empty("").required(),
-});
-
 const postUsersStatusSchema = joi.object({
   clientId: joi.string().trim().empty("").required(),
   disabled: joi.boolean().required(),
 });
 
-const postUsersUpdateLoginPhaseFullLoginSchema = joi.object({
-  clientId: joi.string().trim().empty("").required(),
+const postUsersLoginPhaseSchema = joi.object({
+  id: joi.number().integer().greater(0).invalid(0).required(),
 });
 
 const use_validator_on_data = async (validator_schema, data) => {
@@ -98,13 +94,10 @@ module.exports = {
   vGetUsersListByDevice: async (inputData) => {
     return await use_validator_on_data(getUsersListByDeviceSchema, inputData);
   },
-  vPostUsersDeleted: async (inputData) => {
-    return await use_validator_on_data(postUsersDeletedSchema, inputData);
-  },
   vPostUsersStatus: async (inputData) => {
     return await use_validator_on_data(postUsersStatusSchema, inputData);
   },
-  vPostUsersUpdateLoginPhaseFullLogin: async (inputData) => {
-    return await use_validator_on_data(postUsersUpdateLoginPhaseFullLoginSchema, inputData);
+  vPostUsersLoginPhase: async (inputData) => {
+    return await use_validator_on_data(postUsersLoginPhaseSchema, inputData);
   },
 };
