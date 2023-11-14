@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const router = Router();
-const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const { hasPermissions, authMiddlewareMobile } = require("../../../../middleware/authMiddleware.js");
 const categoryController = require("../controllers/mobile/categories.js");
 const companiesController = require("../controllers/mobile/companies.js");
 const transportController = require("../controllers/mobile/transportRoutes.js");
@@ -8,6 +8,7 @@ const citiesController = require("../controllers/mobile/cities.js");
 const tourismCategoryController = require("../controllers/mobile/tourismCategories.js");
 const tourismCompanyController = require("../controllers/mobile/tourismCompanies.js");
 const taxisController = require("../controllers/mobile/taxis.js");
+router.use(authMiddlewareMobile);
 
 // --------------------- Intercity_transport ----------------------------
 router.get(

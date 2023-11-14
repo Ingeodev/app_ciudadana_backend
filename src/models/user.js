@@ -136,6 +136,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      User.hasMany(models.TaxiComplaint, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   User.init(
