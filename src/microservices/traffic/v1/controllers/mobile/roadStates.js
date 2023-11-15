@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const db = require("../../../../../models/index");
 const validator = require("../../../utils/validators/mobile/roadStates.js");
 const { formatColorOutputForMobile } = require("../../../../../utils/mobileColorFormatter");
+const { dateHourWithOffset, onlyDateWithOffset } = require("../../../../../utils/utcZone.js");
 
 /**
  * Get all routes states
@@ -22,7 +23,7 @@ exports.getRoadStates = async (req, res, next) => {
       where: {
         // createdBy: createdBy.id,
         endDate: {
-          [Op.gte]: new Date(),
+          [Op.gte]: onlyDateWithOffset(),
         },
       },
       limit: objPage.size,
@@ -35,13 +36,45 @@ exports.getRoadStates = async (req, res, next) => {
         "description",
         "startDate",
         "endDate",
+        "startHour",
+        "endHour",
         "color",
         "iconMap",
       ],
     });
 
-    const transformedRoads = roadsInDb.rows.map((point) => {
-      const roadData = point.get({ plain: true }); 
+    let transformedRoads = [];
+    for (let i = 0; i < roadsInDb.rows.length; i++) {
+      const point = roadsInDb.rows[i];
+      const roadData = point.get({ plain: true });     
+
+      let endDate = dateHourWithOffset();
+      endDate = endDate.set({
+        year: roadData.endDate.split("-")[0],
+        month: roadData.endDate.split("-")[1],
+        day: roadData.endDate.split("-")[2],
+        hour: roadData.endHour.split(":")[0],
+        minute: roadData.endHour.split(":")[1],
+        second: 0,
+        millisecond: 0,
+      });
+
+      // Omit records with time in the past
+      if (dateHourWithOffset() > endDate) {
+        continue;
+      }
+
+      let startDate = dateHourWithOffset();
+      startDate = startDate.set({
+        year: roadData.startDate.split("-")[0],
+        month: roadData.startDate.split("-")[1],
+        day: roadData.startDate.split("-")[2],
+        hour: roadData.startHour.split(":")[0],
+        minute: roadData.startHour.split(":")[1],
+        second: 0,
+        millisecond: 0,
+      });
+
       roadData.color = formatColorOutputForMobile(roadData.color);
       let tempType = null;
       switch (String(roadData.type.type).toLowerCase()) {
@@ -79,8 +112,12 @@ exports.getRoadStates = async (req, res, next) => {
       }
       delete roadData.type;
       roadData.type = tempType;
-      return roadData;
-    });
+      roadData.startDate = startDate;
+      roadData.endDate = endDate;
+      delete roadData.startHour;
+      delete roadData.endHour;
+      transformedRoads.push(roadData);
+    }
 
     return res.status(StatusCodes.OK).json(transformedRoads);
   } catch (error) {
