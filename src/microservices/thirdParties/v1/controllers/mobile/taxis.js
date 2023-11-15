@@ -92,22 +92,24 @@ const postComplaint = async (req, res, next) => {
     const { type, complaintType, description, identifier } =
       await validator.vWebPostComplaint(req.body);
 
-    // ! Validar si la placa del carro corresponde a un taxi registrado
-    // ! Validar si la cedula del conductor corresponde a un taxi registrado
-    // const colombian_car_plate_regex = validator.getColombianCarPlateRegex();
+    // ! FALTA: Validar si la cédula (identificador) del conductor corresponde a un taxi registrado
 
-    // let typeReq = null;
-    // if (colombian_car_plate_regex.test(identifier)) {
-    //   typeReq = "placa";
-    // }
+    // Validate if the license plate of the car corresponds to a registered cab.
+    if (type === "vehicle") {
+      // const colombian_car_plate_regex = validator.getColombianCarPlateRegex();
+      let typeReq = "placa";
+      // if (colombian_car_plate_regex.test(identifier)) {
+      //   typeReq = "placa";
+      // }
 
-    // const resAPI = await axios.get(`${urlAPI}?${typeReq}=${identifier}`);
-    // if (resAPI.status !== 200) {
-    //   throw {
-    //     status: StatusCodes.NOT_FOUND,
-    //     message: "The identifier does not correspond to any taxi",
-    //   };
-    // }
+      const resAPI = await axios.get(`${urlAPI}?${typeReq}=${identifier}`);
+      if (resAPI.status !== 200) {
+        throw {
+          status: StatusCodes.NOT_FOUND,
+          message: "The identifier does not correspond to any taxi",
+        };
+      }
+    }
 
     await db.TaxiComplaint.create({
       createdBy: createdBy.id,
