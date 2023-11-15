@@ -32,6 +32,9 @@ exports.postRegister = async (req, res, next) => {
       coordinates,
       color
     } = await validator.vWebPostRegister(req.body);
+
+    const date1 = new Date(startDate);
+    const date2 = new Date(endDate);
     
     const result = await db.RoadState.create({
       createdBy: createdBy.id,
@@ -41,8 +44,10 @@ exports.postRegister = async (req, res, next) => {
         type: typeCoordinates,
         coordinates: coordinates,
       },
-      startDate,
-      endDate,
+      startDate: date1.toISOString().split("T")[0],
+      startHour: date1.toISOString().split("T")[1].substring(0, 5),
+      endDate: date2.toISOString().split("T")[0],
+      endHour: date2.toISOString().split("T")[1].substring(0, 5),
       iconMap,
       recurrence,
       color,
@@ -55,6 +60,10 @@ exports.postRegister = async (req, res, next) => {
       createdBy: undefined,
       type: undefined,
       deletedAt: undefined,
+      startHour: undefined,
+      endHour: undefined,
+      startDate: startDate,
+      endDate: endDate,
     };
 
     return res.status(StatusCodes.CREATED).json({ meta: null, data: data });
@@ -97,6 +106,22 @@ exports.postEdit = async (req, res, next) => {
       delete update.coordinates;
     }
 
+    let startDate = undefined;
+    let endDate = undefined;
+
+    if (update.startDate != null) {
+      startDate = update.startDate;
+      const date1 = new Date(update.startDate);
+      update.startDate = date1.toISOString().split("T")[0];
+      update.startHour = date1.toISOString().split("T")[1].substring(0, 5);
+    }
+    if (update.endDate != null) {
+      endDate = update.endDate;
+      const date2 = new Date(update.endDate);
+      update.endDate = date2.toISOString().split("T")[0];
+      update.endHour = date2.toISOString().split("T")[1].substring(0, 5);
+    }
+
     const resultUpdate = await roadInDb.update(update);
 
     const data = {
@@ -106,6 +131,10 @@ exports.postEdit = async (req, res, next) => {
       createdBy: undefined,
       type: undefined,
       deletedAt: undefined,
+      startHour: undefined,
+      endHour: undefined,
+      startDate: startDate,
+      endDate: endDate,
     };
     return res.status(StatusCodes.OK).json({ data });
   } catch (error) {
@@ -153,6 +182,10 @@ exports.getOne = async (req, res, next) => {
     
     roadInDb.dataValues.typeCoordinates = roadInDb.dataValues.type.type;
     roadInDb.dataValues.coordinates = roadInDb.dataValues.type.coordinates;
+    roadInDb.dataValues.startDate = `${roadInDb.dataValues.startDate}T${roadInDb.dataValues.startHour}:00.000Z`;
+    roadInDb.dataValues.endDate = `${roadInDb.dataValues.endDate}T${roadInDb.dataValues.endHour}:00.000Z`;
+    delete roadInDb.dataValues.startHour;
+    delete roadInDb.dataValues.endHour;
     delete roadInDb.dataValues.type;
 
     return res.status(StatusCodes.OK).send({
@@ -232,7 +265,11 @@ exports.getAll = async (req, res, next) => {
         ...row.dataValues,
         typeCoordinates: row.dataValues.type.type,
         coordinates: row.dataValues.type.coordinates,
+        startDate: `${row.dataValues.startDate}T${row.dataValues.startHour}:00.000Z`,
+        endDate: `${row.dataValues.endDate}T${row.dataValues.endHour}:00.000Z`,
         type: undefined,
+        startHour: undefined,
+        endHour: undefined,
       };
     });
 

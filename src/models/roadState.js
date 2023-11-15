@@ -48,12 +48,22 @@ module.exports = (sequelize, DataTypes) => {
         unique: false,
       },
       startDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
         unique: false,
       },
       endDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        unique: false,
+      },
+      startHour: {
+        type: DataTypes.TIME,
+        allowNull: false,
+        unique: false,
+      },
+      endHour: {
+        type: DataTypes.TIME,
         allowNull: false,
         unique: false,
       },
