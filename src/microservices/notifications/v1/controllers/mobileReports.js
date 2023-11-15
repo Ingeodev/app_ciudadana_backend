@@ -8,6 +8,7 @@ const validator = require("../../utils/validatorReports.js");
 const { checkIfExists } = require("../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
 const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
+const { dateHourWithOffset } = require("../../../../utils/utcZone.js");
 
 // const uploadsFolder = path.join("..", "..", "uploads", "private"); // TODO: transform in env var; ask Esteban.
 const uploadsFolder = path.join("..", "..", "uploads"); // TODO: transform in env var; ask Esteban.
@@ -87,8 +88,7 @@ exports.postRegister = async (req, res, next) => {
     let expiresAt = null;
     let status = "PENDING";
     if (configInDb.automaticApproval) {
-      expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24);
+      expiresAt = dateHourWithOffset().plus({ days: 1 });
       isApproved = "yes";
       status = "APPROVED";
     }
