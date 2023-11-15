@@ -19,7 +19,6 @@ exports.postRegister = async (req, res, next) => {
       imageUri,
       address,
       active: true,
-      createdAt: formatDate(new Date()),
     });
     return res.status(StatusCodes.CREATED).json({ meta: null, data: result });
   } catch (error) {
