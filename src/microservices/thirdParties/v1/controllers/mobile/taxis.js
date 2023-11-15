@@ -15,7 +15,7 @@ const getQuery = async (req, res, next) => {
     const { q: taxiQuery } = await validator.validateTaxiQuerySchema(req.query);
     const colombian_car_plate_regex = validator.getColombianCarPlateRegex();
 
-    let type = null;
+    let type = "tarjetaOperacion";
     if (colombian_car_plate_regex.test(taxiQuery)) {
       type = "placa";
     }
