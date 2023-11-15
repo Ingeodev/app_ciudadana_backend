@@ -240,6 +240,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: false,
       },
+      acceptBicycleTerms: {
+        type: "TIMESTAMPZ",
+        allowNull: true,
+        unique: false,
+      },
     },
     {
       sequelize,
