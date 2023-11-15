@@ -195,7 +195,7 @@ const sendAlerts = async (req, res, next) => {
       expirationDate = new Date(Date.now() + (3600 * 1000 * 24)).toUTCString();
     else
       expirationDate = expiresAt.toUTCString();
-    const savedAlert = await db.Alert.create({
+    let savedAlert = await db.Alert.create({
       title,
       message,
       siteUri: siteUri ? siteUri : undefined,
@@ -206,6 +206,8 @@ const sendAlerts = async (req, res, next) => {
       expiresAt: expirationDate,
     });
 
+    savedAlert = savedAlert.toJSON();
+
     return res
       .status(StatusCodes.ACCEPTED)
       .json({
@@ -213,7 +215,7 @@ const sendAlerts = async (req, res, next) => {
           message: "The alerts are being sent by the external services.",
           acceptedAlerts,
         },
-        data: { ...savedAlert.dataValues, deletedAt: undefined, updatedAt: undefined },
+        data: { ...savedAlert, deletedAt: undefined, updatedAt: undefined },
       });
   } catch (error) {
     next(error);
