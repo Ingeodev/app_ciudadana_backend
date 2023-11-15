@@ -1,13 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/adminsValidator.js");
-const { formatDate } = require("../../../../middleware/formatDate.js");
+const { dateHourWithOffset } = require("../../../../utils/utcZone.js");
 
 
 /**
  * Verify a user's email address
  * @param {object} req - Object containing token, clientId
- * @return {object} Response contains: statuscode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): echo reply, if 200OK. Or if there's error, json (objeto): status, code, detail
  */
 exports.postEmailVerification = async (req, res, next) => {
   try {
@@ -34,7 +34,7 @@ exports.postEmailVerification = async (req, res, next) => {
       };
     }
 
-    const emailVerified = formatDate(new Date());
+    const emailVerified = dateHourWithOffset();
 
     await adminInDb.update({
       emailVerified
