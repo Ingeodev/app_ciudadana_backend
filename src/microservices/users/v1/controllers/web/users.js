@@ -399,6 +399,7 @@ exports.getUsersListByDevice = async (req, res, next) => {
         "loginPhase",
         "pushDeviceToken",
         "createdAt",
+        "acceptBicycleTerms",
       ];
     }
 
