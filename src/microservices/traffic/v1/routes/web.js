@@ -10,6 +10,6 @@ router.use(authMiddleware);
 router.use("", webBase);
 router.use("/road_state", webRoadState);
 router.use("/traffic_notification", webTrafficNotification);
-router.use("/bicycle/terms_conditions", webBicyclesTermsConditions);
+router.use("/bikes/terms_conditions", webBicyclesTermsConditions);
 
 module.exports = router;
