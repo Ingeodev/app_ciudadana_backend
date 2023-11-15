@@ -144,6 +144,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+      
+      User.hasMany(models.BicyclesTermCondition, {
+        foreignKey: {
+          name: "createdBy",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   User.init(
