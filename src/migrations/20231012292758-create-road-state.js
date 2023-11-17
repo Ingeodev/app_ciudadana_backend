@@ -23,6 +23,17 @@ module.exports = {
           onDelete: "RESTRICT",
           onUpdate: "CASCADE",
         },
+        alertId: {
+          type: Sequelize.INTEGER,
+          allowNull: true,
+          unique: false,
+          references: {
+            model: "Alerts",
+            key: "id",
+          },
+          onDelete: "RESTRICT",
+          onUpdate: "CASCADE",
+        },
         title: {
           type: Sequelize.STRING(50),
           allowNull: false,
@@ -74,17 +85,17 @@ module.exports = {
           unique: false,
         },
         createdAt: {
-          type: Sequelize.DATE,
+          type: "TIMESTAMPTZ",
           allowNull: false,
           unique: false,
         },
         updatedAt: {
-          type: Sequelize.DATE,
+          type: "TIMESTAMPTZ",
           allowNull: false,
           unique: false,
         },
         deletedAt: {
-          type: Sequelize.DATE,
+          type: "TIMESTAMPTZ",
           allowNull: true,
           unique: false,
         },

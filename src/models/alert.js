@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
         },
       });
+
+      Alert.hasMany(models.RoadState, {
+        foreignKey: {
+          name: "alertId",
+          allowNull: true,
+          unique: false,
+        },
+      });
     }
   }
   Alert.init(

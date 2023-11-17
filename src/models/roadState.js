@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
@@ -16,6 +17,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      RoadState.belongsTo(models.Alert, {
+        foreignKey: {
+          name: "alertId",
+          allowNull: true,
+          unique: false,
+        },
+      });
     }
   }
   RoadState.init(
@@ -30,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        unique: false,
+      },
+      alertId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
         unique: false,
       },
       title: {
