@@ -140,6 +140,11 @@ const optionalLocationSchema = joi.object({
   lon: longitude_number,
 }).and('lat', 'lon');
 
+const alertFkSchema = joi.object({
+  module: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50),
+  moduleId: non_negative_integer,
+}).and('vModule', 'vModuleId');
+
 /**
  * Asyncronously uses the `validator_schema` to validate the incoming `data` with Joi.
  * @param {joi.ObjectSchema} validator_schema Validation schema to use.
@@ -219,5 +224,8 @@ module.exports = {
   },
   validateOptionalLocationSchema: async inputData => {
     return await use_validator_on_data(optionalLocationSchema, inputData);
+  },
+  validateAlertFk: async inputData => {
+    return await use_validator_on_data(alertFkSchema, inputData);
   },
 };
