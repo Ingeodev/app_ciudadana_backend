@@ -36,8 +36,9 @@ exports.postRegister = async (req, res, next) => {
     const date1 = new Date(startDate);
     const date2 = new Date(endDate);
     
-    const result = await db.RoadState.create({
+    let result = await db.RoadState.create({
       createdBy: createdBy.id,
+      alertId: null,
       title,
       description,
       type: {
@@ -53,10 +54,12 @@ exports.postRegister = async (req, res, next) => {
       color,
     });
 
+    result = result.toJSON();
+
     const data = {
-      ...result.dataValues,
-      typeCoordinates: result.dataValues.type.type,
-      coordinates: result.dataValues.type.coordinates,
+      ...result,
+      typeCoordinates: result.type.type,
+      coordinates: result.type.coordinates,
       createdBy: undefined,
       type: undefined,
       deletedAt: undefined,
@@ -122,12 +125,13 @@ exports.postEdit = async (req, res, next) => {
       update.endHour = date2.toISOString().split("T")[1].substring(0, 5);
     }
 
-    const resultUpdate = await roadInDb.update(update);
+    let resultUpdate = await roadInDb.update(update);
+    resultUpdate = resultUpdate.toJSON();
 
     const data = {
-      ...resultUpdate.dataValues,
-      typeCoordinates: resultUpdate.dataValues.type.type,
-      coordinates: resultUpdate.dataValues.type.coordinates,
+      ...resultUpdate,
+      typeCoordinates: resultUpdate.type.type,
+      coordinates: resultUpdate.type.coordinates,
       createdBy: undefined,
       type: undefined,
       deletedAt: undefined,
@@ -260,13 +264,16 @@ exports.getAll = async (req, res, next) => {
     if (roadsInDb.rows.length <= 0)
       message = '"page[number]" is too large for the number of possible pages.';
 
-    const data = roadsInDb.rows.map((row) => {
+    // roadsInDb.rows = roadsInDb.rows.map(record => record.toJSON())
+
+    const data = roadsInDb.rows.map((record) => {
+      const row = record.toJSON();
       return {
-        ...row.dataValues,
-        typeCoordinates: row.dataValues.type.type,
-        coordinates: row.dataValues.type.coordinates,
-        startDate: `${row.dataValues.startDate}T${row.dataValues.startHour}:00.000Z`,
-        endDate: `${row.dataValues.endDate}T${row.dataValues.endHour}:00.000Z`,
+        ...row,
+        typeCoordinates: row.type.type,
+        coordinates: row.type.coordinates,
+        startDate: `${row.startDate}T${row.startHour}:00.000Z`,
+        endDate: `${row.endDate}T${row.endHour}:00.000Z`,
         type: undefined,
         startHour: undefined,
         endHour: undefined,
