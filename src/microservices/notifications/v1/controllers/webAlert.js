@@ -147,8 +147,41 @@ const sendSmsNotifications = async (name, message, usersPhoneNumbers) => {
   }
 };
 
+/**
+ * Send an alert (Optional query: module moduleId)
+ * @param {object} req.query - OPtional - module (String) - moduleId (Integer)
+ * @param {object} req.body - Object containing the title, message, siteUri, imageUri, push, sms, expiresAt
+ * @return {object} Response contains: statusCode (integer), json (object): meta (message, acceptedAlerts, module), data (alert object). Or if there's error, json (object): status, code, detail
+ */
 const sendAlerts = async (req, res, next) => {
+  // const transaction = await db.sequelize.transaction();
   try {
+    const objModule = await validator.validateAlertFk({
+      module: req.query.module,
+      moduleId: req.query.moduleId,
+    });
+    const possibleModules = ["roadState"];
+    let moduleInDb = null; 
+    if (objModule.module != null && possibleModules.includes(objModule.module)) {
+      switch (objModule.module) {
+        case possibleModules[0]:
+          moduleInDb = await db.RoadState.findOne({
+            where: {
+              id: objModule.moduleId,
+              alertId: null
+            },
+          });
+          if (moduleInDb == null)
+            throw {
+              message: "moduleId not found or alert has been sent previously.",
+              status: StatusCodes.NOT_FOUND,
+            };
+          break;
+        default:
+          break;
+      }
+    }
+
     const { title, message, siteUri, imageUri, push, sms, expiresAt } =
       await validator.validateAlertSchema(req.body);
     if (!(push || sms))
@@ -204,27 +237,45 @@ const sendAlerts = async (req, res, next) => {
       isPUSH: push,
       isSMS: sms,
       expiresAt: expirationDate,
-    });
+    },
+      // { transaction }
+    );
+
+    let messageModule = null;
+    if (savedAlert != null) {
+      switch (objModule.module) {
+        case possibleModules[0]:
+          const updateModule = await moduleInDb.update({
+            alertId: savedAlert.id,
+          });
+          if (updateModule != null) {
+            messageModule = `The alert was added to module=${objModule.module} with moduleId=${objModule.moduleId}`;
+          }
+          break;
+        default:
+          break;
+      }
+    }
 
     savedAlert = savedAlert.toJSON();
-
-    return res
-      .status(StatusCodes.ACCEPTED)
-      .json({
-        meta: {
-          message: "The alerts are being sent by the external services.",
-          acceptedAlerts,
-        },
-        data: { ...savedAlert, deletedAt: undefined, updatedAt: undefined },
-      });
+    // await transaction.commit();    
+    return res.status(StatusCodes.ACCEPTED).json({
+      meta: {
+        message: "The alerts are being sent by the external services.",
+        acceptedAlerts,
+        module: messageModule,
+      },
+      data: { ...savedAlert, deletedAt: undefined, updatedAt: undefined },
+    });
   } catch (error) {
+    // await transaction.rollback();
     next(error);
   }
 };
 
 /**
  * Get all alerts
- * @return {object} Response contains: statuscode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
+ * @return {object} Response contains: statusCode (integer), json (objeto): data Users. Or if there's error, json (objeto): status, code, detail
  */
 const getlistAll = async (req, res, next) => {
   try {
