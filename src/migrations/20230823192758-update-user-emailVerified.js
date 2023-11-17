@@ -19,7 +19,7 @@ module.exports = {
       unique: false,
     });
     await queryInterface.addColumn("Users", "acceptBicycleTerms", {
-      type: "TIMESTAMPZ",
+      type: "TIMESTAMPTZ",
       allowNull: false,
       unique: false,
     });
