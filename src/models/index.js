@@ -51,7 +51,9 @@ Object.keys(db).forEach( (modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
-  db[modelName].prototype.toJSON = configureTimezoneTimestamps;
+  if (db[modelName].prototype) {
+    db[modelName].prototype.toJSON = configureTimezoneTimestamps;
+  }  
 });
 
 db.sequelize = sequelize;
