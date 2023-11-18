@@ -2,10 +2,8 @@
 This backend has been generated from scratch to support the Cali Mobility Application
 
 **Table of Contents**
-
 - [CALI MOBILITY BACKEND](#cali-mobility-backend)
   - [1. Tools](#1-tools)
-  - [**Postman**: Documentation Link](#postman-documentation-link)
   - [2. Architecture](#2-architecture)
     - [2.1. Response Format](#21-response-format)
       - [Successful HTTP Request](#successful-http-request)
@@ -13,69 +11,150 @@ This backend has been generated from scratch to support the Cali Mobility Applic
   - [3. Run local](#3-run-local)
   - [4. Microservices](#4-microservices)
     - [4.1. Users Microservice](#41-users-microservice)
-      - [App Runner](#app-runner)
-      - [How to run in local](#how-to-run-in-local)
-      - [List of endpoints](#list-of-endpoints)
+      - [4.1.1 Cloud Run in GCP](#411-cloud-run-in-gcp)
+      - [4.1.2 How to run in local](#412-how-to-run-in-local)
+      - [4.1.3 List of endpoints](#413-list-of-endpoints)
+        - [4.1.3.1 Users](#4131-users)
+          - [Mobile](#mobile)
+          - [Web](#web)
+        - [4.1.3.2 Document Types](#4132-document-types)
+          - [Mobile](#mobile-1)
+          - [Web](#web-1)
+        - [4.1.3.3  Web Base Endpoints](#4133--web-base-endpoints)
+    - [4.2. Notifications Microservice](#42-notifications-microservice)
+      - [4.2.1. Advertising](#421-advertising)
+        - [Mobile Endpoints](#mobile-endpoints)
+          - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
+          - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
+        - [Web Endpoints](#web-endpoints)
+          - [_POST_ save new advertisement](#post-save-new-advertisement)
+          - [_GET_ list advertisements](#get-list-advertisements)
+          - [_POST_ update advertisement](#post-update-advertisement)
+          - [_POST_ change advertisement status](#post-change-advertisement-status)
+          - [_POST_ delete advertisement](#post-delete-advertisement)
+      - [4.2.2. Mobile Services (Advertisement Categories)](#422-mobile-services-advertisement-categories)
         - [Mobile App](#mobile-app)
         - [Web App](#web-app)
-    - [4.2. Notifications Microservice](#42-notifications-microservice)
-      - [App Runner](#app-runner-1)
-      - [4.2.1. Advertising](#421-advertising)
-        - [_POST_ save new advertisement](#post-save-new-advertisement)
-        - [_GET_ list advertisements](#get-list-advertisements)
-        - [_POST_ update advertisement](#post-update-advertisement)
-        - [_POST_ change advertisement status](#post-change-advertisement-status)
-        - [_POST_ delete advertisement](#post-delete-advertisement)
-      - [4.2.2. Advertisement Categories](#422-advertisement-categories)
-        - [_POST_ save new advertisement category](#post-save-new-advertisement-category)
-        - [_GET_ list advertisement categories](#get-list-advertisement-categories)
-        - [_POST_ edit advertisement category](#post-edit-advertisement-category)
-        - [_POST_ delete advertisement category](#post-delete-advertisement-category)
-      - [4.2.3. Publicity](#423-publicity)
-        - [_GET_ Uncategorized advertisements (Publicity)](#get-uncategorized-advertisements-publicity)
-        - [_GET_ Categorized advertisements (Banners)](#get-categorized-advertisements-banners)
-      - [4.2.4. Attention Lines](#424-attention-lines)
-      - [List of endpoints](#list-of-endpoints-1)
+      - [4.2.3. Own Attention Lines](#423-own-attention-lines)
         - [Mobile App](#mobile-app-1)
         - [Web App](#web-app-1)
-      - [4.2.5. Service Lines](#425-service-lines)
-      - [4.2.6. Alerts](#426-alerts)
-        - [_GET_ Active Alerts (MOBILE)](#get-active-alerts-mobile)
-        - [_POST_ Register Device Token (MOBILE)](#post-register-device-token-mobile)
-        - [_GET_ All Alerts](#get-all-alerts)
-        - [_POST_ Send Alert](#post-send-alert)
-      - [4.2.7. Reports](#427-reports)
-        - [_GET_ Closest Reports (MOBILE)](#get-closest-reports-mobile)
-        - [_POST_ Register Report (MOBILE)](#post-register-report-mobile)
-        - [_GET_ User Reports (web)](#get-user-reports-web)
-      - [4.2.8. Dependencies](#428-dependencies)
-        - [_GET_ list dependencies (MOBILE)](#get-list-dependencies-mobile)
-        - [_POST_ upload dependencies excel](#post-upload-dependencies-excel)
-        - [_GET_ list dependencies](#get-list-dependencies)
-        - [_GET_ download dependencies Excel file](#get-download-dependencies-excel-file)
-        - [_GET_ download dependencies template file](#get-download-dependencies-template-file)
-      - [4.2.9. Security Attention Points](#429-security-attention-points)
-        - [_GET_ list security attention points (MOBILE)](#get-list-security-attention-points-mobile)
-        - [_POST_ create Security Attention Point](#post-create-security-attention-point)
-        - [_POST_ update Security Attention Point](#post-update-security-attention-point)
-        - [_POST_ delete Security Attention Point](#post-delete-security-attention-point)
-        - [_GET_ list Security Attention Points](#get-list-security-attention-points)
-        - [_GET_ single Security Attention Point](#get-single-security-attention-point)
+      - [4.2.4. Alerts](#424-alerts)
+        - [Mobile App](#mobile-app-2)
+          - [_GET_ Active Alerts (MOBILE)](#get-active-alerts-mobile)
+          - [_POST_ Register Device Token (MOBILE)](#post-register-device-token-mobile)
+        - [Web App](#web-app-2)
+          - [_GET_ All Alerts](#get-all-alerts)
+          - [_POST_ Send Alert](#post-send-alert)
+      - [4.2.5. Reports](#425-reports)
+        - [Mobile App](#mobile-app-3)
+          - [_GET_ Closest Reports (MOBILE)](#get-closest-reports-mobile)
+          - [_POST_ Register Report (MOBILE)](#post-register-report-mobile)
+        - [Web App](#web-app-3)
+          - [_GET_ User Reports (web)](#get-user-reports-web)
+      - [4.2.6. Dependencies](#426-dependencies)
+        - [Mobile App](#mobile-app-4)
+          - [_GET_ list dependencies (MOBILE)](#get-list-dependencies-mobile)
+        - [Web App](#web-app-4)
+          - [_POST_ upload dependencies excel](#post-upload-dependencies-excel)
+          - [_GET_ list dependencies](#get-list-dependencies)
+          - [_GET_ download dependencies Excel file](#get-download-dependencies-excel-file)
+          - [_GET_ download dependencies template file](#get-download-dependencies-template-file)
+      - [4.2.7. Security Attention Points](#427-security-attention-points)
+        - [Mobile App](#mobile-app-5)
+          - [_GET_ list security attention points (MOBILE)](#get-list-security-attention-points-mobile)
+        - [Web App](#web-app-5)
+          - [_POST_ create Security Attention Point](#post-create-security-attention-point)
+          - [_POST_ update Security Attention Point](#post-update-security-attention-point)
+          - [_POST_ delete Security Attention Point](#post-delete-security-attention-point)
+          - [_GET_ list Security Attention Points](#get-list-security-attention-points)
+          - [_GET_ single Security Attention Point](#get-single-security-attention-point)
+      - [4.2.8. Gender Equity Attention Points](#428-gender-equity-attention-points)
+        - [Mobile App](#mobile-app-6)
+        - [Web App](#web-app-6)
+      - [4.2.9. Gender Equity Attention Lines](#429-gender-equity-attention-lines)
+        - [Mobile App](#mobile-app-7)
+        - [Web App](#web-app-7)
+      - [4.2.10. Gender Equity Categories](#4210-gender-equity-categories)
+        - [Mobile App](#mobile-app-8)
+        - [Web App](#web-app-8)
+      - [4.2.11. Report Configuration](#4211-report-configuration)
+        - [Web App](#web-app-9)
+      - [4.2.12. Security Attention Lines](#4212-security-attention-lines)
+        - [Mobile App](#mobile-app-9)
+        - [Web App](#web-app-10)
+      - [4.2.13. Security Categories](#4213-security-categories)
+        - [Mobile App](#mobile-app-10)
+        - [Web App](#web-app-11)
+      - [4.2.14. Social Network](#4214-social-network)
+        - [Mobile App](#mobile-app-11)
+        - [Web App](#web-app-12)
+      - [4.2.15. Base endpoints](#4215-base-endpoints)
+        - [Web App](#web-app-13)
     - [4.3. Third-Party Microservice](#43-third-party-microservice)
-      - [4.3.1. Tourism Categories](#431-tourism-categories)
-        - [_GET_ list tourism categories (MOBILE)](#get-list-tourism-categories-mobile)
-        - [_POST_ create Tourism Category](#post-create-tourism-category)
-        - [_POST_ update Tourism Category](#post-update-tourism-category)
-        - [_POST_ delete Tourism Category](#post-delete-tourism-category)
-        - [_GET_ list Tourism Categories](#get-list-tourism-categories)
+      - [4.3.1. Cities](#431-cities)
+        - [Mobile App](#mobile-app-12)
+        - [Web App](#web-app-14)
+      - [4.3.2. Third-Party Categories](#432-third-party-categories)
+        - [Mobile App](#mobile-app-13)
+        - [Web App](#web-app-15)
+      - [4.3.3. Third-Party Companies](#433-third-party-companies)
+        - [Mobile App](#mobile-app-14)
+        - [Web App](#web-app-16)
+      - [4.3.4. ThirdParty Company Services](#434-thirdparty-company-services)
+        - [Web App](#web-app-17)
+      - [4.3.5. Tourism Categories](#435-tourism-categories)
+        - [Mobile App](#mobile-app-15)
+          - [_GET_ list tourism categories (MOBILE)](#get-list-tourism-categories-mobile)
+        - [Web App](#web-app-18)
+          - [_POST_ create Tourism Category](#post-create-tourism-category)
+          - [_POST_ update Tourism Category](#post-update-tourism-category)
+          - [_POST_ delete Tourism Category](#post-delete-tourism-category)
+          - [_GET_ list Tourism Categories](#get-list-tourism-categories)
+      - [4.3.6. Tourism Companies](#436-tourism-companies)
+        - [Mobile App](#mobile-app-16)
+        - [Web App](#web-app-19)
+      - [4.3.7. Tourism Services](#437-tourism-services)
+        - [Web App](#web-app-20)
+      - [4.3.8. Transport Companies](#438-transport-companies)
+        - [Web App](#web-app-21)
+      - [4.3.9. Transport Routes](#439-transport-routes)
+        - [Mobile App](#mobile-app-17)
+        - [Web App - Transport Route](#web-app---transport-route)
+        - [Web App - Transport Route Timetables - Date field](#web-app---transport-route-timetables---date-field)
+        - [Web App - Transport Route Timetables - Hour n Tariff fields](#web-app---transport-route-timetables---hour-n-tariff-fields)
+      - [4.3.10. Base endpoint](#4310-base-endpoint)
+        - [Web App](#web-app-22)
+      - [4.3.11. Taxis](#4311-taxis)
+        - [Mobile App](#mobile-app-18)
+      - [4.3.12. API: Tourism Services](#4312-api-tourism-services)
+        - [Web App](#web-app-23)
+      - [4.3.13. API: Tourism Services](#4313-api-tourism-services)
+        - [Web App](#web-app-24)
     - [4.4. File Management Microservice](#44-file-management-microservice)
-      - [App Runner](#app-runner-2)
-      - [How to run in local](#how-to-run-in-local-1)
-      - [List of endpoints](#list-of-endpoints-2)
+      - [How to run in local](#how-to-run-in-local)
+      - [List of endpoints](#list-of-endpoints)
         - [Download](#download)
         - [Upload](#upload)
-        - [_POST_ Upload Image](#post-upload-image)
-        - [_POST_ Upload PDF](#post-upload-pdf)
+          - [_POST_ Upload Image](#post-upload-image)
+          - [_POST_ Upload PDF](#post-upload-pdf)
+    - [4.5. Traffic (Mobility) Microservice](#45-traffic-mobility-microservice)
+      - [4.5.1. Bikes TermsConditions](#451-bikes-termsconditions)
+        - [Mobile App](#mobile-app-19)
+        - [Web App](#web-app-25)
+      - [4.5.2. Configuration of Traffic Notifications](#452-configuration-of-traffic-notifications)
+        - [Web App](#web-app-26)
+      - [4.5.3. Road States](#453-road-states)
+        - [Mobile App](#mobile-app-20)
+        - [Web App](#web-app-27)
+    - [4.6. Admins Microservice](#46-admins-microservice)
+      - [4.6.1. Admin without security](#461-admin-without-security)
+        - [Web App](#web-app-28)
+      - [4.6.2. Admin](#462-admin)
+        - [Web App](#web-app-29)
+      - [4.6.3. Admin Notifications](#463-admin-notifications)
+        - [Web App](#web-app-30)
+      - [4.6.3. Role](#463-role)
+        - [Web App](#web-app-31)
   - [5. Contributors](#5-contributors)
   - [6. License](#6-license)
 
@@ -87,7 +166,9 @@ This backend has been generated from scratch to support the Cali Mobility Applic
 3. [Express](https://expressjs.com/)
 
 **Postman**: [Documentation Link](http://postmanTest.com "Documentation Link")
+
 ------------
+
 ## 2. Architecture
 
 ### 2.1. Response Format
@@ -107,6 +188,7 @@ When an error occurs during the processing of any HTTP request, our API responds
 }
 ```
 ------------
+
 ## 3. Run local
 
 To run locally this project use
@@ -156,21 +238,25 @@ Migration to cloud run
 ```
 
 ------------
+
 ## 4. Microservices
-------------
+
 ### 4.1. Users Microservice
+This microservice handles the [**Users**](#4131-users) and [**Document Types**](#4132-document-types) end-points. And an [**endpoint**](#4133-web-base-endpoints) to validate that a given latitude and longitude belongs to the area of the City of Cali, Valle del Cauca.
 
-#### App Runner
-    https://vbxb7pp27j.us-east-1.awsapprunner.com
+#### 4.1.1 Cloud Run in GCP
+    https://users-cmiesjcqoq-ue.a.run.app
 
-#### How to run in local
+#### 4.1.2 How to run in local
     # On the console
     cd src\microservices\users
     node index.js
-#### List of endpoints
-##### Mobile App
+
+#### 4.1.3 List of endpoints
+##### 4.1.3.1 Users
+###### Mobile
 	Path: http:localhost:3000/api/mobile/v1/users
-	Controller: src\microservices\users\v1\controllers\mobileUsers.js
+	Controller: src\microservices\users\v1\controllers\mobile\users.js
 	Route: src\microservices\users\v1\routes\mobile.js
 | Endpoint             | Method | Location in Controller | Description                                               |
 | :------------------- | :----- | :--------------------- | :-------------------------------------------------------- |
@@ -180,36 +266,125 @@ Migration to cloud run
 | /account/login/phase | GET    | getAccountLoginPhase   | Get the user loginPhase state                             |
 | /account/edit        | POST   | postAccountUpdateUser  | Update user data - when loginPhase="fullLogin"            |
 
-##### Web App
+###### Web
 	Path: http:localhost:3000/api/web/v1/users
-	Controller: src\microservices\users\v1\controllers\webUsers.js
+	Controller: src\microservices\users\v1\controllers\web\users.js
 	Route: src\microservices\users\v1\routes\web.js
 | Endpoint             | Method | Location in Controller  | Description                                               |
 | :------------------- | :----- | :---------------------- | :-------------------------------------------------------- |
 | /                    | GET    | getUsersListAll         | Get all users (web + app)                                 |
-| /delete              | POST   | postUsersUpdateDisabled | Update  status user.disabled=true                         |
+| /status              | POST   | postUsersStatus         | Update  status user.disabled=true                         |
 | /full_login          | POST   | postUsersFullLogin      | Update users.loginPhase to fullLogin                      |
+| /base_login          | POST   | postUsersBaseLogin      | Update the users.loginPhase="inVerification" to "baseLogin"|
 | /account/info        | POST   | postAccountInfo         | Create the user base information - loginPhase="baseLogin" |
 | /account/full_login  | POST   | postAccountFullLogin    | Update missing user data - when loginPhase="baseLogin"    |
 | /account/info        | GET    | getAccountInfo          | Get user data and login phase                             |
 | /account/login/phase | GET    | getAccountLoginPhase    | Get the user loginPhase state                             |
 | /account/edit        | POST   | postAccountUpdateUser   | Update user data - when loginPhase="fullLogin"            |
 
+##### 4.1.3.2 Document Types
+###### Mobile
+	Path: http:localhost:3000/api/mobile/v1/users
+	Controller: src\microservices\users\v1\controllers\mobile\documentTypes.js
+	Route: src\microservices\users\v1\routes\mobile.js
+| Endpoint             | Method | Location in Controller | Description                                               |
+| :------------------- | :----- | :--------------------- | :-------------------------------------------------------- |
+| /document_types        | GET   | getAll        | Get all document types |
+
+###### Web
+	Path: http:localhost:3000/api/web/v1/users
+	Controller: src\microservices\users\v1\controllers\web\documentTypes.js
+	Route: src\microservices\users\v1\routes\web.js
+| Endpoint             | Method | Location in Controller | Description                                               |
+| :------------------- | :----- | :--------------------- | :-------------------------------------------------------- |
+| /document_types        | POST   | postRegister        | Create a document type |
+| /document_types/edit        | POST   | postEdit        | Update document type |
+| /document_types        | GET   | getAll        | Get all document types |
+| /document_types/:id        | GET   | getOneById        | Get document type by id |
+
+
+##### 4.1.3.3  Web Base Endpoints
+	Path: http:localhost:3000/api/web/v1/users
+	Controller: src\microservices\users\v1\controllers\web\base.js
+	Route: src\microservices\users\v1\routes\web.js
+| Endpoint             | Method | Location in Controller | Description                                               |
+| :------------------- | :----- | :--------------------- | :-------------------------------------------------------- |
+| /validate_lat_lon        | POST   | postValidateLatLon        | Validate lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia |
 
 ------------
+
 ### 4.2. Notifications Microservice
 
 This microservice handles the [**Advertising**](#advertising), [**Publicity**](#publicity), [**Attention Lines**](#attention-lines), [**Service Lines**](#service-lines), and [**Alert**](#alert) end-points.
 
-#### App Runner
-     https://k7gmmdc9dj.us-east-1.awsapprunner.com
+    https://notifications-cmiesjcqoq-ue.a.run.app
 
 ------------
-#### 4.2.1. Advertising 
+
+#### 4.2.1. Advertising
+
+##### Mobile Endpoints
+
+The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
+
+Path: http:localhost:3000/api/mobile/v1/notifications/publicity
+Controller: src\microservices\notifications\v1\controllers\mobilePublicity.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /         | GET    | getUncategorized          | Retrieve the advertisements that have no category attached.    |
+| /register | GET    | getCategorized           | Retrieve the advertisements with a category attached. |
+
+
+###### _GET_ Uncategorized advertisements (Publicity)
+
+
+###### _GET_ Categorized advertisements (Banners)
+
+\(\<Your_Host\>/api/mobile/v1/notifications/publicity/banners/\) allows mobile users to retrieve all the active banners (i.e. categorized advertisements). It receives no parameters. It returns a list of objects with whe image locator `image`, the provider URL `url`, and the category `category`.
+
+**Example Response**
+
+> _Status Code: **200 OK**_
+> ```JSON
+> [
+>     {
+>         "image": "https://test.image.url/second",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     },
+>     {
+>         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     },
+>     {
+>         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
+>         "url": "https://test.site.url/second",
+>         "category": "sample"
+>     }
+> ]
+> ```
+
+##### Web Endpoints
 
 The Advertising end-points allow the web user to manage the advertisements shown to mobile users.
 
-##### _POST_ save new advertisement
+Path: http:localhost:3000/api/web/v1/notifications/informationmb
+Controller: src\microservices\notifications\v1\controllers\webAdvertisement.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint  | Method | Location in Controller | Description          |
+| :-------- | :----- | :--------------------- | :------------------- |
+| /         | GET    | getAllAdvertisements          | Get all registered advertisements.    |
+| / | POST    | postAdvertisement           | Create an advertisement. |
+| /edit | POST    | postAdvertisementEdit           | Edit an advertisement |
+| /status | POST    | postAdvertisementStatus           | Change the status of an advertisement |
+| /delete | POST    | postAdvertisementDelete           | Remove (Soft-Delete) an advertisement. |
+
+
+###### _POST_ save new advertisement
 \(\<Your_Host\>/api/web/v1/notifications/informationmb/\) allows web users to save a new advertisement into the database. It receives the following parameters:
 
 | **Name**     |   **Type**   | **Required** | **Description**                                                  |
@@ -275,7 +450,7 @@ It returns **201 _created_** and the created object on success.
       > }
       > ```
 
-##### _GET_ list advertisements
+###### _GET_ list advertisements
 \(\<Your_Host\>/api/web/v1/notifications/informationmb/\) allows web users to list a set of the advertisements from the database. It receives the following query parameters:
 
 
@@ -356,7 +531,7 @@ It returns **200 _OK_** and the list of objects on success.
 >}
 > ```
 
-##### _POST_ update advertisement
+###### _POST_ update advertisement
 \(\<Your_Host\>/api/web/v1/notifications/informationmb/edit\) allows web users to edit an existing advertisement in the database. It receives the following parameters:
 
 | **Name**     |   **Type**   | **Required** | **Description**                                                  |
@@ -399,7 +574,7 @@ Response:
   > }
   > ```
 
-##### _POST_ change advertisement status
+###### _POST_ change advertisement status
 \(\<Your_Host\>/api/web/v1/notifications/informationmb/status\) allows web users to directly change the status of an existing advertisement in the database. It receives the following parameters:
 
 | **Name** | **Type** | **Required** | **Description**                                               |
@@ -435,7 +610,7 @@ Response:
   > }
   > ```
 
-##### _POST_ delete advertisement
+###### _POST_ delete advertisement
 \(\<Your_Host\>/api/web/v1/notifications/informationmb/delete\) allows web users to delete an existing advertisement from the database. This service uses a soft-delete approach. It receives the following parameter:
 
 | **Name** | **Type** | **Required** | **Description**                    |
@@ -464,189 +639,45 @@ Response:
   > ```
 
 ------------
-#### 4.2.2. Advertisement Categories
+
+#### 4.2.2. Mobile Services (Advertisement Categories)
 
 The Advertisement Categories end-points allow the web user to manage the advertisement categories that can classify the [**advertisements**](#421-advertising).
 
-##### _POST_ save new advertisement category
-\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to save a new advertisement category into the database. It receives the following parameters:
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/services
+Controller: src\microservices\notifications\v1\controllers\mobileMobileService.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getMobileServices | Get all registered mobile services. |
 
-| **Name** |      **Type**      | **Required** | **Description**        |
-| -------- | :----------------: | :----------: | ---------------------- |
-| _name_   |       String       |     Yes      | Category name.         |
-| _color_  | String (Hex Color) |     Yes      | Color of the category. |
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/mobile_services
+Controller: src\microservices\notifications\v1\controllers\webMobileService.js
+Route: src\microservices\notifications\v1\routes\web.js
 
-It returns **201 _created_** and the created object on success.
-
-**Example**
-
-Request body:
-  >```JSON
-  >{
-  >  "name": "testCat000",
-  >  "color": "#feF37e"
-  >}
-  >```
-
-Response:
-  > _Status code: **201 Created**_
-  > ```JSON
-  > {
-  >   "data": {
-  >       "id": 3,
-  >       "name": "testCat000",
-  >       "color": "#feF37e",
-  >       "createdAt": "2023-08-16T15:21:37.943Z"
-  >    }
-  > }
-  > ```
-
-##### _GET_ list advertisement categories
-\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/\) allows web users to list a set of the advertisement categories from the database. It receives the following query parameters:
-
-
-| **Name**       |      **Type**      | **Required** | **Description**             |
-| -------------- | :----------------: | :----------: | --------------------------- |
-| _page[number]_ | Integer (positive) |      No      | Page number for pagination. |
-| _page[size]_   | Integer (positive) |      No      | Page size for pagination.   |
-
-If one of the query parameters (`page[number]` or `page[size]`) is present, the other becomes mandatory.
-
-It returns **200 _OK_** and the list of objects on success.
-
-**Example Response**
-> _Status Code: **200 OK**_
-> ```JSON
-> {
->     "meta": {
->         "page": 1,
->         "pageSize": 20,
->         "totalRecords": 1,
->         "totalPages": 1
->     },
->     "data": [
->         {
->             "id": 2,
->             "name": "sample",
->             "color": "#2d96ad",
->             "createdAt": "2023-07-26T17:06:30.812Z",
->             "updatedAt": "2023-08-16T23:02:30.252Z"
->         }
->     ]
-> }
-> ```
-
-##### _POST_ edit advertisement category
-\(\<Your_Host\>/api/web/v1/notifications/advertisementCategory/edit\) allows web users to edit an existing advertisement category in the database. It receives the following parameters:
-
-| **Name** |      **Type**      | **Required** | **Description**                           |
-| -------- | :----------------: | :----------: | ----------------------------------------- |
-| _id_     |      Integer       |     Yes      | ID of the advertisement category to edit. |
-| _name_   |       String       |      No      | Category name.                            |
-| _color_  | String (Hex Color) |      No      | Color of the category.                    |
-
-At least one of the optional (_name_, _color_) parameters must be passed.
-
-It returns **200 _OK_** and the updated object on success.
-
-**Example**
-
-Request body:
-  >```JSON
-  >{
-  >  "id": 2,
-  >  "name": "editedCategory",
-  >  "color": "#00FF00"
-  >}
-  >```
-
-Response:
-  > _Status code: **200 OK**_
-  > ```JSON
-  > {
-  >   "data": {
-  >       "id": 2,
-  >       "name": "editedCategory",
-  >       "color": "#00FF00",
-  >       "createdAt": "2023-07-26T17:06:30.812Z",
-  >       "updatedAt": "2023-08-25T14:11:48.550Z"
-  >    }
-  > }
-  > ```
-
-##### _POST_ delete advertisement category
-\(\<Your_Host\>/api/web/v1/notifications/informationmb/delete\) allows web users to delete an existing advertisement category from the database. This service fails if the category is used. This service uses a soft-delete approach. It receives the following parameter:
-
-| **Name** | **Type** | **Required** | **Description**                             |
-| -------- | :------: | :----------: | ------------------------------------------- |
-| _id_     | Integer  |     Yes      | ID of the advertisement category to delete. |
-
-It returns **200 _OK_** and the updated object on success.
-
-**Example**
-
-Request body:
-  >```JSON
-  >{
-  >    "id": 3
-  >}
-  >```
-
-Response:
-  > _Status code: **200 OK**_
-  > ```JSON
-  > {
-  >    "data": {
-  >        "id": 3
-  >    }
-  > }
-  > ```
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | GET   | listMobileServices | List all registered Mobile Services      |
+| /access  | GET   | listMobileServiceTypes   | List all types of access used in the mobile application |
+| /        | POST   | registerMobileService | Create a new Mobile Service record |
+| /edit    | POST    | updateMobileService    | Edit a Mobile Service record |
+| /status  | POST    | changeStatusMobileService    | Change the status (activated or deactivated) of a Mobile Service. |
+| /delete  | POST    | deleteMobileService    | Delete (Soft-Delete) a registered Mobile Service |
 
 ------------
-#### 4.2.3. Publicity 
-
-The Publicity end-points allow the mobile user to consume the advertisements managed by web users in [advertising](#advertising).
-
-##### _GET_ Uncategorized advertisements (Publicity)
 
 
-##### _GET_ Categorized advertisements (Banners)
+#### 4.2.3. Own Attention Lines
 
-\(\<Your_Host\>/api/mobile/v1/notifications/publicity/banners/\) allows mobile users to retrieve all the active banners (i.e. categorized advertisements). It receives no parameters. It returns a list of objects with whe image locator `image`, the provider URL `url`, and the category `category`.
-
-**Example Response**
-
-> _Status Code: **200 OK**_
-> ```JSON
-> [
->     {
->         "image": "https://test.image.url/second",
->         "url": "https://test.site.url/second",
->         "category": "sample"
->     },
->     {
->         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
->         "url": "https://test.site.url/second",
->         "category": "sample"
->     },
->     {
->         "image": "gs://documentainotery.appspot.com/dance%20dance%20danseur.jpg",
->         "url": "https://test.site.url/second",
->         "category": "sample"
->     }
-> ]
-> ```
-
-------------
-#### 4.2.4. Attention Lines 
-#### List of endpoints
 ##### Mobile App
 	Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines
 	Controller: src\microservices\notifications\v1\controllers\mobileAttentionLines.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
 | Endpoint         | Method | Location in Controller | Description             |
 | :--------------- | :----- | :--------------------- | :---------------------- |
-| /attention_lines | GET    | getListAll             | Get all attention lines |
+| / | GET    | getAttentionLine             | Get all attention lines |
 
 ##### Web App
 	Path: http:localhost:3000/api/web/v1/notifications/attention_lines
@@ -655,24 +686,17 @@ The Publicity end-points allow the mobile user to consume the advertisements man
 
 | Endpoint                | Method | Location in Controller | Description                              |
 | :---------------------- | :----- | :--------------------- | :--------------------------------------- |
-| /attention_lines        | GET    | getListAll             | Get all attention lines                  |
-| /attention_lines/       | POST   | postRegister           | Create an attention line                 |
-| /attention_lines/edit   | POST   | postUpdate             | Update an attention line                 |
-| /attention_lines/status | POST   | postUpdateActive       | Activate or deactivate an attention line |
-| /attention_lines/:id    | GET    | getAttentionLine       | Get an attention line by id              |
+| /       | POST   | postRegister           | Create the attention line                 |
+| /    | GET    | getOne       | Get the attention line              |
 
 ------------
 
-#### 4.2.5. Service Lines 
 
-------------
-
-#### 4.2.6. Alerts
+#### 4.2.4. Alerts
 
 The Alerts endpoints allow web users to send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List), and list the previously-delivered alerts.
 
-**_List of endpoints_**
-**Mobile App**
+##### Mobile App
 	Path: http:localhost:3000/api/mobile/v1/notifications/notifications/
 	Controller: src\microservices\notifications\v1\controllers\mobileAlert.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
@@ -682,7 +706,8 @@ The Alerts endpoints allow web users to send alerts to mobile users through diff
 | /         | GET    | getListActive          | Get active alerts    |
 | /register | POST   | registerPush           | Send alerts to users |
 
-##### _GET_ Active Alerts (MOBILE)
+
+ ###### _GET_ Active Alerts (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/notifications/\) allow mobile users to list the valid notifications. This service accepts both paginated and unpaginated requests. The unpaginated request returns up to 500 Notifications ordered from the most recent to the oldest. It receives the following optional parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -726,7 +751,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ```
 
 
-##### _POST_ Register Device Token (MOBILE)
+###### _POST_ Register Device Token (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/notifications/register\) allows mobile users to subscribe their device (i.e. phone) to the PUSH alert service. It receives the following parameter:
 
 | **Name**      | **Type** | **Required** | **Description**                                                     |
@@ -754,7 +779,7 @@ Response:
   > }
   > ```
 
-**Web App**
+##### Web App
 	Path: http:localhost:3000/api/web/v1/notifications/alert
 	Controller: src\microservices\notifications\v1\controllers\webAlert.js
 	Route: src\microservices\notifications\v1\routes\web.js
@@ -764,7 +789,7 @@ Response:
 | /alert   | GET    | getlistAll             | Get all alerts       |
 | /alert   | POST   | sendAlerts             | Send alerts to users |
 
-##### _GET_ All Alerts
+###### _GET_ All Alerts
 \(\<Your_Host\>/api/web/v1/notifications/alert\) allow web users to list all the valid and expired alerts. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -849,7 +874,7 @@ It returns **200 _OK_** and the list of objects in data on success.
 > }
 > ```
 
-##### _POST_ Send Alert
+###### _POST_ Send Alert
 \(\<Your_Host\>/api/web/v1/notifications/alert\) send alerts to mobile users through different services (PUSH notifications, SMSs, and Alert List). It receives the following parameters:
 
 | **Name**    |   **Type**   | **Required** | **Description**                                                                             |
@@ -953,12 +978,11 @@ It returns **202 _Accepted_** and the created alert object on success.
 
 ------------
 
-#### 4.2.7. Reports
+#### 4.2.5. Reports
 
 The Reports endpoints allow mobile users to report accidents to both other mobile users and web users using their location.
 
-**_List of endpoints_**
-**Mobile App**
+##### Mobile App
 	Path: http:localhost:3000/api/mobile/v1/notifications/
 	Controller: src\microservices\notifications\v1\controllers\mobileReports.js
 	Route: src\microservices\notifications\v1\routes\mobile.js
@@ -968,7 +992,7 @@ The Reports endpoints allow mobile users to report accidents to both other mobil
 | /security/reports | GET    | getListAllClosest      | Get closest reports |
 | /security/reports | POST   | postRegister           | Create report       |
 
-##### _GET_ Closest Reports (MOBILE)
+###### _GET_ Closest Reports (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to list a set of the closest report from the database. It receives the following query parameters:
 
 | **Name** | **Type** | **Required** | **Description**                        |
@@ -1001,7 +1025,7 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
-##### _POST_ Register Report (MOBILE)
+###### _POST_ Register Report (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/security/reports\) allows mobile users to create a report. It receives the following parameter:
 
 | **Name**             |   **Type**   | **Required** | **Description**                        |
@@ -1049,16 +1073,20 @@ Response:
   > }
   > ```
 
-  **Web App**
-  Path: http:localhost:3000/api/web/v1/notifications/
+##### Web App
+  Path: http:localhost:3000/api/web/v1/notifications/security/reports
   Controller: src\microservices\notifications\v1\controllers\webReports.js
   Route: src\microservices\notifications\v1\routes\web.js
 
 | Endpoint          | Method | Location in Controller | Description                    |
 | :---------------- | :----- | :--------------------- | :----------------------------- |
-| /security/reports | GET    | getListAllByUser       | Get reports by user identifier |
+| /approve          | POST    | postApprove       | Approve a report |
+| /disapprove       | POST    | postDisapprove       | Disapprove a report |
+| /expires          | POST    | postExpires       | Modify the expiration date of an approved report |
+| /                 | GET    | getListAll       | Get all reports |
+| /:id              | GET    | getReport       | Get report by id |
 
-##### _GET_ User Reports (web)
+###### _GET_ User Reports (web)
 \(\<Your_Host\>/api/web/v1/notifications/security/reports\) allows web users to list its own reports from the database. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -1093,11 +1121,11 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
-#### 4.2.8. Dependencies 
+#### 4.2.6. Dependencies 
 
 The Dependencies end-points allow web users to manage the dependencies shown to mobile users when they create a new PQRS.
 
-**Mobile App**
+##### Mobile App
 Path: http:localhost:3000/api/mobile/v1/notifications/attention_lines/dependencies
 Controller: src\microservices\notifications\v1\controllers\mobileDependencies.js
 Route: src\microservices\notifications\v1\routes\mobile.js
@@ -1105,7 +1133,7 @@ Route: src\microservices\notifications\v1\routes\mobile.js
 | :------- | :----- | :--------------------- | :------------------------------------------ |
 | /        | GET    | getDependencies        | Get all the dependencies to submit a pqrsdf |
 
-##### _GET_ list dependencies (MOBILE)
+###### _GET_ list dependencies (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/dependencies/\) Allows mobile users to list all the dependencies for PQRSs. This requests accepts pagination, although it is optional. The unpaginated request returns up to 500 dependencies. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -1142,19 +1170,19 @@ It returns **200 _OK_** and the list of objects on success.
 > ]
 > ```
 
-**Web App**
+##### Web App
 Path: http:localhost:3000/api/web/v1/notifications/dependencies
 Controller: src\microservices\notifications\v1\controllers\webDependencies.js
 Route: src\microservices\notifications\v1\routes\web.js
 
 | Endpoint  | Method | Location in Controller      | Description                                   |
 | :-------- | :----- | :-------------------------- | :-------------------------------------------- |
-| /excel    | POST   | postUploadXlsxDependencies  | Upload excel file with dependencies           |
 | /         | GET    | getAllDependencies          | Get paginated dependencies list               |
-| /excel    | GET    | getDownloadXlsxDependencies | Download all dependencies in excel            |
 | /template | GET    | getDownloadXlsxTemplate     | Download template excel file for dependencies |
+| /excel    | POST   | postUploadXlsxDependencies  | Upload excel file with dependencies           |
+| /excel    | GET    | getDownloadXlsxDependencies | Download all dependencies in excel            |
 
-##### _POST_ upload dependencies excel
+###### _POST_ upload dependencies excel
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/excel/\) allows web users to upload an excel (xls or xlsx) file in the specified format (id - name) with the dependencies that should appear in the PQRSs services. It receives the following **form** parameter:
 
 | **Name** | **Type** | **Required** | **Description**                                              |
@@ -1191,7 +1219,7 @@ It returns **201 _created_** and the created dependencies on success.
 > }
 > ```
 
-##### _GET_ list dependencies
+###### _GET_ list dependencies
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/\) allows web users to list the existing dependencies in the database. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -1234,21 +1262,21 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
-##### _GET_ download dependencies Excel file
+###### _GET_ download dependencies Excel file
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/excel/\) allows web users to download an XLSX file with all the existing dependencies in the database. It receives no query parameters.
 
 It returns **200 _OK_** and the dependencies XLSX file on success.
 
-##### _GET_ download dependencies template file
+###### _GET_ download dependencies template file
 \(\<Your_Host\>/api/web/v1/notifications/dependencies/template/\) allows web users to download an XLSX file as a template of how the dependencies XLSX or XLS files should look like. It receives no query parameters.
 
 It returns **200 _OK_** and the template XLSX file on success.
 
-#### 4.2.9. Security Attention Points 
+#### 4.2.7. Security Attention Points 
 
 The Security Attention Points end-points allow web users to manage the Security Attention Points shown to mobile users when they need assistance.
 
-**Mobile App**
+##### Mobile App
 Path: http:localhost:3000/api/mobile/v1/notifications/security/attention_points
 Controller: src\microservices\notifications\v1\controllers\mobileSecurityAttentionPoint.js
 Route: src\microservices\notifications\v1\routes\mobile.js
@@ -1256,7 +1284,7 @@ Route: src\microservices\notifications\v1\routes\mobile.js
 | :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
 | /        | GET    | getSecurityAttentionPoints | Get all the security attention points that may be sorted by name or by shortest distance. |
 
-##### _GET_ list security attention points (MOBILE)
+###### _GET_ list security attention points (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/notifications/security/attention_points\) Allows mobile users to list all the Security Attention Points for assistance. This requests accepts location (``lon`` and ``lat``), although it is optional. The located request returns all the security attention points sorted by the shortest distance; the unlocated requests sorts the points by name. It accepts the following query parameters:
 
 | **Name** | **Type** | **Required** | **Description**            |
@@ -1309,7 +1337,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ]
 > ```
 
-**Web App**
+##### Web App
 Path: http:localhost:3000/api/web/v1/notifications/security/attentionPoint
 Controller: src\microservices\notifications\v1\controllers\webSecurityAttentionPoint.js
 Route: src\microservices\notifications\v1\routes\web.js
@@ -1322,7 +1350,7 @@ Route: src\microservices\notifications\v1\routes\web.js
 | /        | GET    | getAllSecurityAttentionPoints    | List all Security Attention Points       |
 | /:id     | GET    | getOneSecurityAttentionPoint     | Get only one Security Attention Point    |
 
-##### _POST_ create Security Attention Point
+###### _POST_ create Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to create a new Security Attention Point. It receives the following body parameters:
 
 | **Name**      | **Type**        | **Required** | **Description**                               |
@@ -1376,7 +1404,7 @@ Response:
   > }
   > ```
 
-##### _POST_ update Security Attention Point
+###### _POST_ update Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/edit\) allows web users to update an existing Security Attention Point. It receives the following body parameters:
 
 | **Name**      | **Type**        | **Required** | **Description**                               |
@@ -1429,7 +1457,7 @@ Response:
   > }
   > ```
 
-##### _POST_ delete Security Attention Point
+###### _POST_ delete Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/delete\) allows web users to delete an existing Security Attention Point. It receives the following body parameter:
 
 | **Name** | **Type** | **Required** | **Description**                     |
@@ -1457,7 +1485,7 @@ Response:
   > }
   > ```
 
-##### _GET_ list Security Attention Points
+###### _GET_ list Security Attention Points
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint\) allows web users to list the existing Security Attention Points in the database. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -1521,7 +1549,7 @@ It returns **200 _OK_** and the list of objects on success.
 > }
 > ```
 
-##### _GET_ single Security Attention Point
+###### _GET_ single Security Attention Point
 \(\<Your_Host\>/api/web/v1/notifications/security/attentionPoint/:id\) allows web users to obtain one existing Security Attention Point from the database. It receives the following URL parameter:
 
 | **Name** |      **Type**      | **Required** | **Description**                              |
@@ -1553,14 +1581,317 @@ It returns **200 _OK_** and the requested object on success.
 ------------
 
 ------------
+
+#### 4.2.8. Gender Equity Attention Points 
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/gender/attention_points
+Controller: src\microservices\notifications\v1\controllers\mobileGender.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getAttentionPoints | Get all gender attention points |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/gender_point
+Controller: src\microservices\notifications\v1\controllers\webGenderAttentionPoint.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create an attention point of gender equity      |
+| /edit    | POST   | postEdit   | Update an attention point of gender equity |
+| /delete  | POST   | postDelete | Destroy (Soft delete) an attention point of gender equity |
+| /        | GET    | getListAll    | Get all attention points of gender equity       |
+
+
+------------
+
+
+
+#### 4.2.9. Gender Equity Attention Lines 
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/gender
+Controller: src\microservices\notifications\v1\controllers\mobileGender.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getCategoriesnAttentionLines | Get all gender attention lines and gender categories. |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/gender_line
+Controller: src\microservices\notifications\v1\controllers\webGenderAttentionLines.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create an attention line of gender equity      |
+| /edit    | POST   | postEdit   | Update an attention line of gender equity |
+| /delete  | POST   | postDelete | Destroy (Soft delete) an attention line of gender equity |
+| /        | GET    | getListAll    | Get all attention lines of gender equity       |
+
+
+------------
+
+
+
+
+#### 4.2.10. Gender Equity Categories
+
+Categories for gender equity attention lines.
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/gender
+Controller: src\microservices\notifications\v1\controllers\mobileGender.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getCategoriesnAttentionLines | Get all gender attention lines and gender categories. |
+
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/gender_category
+Controller: src\microservices\notifications\v1\controllers\webGenderCategories.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a gender attention lines category      |
+| /edit    | POST   | postEdit   | Update gender attention lines category |
+| /delete  | POST   | postDelete | Destroy a gender attention lines category (soft delete) |
+| /        | GET    | getListAll    | Get all gender attention lines categories |
+
+
+------------
+
+
+#### 4.2.11. Report Configuration
+
+Set up automatic approval of reports (Only web endpoints).
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/security/report_configuration
+Controller: src\microservices\notifications\v1\controllers\webReportConfigurations.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | GET   | getReportConfig | Get current report configuration      |
+| /        | POST   | postRegister | Create report configuration |
+
+
+------------
+
+#### 4.2.12. Security Attention Lines
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/security
+Controller: src\microservices\notifications\v1\controllers\mobileSecurity.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getListAll | Get all attention lines and categories of security/emergency |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/security
+Controller: src\microservices\notifications\v1\controllers\webMobileService.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create an attention line of security/emergency |
+| /edit    | POST    | postEdit    | Update an attention line of security/emergency |
+| /delete  | POST    | postDelete    | Destroy (Soft delete) an attention line of security/emergency |
+| /        | GET   | getListAll | Get all attention lines of security/emergency      |
+| /:id     | GET   | getSecurity | Get an attention line of security/emergency by id      |
+
+
+------------
+
+
+#### 4.2.13. Security Categories
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/security
+Controller: src\microservices\notifications\v1\controllers\mobileSecurity.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getListAll | Get all attention lines and categories of security/emergency |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/security_category
+Controller: src\microservices\notifications\v1\controllers\webSecurityCategories.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a security category |
+| /edit    | POST    | postEdit    | Update security category |
+| /delete  | POST    | postDelete    | Destroy a security category (soft delete) |
+| /        | GET   | getAll | Get all security categories      |
+| /:id     | GET   | getOneById | Get security category by id      |
+
+
+------------
+
+
+#### 4.2.14. Social Network
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/notifications/social_networks
+Controller: src\microservices\notifications\v1\controllers\mobileSocialNetwork.js
+Route: src\microservices\notifications\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getSocialNetworks | Get all registered accounts (in social networks) |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/social_networks
+Controller: src\microservices\notifications\v1\controllers\webSocialNetwork.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | registerSocialNetwork | Add a social network account |
+| /edit    | POST    | updateSocialNetwork    | Update a social network account |
+| /status  | POST    | changeStatusSocialNetwork    | Changes the status (active or deactivated) of a social network account |
+| /delete  | POST    | deleteSocialNetwork    | Destroy a social network account (soft delete) |
+| /        | GET   | listSocialNetworks | List all registered (social network) accounts      |
+| /types   | GET   | listSocialNetworkTypes | List all registered social networks     |
+
+
+------------
+
+
+#### 4.2.15. Base endpoints
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/notifications/validate_lat_lon
+Controller: src\microservices\notifications\v1\controllers\webBase.js
+Route: src\microservices\notifications\v1\routes\web.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postValidateLatLon | Validate lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia |
+
+
+------------
+
 ### 4.3. Third-Party Microservice
 This microservice handles third-party APIs.
 
-#### 4.3.1. Tourism Categories 
+    https://third-parties-cmiesjcqoq-ue.a.run.app
+
+------------
+
+#### 4.3.1. Cities
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/intercity_transport/cities
+Controller: src\microservices\thirdParties\v1\controllers\mobile\cities.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getAll | Get all Cities |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/city
+Controller: src\microservices\thirdParties\v1\controllers\web\cities.js
+Route: src\microservices\thirdParties\v1\routes\webCities.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a city |
+| /edit    | POST   | postEdit    | Update a city |
+| /delete  | POST   | postDelete    | Destroy a city (soft delete) |
+| /excel   | POST   | postUploadXlsx    | Upload an excel file that will create/update transport routes in the database. This use "Codigos_municipios_DANE.xlsx". With: code of municipality, name of department, name of municipality |
+| /        | GET    | getAll | Get all Cities    |
+| /autocomplete    | GET    | getAutocomplete | Get list - autocomplete     |
+
+
+------------
+
+
+#### 4.3.2. Third-Party Categories
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/third_parties/categories
+Controller: src\microservices\thirdParties\v1\controllers\mobile\categories.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getAll | Get all ThirdPartyCategories |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/categories
+Controller: src\microservices\thirdParties\v1\controllers\web\categories.js
+Route: src\microservices\thirdParties\v1\routes\webCategories.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a thirdParty category |
+| /edit    | POST   | postEdit    | Update a thirdParty category |
+| /delete  | POST   | postDelete    | Destroy a ThirdParty category (soft delete) |
+| /        | GET    | getAll | Get all ThirdParty categories    |
+| /:id     | GET    | getOneById | Get ThirdParty category by id     |
+
+
+------------
+
+
+#### 4.3.3. Third-Party Companies
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/third_parties
+Controller: src\microservices\thirdParties\v1\controllers\mobile\companies.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getAll | Get all companies with your services |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/company
+Controller: src\microservices\thirdParties\v1\controllers\web\companies.js
+Route: src\microservices\thirdParties\v1\routes\webCompanies.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a company |
+| /edit    | POST   | postEdit    | Update a company |
+| /delete  | POST   | postDelete    | Destroy a company (soft delete) |
+| /        | GET    | getAll | Get all companies    |
+| /:id     | GET    | getProfile | Get the data of company and your services - to profile     |
+
+
+------------
+
+
+#### 4.3.4. ThirdParty Company Services
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/company_service
+Controller: src\microservices\thirdParties\v1\controllers\web\companyServices.js
+Route: src\microservices\thirdParties\v1\routes\webCompanyServices.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postServices | Creates and updates company services |
+| /edit    | POST   | postEdit    | Update a service company |
+| /delete  | POST   | postDelete    | Destroy a service company (soft delete) |
+| /:id   | GET   | getServices    | Get all services of one company |
+
+
+------------
+
+
+
+#### 4.3.5. Tourism Categories 
 
 The Tourism Categories end-points allow web users to manage the Tourism Categories shown to mobile users when they consume touristic content.
 
-**Mobile App**
+##### Mobile App
 Path: http://localhost:3000/api/mobile/v1/third_parties/tourism/categories
 Controller: src\microservices\thirdParties\v1\controllers\mobile\tourismCategories.js
 Route: src\microservices\thirdParties\v1\routes\mobile.js
@@ -1568,7 +1899,7 @@ Route: src\microservices\thirdParties\v1\routes\mobile.js
 | :------- | :----- | :--------------------- | :---------------------------------------------------- |
 | /        | GET    | getAll                 | List all the tourism categories in the mobile format. |
 
-##### _GET_ list tourism categories (MOBILE)
+###### _GET_ list tourism categories (MOBILE)
 \(\<Your_Host\>/api/mobile/v1/third_parties/tourism/categories\) Allows mobile users to list all the tourism categories. This requests accepts pagination (``page[number]`` and ``page[size]``), although it is optional. The default unpaginated request returns up to 500 Tourism Categories. It accepts the following query parameters:
 
 | **Name**       | **Type** | **Required** | **Description**      |
@@ -1599,7 +1930,7 @@ It returns **200 _OK_** and the list of objects on success.
 > ]
 > ```
 
-**Web App**
+##### Web App
 Path: http://localhost:3000/api/web/v1/third_parties/tourism_categories/
 Controller: src\microservices\thirdParties\v1\controllers\web\tourismCategories.js
 Route: src\microservices\thirdParties\v1\routes\webTourismCategories.js
@@ -1611,7 +1942,7 @@ Route: src\microservices\thirdParties\v1\routes\webTourismCategories.js
 | /delete  | POST   | postDelete             | Delete existing Tourism Category. |
 | /        | GET    | getAll                 | List all Tourism Categories.      |
 
-##### _POST_ create Tourism Category
+###### _POST_ create Tourism Category
 \(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/\) allows web users to create a new Tourism Category. It receives the following body parameters:
 
 | **Name**  | **Type**       | **Required** | **Description**                           |
@@ -1652,7 +1983,7 @@ Response:
   > }
   > ```
 
-##### _POST_ update Tourism Category
+###### _POST_ update Tourism Category
 \(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/edit\) allows web users to update an existing Tourism Category. It receives the following body parameters:
 
 | **Name**  | **Type**       | **Required** | **Description**                           |
@@ -1694,7 +2025,7 @@ Response:
   > }
   > ```
 
-##### _POST_ delete Tourism Category
+###### _POST_ delete Tourism Category
 \(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/delete\) allows web users to delete an existing Tourism Category. It receives the following body parameter:
 
 | **Name** | **Type** | **Required** | **Description**             |
@@ -1722,7 +2053,7 @@ Response:
   > }
   > ```
 
-##### _GET_ list Tourism Categories
+###### _GET_ list Tourism Categories
 \(\<Your_Host\>/api/web/v1/third_parties/tourism_categories/\) allows web users to list the existing Tourism Categories in the database. It receives the following query parameters:
 
 | **Name**       |      **Type**      | **Required** | **Description**             |
@@ -1769,11 +2100,214 @@ It returns **200 _OK_** and the list of objects on success.
 
 
 ------------
+
+
+
+#### 4.3.6. Tourism Companies
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/tourism
+Controller: src\microservices\thirdParties\v1\controllers\mobile\tourismCompanies.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getCompaniesnServices | Get all tourism companies with your services |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/tourism_company
+Controller: src\microservices\thirdParties\v1\controllers\web\tourismCompanies.js
+Route: src\microservices\thirdParties\v1\routes\webTourismCompanies.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a tourism company |
+| /edit    | POST   | postEdit    | Update a tourism company |
+| /delete  | POST   | postDelete    | Destroy a tourism company (soft delete) |
+| /api_key   | POST   | postCreateApiKey    | Create an Api Key |
+| /api_key/:companyId   | GET   | getApiKey    | Get the apiKey (First 5 characters) |
+| /        | GET    | getAll | Get all tourism companies    |
+| /:id        | GET    | getProfile | Get the data of tourism company - profile    |
+
+
+------------
+
+#### 4.3.7. Tourism Services
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/tourism_service
+Controller: src\microservices\thirdParties\v1\controllers\web\tourismServices.js
+Route: src\microservices\thirdParties\v1\routes\webTourismServices.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postServices | Creates and updates company services |
+| /edit    | POST   | postEdit    | Update a service company |
+| /delete  | POST   | postDelete    | Destroy a service company (soft delete) |
+| /:id     | GET    | getServices | Get all services of one tourism company    |
+
+
+
+------------
+
+
+#### 4.3.8. Transport Companies
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/transport_company
+Controller: src\microservices\thirdParties\v1\controllers\web\transportCompanies.js
+Route: src\microservices\thirdParties\v1\routes\webTransportCompanies.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a transport company |
+| /edit    | POST   | postEdit    | Update a transport company |
+| /delete  | POST   | postDelete    | Destroy a transport company (soft delete) |
+| /api_key   | POST   | postCreateApiKey    | Create an Api Key |
+| /api_key/:companyId   | GET   | getApiKey    | Get the apiKey (First 5 characters) |
+| /        | GET    | getAll | Get all transport companies    |
+| /:id        | GET    | getProfile | Get the data of transport company - profile    |
+
+
+------------
+
+
+#### 4.3.9. Transport Routes
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/intercity_transport
+Controller: src\microservices\thirdParties\v1\controllers\mobile\cities.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getTransportRoutes | Get the available routes for a given city and date |
+
+##### Web App - Transport Route
+Path: http:localhost:3000/api/web/v1/third_parties/transport_company/route
+Controller: src\microservices\thirdParties\v1\controllers\web\webTransportRoutes.js
+Route: src\microservices\thirdParties\v1\routes\webCities.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a transport route |
+| /edit    | POST   | postEdit    | Update a transport route  |
+| /delete  | POST   | postDelete    | Destroy a transport route (soft delete) |
+| /excel   | POST   | postUploadXlsx    | Upload an excel file that will create/update transport routes in the database. This use "template.xlsx". With: originCode, destinationCode, duration, date, hour, tariff |
+| /template      | GET    | getDownloadXlsxTemplate |Download the template to create new transport routes.    |
+| /itinerary    | GET    | getItinerary | Get all route timetables of an route     |
+| /companies    | GET    | getCompaniesNRoutes | Get all transport companies with your routes     |
+| /:companyId    | GET    | getAll | Get all transport routes by company Id     |
+
+##### Web App - Transport Route Timetables - Date field
+Path: http:localhost:3000/api/web/v1/third_parties/transport_company/route/date
+Controller: src\microservices\thirdParties\v1\controllers\web\routeTimetables.js
+Route: src\microservices\thirdParties\v1\routes\webRouteTimetableDate.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a route timetable |
+| /hours   | POST   | postRegisterWithHour | Create a route timetable with your hours |
+| /edit    | POST   | postEdit    | Update a route timetable  |
+| /delete  | POST   | postDelete    | Destroy a Route timetable (soft delete) |
+| /    | GET    | getAll | Get all Route timetables    |
+
+
+##### Web App - Transport Route Timetables - Hour n Tariff fields
+Path: http:localhost:3000/api/web/v1/third_parties/transport_company/route/hour
+Controller: src\microservices\thirdParties\v1\controllers\web\routeTimetablesHourTariff.js
+Route: src\microservices\thirdParties\v1\routes\webRouteTimetableHour.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a hour n tariff for a route timetable |
+| /edit    | POST   | postEdit    | Update a hour n tariff for a route timetable  |
+| /delete  | POST   | postDelete    | Destroy a hour n tariff for a route timetable (soft delete) |
+| /    | GET    | getAll | Get all - hour n tariff for a route timetable    |
+
+
+
+------------
+
+
+#### 4.3.10. Base endpoint
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/validate_lat_lon
+Controller: src\microservices\thirdParties\v1\controllers\web\cities.js
+Route: src\microservices\thirdParties\v1\routes\webBase.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postValidateLatLon | Validate lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia |
+
+------------
+
+
+#### 4.3.11. Taxis
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/third_parties/taxis
+Controller: src\microservices\thirdParties\v1\controllers\mobile\taxis.js
+Route: src\microservices\thirdParties\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getQuery | Get the required vehicle data from the taxi API in the mobile format. |
+| /complaint        | POST    | postComplaint | Create a complaint against a driver or a vehicle in the taxi API and the database. |
+
+
+------------
+
+#### 4.3.12. API: Tourism Services 
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/tourism_company_api
+Controller: src\microservices\thirdParties\v1\controllers\web\tourismServicesAPI.js
+Route: src\microservices\thirdParties\v1\routes\webTourismServicesAPI.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /services        | GET   | getServices | Get all services of one tourism company  |
+| /services        | POST   | postService | Create tourism service  |
+| /services/edit        | POST   | postEdit | Update a tourism service  |
+| /services/delete        | POST   | postDelete | Destroy a tourism service (soft delete)  |
+| /services_bulk        | POST   | postBulkService | Creates tourism services  |
+| /services_bulk/delete        | POST   | postBulkServiceDelete | Destroy many tourism service (soft delete)  |
+
+------------
+
+#### 4.3.13. API: Tourism Services 
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/third_parties/transport_company_api
+Controller: src\microservices\thirdParties\v1\controllers\web\transportRoutesAPI.js
+Route: src\microservices\thirdParties\v1\routes\webTransportRoutesAPI.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /route        | POST   | postRouteRegister | Create a transport route |
+| /route/edit    | POST   | postRouteEdit    | Update a transport route  |
+| /route/delete  | POST   | postRouteDelete    | Destroy a transport route (soft delete) |
+| /route/itinerary    | GET    | getRouteItinerary | Get all route timetables of an route     |
+| /route/    | GET    | getRouteAll | Get all transport routes of the company     |
+| /route/date        | POST   | postDateRegister | Create a route timetable |
+| /route/date/hours   | POST   | postDateRegisterWithHour | Create a route timetable with your hours |
+| /route/date/edit    | POST   | postDateEdit    | Update a route timetable  |
+| /route/date/delete  | POST   | postDateDelete    | Destroy a Route timetable (soft delete) |
+| /route/date    | GET    | getDateAll | Get all Route timetables    |
+| /route/hour        | POST   | postHourRegister | Create a hour n tariff for a route timetable |
+| /route/hour/edit    | POST   | postHourEdit    | Update a hour n tariff for a route timetable  |
+| /route/hour/delete  | POST   | postHourDelete    | Destroy a hour n tariff for a route timetable (soft delete) |
+| /route/hour    | GET    | getHourAll | Get all - hour n tariff for a route timetable    |
+
+
+------------
+
+
+
+
 ### 4.4. File Management Microservice
 This microservice handles the files upload and download for the web application.
 
-#### App Runner
-    -- Pending --
+    https://file-management-cmiesjcqoq-ue.a.run.app
 
 #### How to run in local
     # On the console
@@ -1802,7 +2336,7 @@ The download endpoint allows anyone to download saved resources. This endpoint i
 
 The upload endpoints allow web users to save images and PDF documents into the file server. 
 
-##### _POST_ Upload Image
+###### _POST_ Upload Image
 \(\<Your_Host\>/api/web/v1/file_management/upload/image\) saves images in the file server. It receives the following parameters:
 
 | **Name** | **Type** | **Required** | **Description**                                                                |
@@ -1830,7 +2364,7 @@ Response:
   > }
   > ```
 
-##### _POST_ Upload PDF
+###### _POST_ Upload PDF
 \(\<Your_Host\>/api/web/v1/file_management/upload/pdf\) saves images in the file server. It receives the following parameters:
 
 | **Name** | **Type** | **Required** | **Description**                                                                |
@@ -1859,15 +2393,170 @@ Response:
   > ```
 
 ------------
+
+### 4.5. Traffic (Mobility) Microservice
+This microservice handles traffic APIs.
+
+    https://traffic-cmiesjcqoq-ue.a.run.ap
+
+------------
+
+#### 4.5.1. Bikes TermsConditions
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/traffic/bikes/terms
+Controller: src\microservices\traffic\v1\controllers\mobile\bicyclesTermsConditions.js
+Route: src\microservices\traffic\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getTerms | Get the data of the terms and conditions |
+| /agree        | POST    | postAcceptTerms | The mobile user accepts the terms and conditions |
+| /agree        | GET    | getAcceptTerms | Get if the mobile user has accepted the terms and conditions |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/traffic/bikes/terms_conditions
+Controller: src\microservices\traffic\v1\controllers\web\bicyclesTermsConditions.js
+Route: src\microservices\traffic\v1\routes\webBicyclesTermsConditions.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a the terms and conditions |
+| /        | GET   | getTermsConditions    | Get the data of the terms and conditions |
+
+
+------------
+
+#### 4.5.2. Configuration of Traffic Notifications
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/traffic/traffic_notification
+Controller: src\microservices\traffic\v1\controllers\web\trafficNotifications.js
+Route: src\microservices\traffic\v1\routes\webTrafficNotification.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create the configuration of traffic notifications |
+| /        | GET   | getOne    | Get the configuration of traffic notifications |
+
+
+------------
+
+#### 4.5.3. Road States
+
+##### Mobile App
+Path: http:localhost:3000/api/mobile/v1/traffic/mobility
+Controller: src\microservices\traffic\v1\controllers\mobile\roadStates.js
+Route: src\microservices\traffic\v1\routes\mobile.js
+| Endpoint | Method | Location in Controller     | Description                                                                               |
+| :------- | :----- | :------------------------- | :---------------------------------------------------------------------------------------- |
+| /        | GET    | getRoadStates | Get all routes states |
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/traffic/road_state
+Controller: src\microservices\traffic\v1\controllers\web\roadStates.js
+Route: src\microservices\traffic\v1\routes\webRoadStates.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a road state |
+| /edit        | POST   | postEdit | Update a road state |
+| /delete        | POST   | postDelete | Destroy a road state (soft delete) |
+| /        | GET   | getAll    | Get all road states |
+| /:id        | GET   | getOne    | Get the data of road state |
+
+
+------------
+
+
+
+### 4.6. Admins Microservice
+This microservice handles Admin APIs.
+
+    https://admin-cmiesjcqoq-ue.a.run.app
+
+------------
+
+#### 4.6.1. Admin without security
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/admin/admin
+Controller: src\microservices\admin\v1\controllers\web\webAdminFree.js
+Route: src\microservices\admin\v1\routes\webAdminFree.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postEmailVerification | Verify a user's email address |
+
+
+------------
+
+
+#### 4.6.2. Admin
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/admin/admin
+Controller: src\microservices\admin\v1\controllers\web\webAdmin.js
+Route: src\microservices\admin\v1\routes\webAdmin.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a admin |
+| /edit        | POST   | postEdit | Update admin |
+| /edit/mobile_user        | POST   | postEditMobileUser | Update a mobile user |
+| /delete        | POST   | postDelete | Delete an web or mobile user |
+| /add_role        | POST   | postAddRole | Add role an admin |
+| /set_passwd        | POST   | postSetPasswd | Enter a new passwd |
+| /:id        | GET   | getOneById | Get admin by id |
+
+
+------------
+
+#### 4.6.3. Admin Notifications
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/admin/admin
+Controller: src\microservices\admin\v1\controllers\web\webAdminNotifications.js
+Route: src\microservices\admin\v1\routes\webAdmin.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /notifications        | GET   | getAllNotifications | Get all admin notifications |
+
+
+------------
+
+#### 4.6.3. Role
+
+##### Web App
+Path: http:localhost:3000/api/web/v1/admin/role
+Controller: src\microservices\admin\v1\controllers\web\webRole.js
+Route: src\microservices\admin\v1\routes\webRole.js
+
+| Endpoint | Method | Location in Controller           | Description                              |
+| :------- | :----- | :------------------------------- | :--------------------------------------- |
+| /        | POST   | postRegister | Create a role |
+| /edit        | POST   | postEdit | Update a role |
+| /delete        | POST   | postDelete | Destroy a Role (soft delete) |
+| /user        | POST   | postAssignRoleToUser | Assign a role to a user |
+| /user        | GET   | getUsersByRoleId | Get the users that have a certain role |
+| /        | GET   | getAll | Get all Roles |
+| /:id        | GET   | getRole | Get the data of a role |
+
+
+------------
+
+
+
+
 ## 5. Contributors
 
----
-
 - [estebance](https://github.com/estebance)
-- [daniel]()
-- [andres]()
+- [daniel](https://github.com/danielcollazostbbc)
+- [andres](https://github.com/AndresGarzonJ-TBBC)
 - [Julián](https://github.com/bitjep)
+
 ------------
+
 ## 6. License
 
 TBD
