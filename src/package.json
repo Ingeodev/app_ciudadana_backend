@@ -7,11 +7,7 @@
     "test": "echo \"Remember that the Microservices must be running\" & jest --detectOpenHandles",
     "format": "prettier --write .",
     "start": "nodemon ./index",
-    "backend": "nodemon ./all-server.js",
-    "users": "nodemon microservices/users/index.js",
-    "files": "cd microservices/fileManagement && nodemon microservices/fileManagement/index.js",
-    "admins": "nodemon microservices/admin/index.js",
-    "third": "nodemon microservices/thirdParties/index.js"
+    "backend": "nodemon ./all-server.js"
   },
   "author": "restebance",
   "license": "ISC",
