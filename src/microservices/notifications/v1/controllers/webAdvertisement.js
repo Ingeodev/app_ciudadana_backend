@@ -45,9 +45,11 @@ const getAllAdvertisements = async (req, res, next) => {
             message = 'There are no Advertisements registered in the database.';
         if (pageAdvertisements.rows.length <= 0)
             message = '"page[number]" is too large for the number of possible pages.';
-        const data = pageAdvertisements.rows.map(row => {
-            return row.dataValues;
+        const data = pageAdvertisements.rows.map((record) => {
+            const row = record.toJSON();          
+            return row;
         });
+
         return res.status(StatusCodes.OK).json({
             meta: {
                 message,
@@ -73,14 +75,15 @@ const postAdvertisement = async (req, res, next) => {
                 status: StatusCodes.NOT_FOUND,
                 message: 'The assigned category does not exist.',
             };
-        const newAdvertisement = await db.Advertisement.create({
+        let newAdvertisement = await db.Advertisement.create({
             imageUri,
             imageMobileUri,
             siteUri,
             categoryId,
         });
+        newAdvertisement = newAdvertisement.toJSON();
         return res.status(StatusCodes.CREATED)
-            .json({ data: { ...newAdvertisement.dataValues, deletedAt: undefined } });
+            .json({ data: { ...newAdvertisement, deletedAt: undefined } });
     } catch (error) {
         return next(error);
     }
@@ -102,9 +105,10 @@ const postAdvertisementEdit = async (req, res, next) => {
                 status: StatusCodes.NOT_FOUND,
                 message: 'The assigned category does not exist.',
             };
-        const updatedAdvertisement = await advertisement.update(update);
+        let updatedAdvertisement = await advertisement.update(update);
+        updatedAdvertisement = updatedAdvertisement.toJSON();
         return res.status(StatusCodes.OK)
-            .json({ data: { ...updatedAdvertisement.dataValues, deletedAt: undefined } });
+            .json({ data: { ...updatedAdvertisement, deletedAt: undefined } });
     } catch (error) {
         return next(error);
     }
@@ -120,9 +124,11 @@ const postAdvertisementStatus = async (req, res, next) => {
                 status: StatusCodes.NOT_FOUND,
                 message: `The requested Advertisement with id ${id} does not exist.`
             };
-        const updatedAdvertisement = await advertisement.update({ active });
+        let updatedAdvertisement = await advertisement.update({ active });
+        updatedAdvertisement = updatedAdvertisement.toJSON();
+
         return res.status(StatusCodes.OK)
-            .json({ data: { ...updatedAdvertisement.dataValues, deletedAt: undefined } });
+            .json({ data: { ...updatedAdvertisement, deletedAt: undefined } });
     } catch (error) {
         return next(error);
     }
