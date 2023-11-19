@@ -28,14 +28,16 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
             };
         const createdBy = webUser.id;
 
-        const createdSAP = await db.SecurityAttentionPoint.create({
+        let createdSAP = await db.SecurityAttentionPoint.create({
             name, description, phone: `+57${phone}`, color, address, imageUri, iconMap, geolocation, createdBy,
         });
+        createdSAP = createdSAP.toJSON();
+
         const data = {
-            ...createdSAP.dataValues, deletedAt: undefined, geolocation: undefined,
+            ...createdSAP, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: createdSAP.dataValues.geolocation.coordinates[1],
-            lon: createdSAP.dataValues.geolocation.coordinates[0],
+            lat: createdSAP.geolocation.coordinates[1],
+            lon: createdSAP.geolocation.coordinates[0],
         };
         return res.status(StatusCodes.CREATED)
             .json({
@@ -73,12 +75,13 @@ const postEditSecurityAttentionPoint = async (req, res, next) => {
           update.phone = `+57${update.phone}`;
         }
 
-        const updatedPoint = await existingPoint.update(update);
+        let updatedPoint = await existingPoint.update(update);
+        updatedPoint = updatedPoint.toJSON();
         const data = {
-            ...updatedPoint.dataValues, deletedAt: undefined, geolocation: undefined,
+            ...updatedPoint, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: updatedPoint.dataValues.geolocation.coordinates[1],
-            lon: updatedPoint.dataValues.geolocation.coordinates[0],
+            lat: updatedPoint.geolocation.coordinates[1],
+            lon: updatedPoint.geolocation.coordinates[0],
         };
         return res.status(StatusCodes.OK)
             .json({
@@ -113,17 +116,19 @@ const postDeleteSecurityAttentionPoint = async (req, res, next) => {
 const getOneSecurityAttentionPoint = async (req, res, next) => {
     try {
         const { id } = await validator.validateSimpleDeleteByIdSchema(req.params);
-        const existingPoint = await db.SecurityAttentionPoint.findByPk(id);
+        let existingPoint = await db.SecurityAttentionPoint.findByPk(id);
         if (existingPoint == null)
             throw {
                 status: StatusCodes.NOT_FOUND,
                 message: `The requested Security Attention Point with id ${id} does not exist.`
             };
+        existingPoint = existingPoint.toJSON();
+        
         const data = {
-            ...existingPoint.dataValues, deletedAt: undefined, geolocation: undefined,
+            ...existingPoint, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: existingPoint.dataValues.geolocation.coordinates[1],
-            lon: existingPoint.dataValues.geolocation.coordinates[0],
+            lat: existingPoint.geolocation.coordinates[1],
+            lon: existingPoint.geolocation.coordinates[0],
         };
         return res.status(StatusCodes.OK)
             .json({
@@ -155,15 +160,16 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
         if (pagePoints.rows.length <= 0)
             message = '"page[number]" is too large for the number of possible pages.';
 
-        const data = pagePoints.rows.map(row => {
-            return {
-                ...row.dataValues,
-                deletedAt: undefined,
-                geolocation: undefined,
-                createdBy: undefined,
-                lat: row.dataValues.geolocation.coordinates[1],
-                lon: row.dataValues.geolocation.coordinates[0],
-            };
+        const data = pagePoints.rows.map((record) => {
+          const row = record.toJSON();
+          return {
+            ...row,
+            deletedAt: undefined,
+            geolocation: undefined,
+            createdBy: undefined,
+            lat: row.geolocation.coordinates[1],
+            lon: row.geolocation.coordinates[0],
+          };
         });
         return res.status(StatusCodes.OK).json({
             meta: {
