@@ -28,38 +28,51 @@ steps:
     args: ['build', '-t', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-users/users:latest', '-f', 'src/microservices/users/gcp.Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-users/users:latest']
-  # file-management
+  # file-management microservice
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-file-management/file-management:latest', '-f', 'src/microservices/fileManagement/gcp.Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-file-management/file-management:latest']
-  # notifications
+  # notifications microservice
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-notifications/notifications:latest', '-f', 'src/microservices/notifications/gcp.Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-notifications/notifications:latest']
-  # third parties
+  # third parties microservice
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-third-parties/third-parties:latest', '-f', 'src/microservices/thirdParties/gcp.Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-third-parties/third-parties:latest']
+  # traffic microservice
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-traffic/traffic:latest', '-f', 'src/microservices/traffic/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-traffic/traffic:latest']
   # deployments
+  # Admin
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: ['run', 'deploy', 'admin', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-admin/admin:latest', '--region', 'us-east1']
+  # Users
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: ['run', 'deploy', 'users', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-users/users:latest', '--region', 'us-east1']
+  # FileManagement
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: ['run', 'deploy', 'file-management', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-file-management/file-management:latest', '--region', 'us-east1']
+  # Notifications
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: ['run', 'deploy', 'notifications', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-notifications/notifications:latest', '--region', 'us-east1']
-  #  # third parties
+  # third parties
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: ['run', 'deploy', 'third-parties', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-third-parties/third-parties:latest', '--region', 'us-east1']
+  # traffic
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['run', 'deploy', 'traffic', '--image', 'us-east1-docker.pkg.dev/aplicacion-ciudadana-cali/cali-mobility-traffic/traffic:latest', '--region', 'us-east1']
 availableSecrets:
   secretManager:
     - versionName: projects/360955405402/secrets/service_key/versions/latest
