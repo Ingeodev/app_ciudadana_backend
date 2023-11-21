@@ -18,19 +18,8 @@ const mobileRouterUser = require("./microservices/users/v1/routes/mobile.js");
 // Third parties
 const webTourismAPI = require("./microservices/thirdParties/v1/routes/webTourismServicesAPI.js");
 const webRoutesAPI = require("./microservices/thirdParties/v1/routes/webTransportRoutesAPI.js");
-const webCategories = require("./microservices/thirdParties/v1/routes/webCategories.js");
-const webCompanies = require("./microservices/thirdParties/v1/routes/webCompanies.js");
-const webTourismCategories = require("./microservices/thirdParties/v1/routes/webTourismCategories.js");
-const webCompServices = require("./microservices/thirdParties/v1/routes/webCompanyServices.js");
-const webTourismComp = require("./microservices/thirdParties/v1/routes/webTourismCompanies.js");
-const webTourismServ = require("./microservices/thirdParties/v1/routes/webTourismServices.js");
-const webRouteDate = require("./microservices/thirdParties/v1/routes/webRouteTimetableDate.js");
-const webRouteHourTariff= require("./microservices/thirdParties/v1/routes/webRouteTimetableHour.js");
-const webTranspRoutes = require("./microservices/thirdParties/v1/routes/webTransportRoutes.js");
-const webTranspCompanies = require("./microservices/thirdParties/v1/routes/webTransportCompanies.js");
-const webCities = require("./microservices/thirdParties/v1/routes/webCities.js");
-const mobileRouterThird = require("./microservices/thirdParties/v1/routes/mobile.js");
-const webBase = require("./microservices/thirdParties/v1/routes/webBase.js");
+const mobileThirdPartiesRouter = require("./microservices/thirdParties/v1/routes/mobile.js");
+const webThirdPartiesRouter = require("./microservices/thirdParties/v1/routes/web.js");
 
 // File Management
 const uploadRouter = require("./microservices/fileManagement/v1/routes/upload.js");
@@ -42,10 +31,8 @@ const webAdminRouter = require("./microservices/admin/v1/routes/webAdmin");
 const webAdminFreeRouter = require("./microservices/admin/v1/routes/webAdminFree");
 
 // Traffic
-const mobileRouterState = require("./microservices/traffic/v1/routes/mobile.js");
-const webBaseState = require("./microservices/traffic/v1/routes/webBase.js");
-const webRoadState = require("./microservices/traffic/v1/routes/webRoadStates.js");
-const webTrafficNotification = require("./microservices/traffic/v1/routes/webTrafficNotification.js");
+const mobileTrafficRouter = require("./microservices/traffic/v1/routes/mobile.js");
+const webTrafficRouter = require("./microservices/traffic/v1/routes/web.js");
 
 const app = express();
 
@@ -60,6 +47,9 @@ app.use("/api/web/v1/admin/admin", webAdminFreeRouter);
 
 //#region download end-points
 app.use("/api/v1/file_management/download", downloadRouter);
+//#endregion
+//#region upload end-points
+app.use("/api/web/v1/file_management/upload", uploadRouter);
 //#endregion
 
 app.use(authMiddleware);
@@ -83,28 +73,12 @@ app.use("/api/mobile/v1/users", mobileRouterUser);
 app.use("/api/web/v1/third_parties/tourism_company_api", webTourismAPI);
 app.use("/api/web/v1/third_parties/transport_company_api", webRoutesAPI);
 
-app.use(authMiddleware);
 //#region Web-oriented end-points
-app.use("/api/web/v1/third_parties", webBase);
-app.use("/api/web/v1/third_parties/city", webCities);
-app.use("/api/web/v1/third_parties/categories", webCategories);
-app.use("/api/web/v1/third_parties/tourism_categories", webTourismCategories);
-app.use("/api/web/v1/third_parties/tourism_company", webTourismComp);
-app.use("/api/web/v1/third_parties/tourism_service", webTourismServ);
-app.use("/api/web/v1/third_parties/company", webCompanies);
-app.use("/api/web/v1/third_parties/company_service", webCompServices);
-app.use("/api/web/v1/third_parties/transport_company/route/date", webRouteDate);
-app.use("/api/web/v1/third_parties/transport_company/route/hour", webRouteHourTariff);
-app.use("/api/web/v1/third_parties/transport_company/route", webTranspRoutes);
-app.use("/api/web/v1/third_parties/transport_company", webTranspCompanies);
+app.use("/api/web/v1/third_parties", webThirdPartiesRouter);
 //#endregion
 
 //#region Mobile-oriented end-points
-app.use("/api/mobile/v1/third_parties", mobileRouterThird);
-//#endregion
-
-//#region upload end-points
-app.use("/api/web/v1/file_management/upload", uploadRouter);
+app.use("/api/mobile/v1/third_parties", mobileThirdPartiesRouter);
 //#endregion
 
 //#region Web-oriented end-points
@@ -114,14 +88,14 @@ app.use("/api/web/v1/admin/admin", webAdminRouter);
 //#endregion
 
 //#region Web-oriented end-points
-app.use("/api/web/v1/traffic", webBaseState);
-app.use("/api/web/v1/traffic/road_state", webRoadState);
-app.use("/api/web/v1/traffic/traffic_notification", webTrafficNotification);
+app.use("/api/web/v1/traffic", webTrafficRouter);
 //#endRegion
 
 //#region Mobile-oriented end-points
-app.use("/api/mobile/v1/traffic", mobileRouterState);
+app.use("/api/mobile/v1/traffic", mobileTrafficRouter);
 //#endRegion
+
+
 //#region Error handling
 // Not found route!
 app.use((req, res, next) => {
