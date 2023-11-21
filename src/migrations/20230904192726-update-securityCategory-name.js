@@ -8,7 +8,6 @@ module.exports = {
       allowNull: false,
       unique: false,
     });
-    return await queryInterface.removeConstraint('SecurityCategories', 'SecurityCategories_name_key');
   },
 
   async down (queryInterface, Sequelize) {

@@ -50,12 +50,12 @@ module.exports = {
       }
     );
     await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX "idx_unique_socialNetworkType_code"
+      CREATE UNIQUE INDEX "idx_unique_socialNetworkTypes_code"
       ON "SocialNetworkTypes"("code")
       WHERE "deletedAt" IS NULL;
     `);
     return await queryInterface.sequelize.query(`
-      CREATE UNIQUE INDEX "idx_unique_socialNetworkType_name"
+      CREATE UNIQUE INDEX "idx_unique_socialNetworkTypes_name"
       ON "SocialNetworkTypes"("name")
       WHERE "deletedAt" IS NULL;
     `);
@@ -63,10 +63,10 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS "idx_unique_socialNetworkType_name";
+      DROP INDEX IF EXISTS "idx_unique_socialNetworkTypes_name";
     `);
     await queryInterface.sequelize.query(`
-      DROP INDEX IF EXISTS "idx_unique_socialNetworkType_code";
+      DROP INDEX IF EXISTS "idx_unique_socialNetworkTypes_code";
     `);
     await queryInterface.dropTable("SocialNetworkTypes");
   }

@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "SocialNetwork",
-      tableName: "SocialNetwork",
+      tableName: "SocialNetworks",
       schema: "public",
       paranoid: true,
       timestamps: true,

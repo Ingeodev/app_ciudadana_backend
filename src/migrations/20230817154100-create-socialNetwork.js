@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "SocialNetwork",
+      "SocialNetworks",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -50,16 +50,16 @@ module.exports = {
         },
       },
       {
-        tableName: "SocialNetwork",
+        tableName: "SocialNetworks",
         schema: "public",
       }
     );
-    await queryInterface.addConstraint("SocialNetwork", {
-      name: "fk_SocialNetwork_SocialNetworkType",
+    await queryInterface.addConstraint("SocialNetworks", {
+      name: "fk_SocialNetworks_SocialNetworkTypes",
       fields: ["socialNetworkTypeId"],
       type: "foreign key",
       references: {
-        table: "SocialNetworkType",
+        table: "SocialNetworkTypes",
         field: "id",
       },
       onDelete: "RESTRICT",
@@ -68,7 +68,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeConstraint("SocialNetwork", "fk_SocialNetwork_SocialNetworkType");
-    await queryInterface.dropTable("SocialNetwork");
+    await queryInterface.removeConstraint("SocialNetworks", "fk_SocialNetworks_SocialNetworkTypes");
+    await queryInterface.dropTable("SocialNetworks");
   }
 };
