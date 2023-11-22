@@ -115,6 +115,7 @@ async function mailInvitationVerification(dataUser, tokenEmailVerified, clientId
 exports.postRegister = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   let wasCreated = false;
+  let uid = "";
   try {
     const { name, lastName, email, documentTypeId, document } =
       await validator.vWebPostRegister(req.body);
@@ -164,6 +165,7 @@ exports.postRegister = async (req, res, next) => {
       };
     }
     wasCreated = resCreate.wasCreated;
+    uid = resCreate.uid;
     const userInDb = await db.User.create(
       {
         clientId: resCreate.uid,
@@ -207,7 +209,7 @@ exports.postRegister = async (req, res, next) => {
       .status(StatusCodes.CREATED)
       .json({
         meta: null,
-        data: { name, lastName, email, documentTypeId, document },
+        data: { id: userInDb.dataValues.id, name, lastName, email, documentTypeId, document },
       });
   } catch (error) {
     await transaction.rollback();
