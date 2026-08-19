@@ -2,11 +2,26 @@ const adminFirebase = require("firebase-admin");
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models/index");
 
-const serviceAccount = require("../config/account_service_key.json");
+if (!adminFirebase.apps.length) {
+  let serviceAccount = null;
+  try {
+    serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+      ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+      : require("../config/account_service_key.json");
+  } catch (error) {
+    serviceAccount = null;
+  }
 
-const appFirebase = adminFirebase.initializeApp({
-  credential: adminFirebase.credential.cert(serviceAccount),
-});
+  if (serviceAccount) {
+    adminFirebase.initializeApp({
+      credential: adminFirebase.credential.cert(serviceAccount),
+    });
+  } else {
+    adminFirebase.initializeApp();
+  }
+}
+
+const appFirebase = adminFirebase.apps[0];
 
 const authMiddleware = async (req, res, next) => {
   try {

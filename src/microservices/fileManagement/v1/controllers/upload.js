@@ -8,7 +8,7 @@ const { StatusCodes } = require('http-status-codes');
 const validator = require('../../utils/validator');
 const { checkIfExists } = require('../../utils/accessCheck');
 
-const uploadsFolder = path.join('..', '..', 'uploads'); // TODO: transform in env var; ask Esteban.
+const uploadsFolder = process.env.UPLOADS_DIR || path.join('..', '..', 'uploads');
 
 const postSingleFile = async (req, res, next) => {
     try {

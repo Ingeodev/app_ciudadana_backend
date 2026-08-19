@@ -8,23 +8,38 @@ const basename = path.basename(__filename);
 const { UTC_ZONE_DB } = require("../config/utc_zone.json");
 const { configureTimezoneTimestamps } = require("../utils/utcZone.js");
 const env = process.env.NODE_ENV || 'development';
-// const config = require(__dirname + '/../config/config.json')[env];
-const config = require( '../config/config.json')[env];
+let config = {};
+try {
+  config = require( '../config/config.json')[env] || {};
+} catch (error) {
+  config = {};
+}
 const db = {};
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 let sequelize;
-if (config.use_env_variable) {
+if (process.env.DATABASE_URL) {
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialectOptions: {
+      useUTC: false, //for reading from database
+    },
+    timezone: UTC_ZONE_DB,
+    logging: isProduction ? false : console.log,
+  });
+} else if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], {
     ...config,
     dialectOptions: {
       useUTC: false, //for reading from database
     },
     timezone: UTC_ZONE_DB,
+    logging: isProduction ? false : console.log,
   });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
     ...config,
-    logging: console.log,
+    logging: isProduction ? false : console.log,
     dialectOptions: {
       useUTC: false, //for reading from database
     },

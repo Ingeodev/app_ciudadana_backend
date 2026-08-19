@@ -145,3 +145,10 @@ terraform.rc
 
 # GCloud SDK (accidental install in repo root)
 *gcloud*/
+
+# FIREBASE STUFF
+.firebase/
+firebase-debug.log
+.firebaserc.local
+.env.*
+*.env.*

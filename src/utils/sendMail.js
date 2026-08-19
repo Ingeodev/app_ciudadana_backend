@@ -1,7 +1,19 @@
 const { StatusCodes } = require("http-status-codes");
 const sgMail = require("@sendgrid/mail");
-const sgKey = require("../config/email_service_key.json");
-sgMail.setApiKey(sgKey.api_key);
+
+let sgKey = {};
+try {
+  sgKey = require("../config/email_service_key.json");
+} catch (error) {
+  sgKey = {};
+}
+
+const sgApiKey = process.env.SENDGRID_API_KEY || sgKey.api_key;
+const sgFromEmail = process.env.SENDGRID_EMAIL || sgKey.email;
+
+if (sgApiKey) {
+  sgMail.setApiKey(sgApiKey);
+}
 
 /**
  * Send an email using SendGrid
@@ -12,7 +24,7 @@ exports.sendMail = async (data) => {
   try {
     const msg = {
       to: data.to,
-      from: sgKey.email,
+      from: sgFromEmail,
       subject: data.subject,
       html: data.html,
     };

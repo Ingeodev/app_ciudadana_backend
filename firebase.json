@@ -1,0 +1,20 @@
+{
+  "functions": {
+    "source": "src",
+    "runtime": "nodejs20",
+    "ignore": [
+      "node_modules",
+      "__tests__",
+      "migrations",
+      "seeders",
+      "infra",
+      "uploads",
+      "*.test.js",
+      "jest.config*.js",
+      ".env",
+      ".env.*",
+      "config/config.json",
+      "config/*_key.json"
+    ]
+  }
+}

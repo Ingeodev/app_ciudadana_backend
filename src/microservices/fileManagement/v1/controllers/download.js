@@ -5,7 +5,9 @@ const { StatusCodes } = require('http-status-codes');
 const validator = require('../../utils/validator');
 const { checkIfExists } = require('../../utils/accessCheck');
 
-const uploadsFolder = path.resolve(path.join('..', '..', 'uploads')); // TODO: transform in env var; ask Esteban.
+const uploadsFolder = process.env.UPLOADS_DIR
+  ? path.resolve(process.env.UPLOADS_DIR)
+  : path.resolve(path.join('..', '..', 'uploads'));
 
 const downloadFile = async (req, res, next) => {
     try {
