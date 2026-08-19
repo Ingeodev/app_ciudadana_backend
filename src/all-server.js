@@ -52,8 +52,8 @@ app.use("/api/v1/file_management/download", downloadRouter);
 app.use("/api/web/v1/file_management/upload", uploadRouter);
 //#endregion
 
-app.use(authMiddleware);
 //#region Web-oriented end-points
+app.use('/api/web', authMiddleware);
 app.use('/api/web/v1/notifications', webRouterNotification);
 //#endregion
 
@@ -108,6 +108,7 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 //#endregion
 
-app.listen(3001, function () {
-  console.log("running with port 3001");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
+  console.log(`running with port ${PORT}`);
 });

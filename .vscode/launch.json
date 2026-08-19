@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Monolito",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src",
+      "runtimeExecutable": "nodemon",
+      "runtimeArgs": ["--inspect=9229"],
+      "program": "./all-server.js",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "envFile": "${workspaceFolder}/src/.env"
+    },
+    {
+      "name": "Debug Microservicio",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src",
+      "runtimeExecutable": "nodemon",
+      "runtimeArgs": ["--inspect=9230"],
+      "program": "./index.js",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "envFile": "${workspaceFolder}/src/.env"
+    },
+    {
+      "name": "Attach a proceso existente",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "localRoot": "${workspaceFolder}/src",
+      "remoteRoot": "/usr/src/app"
+    }
+  ]
+}

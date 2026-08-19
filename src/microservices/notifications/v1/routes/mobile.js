@@ -15,7 +15,7 @@ const securityAttentionPointsController = require("../controllers/mobileSecurity
 const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
-router.use(authMiddlewareMobile);
+//router.use(authMiddlewareMobile);
 
 //#region Publicity end-points
 // Retrieve the advertisements that have no category attached.

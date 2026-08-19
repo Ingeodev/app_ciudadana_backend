@@ -1,4 +1,4 @@
 {
-  "front": "https://frontend-cmiesjcqoq-ue.a.run.app",
-  "fileManagement": "https://file-management-cmiesjcqoq-ue.a.run.app"
+  "front": "http://localhost:3000",
+  "fileManagement": "http://localhost:3001/api/web/v1/file_management"
 }

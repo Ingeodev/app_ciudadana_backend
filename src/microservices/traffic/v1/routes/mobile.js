@@ -3,7 +3,10 @@ const router = express.Router();
 const { hasPermissions, authMiddlewareMobile } = require("../../../../middleware/authMiddleware.js");
 const roadStatesController = require("../controllers/mobile/roadStates.js");
 const bicyclesController = require("../controllers/mobile/bicyclesTermsConditions.js");
-router.use(authMiddlewareMobile);
+
+
+//TODO: Descomentar para autenticacion
+//router.use(authMiddlewareMobile);
 
 // --------------------- Road States ----------------------------
 //#region Road States end-points

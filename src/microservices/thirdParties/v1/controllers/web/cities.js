@@ -25,7 +25,7 @@ exports.postRegister = async (req, res, next) => {
     if (error.name === "SequelizeUniqueConstraintError") {
       error.message = "The city has been previously created.";
       error.status = StatusCodes.BAD_REQUEST;
-    } 
+    }
     return next(error);
   }
 };
@@ -67,7 +67,7 @@ exports.postEdit = async (req, res, next) => {
       error.message = "City and State must be unique";
       error.status = StatusCodes.BAD_REQUEST;
     } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
-        error.message = error.errors[0].message;
+      error.message = error.errors[0].message;
     }
     return next(error);
   }
@@ -291,7 +291,7 @@ exports.postUploadXlsx = async (req, res, next) => {
 
         if (cityInDb === null) {
           await db.City.create({ city, cityCode, state });
-          success.push(`Row ${row + 1} - [${item}]. The city has been created.`);          
+          success.push(`Row ${row + 1} - [${item}]. The city has been created.`);
           continue;
         }
         cityInDb.update({ city, state });

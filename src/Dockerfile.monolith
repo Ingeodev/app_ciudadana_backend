@@ -1,0 +1,35 @@
+FROM node:18-alpine3.18
+
+RUN apk update && apk add --no-cache tini curl
+
+ENV NODE_ENV=production \
+    PORT=3000 \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8 \
+    WEB_CONCURRENCY=2
+
+WORKDIR /src
+
+# Copiar estructura completa (sin secretos - se inyectan en build)
+COPY src/package*.json ./
+COPY src/all-server.js ./
+COPY src/middleware/ ./middleware/
+COPY src/models/ ./models/
+COPY src/config/ ./config/
+COPY src/constants/ ./constants/
+COPY src/utils/ ./utils/
+COPY src/migrations/ ./migrations/
+COPY src/seeders/ ./seeders/
+COPY src/microservices/ ./microservices/
+
+# Crear directorio de uploads (Cloud Run tiene filesystem efímero)
+RUN mkdir -p /src/uploads
+
+RUN npm ci --only=production
+
+EXPOSE 3000
+
+# Usar tini para manejo correcto de señales (importante para Cloud Run)
+ENTRYPOINT ["/sbin/tini", "--"]
+
+CMD ["node", "all-server.js"]
