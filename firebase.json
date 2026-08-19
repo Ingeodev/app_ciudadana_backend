@@ -13,8 +13,10 @@
       "jest.config*.js",
       ".env",
       ".env.*",
-      "config/config.json",
-      "config/*_key.json"
+      "**/config.json",
+      "**/*_key.json",
+      "**/secrets.json",
+      "**/example.env"
     ]
   }
 }
