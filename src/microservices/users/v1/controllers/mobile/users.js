@@ -45,11 +45,13 @@ exports.postAccountInfo = async (req, res, next) => {
       emailVerified: null,
     };
 
+    console.log(extraDataUser, dataUser)
+
     await db.User.create({ ...dataUser, ...extraDataUser });
 
     return res.status(StatusCodes.CREATED).json({ ...dataUser, phone});
   } catch (error) {
-    // console.error("account postAccountInfo could not be created/updated: ", error.message);
+    console.error("account postAccountInfo could not be created/updated: ", error.message);
     if (error.name === "SequelizeUniqueConstraintError") {
       error.message = "The email has been used previously.";
       error.status = StatusCodes.BAD_REQUEST;

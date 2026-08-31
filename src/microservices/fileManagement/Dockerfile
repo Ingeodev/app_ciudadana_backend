@@ -25,7 +25,6 @@ COPY src/models /src/models/
 COPY src/config /src/config/
 COPY workspace/config/account_service_key.json /src/config
 COPY workspace/config/email_service_key.json /src/config
-COPY workspace/config/config.json /src/config
 
 RUN npm install --production
 

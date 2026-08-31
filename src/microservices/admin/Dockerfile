@@ -21,7 +21,6 @@ COPY src/constants /src/constants/
 COPY src/utils /src/utils/
 COPY workspace/config/account_service_key.json /src/config
 COPY workspace/config/email_service_key.json /src/config
-COPY workspace/config/config.json /src/config
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
