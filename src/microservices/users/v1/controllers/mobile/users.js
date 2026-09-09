@@ -1,14 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
-const { writeFile } = require("fs/promises");
-const { join, extname } = require("path");
+const { extname } = require("path");
 const { v4: uuidV4 } = require("uuid");
 const db = require("../../../../../models/index.js");
 const firebase = require("../../../../../utils/firebaseAdmin.js");
 const validator = require("../../../utils/validators/mobile/users.js");
-const { checkIfExists } = require("../../../utils/accessCheck.js");
 const { filesMsHostUri } = require("../../../../../utils/uriTransformer.js");
-
-const uploadsFolder = join('..', '..', 'uploads', 'private'); // TODO: transform in env var; ask Esteban.
+const admin = require("firebase-admin");
 
 /**
  * Create (loginPhase="notRegistered") or update (loginPhase="baseLogin") user's base information. All login must be done through firebase so additional account data is registered and the user is linked in firebase with the clientId.
@@ -104,16 +101,15 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     }
 
     const pdfFile = await validator.vfileFullLogin(req.file);
-    // const folder = "uploads/users/mobile/public_service_receipt";
-    // const folder = "uploads";
     const endpoint = "mobileUsersPublicServiceReceipt";
-    const uploadDir = join(uploadsFolder, endpoint);
     const filename = uuidV4() + extname(pdfFile.originalname);
     const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
 
-    const filepath = join(uploadDir, filename);
-    await checkIfExists(uploadDir, true);
-    await writeFile(filepath, pdfFile.buffer);
+    const bucket = admin.storage().bucket();
+    const filePath = `private/${endpoint}/${filename}`;
+    await bucket.file(filePath).save(pdfFile.buffer, {
+      metadata: { contentType: pdfFile.mimetype },
+    });
 
     const resultUpdate = await userInDb.update(
       {

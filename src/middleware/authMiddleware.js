@@ -1,23 +1,53 @@
+const path = require("path");
 const adminFirebase = require("firebase-admin");
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models/index");
 
 if (!adminFirebase.apps.length) {
-  let serviceAccount = null;
-  try {
-    serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-      ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-      : require("../config/account_service_key.json");
-  } catch (error) {
-    serviceAccount = null;
-  }
+  const isCloudFunction = process.env.FUNCTIONS_EMULATOR || process.env.K_SERVICE;
 
-  if (serviceAccount) {
-    adminFirebase.initializeApp({
-      credential: adminFirebase.credential.cert(serviceAccount),
-    });
-  } else {
+  if (isCloudFunction) {
+    // Cloud Functions: auto-init con credenciales del proyecto deployado
     adminFirebase.initializeApp();
+  } else {
+    // Desarrollo local: usar service account desde path o JSON inline
+    let serviceAccount = null;
+
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+      try {
+        const resolvedPath = path.resolve(__dirname, "..", process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
+        serviceAccount = require(resolvedPath);
+      } catch (error) {
+        serviceAccount = null;
+      }
+    }
+
+    if (!serviceAccount && process.env.FIREBASE_SERVICE_ACCOUNT) {
+      try {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      } catch (error) {
+        serviceAccount = null;
+      }
+    }
+
+    if (!serviceAccount) {
+      try {
+        serviceAccount = require("../config/account_service_key.json");
+      } catch (error) {
+        serviceAccount = null;
+      }
+    }
+
+    if (serviceAccount) {
+      adminFirebase.initializeApp({
+        credential: adminFirebase.credential.cert(serviceAccount),
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || undefined,
+      });
+    } else {
+      adminFirebase.initializeApp({
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || undefined,
+      });
+    }
   }
 }
 

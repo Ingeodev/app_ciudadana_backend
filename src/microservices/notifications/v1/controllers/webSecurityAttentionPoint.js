@@ -1,7 +1,17 @@
 const { StatusCodes } = require('http-status-codes');
+const { Sequelize } = require('sequelize');
 
 const db = require('../../../../models/index.js');
 const validator = require('../../utils/validator');
+
+const parseGeolocation = (geo) => {
+    if (!geo) return null;
+    if (geo && geo.coordinates) return geo;
+    if (typeof geo === 'string') {
+        try { return JSON.parse(geo); } catch { return null; }
+    }
+    return null;
+};
 
 /**
  * Create an security attention point.
@@ -33,11 +43,12 @@ const postCreateSecurityAttentionPoint = async (req, res, next) => {
         });
         createdSAP = createdSAP.toJSON();
 
+        const geo = parseGeolocation(createdSAP.geolocation) || geolocation;
         const data = {
             ...createdSAP, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: createdSAP.geolocation.coordinates[1],
-            lon: createdSAP.geolocation.coordinates[0],
+            lat: geo.coordinates[1],
+            lon: geo.coordinates[0],
         };
         return res.status(StatusCodes.CREATED)
             .json({
@@ -77,11 +88,12 @@ const postEditSecurityAttentionPoint = async (req, res, next) => {
 
         let updatedPoint = await existingPoint.update(update);
         updatedPoint = updatedPoint.toJSON();
+        const geo = parseGeolocation(updatedPoint.geolocation);
         const data = {
             ...updatedPoint, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: updatedPoint.geolocation.coordinates[1],
-            lon: updatedPoint.geolocation.coordinates[0],
+            lat: geo ? geo.coordinates[1] : null,
+            lon: geo ? geo.coordinates[0] : null,
         };
         return res.status(StatusCodes.OK)
             .json({
@@ -116,19 +128,27 @@ const postDeleteSecurityAttentionPoint = async (req, res, next) => {
 const getOneSecurityAttentionPoint = async (req, res, next) => {
     try {
         const { id } = await validator.validateSimpleDeleteByIdSchema(req.params);
-        let existingPoint = await db.SecurityAttentionPoint.findByPk(id);
+        let existingPoint = await db.SecurityAttentionPoint.findOne({
+            where: { id },
+            attributes: {
+                include: [
+                    [Sequelize.fn('ST_AsGeoJSON', Sequelize.col('geolocation')), 'geolocation'],
+                ],
+            },
+        });
         if (existingPoint == null)
             throw {
                 status: StatusCodes.NOT_FOUND,
                 message: `The requested Security Attention Point with id ${id} does not exist.`
             };
         existingPoint = existingPoint.toJSON();
+        const geo = parseGeolocation(existingPoint.geolocation);
         
         const data = {
             ...existingPoint, deletedAt: undefined, geolocation: undefined,
             createdBy: undefined,
-            lat: existingPoint.geolocation.coordinates[1],
-            lon: existingPoint.geolocation.coordinates[0],
+            lat: geo ? geo.coordinates[1] : null,
+            lon: geo ? geo.coordinates[0] : null,
         };
         return res.status(StatusCodes.OK)
             .json({
@@ -152,6 +172,9 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
             limit: pagination.size,
             attributes: {
                 exclude: ["deletedAt"],
+                include: [
+                    [Sequelize.fn('ST_AsGeoJSON', Sequelize.col('geolocation')), 'geolocation'],
+                ],
             },
         });
         let message = undefined;
@@ -162,13 +185,14 @@ const getAllSecurityAttentionPoints = async (req, res, next) => {
 
         const data = pagePoints.rows.map((record) => {
           const row = record.toJSON();
+          const geo = parseGeolocation(row.geolocation);
           return {
             ...row,
             deletedAt: undefined,
             geolocation: undefined,
             createdBy: undefined,
-            lat: row.geolocation.coordinates[1],
-            lon: row.geolocation.coordinates[0],
+            lat: geo ? geo.coordinates[1] : null,
+            lon: geo ? geo.coordinates[0] : null,
           };
         });
         return res.status(StatusCodes.OK).json({

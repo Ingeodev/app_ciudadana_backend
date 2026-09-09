@@ -1,25 +1,20 @@
-const path = require('path');
-// const fsp = require('fs/promises');
-const fs = require('fs');
-
 const { v4: uuidV4 } = require('uuid');
 const { StatusCodes } = require('http-status-codes');
+const path = require('path');
+const admin = require('firebase-admin');
 
 const validator = require('../../utils/validator');
-const { checkIfExists } = require('../../utils/accessCheck');
-
-const uploadsFolder = process.env.UPLOADS_DIR || path.join('..', '..', 'uploads');
 
 const postSingleFile = async (req, res, next) => {
     try {
         const imageFile = await validator.validateMulterMemorySingleItemSchema(req.file);
         const { folder } = await validator.validateSaveFolderSchema(req.body);
-        const filename = uuidV4() + path.extname(imageFile.originalname);   // TODO: Ask whether a table for stored files is necessary.
-        const folderPath = path.join(uploadsFolder, folder);
-        await checkIfExists(folderPath, true);
-        const uploadPath = path.join(folderPath, filename);
-        // await fsp.writeFile(uploadPath, imageFile.buffer);
-        fs.writeFileSync(uploadPath, imageFile.buffer);
+        const filename = uuidV4() + path.extname(imageFile.originalname);
+        const bucket = admin.storage().bucket();
+        const filePath = `${folder}/${filename}`;
+        await bucket.file(filePath).save(imageFile.buffer, {
+            metadata: { contentType: imageFile.mimetype },
+        });
         const host = req.get('host');
         const downloadUri = `${req.protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
         return res.status(StatusCodes.CREATED)

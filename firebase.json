@@ -18,5 +18,8 @@
       "**/secrets.json",
       "**/example.env"
     ]
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

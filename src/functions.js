@@ -18,6 +18,7 @@ exports.appCiudadanaApi = onRequest(
       "SENDGRID_API_KEY",
       "SENDGRID_EMAIL",
       "SIGMA_ACCOUNT_KEY",
+      "FIREBASE_STORAGE_BUCKET",
     ],
   },
   app
