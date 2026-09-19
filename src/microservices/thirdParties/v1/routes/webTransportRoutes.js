@@ -43,7 +43,7 @@ router.get(
 router.post(
   "/excel",
   // hasPermissions({ role: "super_master_user" }),
-  uploadSingleExcel,
+  uploadSingleExcel.single("file"),
   transpRoutesController.postUploadXlsx
 );
 

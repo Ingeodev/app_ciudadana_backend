@@ -11,14 +11,14 @@ router.use(authMiddleware);
 router.post(
   "/image",
   // hasPermissions({ role: "super_master_user" }),
-  uploadSingleImage,
+  uploadSingleImage.single('image'),
   uploadController.postSingleFile,
 );
 
 router.post(
   "/pdf",
   // hasPermissions({ role: "super_master_user" }),
-  uploadSinglePdf,
+  uploadSinglePdf.single('file'),
   uploadController.postSingleFile,
 );
 
