@@ -336,7 +336,7 @@ router.get('/dependencies/excel', dependenciesController.getDownloadXlsxDependen
 
 // Upload excel file with dependencies.
 router.post('/dependencies/excel',
-  uploadSingleExcel.single('file'),
+  uploadSingleExcel,
   dependenciesController.postUploadXlsxDependencies);
 //#endRegion
 
