@@ -45,10 +45,10 @@ create_or_update_secret() {
 
   if gcloud secrets describe "$name" --project="$PROJECT" &>/dev/null; then
     echo "  UPDATE: $name"
-    echo "$value" | gcloud secrets versions add "$name" --data-file=- --project="$PROJECT"
+    printf "%s" "$value" | gcloud secrets versions add "$name" --data-file=- --project="$PROJECT"
   else
     echo "  CREATE: $name"
-    echo "$value" | gcloud secrets create "$name" --data-file=- --project="$PROJECT"
+    printf "%s" "$value" | gcloud secrets create "$name" --data-file=- --project="$PROJECT"
   fi
 }
 
