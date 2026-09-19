@@ -37,7 +37,7 @@ router.post(
 router.post(
   "/excel",
   // hasPermissions({ role: "super_master_user" }),
-  uploadSingleExcel.single("file"),
+  uploadSingleExcel,
   citiesController.postUploadXlsx
 );
 // #endregion - Company
