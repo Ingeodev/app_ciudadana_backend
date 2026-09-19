@@ -36,13 +36,7 @@ const webTrafficRouter = require("./microservices/traffic/v1/routes/web.js");
 
 const app = express();
 
-// Skip bodyParser for file upload routes (multer handles multipart itself)
-app.use((req, res, next) => {
-  if (req.originalUrl.startsWith('/api/web/v1/file_management/upload')) {
-    return next();
-  }
-  bodyParser.json()(req, res, next);
-});
+app.use(bodyParser.json());
 app.use(cors());
 
 app.get("/health", function (req, res) {
