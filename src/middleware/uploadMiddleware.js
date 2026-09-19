@@ -63,9 +63,11 @@ function createUploadMiddleware(fieldName, allowedMimetypes) {
 
       stream.on("end", () => {
         fileData = {
-          buffer: Buffer.concat(chunks),
+          fieldname: name,
           originalname: filename,
+          encoding: "7bit",
           mimetype: mimeType,
+          buffer: Buffer.concat(chunks),
           size: fileSize,
         };
       });
