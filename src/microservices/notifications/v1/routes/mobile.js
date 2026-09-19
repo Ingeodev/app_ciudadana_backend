@@ -53,7 +53,7 @@ router.get(
 router.post(
   "/security/reports",
   // hasPermissions({ role: "super_master_user" }),
-  uploadImagesPdfs,
+  uploadImagesPdfs.single("image"),
   reportController.postRegister
 );
 

@@ -16,7 +16,7 @@ router.post(
 router.post(
   "/account/full_login",
   // hasPermissions({ role: "super_master_user" }),
-  uploadImagesPdfs,
+  uploadImagesPdfs.single("file"),
   usersMobile.postAccountBaseLogin
 );
 
