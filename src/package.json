@@ -10,7 +10,7 @@
     "start:dev": "NODE_ENV=development nodemon ./all-server.js",
     "start:prod": "NODE_ENV=production nodemon ./all-server.js",
     "backend": "nodemon ./all-server.js",
-    "deploy": "cd .. && bash deploy.sh",
+    "deploy": "cd .. && bash deploy.sh"
   },
   "author": "restebance",
   "license": "ISC",
