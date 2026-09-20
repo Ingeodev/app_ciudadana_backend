@@ -31,6 +31,7 @@ exports.getRoadStates = async (req, res, next) => {
       order: [["createdAt", "DESC"]],
       paranoid: true,
       attributes: [
+        "id",
         "type",
         "title",
         "description",
