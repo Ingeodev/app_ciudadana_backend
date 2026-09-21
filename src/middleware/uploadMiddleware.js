@@ -98,7 +98,7 @@ function createUploadMiddleware(fieldName, allowedMimetypes) {
 const uploadSingleImage = createUploadMiddleware("image", IMAGE_MIMETYPES);
 const uploadSinglePdf = createUploadMiddleware("file", PDF_MIMETYPES);
 const uploadSingleExcel = createUploadMiddleware("file", EXCEL_MIMETYPES);
-const uploadImagesPdfs = createUploadMiddleware("file", IMAGE_PDF_MIMETYPES);
+const uploadImagesPdfs = createUploadMiddleware("image", IMAGE_PDF_MIMETYPES);
 const uploadSingleJSON = createUploadMiddleware("file", JSON_MIMETYPES);
 
 module.exports = {
