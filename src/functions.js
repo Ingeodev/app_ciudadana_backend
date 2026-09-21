@@ -25,8 +25,6 @@ exports.appCiudadanaApi = onRequest(
       "EMAIL_PROVIDER",
       "GMAIL_USER",
       "GMAIL_APP_PASSWORD",
-      "UPLOADS_DIR",
-      "FCM_TOPIC_NAME_MOBILE",
     ],
   },
   app
