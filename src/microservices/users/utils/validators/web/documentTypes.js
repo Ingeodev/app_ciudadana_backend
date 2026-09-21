@@ -13,8 +13,8 @@ const editSchema = joi.object({
 });
 
 const getAllSchema = joi.object({
-  number: joi.number().integer().greater(0).required(),
-  size: joi.number().integer().greater(0).required(),
+  number: joi.number().integer().greater(0).default(1),
+  size: joi.number().integer().greater(0).default(100),
 });
 
 const getOneSchema = joi.object({

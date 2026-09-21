@@ -257,7 +257,21 @@ exports.getAccountLoginPhase = async (req, res, next) => {
       };
     }
 
-    const { loginPhase } = userInDb.dataValues;
+    let { loginPhase } = userInDb.dataValues;
+
+    // Infer loginPhase if not set in DB
+    if (!loginPhase) {
+      const { name, lastName, documentTypeId, document, emailVerified } = userInDb.dataValues;
+      if (!name || !lastName) {
+        loginPhase = "notRegistered";
+      } else if (documentTypeId && document) {
+        loginPhase = "fullLogin";
+      } else if (emailVerified) {
+        loginPhase = "inVerification";
+      } else {
+        loginPhase = "baseLogin";
+      }
+    }
 
     return res.status(StatusCodes.OK).json({
       meta: null,
