@@ -233,7 +233,7 @@ exports.getAccountLoginPhase = async (req, res, next) => {
       where: { clientId },
     });
 
-    const UserInFirebase = await firebase.getUserByClientId("clientId");
+    const UserInFirebase = await firebase.getUserByClientId(clientId);
     if (userInDb === null && UserInFirebase.uid) {
       return res.status(StatusCodes.OK).json({
         meta: null,
