@@ -19,8 +19,6 @@ exports.appCiudadanaApi = onRequest(
       "SENDGRID_EMAIL",
       "SIGMA_ACCOUNT_KEY",
       "FIREBASE_STORAGE_BUCKET",
-      "NODE_ENV",
-      "PORT",
       "FIREBASE_SERVICE_ACCOUNT_PATH",
       "EMAIL_PROVIDER",
       "GMAIL_USER",
