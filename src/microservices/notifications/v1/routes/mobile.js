@@ -80,7 +80,7 @@ router.get(
 //#endRegion
 
 //#region Alerts (Notifications in swagger) end-points
-router.post('/notifications/register', alertController.registerPush);
+router.post('/notifications/register', authMiddlewareMobile, alertController.registerPush);
 router.get('/notifications/', alertController.getListActive);
 //#endRegion
 
