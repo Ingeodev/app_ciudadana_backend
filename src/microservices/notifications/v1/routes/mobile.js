@@ -52,7 +52,7 @@ router.get(
 //#region Reports end-points
 router.post(
   "/security/reports",
-  // hasPermissions({ role: "super_master_user" }),
+  authMiddlewareMobile,
   uploadImagesPdfs,
   reportController.postRegister
 );
