@@ -1,25 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
 const { fn, col, Op } = require("sequelize");
-const { v4: uuidV4 } = require("uuid");
-const path = require("path");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorReports.js");
-const admin = require("firebase-admin");
-const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
 const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 const { dateHourWithOffset } = require("../../../../utils/utcZone.js");
-
-const uploadFileToStorage = async (file, folder, req) => {
-  const filename = uuidV4() + path.extname(file.originalname);
-  const filePath = `${folder}/${filename}`;
-  const bucket = admin.storage().bucket();
-  await bucket.file(filePath).save(file.buffer, {
-    metadata: { contentType: file.mimetype },
-  });
-  const host = req.get('host');
-  const protocol = req.protocol || 'https';
-  return `${protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
-};
 
 exports.postRegister = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
@@ -36,7 +20,7 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.FORBIDDEN,
       };
 
-    const { description, categoryId, lat, lon } =
+    const { description, categoryId, lat, lon, imageUri } =
       await validator.vMobilePostRegister(JSON.parse(req.body.report));
 
     if (!(await db.SecurityCategory.findByPk(categoryId, { attributes: ['id'], paranoid: true })))
@@ -44,12 +28,6 @@ exports.postRegister = async (req, res, next) => {
         status: StatusCodes.NOT_FOUND,
         message: "The assigned category does not exist.",
       };
-
-    let imageUri = undefined;
-    if (req.file) {
-      const file = await validator.vFileReports(req.file);
-      imageUri = await uploadFileToStorage(file, "mobileReports", req);
-    }
 
     const configInDb = await db.ReportConfiguration.findOne({
       attributes: ["automaticApproval"],

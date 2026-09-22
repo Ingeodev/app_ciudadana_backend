@@ -14,6 +14,7 @@ const postRegisterSchema = joi.object({
   categoryId: joi.number().integer().invalid(0).required(),
   lat: joi.number().min(-90).max(90).required(),
   lon: joi.number().min(-180).max(180).required(),
+  imageUri: joi.string().uri().optional().allow(null, ''),
 }).custom((value, helpers) => {
     if (!polygonCali.isLocationInCali(value.lat, value.lon)) {
       return helpers.message("lat and lon must belong to the area of the municipality of Cali, Valle del Cauca, Colombia");

@@ -12,7 +12,8 @@ const mobileServiceController = require("../controllers/mobileMobileService");
 const dependenciesController = require("../controllers/mobileDependencies");
 const genderController = require("../controllers/mobileGender");
 const securityAttentionPointsController = require("../controllers/mobileSecurityAttentionPoint");
-const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
+const { uploadSingleImage } = require("../../../../middleware/uploadMiddleware.js");
+const uploadController = require("../../../fileManagement/v1/controllers/upload.js");
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 //router.use(authMiddlewareMobile);
@@ -51,9 +52,15 @@ router.get(
 
 //#region Reports end-points
 router.post(
+  "/security/reports/upload-image",
+  authMiddlewareMobile,
+  uploadSingleImage,
+  uploadController.postSingleFile,
+);
+
+router.post(
   "/security/reports",
   authMiddlewareMobile,
-  uploadImagesPdfs,
   reportController.postRegister
 );
 
