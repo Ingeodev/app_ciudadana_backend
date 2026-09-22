@@ -1,5 +1,5 @@
 {
   "front": "http://localhost:3000",
   "fileManagement": "http://localhost:3001/api/web/v1/file_management",
-  "fileManagementProd": "/api/web/v1/file_management"
+  "fileManagementProd": ""
 }
