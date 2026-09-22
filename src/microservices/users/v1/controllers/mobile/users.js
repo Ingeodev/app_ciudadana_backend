@@ -15,7 +15,6 @@ const admin = require("firebase-admin");
 exports.postAccountInfo = async (req, res, next) => {
   try {
     const clientId = res.locals.uid;
-    // ! El email se podría obtener directamente desde el token
     const { name, lastName, phone, email } = await validator.vPostAccountInfo(
       req.body
     );
@@ -42,7 +41,14 @@ exports.postAccountInfo = async (req, res, next) => {
       emailVerified: null,
     };
 
-    await db.User.create({ ...dataUser, ...extraDataUser });
+    const [user, created] = await db.User.findOrCreate({
+      where: { clientId },
+      defaults: { ...dataUser, ...extraDataUser },
+    });
+
+    if (!created) {
+      await user.update({ ...dataUser, loginPhase: "baseLogin" });
+    }
 
     return res.status(StatusCodes.CREATED).json({ ...dataUser, phone: phone || '' });
   } catch (error) {
@@ -53,6 +59,7 @@ exports.postAccountInfo = async (req, res, next) => {
     }
     return next(error);
   }
+};
 };
 
 /**
