@@ -9,6 +9,16 @@ const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
 const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 const { dateHourWithOffset } = require("../../../../utils/utcZone.js");
 
+const uploadFileToStorage = async (file, folder) => {
+  const filename = uuidV4() + path.extname(file.originalname);
+  const filePath = `${folder}/${filename}`;
+  const bucket = admin.storage().bucket();
+  await bucket.file(filePath).save(file.buffer, {
+    metadata: { contentType: file.mimetype },
+  });
+  return `${filesMsHostUri}/api/v1/file_management/download/${folder}/${filename}`;
+};
+
 exports.postRegister = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
@@ -33,19 +43,10 @@ exports.postRegister = async (req, res, next) => {
         message: "The assigned category does not exist.",
       };
 
-    const pdfFile = await validator.vFileReports(req.file);
     let imageUri = undefined;
-
-    if (pdfFile) {
-      const endpoint = "mobileReports";
-      const filename = uuidV4() + path.extname(pdfFile.originalname);
-      imageUri = `${filesMsHostUri}/api/v1/file_management/download/${endpoint}/${filename}`;
-
-      const bucket = admin.storage().bucket();
-      const filePath = `${endpoint}/${filename}`;
-      await bucket.file(filePath).save(pdfFile.buffer, {
-        metadata: { contentType: pdfFile.mimetype },
-      });
+    if (req.file) {
+      const file = await validator.vFileReports(req.file);
+      imageUri = await uploadFileToStorage(file, "mobileReports");
     }
 
     const configInDb = await db.ReportConfiguration.findOne({
