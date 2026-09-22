@@ -3,9 +3,9 @@ const joi = require('joi');
 
 // * ------------- App Mobile --------------------------------
 const postAccountInfoSchema = joi.object({
-  name: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  lastName: joi.string().trim().empty("").invalid(" ").regex(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s0-9]+$/, 'Alphanumeric characters only').max(50).required(),
-  phone: joi.string().trim().empty("").invalid(" ").regex(/^[0-9]*$/, 'Numeric String').length(10).required(),
+  name: joi.string().trim().allow('').default(''),
+  lastName: joi.string().trim().allow('').default(''),
+  phone: joi.string().trim().allow('').default(''),
   email: joi.string().trim().email().empty("").invalid(" ").required(),
 });
 

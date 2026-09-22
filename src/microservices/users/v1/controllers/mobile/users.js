@@ -28,9 +28,9 @@ exports.postAccountInfo = async (req, res, next) => {
     }
 
     const dataUser = {
-      name,
-      lastName,
-      phone: `+57${phone}`,
+      name: name || '',
+      lastName: lastName || '',
+      phone: phone ? `+57${phone}` : '',
       email,
     };
     const extraDataUser = {
@@ -42,11 +42,9 @@ exports.postAccountInfo = async (req, res, next) => {
       emailVerified: null,
     };
 
-    console.log(extraDataUser, dataUser)
-
     await db.User.create({ ...dataUser, ...extraDataUser });
 
-    return res.status(StatusCodes.CREATED).json({ ...dataUser, phone});
+    return res.status(StatusCodes.CREATED).json({ ...dataUser, phone: phone || '' });
   } catch (error) {
     console.error("account postAccountInfo could not be created/updated: ", error.message);
     if (error.name === "SequelizeUniqueConstraintError") {
