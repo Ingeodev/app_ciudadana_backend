@@ -1,10 +1,23 @@
 const express = require("express");
 const router = express.Router();
+const Busboy = require('busboy');
 const { hasPermissions , authMiddlewareMobile} = require("../../../../middleware/authMiddleware.js");
 const usersMobile = require("../controllers/mobile/users.js");
 const documentTypes = require("../controllers/mobile/documentTypes.js");
-const { uploadImagesPdfs } = require("../../../../middleware/uploadMiddleware.js");
+const { uploadSingleImage } = require("../../../../middleware/uploadMiddleware.js");
+const uploadController = require("../../../fileManagement/v1/controllers/upload.js");
 router.use(authMiddlewareMobile);
+
+const parseInfoField = (req, res, next) => {
+  if (!req.rawBody) {
+    return next(Object.assign(new Error("rawBody not available"), { status: 500 }));
+  }
+  const busboy = Busboy({ headers: req.headers });
+  const fields = {};
+  busboy.on("field", (name, value) => { fields[name] = value; });
+  busboy.on("close", () => { req.body = fields; next(); });
+  busboy.end(req.rawBody);
+};
 
 // * ------------------ Endpoints - appMobile -----------------------------
 router.post(
@@ -15,9 +28,14 @@ router.post(
 
 router.post(
   "/account/full_login",
-  // hasPermissions({ role: "super_master_user" }),
-  uploadImagesPdfs,
+  uploadSingleImage,
   usersMobile.postAccountBaseLogin
+);
+
+router.post(
+  "/account/full_login/upload-file",
+  uploadSingleImage,
+  uploadController.postSingleFile
 );
 
 router.get(

@@ -13,6 +13,7 @@ const postAccountFullLoginSchema = joi.object({
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().empty("").invalid(" ").required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),
+  imageUri: joi.string().uri().optional().allow(null, ''),
 });
 
 const postAccountUpdateUserSchema = joi.object({

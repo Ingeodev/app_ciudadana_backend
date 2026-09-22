@@ -76,6 +76,7 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       documentTypeId,
       document,
       address,
+      imageUri,
     } = await validator.vPostAccountFullLogin(JSON.parse(req.body.info));
 
     const dataUser = {
@@ -98,17 +99,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       };
     }
 
-    const pdfFile = await validator.vfileFullLogin(req.file);
-    const endpoint = "mobileUsersPublicServiceReceipt";
-    const filename = uuidV4() + extname(pdfFile.originalname);
-    const imageUri = `${filesMsHostUri}/api/v1/file_management/download/secure/${endpoint}/${filename}`;
-
-    const bucket = admin.storage().bucket();
-    const filePath = `private/${endpoint}/${filename}`;
-    await bucket.file(filePath).save(pdfFile.buffer, {
-      metadata: { contentType: pdfFile.mimetype },
-    });
-
     const resultUpdate = await userInDb.update(
       {
         ...dataUser,
@@ -118,7 +108,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
       { transaction }
     );
 
-    // notify the administrator
     await db.AdminNotification.create({
       type: "user-inVerification",
       referenceId: resultUpdate.id,
@@ -130,13 +119,15 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({ ...dataUser, file: imageUri });
   } catch (error) {
     await transaction.rollback();
-    // console.error("account full_login could not be updated: ", error);
     if (error.name === 'SequelizeUniqueConstraintError') {
       error.message = "Document has been used previously.";
       error.status = StatusCodes.BAD_REQUEST;
     } else if (error && error.errors && error.errors.length > 0 && error.errors[0].message) {
         error.message = error.errors[0].message;
     }
+    return next(error);
+  }
+};
     return next(error);
   }
 };
