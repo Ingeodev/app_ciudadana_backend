@@ -128,9 +128,6 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     return next(error);
   }
 };
-    return next(error);
-  }
-};
 
 /**
  * Gets the user information and the loginPhase
