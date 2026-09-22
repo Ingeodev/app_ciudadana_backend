@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Busboy = require('busboy');
 
 const { authMiddlewareMobile } = require("../../../../middleware/authMiddleware");
 const publicityController = require('../controllers/mobilePublicity');
@@ -14,6 +15,17 @@ const genderController = require("../controllers/mobileGender");
 const securityAttentionPointsController = require("../controllers/mobileSecurityAttentionPoint");
 const { uploadSingleImage } = require("../../../../middleware/uploadMiddleware.js");
 const uploadController = require("../../../fileManagement/v1/controllers/upload.js");
+
+const parseReportField = (req, res, next) => {
+  if (!req.rawBody) {
+    return next(Object.assign(new Error("rawBody not available"), { status: 500 }));
+  }
+  const busboy = Busboy({ headers: req.headers });
+  const fields = {};
+  busboy.on("field", (name, value) => { fields[name] = value; });
+  busboy.on("close", () => { req.body = fields; next(); });
+  busboy.end(req.rawBody);
+};
 
 // TODO: require MOBILE authentication for every point(CHECK hasPermissions)
 //router.use(authMiddlewareMobile);
@@ -61,6 +73,7 @@ router.post(
 router.post(
   "/security/reports",
   authMiddlewareMobile,
+  parseReportField,
   reportController.postRegister
 );
 
