@@ -10,6 +10,9 @@ const postAccountInfoSchema = joi.object({
 });
 
 const postAccountFullLoginSchema = joi.object({
+  name: joi.string().trim().allow('').default(''),
+  lastName: joi.string().trim().allow('').default(''),
+  phone: joi.string().trim().allow('').default(''),
   documentTypeId: joi.number().integer().greater(0).required(),
   document: joi.string().trim().empty("").invalid(" ").required(),
   address: joi.string().trim().empty("").invalid(" ").max(255).required(),

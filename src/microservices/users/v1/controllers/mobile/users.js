@@ -79,6 +79,9 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     }
 
     const {
+      name,
+      lastName,
+      phone,
       documentTypeId,
       document,
       address,
@@ -86,6 +89,9 @@ exports.postAccountBaseLogin = async (req, res, next) => {
     } = await validator.vPostAccountFullLogin(JSON.parse(req.body.info));
 
     const dataUser = {
+      name: name || '',
+      lastName: lastName || '',
+      phone: phone ? `+57${phone}` : '',
       documentTypeId,
       document,
       address,
