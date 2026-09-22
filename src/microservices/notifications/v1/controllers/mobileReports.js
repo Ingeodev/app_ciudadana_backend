@@ -9,14 +9,16 @@ const { filesMsHostUri } = require("../../../../utils/uriTransformer.js");
 const { formatColorOutputForMobile } = require("../../../../utils/mobileColorFormatter.js");
 const { dateHourWithOffset } = require("../../../../utils/utcZone.js");
 
-const uploadFileToStorage = async (file, folder) => {
+const uploadFileToStorage = async (file, folder, req) => {
   const filename = uuidV4() + path.extname(file.originalname);
   const filePath = `${folder}/${filename}`;
   const bucket = admin.storage().bucket();
   await bucket.file(filePath).save(file.buffer, {
     metadata: { contentType: file.mimetype },
   });
-  return `${filesMsHostUri}/api/v1/file_management/download/${folder}/${filename}`;
+  const host = req.get('host');
+  const protocol = req.protocol || 'https';
+  return `${protocol}://${host}/api/v1/file_management/download/${folder}/${filename}`;
 };
 
 exports.postRegister = async (req, res, next) => {
@@ -46,7 +48,7 @@ exports.postRegister = async (req, res, next) => {
     let imageUri = undefined;
     if (req.file) {
       const file = await validator.vFileReports(req.file);
-      imageUri = await uploadFileToStorage(file, "mobileReports");
+      imageUri = await uploadFileToStorage(file, "mobileReports", req);
     }
 
     const configInDb = await db.ReportConfiguration.findOne({
