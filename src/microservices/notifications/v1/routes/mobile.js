@@ -13,7 +13,7 @@ const mobileServiceController = require("../controllers/mobileMobileService");
 const dependenciesController = require("../controllers/mobileDependencies");
 const genderController = require("../controllers/mobileGender");
 const securityAttentionPointsController = require("../controllers/mobileSecurityAttentionPoint");
-const { uploadSingleImage } = require("../../../../middleware/uploadMiddleware.js");
+const { uploadSingleImage, uploadSinglePqrsFile } = require("../../../../middleware/uploadMiddleware.js");
 const uploadController = require("../../../fileManagement/v1/controllers/upload.js");
 
 const parseReportField = (req, res, next) => {
@@ -47,11 +47,20 @@ router.get(
 );
 //#endRegion
 
-// router.post(
-//   "/attention_lines/pqrsdf",
-//   // hasPermissions({ role: "super_master_user" }),
-//   attentionController.postPqrsdf
-// );
+//#region PQRSDF end-points
+// Upload the attachment (jpg, jpeg, png or pdf) for a PQRS request.
+router.post(
+  "/attention_lines/pqrsdf/upload-file",
+  uploadSinglePqrsFile,
+  uploadController.postSingleFile,
+);
+
+// Register a PQRS request. Multipart body: field 'pqrs' (JSON string) with the request data.
+router.post(
+  "/attention_lines/pqrsdf",
+  parseReportField,
+  attentionController.postPqrsdf
+);
 //#endRegion
 
 //#region Security end-points
