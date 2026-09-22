@@ -7,7 +7,9 @@ const filesMsHostUriReplaceKeyword = "|__this host__|";
  * Default base URI of the FILE MANAGEMENT MICROSERVICE.
  */
 const msURLS = require("../config/microservices_urls.json");
-const filesMsHostUri = msURLS.fileManagement;
+const filesMsHostUri = process.env.NODE_ENV === "production"
+  ? msURLS.fileManagementProd
+  : msURLS.fileManagement;
 
 /**
  * Function that replaces the default FILE MANAGEMENT MICROSERVICE base URI into a default keyword that will later be used to replace.

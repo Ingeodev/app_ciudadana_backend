@@ -39,7 +39,7 @@ exports.postRegister = async (req, res, next) => {
     if (pdfFile) {
       const endpoint = "mobileReports";
       const filename = uuidV4() + path.extname(pdfFile.originalname);
-      imageUri = `/api/v1/file_management/download/${endpoint}/${filename}`;
+      imageUri = `${filesMsHostUri}/api/v1/file_management/download/${endpoint}/${filename}`;
 
       const bucket = admin.storage().bucket();
       const filePath = `${endpoint}/${filename}`;
