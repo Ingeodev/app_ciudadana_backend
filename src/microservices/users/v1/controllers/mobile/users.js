@@ -60,7 +60,6 @@ exports.postAccountInfo = async (req, res, next) => {
     return next(error);
   }
 };
-};
 
 /**
  * Update a user (existing in db) with missing information, ie, when loginPhase="baseLogin"
