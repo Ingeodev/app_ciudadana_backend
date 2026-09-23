@@ -59,6 +59,33 @@ const passwdSchema = joi.object({
   passwd: joi.string().trim().empty("").invalid(" ").regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&()_+{}|:;,.?/])[A-Za-z\d!@#%^&()_+{}|:;,.?/].{8,}$/, 'Password does not meet the conditions').required(),
 });
 
+// #region PQRS
+const pqrsGetListSchema = joi.object({
+  number: joi.number().integer().greater(0).default(1),
+  size: joi.number().integer().greater(0).max(100).default(10),
+  radicado: joi.string().trim().allow('', null).optional(),
+  status: joi.string().valid('ENVIADA', 'RECIBIDA', 'ATENDIDA').optional(),
+});
+
+const pqrsGetOneSchema = joi.object({
+  id: joi.number().integer().greater(0).invalid(0).required(),
+});
+
+const pqrsRespondSchema = joi.object({
+  pqrsId: joi.number().integer().greater(0).invalid(0).required(),
+  description: joi.string().trim().min(1).max(2000).required(),
+});
+
+const pqrsFileSchema = joi.object({
+  fieldname: joi.string().required(),
+  originalname: joi.string().required(),
+  encoding: joi.string().required(),
+  mimetype: joi.string().required(),
+  size: joi.number().required(),
+  buffer: joi.binary().required(),
+});
+// #endregion
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -107,5 +134,17 @@ module.exports = {
   },
   vWebPostPasswd: async (inputData) => {
     return await use_validator_on_data(passwdSchema, inputData);
+  },
+  vWebPqrsGetList: async (inputData) => {
+    return await use_validator_on_data(pqrsGetListSchema, inputData);
+  },
+  vWebPqrsGetOne: async (inputData) => {
+    return await use_validator_on_data(pqrsGetOneSchema, inputData);
+  },
+  vWebPqrsRespond: async (inputData) => {
+    return await use_validator_on_data(pqrsRespondSchema, inputData);
+  },
+  vFilePqrsResponse: async (inputData) => {
+    return await use_validator_on_data(pqrsFileSchema, inputData);
   },
 };

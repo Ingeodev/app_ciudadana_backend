@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { hasPermissions } = require("../../../../middleware/authMiddleware.js");
+const { uploadSinglePqrsFile } = require("../../../../middleware/uploadMiddleware.js");
 const adminNotif = require("../controllers/webAdminNotifications.js");
 const adminController = require("../controllers/webAdmin.js");
 
@@ -11,6 +12,29 @@ router.get(
   // hasPermissions({ role: "super_master_user" }),
   adminNotif.getAllNotifications
 );
+
+//#region PQRS end-points
+// List all the PQRS requests with pagination and filters.
+router.get(
+  "/pqrs",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.getListAllPqrs
+);
+
+// Get one PQRS with its statuses and responses.
+router.get(
+  "/pqrs/:id",
+  // hasPermissions({ role: "super_master_user" }),
+  adminController.getOnePqrs
+);
+
+// Register a response for a PQRS request. Multipart body: field 'file' (attachment) and field 'pqrs' (JSON string).
+router.post(
+  "/pqrs/respond",
+  uploadSinglePqrsFile,
+  adminController.postPqrsResponse
+);
+//#endregion - PQRS
 
 router.post(
   "/",

@@ -35,6 +35,14 @@ module.exports = (sequelize, DataTypes) => {
           unique: false,
         },
       });
+
+      Pqrs.hasMany(models.PqrsResponse, {
+        foreignKey: {
+          name: "pqrsId",
+          allowNull: false,
+          unique: false,
+        },
+      });
     }
   }
   Pqrs.init(

@@ -3,6 +3,7 @@ const { v4: uuidV4 } = require("uuid");
 const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorPqrs.js");
+const { transformSavedUriToSend } = require("../../../../utils/uriTransformer.js");
 // const validator = require("../../utils/validatorAttentionLines.js");
 
 /**
@@ -180,13 +181,17 @@ exports.getPqrsdf = async (req, res, next) => {
           attributes: ["name"],
           required: false,
         },
+        {
+          model: db.PqrsResponse,
+          attributes: ["id", "description", "fileUri", "createdAt"],
+          required: false,
+        },
       ],
       attributes: {
-        exclude: ["deletedAt", "Dependency"],
+        exclude: ["deletedAt", "Dependency", "PqrsResponses"],
         include: [
           [db.sequelize.literal(latestStatusLiteral), "status"],
           [db.sequelize.literal(latestStatusDateLiteral), "statusDate"],
-          [db.sequelize.col('"Dependency"."name"'), "dependencyName"],
         ],
       },
     });
@@ -198,7 +203,17 @@ exports.getPqrsdf = async (req, res, next) => {
       message = '"page[number]" is too large for the number of possible pages.';
 
     const data = pqrsDb.rows.map((row) => {
-      return { ...row.dataValues, Dependency: undefined };
+      const values = { ...row.dataValues, Dependency: undefined };
+      values.dependencyName = row.dataValues.Dependency
+        ? row.dataValues.Dependency.name
+        : null;
+      if (Array.isArray(values.PqrsResponses)) {
+        values.PqrsResponses = values.PqrsResponses.map((response) => ({
+          ...response,
+          fileUri: transformSavedUriToSend(response.fileUri),
+        }));
+      }
+      return values;
     });
 
     return res.status(StatusCodes.OK).json({
