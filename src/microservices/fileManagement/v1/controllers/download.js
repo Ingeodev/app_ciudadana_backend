@@ -22,7 +22,9 @@ const downloadSecuredFile = async (req, res, next) => {
     try {
         const { folder, fileName } = await validator.validateDownloadSchema(req.params);
         const bucket = admin.storage().bucket();
-        const file = bucket.file(`private/${folder}/${fileName}`);
+        // Los archivos se almacenan en `${folder}/${fileName}` (la ruta 'secure'
+        // solo agrega autenticación, no cambia la ubicación del archivo).
+        const file = bucket.file(`${folder}/${fileName}`);
         const [exists] = await file.exists();
         if (!exists)
             throw { status: StatusCodes.NOT_FOUND, message: 'The requested file does not exist in the storage.' };
