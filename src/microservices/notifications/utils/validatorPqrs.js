@@ -27,7 +27,6 @@ const postRegisterSchema = joi.object({
   dependencyId: joi.number().integer().positive().required(),
   responseChannel: joi.number().integer().min(1).max(2).required(),
   fileUri: joi.string().allow('', null).optional(),
-  userId: joi.number().integer().positive().allow(null).optional(),
 }).custom((value, helpers) => {
   const isJuridica = value.typeSol === 2;
   if (isJuridica) {

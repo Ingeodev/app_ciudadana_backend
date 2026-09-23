@@ -37,6 +37,18 @@ exports.getAttentionLine = async (req, res, next) => {
 exports.postPqrsdf = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
+    const userData = await db.User.findOne({
+      where: { clientId: res.locals.uid, userMobile: true, disabled: false },
+      attributes: ["id"],
+    });
+
+    if (userData == null || userData.id == null)
+      throw {
+        message:
+          "Requesting user is not allowed to create PQRS or is not registered in the database yet.",
+        status: StatusCodes.FORBIDDEN,
+      };
+
     let rawPqrs = req.body && req.body.pqrs;
     if (typeof rawPqrs !== "string") {
       throw {
@@ -80,24 +92,13 @@ exports.postPqrsdf = async (req, res, next) => {
         message: "The assigned document type does not exist.",
       };
 
-    if (pqrsData.userId != null) {
-      const user = await db.User.findByPk(pqrsData.userId, {
-        attributes: ["id"],
-        paranoid: true,
-      });
-      if (user === null)
-        throw {
-          status: StatusCodes.NOT_FOUND,
-          message: "The assigned user does not exist.",
-        };
-    }
-
     const radicado = `PQRS-${uuidV4().replace(/-/g, "").toUpperCase().slice(0, 8)}`;
 
     const pqrsInDb = await db.Pqrs.create(
       {
         ...pqrsData,
         radicado,
+        userId: userData.id,
       },
       { transaction }
     );

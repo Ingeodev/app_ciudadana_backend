@@ -56,8 +56,10 @@ router.post(
 );
 
 // Register a PQRS request. Multipart body: field 'pqrs' (JSON string) with the request data.
+// The user is resolved from the token so the request is always associated to its owner.
 router.post(
   "/attention_lines/pqrsdf",
+  authMiddlewareMobile,
   parseReportField,
   attentionController.postPqrsdf
 );
