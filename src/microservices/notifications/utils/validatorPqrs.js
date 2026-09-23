@@ -53,6 +53,13 @@ const vFileSchema = joi.object({
   buffer: joi.binary().required(),
 });
 
+const getListSchema = joi.object({
+  number: joi.number().integer().greater(0).default(1),
+  size: joi.number().integer().greater(0).max(100).default(10),
+  radicado: joi.string().trim().allow('', null).optional(),
+  status: joi.string().valid('ENVIADA', 'RECIBIDA', 'ATENDIDA').optional(),
+});
+
 const use_validator_on_data = async (validator_schema, data) => {
   try {
     if (!validator_schema) {
@@ -77,5 +84,8 @@ module.exports = {
   },
   vFilePqrs: async (inputData) => {
     return await use_validator_on_data(vFileSchema, inputData);
+  },
+  vPqrsGetList: async (inputData) => {
+    return await use_validator_on_data(getListSchema, inputData);
   },
 };

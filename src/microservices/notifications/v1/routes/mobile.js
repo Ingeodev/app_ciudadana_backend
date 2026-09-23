@@ -61,6 +61,13 @@ router.post(
   parseReportField,
   attentionController.postPqrsdf
 );
+
+// List the PQRS requests of the authenticated user with pagination and filters (radicado, status).
+router.get(
+  "/attention_lines/pqrsdf",
+  authMiddlewareMobile,
+  attentionController.getPqrsdf
+);
 //#endRegion
 
 //#region Security end-points

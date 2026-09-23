@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { v4: uuidV4 } = require("uuid");
+const { Op } = require("sequelize");
 const db = require("../../../../models/index.js");
 const validator = require("../../utils/validatorPqrs.js");
 // const validator = require("../../utils/validatorAttentionLines.js");
@@ -120,6 +121,96 @@ exports.postPqrsdf = async (req, res, next) => {
     });
   } catch (error) {
     await transaction.rollback();
+    return next(error);
+  }
+};
+
+/**
+ * List the PQRS requests of the authenticated user.
+ * @param {object} req.query - Object containing page[number], page[size], radicado and status filters.
+ * @return {object} Response contains: statusCode (integer), json (objeto): meta with pagination info and the PQRS data list.
+ */
+exports.getPqrsdf = async (req, res, next) => {
+  try {
+    const userData = await db.User.findOne({
+      where: { clientId: res.locals.uid, userMobile: true, disabled: false },
+      attributes: ["id"],
+    });
+
+    if (userData == null || userData.id == null)
+      throw {
+        message:
+          "Requesting user is not allowed to list PQRS or is not registered in the database yet.",
+        status: StatusCodes.FORBIDDEN,
+      };
+
+    const filters = await validator.vPqrsGetList({
+      number: req.query.page ? parseInt(req.query.page.number) : null,
+      size: req.query.page ? parseInt(req.query.page.size) : null,
+      radicado: req.query.radicado,
+      status: req.query.status,
+    });
+    const offset = (filters.number - 1) * filters.size;
+
+    const where = { userId: userData.id };
+
+    if (filters.radicado) {
+      where.radicado = { [Op.iLike]: `%${filters.radicado}%` };
+    }
+
+    // Latest status (and its timestamp) of each Pqrs.
+    const latestStatusLiteral = `(SELECT ps.status FROM "PqrsStatuses" ps WHERE ps."pqrsId" = "Pqrs"."id" AND ps."deletedAt" IS NULL ORDER BY ps."createdAt" DESC LIMIT 1)`;
+    const latestStatusDateLiteral = `(SELECT ps."createdAt" FROM "PqrsStatuses" ps WHERE ps."pqrsId" = "Pqrs"."id" AND ps."deletedAt" IS NULL ORDER BY ps."createdAt" DESC LIMIT 1)`;
+
+    if (filters.status) {
+      where[Op.and] = [db.sequelize.literal(`${latestStatusLiteral} = '${filters.status}'`)];
+    }
+
+    const pqrsDb = await db.Pqrs.findAndCountAll({
+      where,
+      distinct: true,
+      paranoid: true,
+      order: [["createdAt", "DESC"]],
+      offset,
+      limit: filters.size,
+      include: [
+        {
+          model: db.Dependency,
+          attributes: ["name"],
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ["deletedAt", "Dependency"],
+        include: [
+          [db.sequelize.literal(latestStatusLiteral), "status"],
+          [db.sequelize.literal(latestStatusDateLiteral), "statusDate"],
+          [db.sequelize.col('"Dependency"."name"'), "dependencyName"],
+        ],
+      },
+    });
+
+    let message = undefined;
+    if (pqrsDb.count <= 0)
+      message = "There are no PQRS registered for this user.";
+    if (pqrsDb.rows.length <= 0)
+      message = '"page[number]" is too large for the number of possible pages.';
+
+    const data = pqrsDb.rows.map((row) => {
+      return { ...row.dataValues, Dependency: undefined };
+    });
+
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        message,
+        page: filters.number,
+        pageSize: filters.size,
+        totalRecords: pqrsDb.count,
+        totalPages: Math.ceil(pqrsDb.count / filters.size),
+      },
+      data,
+    });
+  } catch (error) {
     return next(error);
   }
 };
