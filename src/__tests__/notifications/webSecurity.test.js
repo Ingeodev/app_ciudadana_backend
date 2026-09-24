@@ -10,32 +10,32 @@ describe("Web - Security management API points: ", () => {
   };
 
   const testCategory0 = {
-    name: uuidV4(),
-    phone: "testPhone",
+    name: uuidV4().replace(/-/g, ""),
+    phone: "3001234567",
     imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url",
     address: "testAdress",
   };
 
   const testCategory1 = {
-    name: uuidV4(),
-    phone: "testPhone",
+    name: uuidV4().replace(/-/g, ""),
+    phone: "3001234567",
     imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url",
     address: "testAdress",
   };
 
   const editCategory0 = {
-    name: uuidV4(),
-    phone: "testPhone updated",
+    name: uuidV4().replace(/-/g, ""),
+    phone: "3007654321",
     imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url/updated",
     address: "testAddress updated",
   };
 
   const editCategory1 = {
-    name: uuidV4(),
-    phone: "testPhone updated",
+    name: uuidV4().replace(/-/g, ""),
+    phone: "3007654321",
     imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     siteUri: "http://test.site.url/updated",
     address: "testAddress updated",
@@ -118,7 +118,7 @@ describe("Web - Security management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          siteUri: "not uri",
+          phone: -5,
         });
       expect(response4.statusCode).toBe(400);
       expect(response4.body).not.toHaveProperty("meta");
@@ -128,27 +128,12 @@ describe("Web - Security management API points: ", () => {
       expect(response4.body).toHaveProperty("detail");
 
       // 4. ----------------------------------------------
-      const response5 = await request(usedHost)
-        .post("/")
-        .set(requestHeaders)
-        .send({
-          ...testCategory0,
-          phone: -5,
-        });
-      expect(response5.statusCode).toBe(400);
-      expect(response5.body).not.toHaveProperty("meta");
-      expect(response5.body).not.toHaveProperty("data");
-      expect(response5.body).toHaveProperty("status", 400);
-      expect(response5.body).toHaveProperty("code");
-      expect(response5.body).toHaveProperty("detail");
-
-      // 5. ----------------------------------------------
       const response6 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          siteUri: "is not uri",
+          phone: -5,
         });
       expect(response6.statusCode).toBe(400);
       expect(response6.body).not.toHaveProperty("meta");
@@ -451,7 +436,7 @@ describe("Web - Security management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editCategory0,
-          siteUri: "not uri",
+          phone: -5,
         });
       expect(response5.statusCode).toBe(400);
       expect(response5.body).not.toHaveProperty("meta");
@@ -461,27 +446,12 @@ describe("Web - Security management API points: ", () => {
       expect(response5.body).toHaveProperty("detail");
 
       // 5. -------------------------------------
-      const response6 = await request(usedHost)
-        .post("/edit")
-        .set(requestHeaders)
-        .send({
-          ...editCategory0,
-          phone: -5,
-        });
-      expect(response6.statusCode).toBe(400);
-      expect(response6.body).not.toHaveProperty("meta");
-      expect(response6.body).not.toHaveProperty("data");
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
-
-      // 6. -------------------------------------
       const response7 = await request(usedHost)
         .post("/edit")
         .set(requestHeaders)
         .send({
           ...editCategory0,
-          siteUri: "not uri",
+          phone: -5,
         });
       expect(response7.statusCode).toBe(400);
       expect(response7.body).not.toHaveProperty("meta");

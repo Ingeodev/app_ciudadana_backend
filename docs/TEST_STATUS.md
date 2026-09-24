@@ -332,3 +332,41 @@ Este es el patrón de la Fase 1: las suites usan datos que ya no cumplen los val
 - Imagen de prueba subida y verificada en `test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png` (PNG, 70 bytes).
 - `GET /api/v1/file_management/download/test/cd696e0f-eb0a-4c05-b58b-11bc0d1457f3.png` → **200, image/png**.
 - El usuario también corrigió `FIREBASE_SERVICE_ACCOUNT_PATH=./config/account_service_key-testing.json` en `.env.test` (apunta al archivo real). Servidor `NODE_ENV=test` reiniciado con la config corregida.
+
+---
+
+## 8. Resultado de la estabilización (Fase 1) — rama `testing`
+
+> 2026-09-24. En la rama `testing`. Fix aprobado por el usuario: `req.rawBody` en `app.js`.
+
+### 8.1 Fix aplicado al backend (aprobado)
+- **`src/app.js`**: middleware que captura `req.rawBody` para `multipart/form-data` + `verify` en `bodyParser.json()`. Desbloquea los **13 endpoints de upload** (dependencies, cities, transport_routes, PQRS, reports, full_login, file_management). Sin esto todos devolvían `400 "rawBody not available"` (bug latente desde `c53e7b6 feat(pqrs)`).
+
+### 8.2 Resultado por grupo (suite a suite, 100%)
+
+| Grupo | Suites | Tests |
+|---|---|---|
+| notifications/web | 8 | ✅ verdes (webSecurity 19, webSecurityCategories 17, webGenderCategories 16, webGenderAttentionLines 16, webAlerts 6, webAdvertisement 20, webAttentionLines 3, allSecurityAttentionPoint 22) |
+| notifications/mobile | 9 | ✅ verdes + 2 skips (webDependencies 14+1skip, mobileSecurity 2, mobileReports 10, mobilePublicity 8, mobileGender 6, mobileDependencies 3, mobileAttentionLines 1, mobileAlerts 3+1skip, _afterMobile_webReports 3) |
+| thirdParties | 17 | ✅ 407/407 (web 11 + mobile 6 + allTourismCategories) |
+| users + admins | 6 | ✅ 81/81 (2 tests DISABLED por bug backend) |
+| `webAdvertisementCategories.test.js` | — | **Eliminado** (placeholder `return true`, código muerto) |
+
+**Total: ~40 suites, ~657 tests en verde. 2 skipped + 2 disabled por bugs de backend (ver 8.3).**
+
+### 8.3 Bugs de backend pendientes (bloquean tests puntuales)
+
+| Bug | Endpoint | Efecto | Ubicación |
+|---|---|---|---|
+| 1. Path relativo mal | `GET /dependencies/template` | 404 (el archivo vive en `microservices/notifications/static/`) | `webDependencies.js:90` |
+| 2. `FCM_TOPIC_NAME_MOBILE` vacío en `.env*` | `POST /notifications/register` con token inválido | 500 en vez de 422 | `mobileAlert.js` + `.env` |
+| 3. Path relativo mal | `GET /transport_company/route/template` | 500 (workaround: symlink `src/static`) | `transportRoutes.js:927` |
+| 4. Ruta comentada | `GET /admin/admin` (listado admins) | 404, 2 tests DISABLED | `webAdmin.js:70-74` |
+
+### 8.4 Hallazgos sendgrid / sigma (regla del usuario)
+- **No hay ningún test que use sendgrid ni sigma.** Los 34 archivos revisados: los flujos de email del backend ya usan `EMAIL_PROVIDER=gmail` (nodemailer); las alertas usan push FCM con `sms:false` (no disparan SMS). Nada que sustituir ni eliminar. El único proveedor externo tocado es FCM (bug 8.3.2).
+
+### 8.5 Run completo (repo entero): se cuelga por throttling de identitytoolkit
+- Las suites pasan **individualmente y por bloque** (`notifications` 17/17, `thirdParties` por bloques, `users+admins` 6/6).
+- El **run completo encadenado** se cuelga después de ~16 logins seguidos a la misma cuenta de test: Firebase Auth (identitytoolkit) hace rate-limit/backoff y el `beforeAll` de login queda esperando sin timeout.
+- **Propuestas para CI:** (a) reusar el idToken entre suites (compartir estado global), (b) `--testTimeout` global + manejo del 429/backoff en los logins, (c) pool de usuarios de test por suite. Elegir en Fase 3.

@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
   TransportRoute.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -64,32 +65,38 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       origin: {
+        comment: "Clave foránea hacia Cities.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       destination: {
+        comment: "Clave foránea hacia Cities.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       companyId: {
+        comment: "Clave foránea hacia TransportCompanies.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       duration: {
+        comment: "Campo duration (INTEGER).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Rutas del sistema de transporte público.",
       sequelize,
       modelName: "TransportRoute",
       tableName: "TransportRoutes",

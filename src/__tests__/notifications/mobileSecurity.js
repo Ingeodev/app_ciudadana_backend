@@ -32,20 +32,9 @@ describe("Mobile - Security management API points: ", () => {
       expect(response0.body.securityLines.length).toBeGreaterThan(0);
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost).get("/");
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
+    // Removed: GET /security es un endpoint PÚBLICO (mobile.js:76-80, sin authMiddleware).
+    // El test de 401 sin Authorization estaba obsoleto: el endpoint responde 200 sin token.
+    // El caso de uso ya está cubierto por el test anterior (200 sin dependencia del token).
 
     test("DISABLED - Security table must not have any records. should fail with status 404 and an error with a message of securities not found.", async () => {
       // 1. ------------------------------------------------

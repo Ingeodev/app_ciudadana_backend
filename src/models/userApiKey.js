@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   UserApiKey.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -45,32 +46,38 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       tourismCompanyId: {
+        comment: "Clave foránea hacia TourismCompanies.id.",
         type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       transportCompanyId: {
+        comment: "Clave foránea hacia TransportCompanies.id.",
         type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       key: {
+        comment: "Campo key (TEXT).",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       expirationAt: {
+        comment: "Campo expirationAt (DATE).",
         type: DataTypes.DATEONLY,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Claves API emitidas a los usuarios para integraciones.",
       sequelize,
       modelName: "UserApiKey",
       paranoid: true,

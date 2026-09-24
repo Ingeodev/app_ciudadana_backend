@@ -27,32 +27,38 @@ module.exports = (sequelize, DataTypes) => {
   TourismCategory.init(
     {
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING(60),
         allowNull: false,
         unique: false,
       },
       color: {
+        comment: "Color representativo asociado al registro.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       icon: {
+        comment: "Campo icon (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       iconMap: {
+        comment: "Campo iconMap (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Categorías dentro de la ruta de atención de turismo.",
       sequelize,
       modelName: "TourismCategory",
       paranoid: true,

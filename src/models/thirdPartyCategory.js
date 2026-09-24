@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   ThirdPartyCategory.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -29,27 +30,32 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       icon: {
+        comment: "Campo icon (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       iconMap: {
+        comment: "Campo iconMap (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       color: {
+        comment: "Color representativo asociado al registro.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Categorías de los servicios prestados por terceros.",
       sequelize,
       modelName: "ThirdPartyCategory",
       tableName: "ThirdPartyCategories",

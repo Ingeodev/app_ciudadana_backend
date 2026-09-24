@@ -156,7 +156,7 @@ describe("Web - Transport Companies management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCompany0,
-          siteUri: "is.not uri",
+          siteUri: "not a valid uri",
         });
       expect(response3.statusCode).toBe(400);
       expect(response3.body).not.toHaveProperty("meta");
@@ -649,7 +649,7 @@ describe("Web - Transport Companies management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editCompany0,
-          siteUri: "is.not uri",
+          siteUri: "not a valid uri",
         });
       expect(response7.statusCode).toBe(400);
       expect(response7.body).not.toHaveProperty("meta");
@@ -664,7 +664,7 @@ describe("Web - Transport Companies management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editCompany0,
-          imageUri: "is.not uri",
+          imageUri: "not a valid uri",
         });
       expect(response8.statusCode).toBe(400);
       expect(response8.body).not.toHaveProperty("meta");

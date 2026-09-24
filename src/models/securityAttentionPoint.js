@@ -22,38 +22,52 @@ module.exports = (sequelize, DataTypes) => {
   SecurityAttentionPoint.init(
     {
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING(50),
         allowNull: false,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.STRING(200),
         allowNull: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
       },
-      color: DataTypes.STRING(10),
+      color: {
+        type: DataTypes.STRING(10),
+        comment: "Color representativo asociado al registro."
+      },
       address: {
+        comment: "Dirección de contacto.",
         type: DataTypes.STRING,
         allowNull: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: true,
       },
       iconMap: {
+        comment: "Campo iconMap (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
       },
-      geolocation: DataTypes.GEOMETRY,
+      geolocation: {
+        type: DataTypes.GEOMETRY,
+        comment: "Punto geográfico (GEOMETRY) con la ubicación."
+      },
     },
     {
+      comment: "Puntos de atención presencial especializados en la ruta de seguridad.",
       sequelize,
       modelName: "SecurityAttentionPoint",
       schema: "public",

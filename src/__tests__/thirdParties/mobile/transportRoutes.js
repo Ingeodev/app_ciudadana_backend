@@ -1,10 +1,17 @@
 const request = require("supertest");
+const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.thirdPartiesMicroserviceLocalHost}/api/mobile/v1/third_parties/intercity_transport`;
 describe("Mobile - Transport Routes management API points: ", () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(90000);
+
+  const generateAlphanumeric = () => uuidV4().replace(/-/g, "");
 
   const requestHeaders = {
+    Authorization: "Bearer ",
+  };
+
+  const requestHeadersWeb = {
     Authorization: "Bearer ",
   };
 
@@ -17,11 +24,28 @@ describe("Mobile - Transport Routes management API points: ", () => {
         return index !== -1 ? withoutAccents[index] : char;
     }).join('');
   }
-  
+
   nameCity = "POPAYAN";
   let cityObj = undefined;
-  date = "2023-11-20";
+  // Use a future date (the validator rejects dates in the past).
+  date = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
+  let testCompany0 = undefined;
+  let routeToCali = undefined;
+  let routeFromCali = undefined;
+  let timetableToCali = undefined;
+  let timetableFromCali = undefined;
+  let hoursToCali = [];
+  let hoursFromCali = [];
+
+  const testCompanyPayload = {
+    name: generateAlphanumeric(),
+    nit: `${Math.floor(Math.random() * (9000000 - 1000000 + 1)) + 1000000}-1`,
+    description: "test description",
+    phone: "3122334455",
+    siteUri: 'http://test.site.url',
+    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+  };
 
   beforeAll(async () => {
     const firebaseAuth = await request(
@@ -31,16 +55,84 @@ describe("Mobile - Transport Routes management API points: ", () => {
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
+
+    const firebaseAuthWeb = await request(
+      "https://identitytoolkit.googleapis.com/v1"
+    )
+      .post("/accounts:signInWithPassword")
+      .query({ key: global.firebaseKey })
+      .send(global.firebaseTestWebUserLogin);
+    requestHeadersWeb.Authorization += firebaseAuthWeb.body.idToken;
   });
 
-  describe("Search for the cities of Popayan, Cauca. ", () => {
+  afterAll(async () => {
+    const hours = [...hoursToCali, ...hoursFromCali];
+    for (const hour of hours) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/hour/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({
+          id: hour.id,
+          timetableId: hour.timetableId,
+          companyId: testCompany0 ? testCompany0.id : undefined,
+          routeId: hour.routeId,
+        });
+    }
+
+    if (timetableToCali) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/date/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({ id: timetableToCali.id, routeId: routeToCali.id, companyId: testCompany0.id });
+    }
+    if (timetableFromCali) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/date/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({ id: timetableFromCali.id, routeId: routeFromCali.id, companyId: testCompany0.id });
+    }
+
+    if (routeToCali) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({ id: routeToCali.id, companyId: testCompany0.id });
+    }
+    if (routeFromCali) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({ id: routeFromCali.id, companyId: testCompany0.id });
+    }
+
+    if (testCompany0) {
+      await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/delete`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({ id: testCompany0.id });
+    }
+  });
+
+  describe("Search for the cities of Popayan, Cauca and create the test transport company/routes. ", () => {
     test("Should respond with status 200.", async () => {
       // Search the id of the city of Popayan.
       const response2 = await request(
         `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/city`
       )
         .get("/autocomplete")
-        .set(requestHeaders)
+        .set(requestHeadersWeb)
         .query({ page: { number: 1, size: 100 }, q: nameCity });
       expect(response2.body).toHaveProperty("meta");
       expect(response2.body.meta).toHaveProperty("totalRecords");
@@ -49,6 +141,99 @@ describe("Mobile - Transport Routes management API points: ", () => {
       expect(response2.body.data).toEqual(expect.any(Array));
       cityObj = response2.body.data.find((item) => removeTildes(item.city) === nameCity);
       expect(Number.isInteger(cityObj.cityCode)).toBe(true);
+
+      // Search the id of the city of Cali, Valle del Cauca, Colombia.
+      const caliResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/city`
+      )
+        .get("/autocomplete")
+        .set(requestHeadersWeb)
+        .query({ page: { number: 1, size: 100 }, q: "CALI" });
+      const caliObj = caliResponse.body.data.find((item) => item.city === "CALI");
+      expect(caliObj).toBeDefined();
+
+      // Create a test transport company
+      const companyResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send(testCompanyPayload);
+      expect(companyResponse.statusCode).toBe(201);
+      expect(companyResponse.body.data).toHaveProperty("id");
+      testCompany0 = { id: companyResponse.body.data.id };
+
+      // Create the route Popayan -> Cali
+      const routeToCaliResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({
+          companyId: testCompany0.id,
+          originId: cityObj.id,
+          destinationId: caliObj.id,
+          duration: "02:00",
+        });
+      expect(routeToCaliResponse.statusCode).toBe(201);
+      routeToCali = { id: routeToCaliResponse.body.data.id };
+
+      // Create the route Cali -> Popayan
+      const routeFromCaliResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({
+          companyId: testCompany0.id,
+          originId: caliObj.id,
+          destinationId: cityObj.id,
+          duration: "02:00",
+        });
+      expect(routeFromCaliResponse.statusCode).toBe(201);
+      routeFromCali = { id: routeFromCaliResponse.body.data.id };
+
+      // Create timetable + hour/tariffs for the Popayan -> Cali route
+      const timetableToCaliResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/date/hours`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({
+          date,
+          routeId: routeToCali.id,
+          companyId: testCompany0.id,
+          hoursTariffs: [{ hour: "08:00", tariff: "10000" }],
+        });
+      expect(timetableToCaliResponse.statusCode).toBe(201);
+      expect(timetableToCaliResponse.body.data).toHaveProperty("id");
+      timetableToCali = { id: timetableToCaliResponse.body.data.id };
+      hoursToCali = timetableToCaliResponse.body.data.hourTariffs.map((h) => ({
+        id: h.id,
+        timetableId: timetableToCali.id,
+        routeId: routeToCali.id,
+      }));
+
+      // Create timetable + hour/tariffs for the Cali -> Popayan route
+      const timetableFromCaliResponse = await request(
+        `${global.thirdPartiesMicroserviceDefaultHost}/api/web/v1/third_parties/transport_company/route/date/hours`
+      )
+        .post("/")
+        .set(requestHeadersWeb)
+        .send({
+          date,
+          routeId: routeFromCali.id,
+          companyId: testCompany0.id,
+          hoursTariffs: [{ hour: "09:00", tariff: "10000" }],
+        });
+      expect(timetableFromCaliResponse.statusCode).toBe(201);
+      expect(timetableFromCaliResponse.body.data).toHaveProperty("id");
+      timetableFromCali = { id: timetableFromCaliResponse.body.data.id };
+      hoursFromCali = timetableFromCaliResponse.body.data.hourTariffs.map((h) => ({
+        id: h.id,
+        timetableId: timetableFromCali.id,
+        routeId: routeFromCali.id,
+      }));
     });
   });
 

@@ -157,6 +157,7 @@ module.exports = (sequelize, DataTypes) => {
   User.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -164,89 +165,112 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       roleId: {
+        comment: "Clave foránea hacia Roles.id.",
         type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       clientId: {
+        comment: "Identificador de referencia a otra entidad (clave foránea).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      name: DataTypes.STRING,
-      lastName: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        comment: "Nombre del registro."
+      },
+      lastName: {
+        type: DataTypes.STRING,
+        comment: "Campo lastName (VARCHAR(255))."
+      },
       email: {
+        comment: "Correo electrónico de contacto.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: true,
       },
       emailVerified: {
+        comment: "Campo emailVerified (TIMESTAMP WITH TIME ZONE).",
         type: DataTypes.DATE,
         allowNull: true,
         unique: false,
       },
       tokenEmailVerified: {
+        comment: "Campo tokenEmailVerified (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: true,
       },
       passwdReset: {
+        comment: "Campo passwdReset (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
       documentTypeId: {
+        comment: "Clave foránea hacia DocumentTypes.id.",
         type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       document: {
+        comment: "Campo document (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: true,
         unique: false,
       },
       address: {
+        comment: "Dirección de contacto.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       serviceReceiptUri: {
+        comment: "Campo serviceReceiptUri (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       loginPhase: {
+        comment: "Campo loginPhase (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       disabled: {
+        comment: "Indica si el registro está deshabilitado.",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
       userMobile: {
+        comment: "Campo userMobile (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
       pushDeviceToken: {
+        comment: "Campo pushDeviceToken (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       acceptBicycleTerms: {
+        comment: "Campo acceptBicycleTerms (TIMESTAMPZ).",
         type: "TIMESTAMPZ",
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Usuarios registrados en la aplicación, con sus datos de identidad, contacto y estado.",
       sequelize,
       modelName: "User",
       tableName: "Users",

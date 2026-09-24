@@ -207,16 +207,16 @@ describe("All Tourism Categories API points: ", () => {
       expect(response6.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 403 and an error with a message if the request comes from a web user", async () => {
+    test("should fail with status 401 and an error with a message if the request comes from a mobile user", async () => {
       const response0 = await request(usedWebHost)
         .post("/")
         .set(requestHeadersMobile)
         .send({
           ...testTourCat1,
         });
-      expect(response0.statusCode).toBe(403);
+      expect(response0.statusCode).toBe(401);
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 403);
+      expect(response0.body).toHaveProperty("status", 401);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
     });
@@ -543,7 +543,7 @@ describe("All Tourism Categories API points: ", () => {
       });
 
       test("should fail with status 400 and an error with a message if pagination is wrongly provided", async () => {
-        const response0 = await request(usedWebHost)
+        const response0 = await request(usedMobileHost)
           .get("/")
           .set(requestHeadersMobile)
           .query({ page: { size: "n", number: 1 } });

@@ -3,9 +3,15 @@ const request = require("supertest");
 const usedHostWeb = `${global.usersMicroserviceLocalHost}/api/web/v1/users`;
 const usedHost = `${global.usersMicroserviceLocalHost}/api/mobile/v1/users`;
 describe("Mobile - Users management API points: ", () => {
-  jest.setTimeout(25000);
+  jest.setTimeout(90000);
 
   const requestHeaders = {
+    Authorization: "Bearer "
+  };
+
+  // Token web (testWeb) para el paso de verificación del admin (web verify),
+  // que transiciona al usuario mobile de inVerification -> fullLogin.
+  const requestHeadersWeb = {
     Authorization: "Bearer "
   };
 
@@ -19,12 +25,12 @@ describe("Mobile - Users management API points: ", () => {
   const urlFile = "./__tests__/users/mobile/usersTest.jpg";
   const urlFileFail = "./__tests__/users/mobile/usersTest.docx";
   const editUser0 = {
-    documentTypeId: "6",
+    // documentTypeId 3 = "cédula" (CC), única fila sembrada en DocumentTypes
+    documentTypeId: "3",
     document: "6000354895",
     address: "testDireccion",
+    imageUri: "https://example.com/test-image.jpg",
   };
-
-  const clientId = "vxbi4615BbNSaP7bZwIDetvnwCd2";
 
   const editUser0FullLogin = {
     name: "Juan Francisco",
@@ -33,12 +39,33 @@ describe("Mobile - Users management API points: ", () => {
     address: "direccionActualizada",
   };
 
+  let testMobileId = null;
+
   beforeAll(async () => {
     const firebaseAuth = await request("https://identitytoolkit.googleapis.com/v1")
       .post("/accounts:signInWithPassword")
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken; // console.log(requestHeaders);
+
+    const firebaseAuthWeb = await request("https://identitytoolkit.googleapis.com/v1")
+      .post("/accounts:signInWithPassword")
+      .query({ key: global.firebaseKey })
+      .send(global.firebaseTestWebUserLogin);
+    requestHeadersWeb.Authorization += firebaseAuthWeb.body.idToken;
+
+    // Obtiene el id del usuario mobile de pruebas desde el listado web de
+    // usuarios mobile (el GET /account/info mobile no expone el id).
+    const mobileList = await request(usedHostWeb)
+      .get("/")
+      .set(requestHeadersWeb)
+      .query({ page: { number: 1, size: 100 }, webUser: false, mobileUser: true });
+    expect(mobileList.statusCode).toBe(200);
+    const mobileUser = mobileList.body.data.find(
+      (user) => user.email === "testMobile@gmail.com"
+    );
+    expect(mobileUser).toBeDefined();
+    testMobileId = mobileUser.id;
   });
 
   describe("POST /account/info", () => {
@@ -65,97 +92,54 @@ describe("Mobile - Users management API points: ", () => {
           email: "must be in email format",
         });
       expect(response1.statusCode).toBe(400);
-      
       expect(response1.body).toHaveProperty("status", 400);
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
 
       // 3. ---------------------------------------------------------------
+      // Nota: phone admite '' (allow('')), por lo que solo falla un tipo inválido.
       const response2 = await request(usedHost)
-        .post("/account/info")
-        .set(requestHeaders)
-        .send({
-          ...testUser0,
-          phone: "         ",
-        });
-      expect(response2.statusCode).toBe(400);
-      
-      expect(response2.body).toHaveProperty("status", 400);
-      expect(response2.body).toHaveProperty("code");
-      expect(response2.body).toHaveProperty("detail");
-
-      // 4. ---------------------------------------------------------------
-      const response3 = await request(usedHost)
         .post("/account/info")
         .set(requestHeaders)
         .send({
           ...testUser0,
           phone: 3122223344,
         });
-      expect(response3.statusCode).toBe(400);
-      
-      expect(response3.body).toHaveProperty("status", 400);
-      expect(response3.body).toHaveProperty("code");
-      expect(response3.body).toHaveProperty("detail");
+      expect(response2.statusCode).toBe(400);
+      expect(response2.body).toHaveProperty("status", 400);
+      expect(response2.body).toHaveProperty("code");
+      expect(response2.body).toHaveProperty("detail");
 
-      // 5. ---------------------------------------------------------------
-      const response4 = await request(usedHost)
-        .post("/account/info")
-        .set(requestHeaders)
-        .send({
-          ...testUser0,
-          name: "     ",
-        });
-      expect(response4.statusCode).toBe(400);
-      
-      expect(response4.body).toHaveProperty("status", 400);
-      expect(response4.body).toHaveProperty("code");
-      expect(response4.body).toHaveProperty("detail");
-
-      // 6. ---------------------------------------------------------------
-      const response5 = await request(usedHost)
+      // 4. ---------------------------------------------------------------
+      // name admite '' (allow('')), solo falla un tipo inválido.
+      const response3 = await request(usedHost)
         .post("/account/info")
         .set(requestHeaders)
         .send({
           ...testUser0,
           name: 111111,
         });
-      expect(response5.statusCode).toBe(400);
-      
-      expect(response5.body).toHaveProperty("status", 400);
-      expect(response5.body).toHaveProperty("code");
-      expect(response5.body).toHaveProperty("detail");
+      expect(response3.statusCode).toBe(400);
+      expect(response3.body).toHaveProperty("status", 400);
+      expect(response3.body).toHaveProperty("code");
+      expect(response3.body).toHaveProperty("detail");
 
-      // 7. ---------------------------------------------------------------
-      const response6 = await request(usedHost)
-        .post("/account/info")
-        .set(requestHeaders)
-        .send({
-          ...testUser0,
-          lastName: "     ",
-        });
-      expect(response6.statusCode).toBe(400);
-      
-      expect(response6.body).toHaveProperty("status", 400);
-      expect(response6.body).toHaveProperty("code");
-      expect(response6.body).toHaveProperty("detail");
-
-      // 8.---------------------------------------------------------------
-      const response7 = await request(usedHost)
+      // 5. ---------------------------------------------------------------
+      // lastName admite '' (allow('')), solo falla un tipo inválido.
+      const response4 = await request(usedHost)
         .post("/account/info")
         .set(requestHeaders)
         .send({
           ...testUser0,
           lastName: 111111,
         });
-      expect(response7.statusCode).toBe(400);
-      
-      expect(response7.body).toHaveProperty("status", 400);
-      expect(response7.body).toHaveProperty("code");
-      expect(response7.body).toHaveProperty("detail");
+      expect(response4.statusCode).toBe(400);
+      expect(response4.body).toHaveProperty("status", 400);
+      expect(response4.body).toHaveProperty("code");
+      expect(response4.body).toHaveProperty("detail");
     });
 
-    test("should respond with status 201 and the new object (data) after creating a new user web.", async () => {
+    test("should respond with status 201 and the object with the user base info (findOrCreate is idempotent).", async () => {
       const response0 = await request(usedHost)
         .post("/account/info")
         .set(requestHeaders)
@@ -166,28 +150,23 @@ describe("Mobile - Users management API points: ", () => {
       expect(response0.body).toHaveProperty("phone");
       expect(response0.body).toHaveProperty("email");
       expect(response0.body.email).toBe(testUser0.email);
-      // testUser0.id = response0.body.data.id;
-      // testUser0.clientId = response0.body.data.clientId;
+      expect(response0.body.name).toBe(testUser0.name);
+      expect(response0.body.lastName).toBe(testUser0.lastName);
     });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved.", async () => {
-      // 1. ---------------------------------------------------------------
+    test("should respond with status 201 again when posting the same base info (no data to fail on save).", async () => {
+      // El controller mobile usa findOrCreate, por lo que repetir el payload no
+      // falla: actualiza al usuario existente y responde 201.
       const response0 = await request(usedHost)
         .post("/account/info")
         .set(requestHeaders)
         .send(testUser0);
-      expect(response0.statusCode).toBe(500);
-      expect(response0.body).toHaveProperty("status", 500);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
+      expect(response0.statusCode).toBe(201);
+      expect(response0.body).toHaveProperty("email");
+      expect(response0.body.email).toBe(testUser0.email);
     });
 
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      // {
-      //     "status": 401,
-      //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-      //     "code": "Unauthorized"
-      // }
       const response0 = await request(usedHost).post("/account/info");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).toHaveProperty("status", 401);
@@ -385,6 +364,7 @@ describe("Mobile - Users management API points: ", () => {
           }))
         .attach("file", urlFile);
 
+      expect(response9.statusCode).toBe(400);
       expect(response9.body).toHaveProperty("status", 400);
       expect(response9.body).toHaveProperty("code");
       expect(response9.body).toHaveProperty("detail");
@@ -426,15 +406,17 @@ describe("Mobile - Users management API points: ", () => {
       expect(response11.body).toHaveProperty("detail");
 
       // 13. ---------------------------------------------------------------
+      // Archivo inválido (docx) enviado en el campo "image" -> el middleware
+      // uploadSingleImage responde 415 (Unsupported Media Type).
       const response12 = await request(usedHost)
         .post("/account/full_login")
         .set(requestHeaders)
         .set("Accept", "application/json")
         .field("info", JSON.stringify(editUser0))
-        .attach("file", urlFileFail);
+        .attach("image", urlFileFail);
 
-      expect(response12.statusCode).toBe(400);
-      expect(response12.body).toHaveProperty("status", 400);
+      expect(response12.statusCode).toBe(415);
+      expect(response12.body).toHaveProperty("status", 415);
       expect(response12.body).toHaveProperty("code");
       expect(response12.body).toHaveProperty("detail");
     });
@@ -464,32 +446,26 @@ describe("Mobile - Users management API points: ", () => {
         .set(requestHeaders)
         .set("Accept", "application/json")
         .field("info", JSON.stringify(editUser0))
-        .attach("file", urlFile);
-      
+        .attach("image", urlFile);
+
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("documentTypeId");
-      // expect(response0.body.documentTypeId).toBe(editUser0.documentTypeId);
+      expect(response0.body.documentTypeId).toBe(parseInt(editUser0.documentTypeId, 10));
       expect(response0.body).toHaveProperty("document");
       expect(response0.body.document).toBe(editUser0.document);
       expect(response0.body).toHaveProperty("address");
       expect(response0.body.address).toBe(editUser0.address);
       expect(response0.body).toHaveProperty("file");
-      // testUser0.id = response0.body.data.id;
+      expect(response0.body.file).toBe(editUser0.imageUri);
     });
 
     test("should fail with status 404 and an error with a message if the data cannot be saved - loginPhase != baseLogin.", async () => {
-      // ---------------------------------------------------------------
-      // {
-      //     "status": 404,
-      //     "code": "Not Found",
-      //     "detail": "The user with clientId={clientId} and loginPhase=\"baseLogin\" does not exist"
-      // }
       const response0 = await request(usedHost)
         .post("/account/full_login")
         .set(requestHeaders)
         .set("Accept", "application/json")
         .field("info", JSON.stringify(editUser0))
-        .attach("file", urlFile);
+        .attach("image", urlFile);
 
       expect(response0.statusCode).toBe(404);
       expect(response0.body).toHaveProperty("status", 404);
@@ -498,11 +474,6 @@ describe("Mobile - Users management API points: ", () => {
     });
 
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      // {
-      //     "status": 401,
-      //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-      //     "code": "Unauthorized"
-      // }
       const response0 = await request(usedHost).post("/account/full_login");
 
       expect(response0.statusCode).toBe(401);
@@ -513,8 +484,7 @@ describe("Mobile - Users management API points: ", () => {
   });
 
   describe("GET /account/info", () => {
-    test("should respond with status 200 and user object.", async () => {
-      // -----------------------------------------------------
+    test("should respond with status 200 and the user object.", async () => {
       const response0 = await request(usedHost)
         .get("/account/info")
         .set(requestHeaders);
@@ -523,11 +493,6 @@ describe("Mobile - Users management API points: ", () => {
       expect(response0.body).toHaveProperty("userInfo");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/account/info");
       expect(response0.statusCode).toBe(401);
@@ -539,20 +504,14 @@ describe("Mobile - Users management API points: ", () => {
 
   describe("GET /account/login/phase", () => {
     test("should respond with status 200 and a data object with the attribute of loginPhase.", async () => {
-      // -----------------------------------------------------
       const response0 = await request(usedHost)
         .get("/account/login/phase")
         .set(requestHeaders);
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("loginPhase");
-      // expect(response0.body.loginPhase).toBe("inVerification");
+      expect(response0.body.loginPhase).toBe("inVerification");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/account/login/phase");
       expect(response0.statusCode).toBe(401);
@@ -563,31 +522,25 @@ describe("Mobile - Users management API points: ", () => {
   });
 
   describe("WebUsers - Verify user - POST /full_login ", () => {
-    test("should respond with status 200 and the object updated (data).", async () => {
+    test("should respond with status 200 and the id of the verified user (inVerification -> fullLogin).", async () => {
+      // El admin (testWeb) verifica al usuario mobile en inVerification usando
+      // el endpoint web /full_login con el id del usuario mobile.
       const response0 = await request(usedHostWeb)
         .post("/full_login")
-        .set(requestHeaders)
-        .send({ clientId: clientId });
+        .set(requestHeadersWeb)
+        .send({ id: testMobileId });
 
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("meta");
       expect(response0.body.meta).toBe(null);
       expect(response0.body).toHaveProperty("data");
       expect(response0.body.data).toHaveProperty("id");
-      // expect(response0.body.data.id).toBe(testUser0.id);
-      // testUser0.id = response0.body.data.id;
-      expect(response0.body.data).toHaveProperty("loginPhase");
-      expect(response0.body.data.loginPhase).toBe("fullLogin");
-      expect(response0.body.data).toHaveProperty("disabled");
-      expect(response0.body.data.disabled).toBe(false);
-      expect(response0.body.data).toHaveProperty("userMobile");
-      expect(response0.body.data.userMobile).toBe(true);
+      expect(response0.body.data.id).toBe(testMobileId);
     });
   });
 
   describe("POST /account/edit ", () => {
     test("should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
-      // 3. ---------------------------------------------------------------
       const response2 = await request(usedHost)
         .post("/account/edit")
         .set(requestHeaders)
@@ -600,7 +553,6 @@ describe("Mobile - Users management API points: ", () => {
       expect(response2.body).toHaveProperty("code");
       expect(response2.body).toHaveProperty("detail");
 
-      // 7. ---------------------------------------------------------------
       const response6 = await request(usedHost)
         .post("/account/edit")
         .set(requestHeaders)
@@ -613,7 +565,6 @@ describe("Mobile - Users management API points: ", () => {
       expect(response6.body).toHaveProperty("code");
       expect(response6.body).toHaveProperty("detail");
 
-      // 11. ---------------------------------------------------------------
       const response10 = await request(usedHost)
         .post("/account/edit")
         .set(requestHeaders)
@@ -626,7 +577,6 @@ describe("Mobile - Users management API points: ", () => {
       expect(response10.body).toHaveProperty("code");
       expect(response10.body).toHaveProperty("detail");
 
-      // 15. ---------------------------------------------------------------
       const response14 = await request(usedHost)
         .post("/account/edit")
         .set(requestHeaders)
@@ -640,7 +590,7 @@ describe("Mobile - Users management API points: ", () => {
       expect(response14.body).toHaveProperty("detail");
     });
 
-    test("should respond with status 200 and the user object (data) after updating.", async () => {
+    test("should respond with status 200 and the user object after updating (user in fullLogin).", async () => {
       const response0 = await request(usedHost)
         .post("/account/edit")
         .set(requestHeaders)
@@ -658,11 +608,6 @@ describe("Mobile - Users management API points: ", () => {
     });
 
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      // {
-      //     "status": 401,
-      //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-      //     "code": "Unauthorized"
-      // }
       const response0 = await request(usedHost).post("/account/edit");
       expect(response0.statusCode).toBe(401);
       expect(response0.body).toHaveProperty("status", 401);

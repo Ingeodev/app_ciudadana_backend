@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   BicyclesTermCondition.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
@@ -39,12 +41,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
       },
       termsConditions: {
+        comment: "Campo termsConditions (TEXT).",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Términos y condiciones de uso del servicio de bicicletas compartidas.",
       sequelize,
       modelName: "BicyclesTermCondition",
       tableName: "BicyclesTermsConditions",

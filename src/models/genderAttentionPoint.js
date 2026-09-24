@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   GenderAttentionPoint.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -29,52 +30,62 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       color: {
+        comment: "Color representativo asociado al registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       address: {
+        comment: "Dirección de contacto.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       geolocation: {
+        comment: "Punto geográfico (GEOMETRY) con la ubicación.",
         type: DataTypes.GEOMETRY,
         allowNull: false,
         unique: false,
       },
       iconMap: {
+        comment: "Campo iconMap (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Puntos de atención presencial especializados en la ruta de género.",
       sequelize,
       modelName: "GenderAttentionPoint",
       tableName: "GenderAttentionPoints",

@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   SocialNetwork.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,26 +29,31 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       socialNetworkTypeId: {
+        comment: "Clave foránea hacia SocialNetworkTypes.id.",
         type: DataTypes.INTEGER,
         allowNull: true,
         unique: false,
       },
       url: {
+        comment: "Campo url (TEXT).",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       icon: {
+        comment: "Campo icon (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       active: {
+        comment: "Campo active (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },
     },
     {
+      comment: "Redes sociales registradas de las empresas o servicios.",
       sequelize,
       modelName: "SocialNetwork",
       tableName: "SocialNetworks",

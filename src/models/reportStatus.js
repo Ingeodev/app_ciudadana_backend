@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   ReportStatus.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,11 +29,13 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       reportId: {
+        comment: "Clave foránea hacia Reports.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       status: {
+        comment: "Estado del registro.",
         type: DataTypes.ENUM("APPROVED", "DISAPPROVED", "PENDING"),
         defaultValue: "PENDING",
         allowNull: false,
@@ -43,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      comment: "Estados del ciclo de vida de un reporte.",
       sequelize,
       modelName: "ReportStatus",
       tableName: "ReportStatuses",

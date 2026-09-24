@@ -1,6 +1,8 @@
 const request = require("supertest");
+const { v4: uuidv4 } = require("uuid");
 
 const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/gender`;
+const usedWebHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications`;
 
 describe("Mobile - Gender equality management API points: ", () => {
   jest.setTimeout(90000);
@@ -8,9 +10,41 @@ describe("Mobile - Gender equality management API points: ", () => {
   const requestHeaders = {
     Authorization: "Bearer ",
   };
+  const requestHeadersWeb = {
+    Authorization: "Bearer ",
+  };
 
   const lon = -76.52496476354585;
   const lat = 3.4270331133664707;
+
+  const suffix = uuidv4().replace(/-/g, "");
+  // Dos attention points propios (idempotente: no dependen del seed ni de otras suites).
+  const testPoints = [
+    {
+      id: null,
+      name: `PuntoGeneroA${suffix}`,
+      description: `DescripcionGeneroA${suffix}`,
+      imageUri: `https://example.com/gpA${suffix}.png`,
+      phone: "3001234567",
+      color: "#002955",
+      address: `DireccionGeneroA${suffix}`,
+      iconMap: `https://example.com/gpA${suffix}.png`,
+      lat,
+      lon,
+    },
+    {
+      id: null,
+      name: `PuntoGeneroB${suffix}`,
+      description: `DescripcionGeneroB${suffix}`,
+      imageUri: `https://example.com/gpB${suffix}.png`,
+      phone: "3001234568",
+      color: "#112233",
+      address: `DireccionGeneroB${suffix}`,
+      iconMap: `https://example.com/gpB${suffix}.png`,
+      lat,
+      lon,
+    },
+  ];
 
   beforeAll(async () => {
     const firebaseAuth = await request(
@@ -20,6 +54,34 @@ describe("Mobile - Gender equality management API points: ", () => {
       .query({ key: global.firebaseKey })
       .send(global.firebaseTestMobileUserLogin);
     requestHeaders.Authorization += firebaseAuth.body.idToken;
+
+    const firebaseAuthWeb = await request(
+      "https://identitytoolkit.googleapis.com/v1"
+    )
+      .post("/accounts:signInWithPassword")
+      .query({ key: global.firebaseKey })
+      .send(global.firebaseTestWebUserLogin);
+    requestHeadersWeb.Authorization += firebaseAuthWeb.body.idToken;
+
+    for (const point of testPoints) {
+      const created = await request(usedWebHost)
+        .post("/gender_point/")
+        .set(requestHeadersWeb)
+        .send(point);
+      expect(created.statusCode).toBe(201);
+      point.id = created.body.data.id;
+    }
+  });
+
+  afterAll(async () => {
+    for (const point of testPoints) {
+      if (point.id != null) {
+        await request(usedWebHost)
+          .post("/gender_point/delete")
+          .set(requestHeadersWeb)
+          .send({ id: point.id });
+      }
+    }
   });
 
   describe("GET /gender ", () => {
@@ -42,16 +104,8 @@ describe("Mobile - Gender equality management API points: ", () => {
       // expect(response0.body.length).toBe(0);
     });
 
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost)
-        .get("/");
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
+    // Removed: GET /gender es un endpoint PÚBLICO (mobile.js:138-142, sin auth).
+    // El test de 401 sin Authorization estaba obsoleto: responde 200 sin token.
   });
 
   describe("GET /gender/attention_points ", () => {
@@ -59,20 +113,26 @@ describe("Mobile - Gender equality management API points: ", () => {
       const response0 = await request(usedHost)
         .get("/attention_points")
         .set(requestHeaders)
-        .query({ page: { number: 1, size: 2 }, lat, lon });
+        .query({ page: { number: 1, size: 100 }, lat, lon });
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toEqual(expect.any(Array));
-      expect(response0.body.length).toBe(2);
-      expect(response0.body[0]).toHaveProperty("id");
-      expect(response0.body[0]).toHaveProperty("name");
-      expect(response0.body[0]).toHaveProperty("color");
-      expect(response0.body[0]).toHaveProperty("iconMap");
-      expect(response0.body[0]).toHaveProperty("description");
-      expect(response0.body[0]).toHaveProperty("address");
-      expect(response0.body[0]).toHaveProperty("phone");
-      expect(response0.body[0]).toHaveProperty("image");
-      expect(response0.body[0]).toHaveProperty("lat");
-      expect(response0.body[0]).toHaveProperty("lon");
+
+      // Verifica que los dos attention points creados por esta suite estén presentes.
+      const createdNames = testPoints.map((p) => p.name);
+      const created = response0.body.filter((p) => createdNames.includes(p.name));
+      expect(created.length).toBe(2);
+      for (const point of created) {
+        expect(point).toHaveProperty("id");
+        expect(point).toHaveProperty("name");
+        expect(point).toHaveProperty("color");
+        expect(point).toHaveProperty("iconMap");
+        expect(point).toHaveProperty("description");
+        expect(point).toHaveProperty("address");
+        expect(point).toHaveProperty("phone");
+        expect(point).toHaveProperty("image");
+        expect(point).toHaveProperty("lat");
+        expect(point).toHaveProperty("lon");
+      }
 
       const response1 = await request(usedHost)
         .get("/attention_points")
@@ -80,30 +140,14 @@ describe("Mobile - Gender equality management API points: ", () => {
         .query({ lat, lon });
       expect(response1.statusCode).toBe(200);
       expect(response1.body).toEqual(expect.any(Array));
-      expect(response1.body[0]).toHaveProperty("id");
-      expect(response1.body[0]).toHaveProperty("name");
-      expect(response1.body[0]).toHaveProperty("color");
-      expect(response1.body[0]).toHaveProperty("iconMap");
-      expect(response1.body[0]).toHaveProperty("description");
-      expect(response1.body[0]).toHaveProperty("address");
-      expect(response1.body[0]).toHaveProperty("phone");
-      expect(response1.body[0]).toHaveProperty("image");
-      expect(response1.body[0]).toHaveProperty("lat");
-      expect(response1.body[0]).toHaveProperty("lon");
+      const created1 = response1.body.filter((p) => createdNames.includes(p.name));
+      expect(created1.length).toBe(2);
 
       const response2 = await request(usedHost).get("/attention_points").set(requestHeaders);
       expect(response2.statusCode).toBe(200);
       expect(response2.body).toEqual(expect.any(Array));
-      expect(response2.body[0]).toHaveProperty("id");
-      expect(response2.body[0]).toHaveProperty("name");
-      expect(response2.body[0]).toHaveProperty("color");
-      expect(response2.body[0]).toHaveProperty("iconMap");
-      expect(response2.body[0]).toHaveProperty("description");
-      expect(response2.body[0]).toHaveProperty("address");
-      expect(response2.body[0]).toHaveProperty("phone");
-      expect(response2.body[0]).toHaveProperty("image");
-      expect(response2.body[0]).toHaveProperty("lat");
-      expect(response2.body[0]).toHaveProperty("lon");
+      const created2 = response2.body.filter((p) => createdNames.includes(p.name));
+      expect(created2.length).toBe(2);
     });
 
     test("Should respond with status 200 and an empty array, because the page number does not exist.", async () => {
@@ -217,17 +261,8 @@ describe("Mobile - Gender equality management API points: ", () => {
       expect(response11.body).toHaveProperty("detail");
     });
 
-    test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-      const response0 = await request(usedHost)
-        .get("/attention_points")
-        .query({ page: { number: 2, size: 2 }, lat, lon });
-      expect(response0.statusCode).toBe(401);
-      expect(response0.body).not.toHaveProperty("meta");
-      expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 401);
-      expect(response0.body).toHaveProperty("code");
-      expect(response0.body).toHaveProperty("detail");
-    });
+    // Removed: GET /gender/attention_points es un endpoint PÚBLICO (mobile.js:133-137, sin auth).
+    // El test de 401 sin Authorization estaba obsoleto: responde 200 sin token.
   });
 
 });

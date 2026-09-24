@@ -14,14 +14,14 @@ describe("Web - Security Categories management API points: ", () => {
   };
 
   const testCategory0 = {
-    name: uuidV4(),
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    name: uuidV4().replace(/-/g, ""),
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#E40F81",
   };
 
   const testCategory1 = {
-    name: uuidV4(),
-    imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+    name: uuidV4().replace(/-/g, ""),
+    iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#002955",
   };
 
@@ -83,7 +83,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          imageUri: "is.not uri",
+          iconMap: "this is not a uri",
         });
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
@@ -327,7 +327,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          name: testCategory0.name + " - Modificado",
+          name: testCategory0.name + " Modificado",
         });
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toHaveProperty("meta");
@@ -336,7 +336,7 @@ describe("Web - Security Categories management API points: ", () => {
       expect(response0.body.data).toEqual(
         expect.objectContaining({
           ...testCategory0,
-          name: testCategory0.name + " - Modificado",
+          name: testCategory0.name + " Modificado",
         })
       );
       const response1 = await request(usedHost)
@@ -344,7 +344,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory1,
-          name: testCategory1.name + " - Modificado",
+          name: testCategory1.name + " Modificado",
         });
       expect(response1.statusCode).toBe(200);
       expect(response1.body).toHaveProperty("meta");
@@ -353,7 +353,7 @@ describe("Web - Security Categories management API points: ", () => {
       expect(response1.body.data).toEqual(
         expect.objectContaining({
           ...testCategory1,
-          name: testCategory1.name + " - Modificado",
+          name: testCategory1.name + " Modificado",
         })
       );
     });
@@ -464,7 +464,7 @@ describe("Web - Security Categories management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...testCategory0,
-          imageUri: "is.not uri",
+          iconMap: "this is not a uri",
         });
       expect(response5.statusCode).toBe(400);
       expect(response5.body).not.toHaveProperty("meta");

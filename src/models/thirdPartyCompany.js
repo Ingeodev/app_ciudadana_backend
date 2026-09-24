@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   ThirdPartyCompany.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -45,67 +46,80 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       nit: {
+        comment: "Campo nit (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       categoryId: {
+        comment: "Clave foránea hacia ThirdPartyCategories.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       siteUri: {
+        comment: "URL del sitio o recurso web asociado.",
         type: DataTypes.TEXT,
         allowNull: true,
         unique: false,
       },
       address: {
+        comment: "Dirección de contacto.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       lat: {
+        comment: "Campo lat (FLOAT).",
         type: DataTypes.FLOAT,
         allowNull: false,
         unique: false,
       },
       lon: {
+        comment: "Campo lon (FLOAT).",
         type: DataTypes.FLOAT,
         allowNull: false,
         unique: false,
       },
       geolocation: {
+        comment: "Punto geográfico (GEOMETRY) con la ubicación.",
         type: DataTypes.GEOMETRY,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Empresas o terceros habilitados que prestan servicios en la aplicación.",
       sequelize,
       modelName: "ThirdPartyCompany",
       tableName: "ThirdPartyCompanies",

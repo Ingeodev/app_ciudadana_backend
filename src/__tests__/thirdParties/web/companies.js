@@ -675,7 +675,7 @@ describe("Web - Third Party Companies management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editCompany0,
-          siteUri: "is.not uri",
+          siteUri: "not a valid uri",
         });
       expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");

@@ -20,21 +20,36 @@ module.exports = (sequelize, DataTypes) => {
   Advertisement.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      imageUri: DataTypes.STRING,
-      imageMobileUri: DataTypes.STRING,
-      siteUri: DataTypes.TEXT,
-      categoryId: DataTypes.INTEGER,
+      imageUri: {
+        type: DataTypes.STRING,
+        comment: "URL de la imagen asociada."
+      },
+      imageMobileUri: {
+        type: DataTypes.STRING,
+        comment: "URL de la imagen optimizada para móvil."
+      },
+      siteUri: {
+        type: DataTypes.TEXT,
+        comment: "URL del sitio o recurso web asociado."
+      },
+      categoryId: {
+        type: DataTypes.INTEGER,
+        comment: "Clave foránea hacia MobileServices.id."
+      },
       active: {
+        comment: "Campo active (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },
     },
     {
+      comment: "Publicidades y avisos promocionales mostrados en la aplicación.",
       sequelize,
       modelName: "Advertisement",
       paranoid: true,

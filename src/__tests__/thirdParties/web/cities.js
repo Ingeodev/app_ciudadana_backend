@@ -138,7 +138,7 @@ describe("WEB Cities configuration API points: ", () => {
       expect(response4.body.data).toHaveProperty("errors");
       expect(response4.body.data.errors).toEqual(expect.any(Array));
       expect(response4.body.data.errors.length).toBe(1);
-    });
+    }, 60000);
 
     test("Should fail with error 400 and a message if 'file' is not passed.", async () => {
       const response0 = await request(usedHost)
@@ -151,25 +151,25 @@ describe("WEB Cities configuration API points: ", () => {
       expect(response0.body).toHaveProperty("detail");
     });
 
-    test("Should fail with error 400 and a message if 'file' is not excel (xls or xlsx).", async () => {
+    test("Should fail with error 415 and a message if 'file' is not excel (xls or xlsx).", async () => {
       const response0 = await request(usedHost)
         .post("/excel")
         .set(requestHeaders)
         .attach("file", word);
-      expect(response0.statusCode).toBe(400);
+      expect(response0.statusCode).toBe(415);
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 400);
-      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("status", 415);
+      expect(response0.body).toHaveProperty("code", "Unsupported Media Type");
       expect(response0.body).toHaveProperty("detail");
 
       const response1 = await request(usedHost)
         .post("/excel")
         .set(requestHeaders)
         .attach("file", powerpoint);
-      expect(response1.statusCode).toBe(400);
+      expect(response1.statusCode).toBe(415);
       expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 400);
-      expect(response1.body).toHaveProperty("code");
+      expect(response1.body).toHaveProperty("status", 415);
+      expect(response1.body).toHaveProperty("code", "Unsupported Media Type");
       expect(response1.body).toHaveProperty("detail");
     });
 
@@ -734,7 +734,7 @@ describe("WEB Cities configuration API points: ", () => {
           })
         );
       }
-    });
+    }, 60000);
 
     test("Should fail with status 400 and an error with a message if the entry is not well formatted.", async () => {
       const response0 = await request(usedHost)

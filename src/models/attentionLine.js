@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   AttentionLine.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -21,17 +22,20 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       whatsapp: {
+        comment: "Campo whatsapp (VARCHAR(15)).",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Líneas de atención ciudadana registradas en el sistema.",
       sequelize,
       modelName: "AttentionLine",
       tableName: "AttentionLines",

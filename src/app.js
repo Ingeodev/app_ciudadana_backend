@@ -36,7 +36,22 @@ const webTrafficRouter = require("./microservices/traffic/v1/routes/web.js");
 
 const app = express();
 
-app.use(bodyParser.json());
+// Captura el raw body para los middlewares de upload (busboy) en multipart/form-data
+// y para bodyParser.json() vía verify.
+app.use((req, res, next) => {
+  if (req.is("multipart/form-data")) {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      req.rawBody = Buffer.concat(chunks);
+      next();
+    });
+    req.on("error", next);
+  } else {
+    next();
+  }
+});
+app.use(bodyParser.json({ verify: (req, res, buf) => { if (buf && buf.length) req.rawBody = buf; } }));
 app.use(cors());
 
 app.get("/health", function (req, res) {

@@ -120,6 +120,7 @@ describe("Web API - Tourism Services management API points: ", () => {
       expect(response2.statusCode).toBe(201);
       expect(response2.body.data).toHaveProperty("apiKey");
       requestHeaders["x-api-key"] = response2.body.data.apiKey;
+      requestHeaders["Authorization"] = requestHeadersFirebase.Authorization;
     });
   });
 

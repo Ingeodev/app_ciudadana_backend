@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   ReportConfiguration.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,17 +29,20 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       automaticApproval: {
+        comment: "Campo automaticApproval (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Configuraciones asociadas a los reportes generados por la aplicación.",
       sequelize,
       modelName: "ReportConfiguration",
       tableName: "ReportConfigurations",

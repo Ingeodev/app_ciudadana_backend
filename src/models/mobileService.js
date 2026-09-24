@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   MobileService.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,36 +29,43 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       route: {
+        comment: "Campo route (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       subtitle: {
+        comment: "Campo subtitle (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       icon: {
+        comment: "Campo icon (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       accessLevel: {
+        comment: "Campo accessLevel (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       active: {
+        comment: "Campo active (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
@@ -65,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      comment: "Servicios móviles registrados y disponibles en la aplicación.",
       sequelize,
       modelName: "MobileService",
       tableName: "MobileServices",

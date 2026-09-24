@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   Role.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -27,22 +28,26 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       permission: {
+        comment: "Permisos asignados al rol.",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Catálogo de roles de los usuarios de la aplicación.",
       sequelize,
       modelName: "Role",
       tableName: "Roles",

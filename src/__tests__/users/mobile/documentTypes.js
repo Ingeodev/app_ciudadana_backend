@@ -5,20 +5,10 @@ const request = require("supertest");
 // Local
 const usedHost = `${global.usersMicroserviceLocalHost}/api/mobile/v1/users/document_types`;
 describe("Mobile - Document Type management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(90000);
 
   const requestHeaders = {
     Authorization: "Bearer ",
-  };
-
-  const testDocType0 = {
-    name: "AAA-TEST0 Edit",
-    code: "AAA-TEST0 Code",
-  };
-
-  const testDocType1 = {
-    name: "AAA-TEST1 Edit",
-    code: "AAA-TEST1 Code",
   };
 
    beforeAll(async () => {
@@ -30,85 +20,35 @@ describe("Mobile - Document Type management API points: ", () => {
   });
 
   describe("GET /document_types/ ", () => {
-    // [
-    //   {
-    //     id: 6,
-    //     name: "Cedula de ciudadania",
-    //     code: "CC",
-    //   },
-    //   {
-    //     id: 1,
-    //     name: "Registro civil",
-    //     code: "RC",
-    //   },
-    //   {
-    //     id: 5,
-    //     name: "Tarjeta de identidad",
-    //     code: "TI",
-    //   },
-    // ]
-    test("should respond with status 200 and a list of objects containing the two created objects.", async () => {
-      // No pagination
+    test("should respond with status 200 and a list of document type objects.", async () => {
+      // Sin paginación
       const response0 = await request(usedHost).get("/").set(requestHeaders);
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toEqual(expect.any(Array));
-      expect(response0.body[0]).toHaveProperty("id");
-      expect(response0.body[0]).toHaveProperty("name");
-      expect(response0.body[0].name).toBe(testDocType0.name);
-      expect(response0.body[0]).toHaveProperty("code");
-      expect(response0.body[0].code).toBe(testDocType0.code);
-      expect(response0.body[1]).toHaveProperty("id");
-      expect(response0.body[1]).toHaveProperty("name");
-      expect(response0.body[1].name).toBe(testDocType1.name);
-      expect(response0.body[1]).toHaveProperty("code");
-      expect(response0.body[1].code).toBe(testDocType1.code);
+      expect(response0.body.length).toBeGreaterThan(0);
+      response0.body.forEach((item) => {
+        expect(item).toHaveProperty("id");
+        expect(item).toHaveProperty("name");
+        expect(item).toHaveProperty("code");
+      });
 
-      // Pagination
+      // Con paginación
       const response1 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
         .query({ page: { number: 1, size: 2 } });
       expect(response1.statusCode).toBe(200);
       expect(response1.body).toEqual(expect.any(Array));
-      expect(response1.body[0]).toHaveProperty("id");
-      expect(response1.body[0]).toHaveProperty("name");
-      expect(response1.body[0].name).toBe(testDocType0.name);
-      expect(response1.body[0]).toHaveProperty("code");
-      expect(response1.body[0].code).toBe(testDocType0.code);
-      expect(response1.body[1]).toHaveProperty("id");
-      expect(response1.body[1]).toHaveProperty("name");
-      expect(response1.body[1].name).toBe(testDocType1.name);
-      expect(response1.body[1]).toHaveProperty("code");
-      expect(response1.body[1].code).toBe(testDocType1.code);
+      expect(response1.body.length).toBeLessThanOrEqual(2);
+      response1.body.forEach((item) => {
+        expect(item).toHaveProperty("id");
+        expect(item).toHaveProperty("name");
+        expect(item).toHaveProperty("code");
+      });
     });
 
-    // {
-    // "status": 400,
-    // "detail": "\"number\" must be a number",
-    // "code": "Bad Request"
-    // }
     test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders);
-      // expect(response0.statusCode).toBe(400);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 400);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
-
-      // const response1 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: {} });
-      // expect(response1.statusCode).toBe(400);
-      // expect(response1.body).not.toHaveProperty("meta");
-      // expect(response1.body).not.toHaveProperty("data");
-      // expect(response1.body).toHaveProperty("status", 400);
-      // expect(response1.body).toHaveProperty("code");
-      // expect(response1.body).toHaveProperty("detail");
-
+      // page con number pero sin size
       const response2 = await request(usedHost)
         .get("/")
         .set(requestHeaders)
@@ -175,11 +115,6 @@ describe("Mobile - Document Type management API points: ", () => {
       expect(response7.body).toHaveProperty("detail");
     });
 
-    // {
-    //     "status": 401,
-    //     "detail": "Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.",
-    //     "code": "Unauthorized"
-    // }
     test("should fail with error 401 and a message if Authorization header is not set.", async () => {
       const response0 = await request(usedHost).get("/");
       expect(response0.statusCode).toBe(401);
@@ -188,20 +123,6 @@ describe("Mobile - Document Type management API points: ", () => {
       expect(response0.body).toHaveProperty("status", 401);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
-    });
-
-    test("DISABLED - DocumentTypes table must not have any records. should fail with status 404 and an error with a message of document types not found.", async () => {
-      // 1. ------------------------------------------------
-      // const response0 = await request(usedHost)
-      //   .get("/")
-      //   .set(requestHeaders)
-      //   .query({ page: { number: 1, size: 2 } });
-      // expect(response0.statusCode).toBe(404);
-      // expect(response0.body).not.toHaveProperty("meta");
-      // expect(response0.body).not.toHaveProperty("data");
-      // expect(response0.body).toHaveProperty("status", 404);
-      // expect(response0.body).toHaveProperty("code");
-      // expect(response0.body).toHaveProperty("detail");
     });
   });
 });

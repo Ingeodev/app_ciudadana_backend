@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   Dependencies.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -21,12 +22,14 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Dependencias municipales o entidades oficiales a las que se asocian las PQRS.",
       sequelize,
       modelName: "Dependency",
       tableName: "Dependencies",

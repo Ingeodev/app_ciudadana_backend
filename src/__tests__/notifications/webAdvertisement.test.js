@@ -1,4 +1,5 @@
 const request = require('supertest');
+const { v4: uuidV4 } = require("uuid");
 
 const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/web/v1/notifications/informationmb`;
 
@@ -11,11 +12,13 @@ describe("Advertisement management API points: ", () => {
 
     const testAdvertisement0 = {
         imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        imageMobileUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         siteUri: 'http://test.site.url',
     };
 
     const testAdvertisement1 = {
         imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        imageMobileUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
         siteUri: 'https://test.site.url/second',
         categoryId: 1,
     };
@@ -43,12 +46,12 @@ describe("Advertisement management API points: ", () => {
             .post("/api/web/v1/notifications/mobile_services")
             .set(requestHeaders)
             .send({
-                route: "Test Service Adv",
-                name: "Test Service Adv",
-                subtitle: "Test Service Adv",
+                route: "Test Service Adv " + uuidV4().replace(/-/g, ""),
+                name: "Test Service Adv " + uuidV4().replace(/-/g, ""),
+                subtitle: "Test Service Adv " + uuidV4().replace(/-/g, ""),
                 imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
                 icon: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
-                accessLevel: "Test Service Adv",
+                accessLevel: "Test Service Adv " + uuidV4().replace(/-/g, ""),
             });
         const categoryId = mobileServicesResponse.body.data.id;
         testAdvertisement1.categoryId = categoryId;
@@ -103,7 +106,7 @@ describe("Advertisement management API points: ", () => {
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement0,
-                    siteUri: 'not.an URI.str'
+                    siteUri: 'this is not a uri'
                 });
             expect(response1.statusCode).toBe(400);
             expect(response1.body).not.toHaveProperty("data");
@@ -332,7 +335,7 @@ describe("Advertisement management API points: ", () => {
                 .set(requestHeaders)
                 .send({
                     ...testAdvertisement0,
-                    siteUri: 'not.an URI.str'
+                    siteUri: 'this is not a uri'
                 });
             expect(response1.statusCode).toBe(400);
             expect(response1.body).not.toHaveProperty("data");

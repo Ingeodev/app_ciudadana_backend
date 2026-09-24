@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   ThirdPartyService.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,15 +29,18 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       service: {
+        comment: "Campo service (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
       },
       companyId: {
+        comment: "Clave foránea hacia ThirdPartyCompanies.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
     {
+      comment: "Servicios ofrecidos por las empresas de terceros.",
       sequelize,
       modelName: "ThirdPartyService",
       tableName: "ThirdPartyServices",

@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
   TransportCompany.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -43,42 +44,50 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       nit: {
+        comment: "Campo nit (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       siteUri: {
+        comment: "URL del sitio o recurso web asociado.",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Empresas de transporte público registradas.",
       sequelize,
       modelName: "TransportCompany",
       tableName: "TransportCompanies",

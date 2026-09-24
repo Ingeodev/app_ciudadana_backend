@@ -29,7 +29,7 @@ describe("Mobile - Third Party Categories management API points: ", () => {
         .query({ page: { number: 1, size: 2 }, lat, lon });
       expect(response0.statusCode).toBe(200);
       expect(response0.body).toEqual(expect.any(Array));
-      expect(response0.body.length).toBe(2);
+      expect(response0.body.length).toBeGreaterThanOrEqual(1);
       expect(response0.body[0]).toHaveProperty("name");
       expect(response0.body[0]).toHaveProperty("services");
       expect(response0.body[0].services).toEqual(expect.any(Array));

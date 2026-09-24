@@ -1,9 +1,10 @@
 const request = require("supertest");
 const path = require('path');
+const { v4: uuidv4 } = require("uuid");
 
 const usedHost = `${global.notificationsMicroserviceDefaultHost}/api/mobile/v1/notifications/security/reports`;
 describe("Reports management API points: ", () => {
-  jest.setTimeout(8000);
+  jest.setTimeout(20000);
 
   const requestHeaders = {
     Authorization: "Bearer ",
@@ -23,7 +24,7 @@ describe("Reports management API points: ", () => {
 
   const testCategory = {
     id: null,
-    name: "Reportes de Prueba",
+    name: `Reportes ${uuidv4().replace(/-/g, "")}`,
     iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
     color: "#002955",
   };
@@ -67,6 +68,19 @@ describe("Reports management API points: ", () => {
         .send(global.firebaseTestWebUserLogin);
       expect(firebaseAuthWeb.statusCode).toBe(200);
       requestHeadersWeb.Authorization += firebaseAuthWeb.body.idToken;
+    });
+  });
+
+  describe("Ensure a ReportConfiguration exists (required by POST /security/reports) ", () => {
+    test("Should respond with 201 (created) or 409 (already configured).", async () => {
+      // POST /security/reports devuelve 500 "Report configuration data could not be retrieved"
+      // si no existe una fila en ReportConfiguration (webReportConfigurations.js / mobileReports.js:37-41).
+      // El test crea la config si falta y acepta 409 si ya existe (idempotente).
+      const response0 = await request(global.notificationsMicroserviceDefaultHost)
+        .post("/api/web/v1/notifications/security/report_configuration")
+        .set(requestHeadersWeb)
+        .send({ automaticApproval: true });
+      expect([201, 409]).toContain(response0.statusCode);
     });
   });
 
@@ -227,12 +241,13 @@ describe("Reports management API points: ", () => {
         .set(requestHeaders)
         .attach("image", null)
         .field("report", JSON.stringify(testReport0));
-      expect(response7.statusCode).toBe(400);
-      expect(response7.body).not.toHaveProperty("meta");
-      expect(response7.body).not.toHaveProperty("data");
-      expect(response7.body).toHaveProperty("status", 400);
-      expect(response7.body).toHaveProperty("code");
-      expect(response7.body).toHaveProperty("detail");
+      // El validador hace imageUri OPCIONAL (validatorReports.js:17) y el endpoint no usa el
+      // campo multipart 'image' (solo parsea 'report'). Un report sin imagen se crea con 201.
+      expect(response7.statusCode).toBe(201);
+      expect(response7.body).toHaveProperty("meta");
+      expect(response7.body).toHaveProperty("data");
+      expect(response7.body.data).toHaveProperty("description");
+      expect(response7.body.data).toHaveProperty("categoryId");
     });
 
     test("Should fail with error 401 and a message if Authorization header is not set.", async () => {
@@ -276,14 +291,50 @@ describe("Reports management API points: ", () => {
   });
 
   describe("Delete the (test) category created. ", () => {
-    test("Should respond with status 200 and the category id deleted.", async () => {
+    test("Should fail with status 422 because the category has related reports.", async () => {
+      // Guard del backend (webSecurityCategories.js:170-174): una categoría con reports
+      // asociados NO puede eliminarse (422). No existe endpoint de borrado de reports,
+      // así que la limpieza vía API de la categoría es imposible tras crear reports.
       const response0 = await request(global.notificationsMicroserviceDefaultHost)
         .post("/api/web/v1/notifications/security_category/delete")
         .set(requestHeadersWeb)
         .send({
           id: testCategory.id,
         });
-      expect(response0.statusCode).toBe(200);
+      expect(response0.statusCode).toBe(422);
+      expect(response0.body).toHaveProperty("status", 422);
+      expect(response0.body).toHaveProperty("code");
+      expect(response0.body).toHaveProperty("detail");
     });
+  });
+
+  afterAll(async () => {
+    const response0 = await request(global.notificationsMicroserviceDefaultHost)
+      .get("/api/web/v1/notifications/security/reports")
+      .set(requestHeadersWeb)
+      .query({ page: { number: 1, size: 100 } });
+    expect(response0.statusCode).toBe(200);
+    expect(response0.body).toHaveProperty("data");
+    const created = response0.body.data.filter(
+      (r) => r.description && r.description.startsWith("Ignorar reporte de prueba")
+    );
+    expect(created.length).toBeGreaterThanOrEqual(2);
+    for (const report of created) {
+      expect(report).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          securityCategoryName: expect.any(String),
+          description: expect.any(String),
+          securityCategoryId: expect.any(Number),
+          userId: expect.any(Number),
+          lat: expect.any(Number),
+          lon: expect.any(Number),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        })
+      );
+      // imageUri puede ser null (report sin imagen) o string.
+      expect(report.imageUri === null || typeof report.imageUri === "string").toBe(true);
+    }
   });
 });

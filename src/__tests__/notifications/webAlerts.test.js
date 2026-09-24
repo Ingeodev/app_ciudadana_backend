@@ -24,7 +24,7 @@ describe("WEB Alert configuration API points: ", () => {
 
     // Should expire in 60 seconds
     const push_AlertItem = {
-        title: "Prueba: Ignorar",
+        title: "Prueba Ignorar",
         message: "Esta es una prueba automática, por favor ignórela.",
         siteUri: "https://www.cali.gov.co/",
         imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,

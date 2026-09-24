@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   GenderAttentionLine.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -29,32 +30,38 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       name: {
+        comment: "Nombre del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       phone: {
+        comment: "Teléfono de contacto.",
         type: DataTypes.STRING(15),
         allowNull: false,
         unique: false,
       },
       address: {
+        comment: "Dirección de contacto.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Líneas de atención telefónica especializadas en la ruta de género.",
       sequelize,
       modelName: "GenderAttentionLine",
       tableName: "GenderAttentionLines",

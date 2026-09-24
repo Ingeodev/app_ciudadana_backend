@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   RouteTimetable.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -35,17 +36,20 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       date: {
+        comment: "Campo date (DATE).",
         type: DataTypes.DATEONLY,
         allowNull: false,
         unique: false,
       },
       routeId: {
+        comment: "Clave foránea hacia TransportRoutes.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Horarios de operación de las rutas de transporte.",
       sequelize,
       modelName: "RouteTimetable",
       tableName: "RouteTimetables",

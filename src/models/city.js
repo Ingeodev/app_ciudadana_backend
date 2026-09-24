@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
   City.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -39,22 +40,26 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       city: {
+        comment: "Código de la ciudad.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       cityCode: {
+        comment: "Campo cityCode (INTEGER).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       state: {
+        comment: "Campo state (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Catálogo de ciudades soportadas por la aplicación.",
       sequelize,
       modelName: "City",
       tableName: "Cities",

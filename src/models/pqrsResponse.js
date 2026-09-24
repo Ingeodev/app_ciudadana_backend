@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   PqrsResponse.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -33,27 +34,32 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       pqrsId: {
+        comment: "Clave foránea hacia Pqrs.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       userId: {
+        comment: "Clave foránea hacia Users.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.TEXT,
         allowNull: false,
         unique: false,
       },
       fileUri: {
+        comment: "URL del archivo adjunto.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Respuestas emitidas frente a una PQRS.",
       sequelize,
       modelName: "PqrsResponse",
       tableName: "PqrsResponses",

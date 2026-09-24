@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   TourismService.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -28,17 +29,20 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       service: {
+        comment: "Campo service (VARCHAR(255)).",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       companyId: {
+        comment: "Clave foránea hacia TourismCompanies.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
     },
     {
+      comment: "Servicios turísticos ofrecidos.",
       sequelize,
       modelName: "TourismService",
       tableName: "TourismServices",

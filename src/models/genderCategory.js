@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   GenderCategory.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -29,32 +30,38 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       createdBy: {
+        comment: "Usuario que creó el registro (clave foránea).",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       title: {
+        comment: "Título del contenido.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       siteUri: {
+        comment: "URL del sitio o recurso web asociado.",
         type: DataTypes.TEXT,
         allowNull: true,
         unique: false,
       },
     },
     {
+      comment: "Categorías dentro de la ruta de atención de género.",
       sequelize,
       modelName: "GenderCategory",
       tableName: "GenderCategories",

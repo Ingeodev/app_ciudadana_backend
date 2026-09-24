@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   Alert.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -36,46 +37,55 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       sentBy: {
+        comment: "Clave foránea hacia Users.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       title: {
+        comment: "Título del contenido.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       message: {
+        comment: "Mensaje o contenido textual.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       siteUri: {
+        comment: "URL del sitio o recurso web asociado.",
         type: DataTypes.TEXT,
         allowNull: true,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       isSMS: {
+        comment: "Campo isSMS (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
       isPUSH: {
+        comment: "Campo isPUSH (BOOLEAN).",
         type: DataTypes.BOOLEAN,
         allowNull: false,
         unique: false,
       },
       expiresAt: {
+        comment: "Campo expiresAt (TIMESTAMP WITH TIME ZONE).",
         type: DataTypes.DATE,
         allowNull: false,
       },
     },
     {
+      comment: "Alertas de emergencia emitidas hacia los usuarios, con mensaje, imágenes y envío por SMS/push.",
       sequelize,
       modelName: "Alert",
       tableName: "Alerts",

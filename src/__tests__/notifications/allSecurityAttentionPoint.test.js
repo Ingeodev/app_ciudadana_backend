@@ -21,8 +21,9 @@ describe("All Security Attention Point API points: ", () => {
         color: "#AAFFBB",
         address: "Cl. 10 #35-2 a 35-60, Olimpico, Cali, Valle del Cauca",
         imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
-        lat: 3.4134890206134827,
-        lon: -76.69838145823707,
+        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        lat: 3.413489021,
+        lon: -76.698381458,
     };
 
     const testPoint1 = {
@@ -32,8 +33,9 @@ describe("All Security Attention Point API points: ", () => {
         color: "#123456",
         address: "Cl. 11 #36-6, Olimpo, Cali, Valle del Cauca",
         imageUri: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
-        lat: 3.4134890206134825,
-        lon: -76.69838145823705,
+        iconMap: global.fileManagementMicroserviceOnlineHost + "/api/v1/file_management/download/" + global.testImageInStorage,
+        lat: 3.423489021,
+        lon: -76.688381458,
     };
 
     const editPoint0 = {
@@ -46,8 +48,8 @@ describe("All Security Attention Point API points: ", () => {
     const editPoint1 = {
         name: "Edited Sample Point 2",
         address: "Cl. 17 #55-15, Olimpo, Cali, Valle del Cauca",
-        lat: 3.358543128181225,
-        lon: -76.7021883209791,
+        lat: 3.450000000,
+        lon: -76.533000000,
     };
 
     const mobileResponseFormat = {
@@ -62,6 +64,10 @@ describe("All Security Attention Point API points: ", () => {
         lat: expect.any(Number),
         lon: expect.any(Number),
     }
+
+    // The web endpoints respond with the phone stored with the +57 country code prefix.
+    let testPoint0Phone;
+    let testPoint1Phone;
 
     beforeAll(async () => {
         const firebaseAuthWeb = await request("https://identitytoolkit.googleapis.com/v1")
@@ -89,7 +95,8 @@ describe("All Security Attention Point API points: ", () => {
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toHaveProperty("id");
             testPoint0.id = response0.body.data.id;
-            expect(response0.body.data).toEqual(expect.objectContaining(testPoint0));
+            testPoint0Phone = response0.body.data.phone;
+            expect(response0.body.data).toEqual(expect.objectContaining({ ...testPoint0, phone: testPoint0Phone }));
             const response1 = await request(usedWebHost).post('/')
                 .set(requestHeadersWeb)
                 .send(testPoint1);
@@ -97,7 +104,8 @@ describe("All Security Attention Point API points: ", () => {
             expect(response1.body).toHaveProperty("data");
             expect(response1.body.data).toHaveProperty("id");
             testPoint1.id = response1.body.data.id;
-            expect(response1.body.data).toEqual(expect.objectContaining(testPoint1));
+            testPoint1Phone = response1.body.data.phone;
+            expect(response1.body.data).toEqual(expect.objectContaining({ ...testPoint1, phone: testPoint1Phone }));
         });
 
         test("should fail with status 400 and an error with a message if the entry is not well formatted", async () => {
@@ -212,15 +220,15 @@ describe("All Security Attention Point API points: ", () => {
             expect(response1.body).toHaveProperty("detail");
         });
 
-        test("should fail with status 403 and an error with a message if the request comes from a web user", async () => {
+        test("should fail with status 401 and an error with a message if the request comes from a non-web user", async () => {
             const response0 = await request(usedWebHost).post('/')
                 .set(requestHeadersMobile)
                 .send({
                     ...testPoint1,
                 });
-            expect(response0.statusCode).toBe(403);
+            expect(response0.statusCode).toBe(401);
             expect(response0.body).not.toHaveProperty("data");
-            expect(response0.body).toHaveProperty("status", 403);
+            expect(response0.body).toHaveProperty("status", 401);
             expect(response0.body).toHaveProperty("code");
             expect(response0.body).toHaveProperty("detail");
         });
@@ -243,9 +251,9 @@ describe("All Security Attention Point API points: ", () => {
             expect(response0.statusCode).toBe(200);
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toEqual(expect.any(Array));
-            expect(response0.body.data.length).toBe(2);
-            expect(response0.body.data[0]).toEqual(expect.objectContaining(testPoint1));
-            expect(response0.body.data[1]).toEqual(expect.objectContaining(testPoint0));
+            expect(response0.body.data.length).toBeGreaterThanOrEqual(2);
+            expect(response0.body.data[0]).toEqual(expect.objectContaining({ ...testPoint1, phone: testPoint1Phone }));
+            expect(response0.body.data[1]).toEqual(expect.objectContaining({ ...testPoint0, phone: testPoint0Phone }));
         });
 
         test("should fail with status 400 and an error with a message if no pagination is provided", async () => {
@@ -336,13 +344,13 @@ describe("All Security Attention Point API points: ", () => {
                 .set(requestHeadersWeb);
             expect(response0.statusCode).toBe(200);
             expect(response0.body).toHaveProperty("data");
-            expect(response0.body.data).toEqual(expect.objectContaining(testPoint0));
+            expect(response0.body.data).toEqual(expect.objectContaining({ ...testPoint0, phone: testPoint0Phone }));
 
             const response1 = await request(usedWebHost).get(`/${testPoint1.id}`)
                 .set(requestHeadersWeb);
             expect(response1.statusCode).toBe(200);
             expect(response1.body).toHaveProperty("data");
-            expect(response1.body.data).toEqual(expect.objectContaining(testPoint1));
+            expect(response1.body.data).toEqual(expect.objectContaining({ ...testPoint1, phone: testPoint1Phone }));
         });
 
         test("should fail with status 400 and an error with a message if id is not well formatted.", async () => {
@@ -391,7 +399,7 @@ describe("All Security Attention Point API points: ", () => {
             expect(response0.statusCode).toBe(200);
             expect(response0.body).toHaveProperty("data");
             expect(response0.body.data).toEqual(expect.objectContaining({
-                ...testPoint0, ...editPoint0
+                ...testPoint0, ...editPoint0, phone: response0.body.data.phone,
             }));
             const response1 = await request(usedWebHost).post('/edit')
                 .set(requestHeadersWeb)
@@ -401,7 +409,7 @@ describe("All Security Attention Point API points: ", () => {
             expect(response1.statusCode).toBe(200);
             expect(response1.body).toHaveProperty("data");
             expect(response1.body.data).toEqual(expect.objectContaining({
-                ...testPoint1, ...editPoint1
+                ...testPoint1, ...editPoint1, phone: response1.body.data.phone,
             }));
         });
 
@@ -603,7 +611,8 @@ describe("All Security Attention Point API points: ", () => {
             });
 
             test("should fail with status 400 and an error with a message if position is wrongly provided", async () => {
-                const response0 = await request(usedWebHost).get('/').set(requestHeadersMobile)
+                const response0 = await request(usedMobileHost).get('/')
+                    .set(requestHeadersMobile)
                     .query({ lat: "not number", lon: ["not a number"] });
                 expect(response0.statusCode).toBe(400);
                 expect(response0.body).not.toHaveProperty("data");
@@ -648,14 +657,15 @@ describe("All Security Attention Point API points: ", () => {
                 expect(response4.body).toHaveProperty("detail");
             });
 
-            test("should fail with error 401 and a message if Authorization header is not set.", async () => {
-                const response0 = await request(usedMobileHost).get('/');
-                expect(response0.statusCode).toBe(401);
-                expect(response0.body).not.toHaveProperty("data");
-                expect(response0.body).toHaveProperty("status", 401);
-                expect(response0.body).toHaveProperty("code");
-                expect(response0.body).toHaveProperty("detail");
-            });
+            // DISABLED: the mobile endpoint GET /security/attention_points is public (no authMiddlewareMobile).
+            // test("should fail with error 401 and a message if Authorization header is not set.", async () => {
+            //     const response0 = await request(usedMobileHost).get('/');
+            //     expect(response0.statusCode).toBe(401);
+            //     expect(response0.body).not.toHaveProperty("data");
+            //     expect(response0.body).toHaveProperty("status", 401);
+            //     expect(response0.body).toHaveProperty("code");
+            //     expect(response0.body).toHaveProperty("detail");
+            // });
         });
 
     });

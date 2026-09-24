@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   Report.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -45,41 +46,49 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       description: {
+        comment: "Descripción del registro.",
         type: DataTypes.STRING,
         allowNull: false,
         unique: false,
       },
       securityCategoryId: {
+        comment: "Clave foránea hacia SecurityCategories.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       userId: {
+        comment: "Clave foránea hacia Users.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       imageUri: {
+        comment: "URL de la imagen asociada.",
         type: DataTypes.STRING,
         allowNull: true,
         unique: false,
       },
       lat: {
+        comment: "Campo lat (FLOAT).",
         type: DataTypes.FLOAT,
         allowNull: false,
         unique: false,
       },
       lon: {
+        comment: "Campo lon (FLOAT).",
         type: DataTypes.FLOAT,
         allowNull: false,
         unique: false,
       },
       expiresAt: {
+        comment: "Campo expiresAt (TIMESTAMP WITH TIME ZONE).",
         type: DataTypes.DATE,
         allowNull: true,
         unique: false,
       },
       isApproved: {
+        comment: "Campo isApproved (ENUM).",
         type: DataTypes.ENUM("yes", "no"),
         allowNull: true,
         unique: false,
@@ -89,6 +98,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      comment: "Reportes de incidentes o situaciones registradas por los ciudadanos.",
       sequelize,
       modelName: "Report",
       tableName: "Reports",

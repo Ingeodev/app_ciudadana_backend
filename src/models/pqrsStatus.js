@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   PqrsStatus.init(
     {
       id: {
+        comment: "Identificador único del registro (clave primaria).",
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -23,11 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       pqrsId: {
+        comment: "Clave foránea hacia Pqrs.id.",
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false,
       },
       status: {
+        comment: "Estado del registro.",
         type: DataTypes.ENUM("ENVIADA", "RECIBIDA", "ATENDIDA"),
         defaultValue: "ENVIADA",
         allowNull: false,
@@ -38,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      comment: "Estados del ciclo de vida de una PQRS.",
       sequelize,
       modelName: "PqrsStatus",
       tableName: "PqrsStatuses",

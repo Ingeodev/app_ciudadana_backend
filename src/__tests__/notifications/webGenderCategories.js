@@ -13,28 +13,28 @@ describe("Web - Gender Attention Lines management API points: ", () => {
   };
 
   const testGenderLine0 = {
-    title: uuidV4(),
+    title: uuidV4().replace(/-/g, ""),
     description: "Description test",
     imageUri: "http://image.com",
     siteUri: "http://site.com",
   };
 
   const testGenderLine1 = {
-    title: uuidV4(),
+    title: uuidV4().replace(/-/g, ""),
     description: "Description test",
     imageUri: "http://image.com",
     siteUri: "http://site.com",
   };
 
   const editGender0 = {
-    title: uuidV4(),
+    title: uuidV4().replace(/-/g, ""),
     description: "Description test edit",
     imageUri: "http://image.com/edit",
     siteUri: "http://site.com/edit",
   };
 
   const editGender1 = {
-    title: uuidV4(),
+    title: uuidV4().replace(/-/g, ""),
     description: "Description test edit",
     imageUri: "http://image.com/edit",
     siteUri: "http://site.com/edit",
@@ -138,15 +138,15 @@ describe("Web - Gender Attention Lines management API points: ", () => {
       expect(response8.body).toHaveProperty("detail");
     });
 
-    test("should fail with status 500 and an error with a message if the data cannot be saved", async () => {
+    test("should fail with status 400 and an error with a message if the data cannot be saved", async () => {
       const response0 = await request(usedHost)
         .post("/")
         .set(requestHeaders)
         .send(testGenderLine0);
-      expect(response0.statusCode).toBe(500);
+      expect(response0.statusCode).toBe(400);
       expect(response0.body).not.toHaveProperty("meta");
       expect(response0.body).not.toHaveProperty("data");
-      expect(response0.body).toHaveProperty("status", 500);
+      expect(response0.body).toHaveProperty("status", 400);
       expect(response0.body).toHaveProperty("code");
       expect(response0.body).toHaveProperty("detail");
 
@@ -154,10 +154,10 @@ describe("Web - Gender Attention Lines management API points: ", () => {
         .post("/")
         .set(requestHeaders)
         .send(testGenderLine1);
-      expect(response1.statusCode).toBe(500);
+      expect(response1.statusCode).toBe(400);
       expect(response1.body).not.toHaveProperty("meta");
       expect(response1.body).not.toHaveProperty("data");
-      expect(response1.body).toHaveProperty("status", 500);
+      expect(response1.body).toHaveProperty("status", 400);
       expect(response1.body).toHaveProperty("code");
       expect(response1.body).toHaveProperty("detail");
     });
@@ -395,7 +395,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editGender0,
-          imageUri: "is.not uri",
+          imageUri: "not a uri",
         });
       expect(response6.statusCode).toBe(400);
       expect(response6.body).not.toHaveProperty("meta");
@@ -410,7 +410,7 @@ describe("Web - Gender Attention Lines management API points: ", () => {
         .set(requestHeaders)
         .send({
           ...editGender0,
-          siteUri: "is.not uri",
+          siteUri: "not a uri",
         });
       expect(response7.statusCode).toBe(400);
       expect(response7.body).not.toHaveProperty("meta");
