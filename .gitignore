@@ -154,5 +154,8 @@ firebase-debug.log
 .env.*
 *.env.*
 
+# Service accounts de Firebase Admin SDK (nunca versionar).
+src/config/account_service_key-testing.json
+
 # Plantilla de variables de entorno: SI se versiona (sin secretos).
 !src/.env.example

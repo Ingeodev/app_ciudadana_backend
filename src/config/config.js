@@ -27,6 +27,19 @@ module.exports = {
       useUTC: false,
     },
   },
+    test: {
+    username: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    host: DB_HOST,
+    port: DB_PORT,
+    dialect: "postgres",
+    logging: console.log,
+    timezone: UTC_ZONE_DB,
+    dialectOptions: {
+      useUTC: false,
+    },
+  },
   production: {
     username: DB_USER,
     password: DB_PASSWORD,

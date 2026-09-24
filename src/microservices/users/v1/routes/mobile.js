@@ -56,6 +56,11 @@ router.post(
   usersMobile.postAccountFullLogin
 );
 
+router.post(
+  "/account/delete",
+  usersMobile.deleteAccount
+);
+
 // TODO: -- Start - DocumentTypes Endpoints
 //#region DocumentTypes end-points
 router.get(

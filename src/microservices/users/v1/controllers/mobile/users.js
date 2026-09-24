@@ -241,7 +241,6 @@ exports.getAccountLoginPhase = async (req, res, next) => {
  */
 exports.postAccountFullLogin = async (req, res, next) => {
   try {
-    // console.info("req.file: ", req.file);
     const clientId = res.locals.uid;
 
     if (!clientId) {
@@ -279,8 +278,6 @@ exports.postAccountFullLogin = async (req, res, next) => {
 
     return res.status(StatusCodes.OK).json({ ...dataUser, phone });
   } catch (error) {
-    // console.error("account full_login could not be retrieved: ", error);
-    
     if (
       error &&
       error.errors &&
@@ -289,6 +286,56 @@ exports.postAccountFullLogin = async (req, res, next) => {
     ) {
       error.message = error.errors[0].message;
     }
+    return next(error);
+  }
+};
+
+/**
+ * Delete the authenticated user's account (mobile only).
+ * Soft-deletes the user in the database (paranoid: true).
+ * Firebase Auth is NOT deleted so the user can re-register later
+ * and all related records (Alerts, Reports, Pqrs, etc.) are preserved.
+ * @param {object} req - Express request (uid from auth token)
+ * @return {object} Response contains: statusCode 200 on success
+ */
+exports.deleteAccount = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const clientId = res.locals.uid;
+
+    if (!clientId) {
+      throw {
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Authentication required",
+      };
+    }
+
+    await validator.vDeleteAccount(req.body);
+
+    const userInDb = await db.User.findOne({
+      where: { clientId, userMobile: true },
+      paranoid: false,
+    });
+
+    if (userInDb === null) {
+      throw {
+        status: StatusCodes.NOT_FOUND,
+        message: "User not found",
+      };
+    }
+
+    await userInDb.destroy({ transaction });
+    await transaction.commit();
+
+    return res.status(StatusCodes.OK).json({
+      meta: null,
+      data: { message: "Account deleted successfully" },
+    });
+  } catch (error) {
+    if (transaction.finished) {
+      return next(error);
+    }
+    await transaction.rollback();
     return next(error);
   }
 };

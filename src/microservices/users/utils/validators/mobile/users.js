@@ -35,6 +35,8 @@ const vFileSchema = joi.object({
     buffer: joi.binary().required(),
 }).required().error(new Error('A valid file is required.'));
 
+const deleteAccountSchema = joi.object({});
+
 const use_validator_on_data = async (validator_schema, data) => {
     try {
         if (!validator_schema) {
@@ -66,5 +68,8 @@ module.exports = {
   },
   vfileFullLogin: async (inputData) => {
     return await use_validator_on_data(vFileSchema, inputData);
-  }
+  },
+  vDeleteAccount: async (inputData) => {
+    return await use_validator_on_data(deleteAccountSchema, inputData);
+  },
 };
